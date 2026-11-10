@@ -1,6 +1,6 @@
 // Test both distributions in real Chromium:
-// (1) downloadable one-file HTML with data: config,
-// (2) Playgama ZIP's index.html with real sibling JSON config.
+// (1) downloadable single HTML streaming original MP3s with data: SDK config,
+// (2) Playgama ZIP with untouched original MP3s and sibling Bridge JSON config.
 // Runs without real ads, platform account, or external SDK network calls.
 const assert = require('node:assert/strict');
 const { chromium } = require('playwright');
@@ -68,9 +68,10 @@ const { chromium } = require('playwright');
           crazyScript:!!document.querySelector('script[src*="crazygames-sdk"]'),
           tracks:window.SpaceMusicTracks?.length,
           cover:window.SpaceMusicTracks?.[0]?.cover?.startsWith('data:image/jpeg;base64,'),
-          audio:window.SpaceMusicTracks?.[0]?.src?.startsWith('data:audio/mp4;base64,'),
-          audioSize:window.SpaceMusicTracks?.[0]?.src?.length,
-          twelfthAudio:!!document.getElementById('inline-audio-12'),
+          audio:window.SpaceMusicTracks?.[0]?.src?.endsWith('assets/music/track-01.mp3'),
+          remoteAudio:window.SpaceMusicTracks?.[0]?.src?.startsWith('https://mooouse.github.io/Infinity-Space/assets/music/'),
+          twelfthAudio:window.SpaceMusicTracks?.[11]?.src?.endsWith('assets/music/track-12.mp3'),
+          hasLossyEmbeddedAudio:!!document.getElementById('inline-audio-01'),
           density:document.querySelector('[data-test="density"]')?.value,
           description:JSON.parse(document.getElementById('playgama-submission-info').textContent)
         };
@@ -89,8 +90,19 @@ const { chromium } = require('playwright');
       assert.equal(state.tracks,12);
       assert.equal(state.cover,true);
       assert.equal(state.audio,true);
-      assert.ok(state.audioSize>300_000);
+      assert.equal(state.remoteAudio,!variant.externalConfig,
+        'Standalone must stream original MP3; Playgama must load local original MP3');
       assert.equal(state.twelfthAudio,true);
+      assert.equal(state.hasLossyEmbeddedAudio,false,
+        'Previously transcoded AAC must not be present in HTML');
+      if(variant.externalConfig){
+        const response=await page.request.get(
+          'http://127.0.0.1:8766/playgama/assets/music/track-01.mp3'
+        );
+        assert.equal(response.status(),200,'original track must exist in archive');
+        assert.ok((await response.body()).length>5_000_000,
+          'full-quality original track 01 must be intact');
+      }
       assert.equal(state.density,'32');
       assert.equal(state.description.title,'Infinity Space');
 
@@ -111,7 +123,7 @@ const { chromium } = require('playwright');
       assert.deepEqual(errors,[],
         'JS errors in '+variant.name+': '+errors.join('\n').slice(0,1800));
       console.log('PASS:',variant.name,
-        'SDK ready, correct config location, 12 tracks, rewards and controls');
+        'SDK, config, original-quality MP3 music URLs, rewards and controls');
       await page.close();
     }
   } finally {
