@@ -69,7 +69,6 @@ const botNames=['Nova','Orion','Voidling','Nebula','Pulsar','Quasar','Luna','Vor
 function resize(){sw=Math.max(320,innerWidth);sh=Math.max(200,innerHeight);dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(sw*dpr);canvas.height=Math.round(sh*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);bg=Array.from({length:230},()=>({x:Math.random()*world.w,y:Math.random()*world.h,r:rand(.5,1.75),t:rand(0,6)}));}
 addEventListener('resize',resize);resize();
 function createActor(name,player,team,index){return {name,player,team,index,x:rand(200,world.w-200),y:rand(200,world.h-200),vx:0,vy:0,dirX:1,dirY:0,mass:player?40:rand(34,52),r:29,kills:0,alive:true,respawn:0,shield:0,pulseCD:0,dashCD:0,shieldCD:0,dash:0,portalCD:0,think:0,target:null,personality:rnd(4),color:player?'#bb90ff':colors[index%colors.length],invuln:2.4}};
-}
 function createFood(){let type=rnd(8)===0?1:0;return {x:rand(35,world.w-35),y:rand(35,world.h-35),r:type?rand(7,11):rand(3,6),value:type?rand(9,17):rand(2,5),type,phase:rand(0,TAU)};}
 function createRelic(){return {x:rand(160,world.w-160),y:rand(160,world.h-160),type:['mass','shield','boost'][rnd(3)],r:17,life:22};}
 function init(type){
