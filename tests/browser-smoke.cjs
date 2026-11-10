@@ -20,13 +20,19 @@ const log=(...a)=>process.stdout.write(a.join(' ')+'\n');
   await page.goto(base+'/?tester=1',{waitUntil:'domcontentloaded',timeout:60000});
   await page.locator('#screen-menu [data-reward-page="roulette"]').waitFor({state:'visible',timeout:45000});
 
+  // The first screen IS the five-mode selector. No launcher tile or second page.
+  await page.locator('#hub-mode-story').waitFor({state:'visible',timeout:12000});
+  assert.equal(await page.locator('#screen-menu .hub-modes').count(),0);
+  assert.equal(await page.locator('#screen-menu .hub-mode-dots button').count(),5);
+  assert.equal(await page.locator('#screen-menu .hub-menu').isVisible(),false);
+  // Existing sections, new simulation, and upgrades still use the original
+  // registered handlers; they live in the optional drawer.
+  const sections=page.locator('#screen-menu .hub-mode-story-back');
+  await sections.click();
   await page.locator('#screen-menu .hub-menu').waitFor({state:'visible',timeout:12000});
   assert.equal(await page.locator('#screen-menu .hub-progress-grid .hub-progress-tile').count(),4,
-    'Main-menu progress hub must have four meaningful actions, not a wall of buttons');
-  assert.equal(await page.locator('#screen-menu .hub-modes').isVisible(),true,
-    'Game mode selection must be a primary action');
-  assert.equal(await page.locator('#screen-menu .hub-new-world').isVisible(),true,
-    'New universe action must remain accessible');
+    'The sections drawer retains four progression actions');
+  assert.equal(await page.locator('#screen-menu .hub-new-world').isVisible(),true);
   const more=page.locator('#screen-menu .hub-more-button');
   assert.equal(await page.locator('#screen-menu #hub-more-panel').isVisible(),false);
   await more.click();
@@ -34,6 +40,8 @@ const log=(...a)=>process.stdout.write(a.join(' ')+'\n');
   assert.equal(await page.locator('#screen-menu #hub-more-panel button').count(),3);
   await more.click();
   assert.equal(await page.locator('#screen-menu #hub-more-panel').isVisible(),false);
+  await sections.click();
+  assert.equal(await page.locator('#screen-menu .hub-menu').isVisible(),false);
   const firstBonusHit=await page.evaluate(()=>{
    const b=document.querySelector('#screen-menu [data-reward-page="roulette"]');
    const r=b.getBoundingClientRect(),point=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
@@ -41,7 +49,7 @@ const log=(...a)=>process.stdout.write(a.join(' ')+'\n');
   });
   assert.ok(firstBonusHit.hit&&firstBonusHit.top>=0&&firstBonusHit.bottom<=firstBonusHit.height,
     'Daily bonus button must be visible and physically clickable, including after returning from rewards: '+JSON.stringify(firstBonusHit));
-  log('PASS: main menu is an action-first hub; modes, progression, rewards and More navigation are usable');
+  log('PASS: the main screen IS the carousel; sections and daily rewards remain accessible');
 
   // A roulette launch from the main menu must immediately present real controls
   // even if the detailed SVG has not decoded yet.
@@ -244,7 +252,7 @@ const log=(...a)=>process.stdout.write(a.join(' ')+'\n');
 
   // Enter actual gameplay, open daily rewards using the in-game HUD, then
   // confirm Back really clears the DOM overlay instead of only resuming physics.
-  await page.locator('#screen-menu .primary.big-play').click({timeout:10000});
+  await page.locator('#screen-menu .hub-mode-story-play').click({timeout:10000});
   const tutorial=page.locator('.br-tutorial-done');
   if(await tutorial.isVisible())await tutorial.click({timeout:10000});
   await page.waitForFunction(()=>document.getElementById('modal')?.classList.contains('off'),null,{timeout:15000});
