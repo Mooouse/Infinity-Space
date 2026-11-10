@@ -10,6 +10,7 @@ on:
       - playgama-game-loader.js
       - playgama-bridge-config.json
       - scripts/build_playgama.py
+      - tests/regressions.cjs
       - tests/playgama-bridge.cjs
       - tests/playgama-package.cjs
       - .github/workflows/playgama-release.yml
