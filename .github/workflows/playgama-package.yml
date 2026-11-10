@@ -14,7 +14,10 @@ on:
       - '.github/workflows/playgama-package.yml'
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
+concurrency:
+  group: infinity-space-single-html-release
+  cancel-in-progress: false
 jobs:
   package:
     runs-on: ubuntu-latest
@@ -90,3 +93,21 @@ jobs:
           path: infinity-space-playgama.zip
           retention-days: 1
           if-no-files-found: error
+
+      - name: Publish direct HTML download URL (no artifact ZIP wrapper)
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="infinity-space-single-html"
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --target "$GITHUB_SHA" \
+              --title "Infinity Space — One HTML (Playgama)" \
+              --notes "One-file HTML under 20 MB with all 12 compressed music tracks, covers, inlined code and Playgama Bridge v2. The Playgama ZIP contains only index.html. Release files are overwritten with each new build." \
+              --latest=false
+          fi
+          gh release upload "$TAG" dist/index.html --clobber
+          gh release upload "$TAG" infinity-space-playgama.zip --clobber
+          gh release view "$TAG" --json assets --jq '.assets[] | [.name,.size,.url] | @tsv'
