@@ -48,30 +48,45 @@ jobs:
           echo "$RUNNER_TEMP/ffmpeg-bin" >> "$GITHUB_PATH"
           "$FFMPEG_EXE" -version | head -1
 
-      - name: Re-encode all 12 songs and bundle game as ONE HTML under 20 MB
+      - name: Build under-20-MB HTML and Playgama ZIP with real root-level config
         run: |
           set -euo pipefail
           mkdir -p dist
           python3 tools/build_single_html.py dist/index.html
           python3 - <<'PY'
           from pathlib import Path
-          from html.parser import HTMLParser
-          p = Path('dist/index.html')
-          s = p.read_text(encoding='utf-8')
-          assert p.stat().st_size < 20_000_000
-          assert s.count('type="application/octet-stream" id="inline-audio-') == 12
-          assert s.count('data:image/jpeg;base64,') >= 12
-          assert "data:audio/mp4;base64," in s
-          assert "window.SpaceInlineBridgeConfig" in s
-          assert 'https://bridge.playgama.com/v2/stable/playgama-bridge.js' in s
-          print("PASS: single HTML, full 12-track music collection, 12 covers, inline SDK config", p.stat().st_size)
+          import json
+          root = Path('dist')
+          standalone = root / 'index.html'
+          upload = root / 'playgama' / 'index.html'
+          config = root / 'playgama' / 'playgama-bridge-config.json'
+          assert standalone.is_file() and upload.is_file() and config.is_file()
+          assert standalone.stat().st_size < 20_000_000
+          assert upload.stat().st_size < 20_000_000
+          for page in [standalone, upload]:
+              content = page.read_text(encoding='utf-8')
+              assert content.count('type="application/octet-stream" id="inline-audio-') == 12
+              assert content.count('data:image/jpeg;base64,') >= 12
+              assert 'data:audio/mp4;base64,' in content
+              assert 'https://bridge.playgama.com/v2/stable/playgama-bridge.js' in content
+          assert '<script>window.SpaceInlineBridgeConfig=' in standalone.read_text(encoding='utf-8')
+          # Crucial: no embedded config URL in Playgama upload. Bridge.initialize()
+          # must fetch its DEFAULT relative file (which is physically in ZIP).
+          assert '<script>window.SpaceInlineBridgeConfig=' not in upload.read_text(encoding='utf-8')
+          assert json.loads(config.read_text(encoding='utf-8')) == json.loads(Path('playgama-bridge-config.json').read_text(encoding='utf-8'))
+          print('PASS: 12 tracks, covers, standalone inline config, upload defaults to root JSON')
           PY
-          (cd dist && zip -q -9 ../infinity-space-playgama.zip index.html)
-          unzip -tq infinity-space-playgama.zip
-          test "$(unzip -Z1 infinity-space-playgama.zip)" = "index.html"
-          ls -lh dist/index.html infinity-space-playgama.zip
+          (cd dist/playgama && zip -q -9 ../../infinity-space-playgama.zip index.html playgama-bridge-config.json)
+          python3 - <<'PY'
+          from zipfile import ZipFile
+          with ZipFile('infinity-space-playgama.zip') as z:
+              assert set(z.namelist()) == {'index.html', 'playgama-bridge-config.json'}, z.namelist()
+              assert z.testzip() is None
+              print('PASS: Playgama ZIP root has index.html AND playgama-bridge-config.json')
+          PY
+          ls -lh dist/index.html dist/playgama/index.html infinity-space-playgama.zip
 
-      - name: Test actual single HTML in Chromium (menu, roulette, music, Bridge config)
+      - name: Browser-test standalone and actual Playgama archive HTML with root config
         shell: bash
         run: |
           set -euo pipefail
@@ -92,7 +107,7 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
-      - name: Upload Playgama ZIP (contains only index.html)
+      - name: Upload Playgama ZIP (root HTML plus Bridge JSON config)
         uses: actions/upload-artifact@v4
         with:
           name: infinity-space-playgama
@@ -111,7 +126,7 @@ jobs:
           if ! gh release view "$TAG" >/dev/null 2>&1; then
             gh release create "$TAG" --target "$GITHUB_SHA" \
               --title "Infinity Space — One HTML (Playgama)" \
-              --notes "One-file HTML under 20 MB with all 12 compressed music tracks, covers, inlined code and Playgama Bridge v2. The Playgama ZIP contains only index.html. Release files are overwritten with each new build." \
+              --notes "One-file HTML under 20 MB with all 12 compressed music tracks, covers, inlined code and Playgama Bridge v2. Playgama ZIP includes index.html and playgama-bridge-config.json in its root, as required. Release files are overwritten with each new build." \
               --latest=false
           fi
           gh release upload "$TAG" dist/index.html --clobber
