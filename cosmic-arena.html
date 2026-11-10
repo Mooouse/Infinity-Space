@@ -52,6 +52,9 @@
 </div>
 <div class="shade" id="result"><div class="panel" style="max-width:560px"><span class="eyebrow" id="outcome-kicker">MATCH COMPLETE</span><h2 class="hero" id="outcome">VICTORY</h2><p class="desc" id="outcome-detail"></p><div id="result-stat"><div class="result-cell"><b id="r-place">1</b><small data-l="place">POSITION</small></div><div class="result-cell"><b id="r-kills">0</b><small data-l="kills">ELIMINATIONS</small></div><div class="result-cell"><b id="r-mass">0</b><small data-l="mass">MASS</small></div></div><div class="row"><button class="primary" id="again" data-l="again">PLAY AGAIN</button><button class="text-btn" id="change" data-l="change">CHANGE MODE</button><a class="text-btn" href="index.html" data-l="endless">∞ Endless Space</a></div></div></div>
 <div class="shade" id="paused"><div class="panel" style="max-width:490px"><span class="eyebrow">INFINITY SPACE</span><h2 class="hero" data-l="paused">PAUSED</h2><p class="desc" data-l="pausedDesc">Resume the fight, change mode, or return to the endless universe.</p><div class="row"><button class="primary" id="resume" data-l="resume">RESUME</button><button class="text-btn" id="change2" data-l="change">CHANGE MODE</button><a class="text-btn" href="index.html" data-l="endless">∞ Endless Space</a></div></div></div>
+<script src="platform.js"></script>
+<script src="https://bridge.playgama.com/v2/stable/playgama-bridge.js" defer></script>
+<script src="playgama-platform.js" defer></script>
 <script>
 'use strict';
 (()=>{
@@ -81,12 +84,12 @@ mouse.active=false;touch.active=false;keys={};camera.x=world.w*.5-sw*.5;camera.y
 $('hud').hidden=false;$('team-box').hidden=mode!=='core';$('mode-caption').textContent=c.title;
 $('menu').classList.remove('active');$('result').classList.remove('active');$('paused').classList.remove('active');$('touch-stick').style.display='';
 $('hint').textContent=lang==='ru'?'МЫШЬ / WASD — ПОЛЁТ · ПРОБЕЛ — РЫВОК · E — ИМПУЛЬС · Q — ЩИТ':'MOUSE / WASD — MOVE · SPACE — DASH · E — PULSE · Q — SHIELD';
-last=performance.now(); updateUI();
-try{history.replaceState(null,'','cosmic-arena.html?mode='+mode)}catch(e){}
+last=performance.now();window.SpacePlatform?.playing?.(true);updateUI();
+try{const params=new URLSearchParams(location.search);params.set('mode',mode);history.replaceState(null,'','cosmic-arena.html?'+params.toString())}catch(e){}
 }
-function showMenu(){if(game)game.state='menu';$('hud').hidden=true;$('menu').classList.add('active');$('result').classList.remove('active');$('paused').classList.remove('active');}
-function togglePause(){if(!game||game.state==='finished')return;game.state=game.state==='playing'?'paused':'playing';$('paused').classList.toggle('active',game.state==='paused');last=performance.now();}
-function sound(freq=500,duration=.11,type='sine',vol=.035){try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume();let o=audio.createOscillator(),g=audio.createGain(),now=audio.currentTime;o.type=type;o.frequency.setValueAtTime(freq,now);o.frequency.exponentialRampToValueAtTime(Math.max(70,freq*.55),now+duration);g.gain.setValueAtTime(vol,now);g.gain.exponentialRampToValueAtTime(.0001,now+duration);o.connect(g);g.connect(audio.destination);o.start(now);o.stop(now+duration);}catch(e){}}
+function showMenu(){window.SpacePlatform?.playing?.(false);if(game)game.state='menu';$('hud').hidden=true;$('menu').classList.add('active');$('result').classList.remove('active');$('paused').classList.remove('active');}
+function togglePause(){if(!game||game.state==='finished')return;game.state=game.state==='playing'?'paused':'playing';window.SpacePlatform?.playing?.(game.state==='playing');$('paused').classList.toggle('active',game.state==='paused');last=performance.now();}
+function sound(freq=500,duration=.11,type='sine',vol=.035){if(window.SpacePlatform?.muted)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume();let o=audio.createOscillator(),g=audio.createGain(),now=audio.currentTime;o.type=type;o.frequency.setValueAtTime(freq,now);o.frequency.exponentialRampToValueAtTime(Math.max(70,freq*.55),now+duration);g.gain.setValueAtTime(vol,now);g.gain.exponentialRampToValueAtTime(.0001,now+duration);o.connect(g);g.connect(audio.destination);o.start(now);o.stop(now+duration);}catch(e){}}
 function notify(message){$('toast').textContent=message;$('toast').classList.add('show');toastUntil=performance.now()+1700;}
 function addFx(x,y,color,count=10,power=90){for(let i=0;i<count;i++){let a=rand(0,TAU),speed=rand(power*.3,power);fx.push({x,y,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,t:rand(.35,.75),max:.75,color,r:rand(1.3,3.2)});}if(fx.length>280)fx.splice(0,fx.length-280);}
 function moveAngle(p,dx,dy){let len=Math.hypot(dx,dy);if(len>.05){p.dirX=dx/len;p.dirY=dy/len;}}
@@ -162,7 +165,7 @@ for(let i=fx.length-1;i>=0;i--){let p=fx[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=1-dt
 function kill(victim,killer){if(!victim.alive)return;victim.alive=false;victim.respawn=mode==='royale'?0:2.5;victim.mass=Math.max(20,victim.mass);addFx(victim.x,victim.y,victim.color,33,180);if(victim.player&&mode!=='royale')notify(L('killed'));if(killer&&killer.player)notify(L('hunt'));}
 function consume(big,small){if(!small.alive)return;big.mass+=small.mass*.56;big.kills++;kill(small,big);if(big.player)sound(170,.19,'triangle',.046);}
 function finish(won,reason){
-if(!game||game.state==='finished')return;game.state='finished';game.finishReason=reason;let p=game.people[0],rank=game.people.slice().sort((a,b)=>b.mass-a.mass).indexOf(p)+1;
+if(!game||game.state==='finished')return;game.state='finished';window.SpacePlatform?.playing?.(false);game.finishReason=reason;let p=game.people[0],rank=game.people.slice().sort((a,b)=>b.mass-a.mass).indexOf(p)+1;
 $('outcome').textContent=L(won?'win':'lose');$('outcome').style.color=won?'#dfc2ff':'#ffb5bb';$('outcome-kicker').textContent=L('finish');$('outcome-detail').textContent=lang==='ru'?(reason==='core'?'Синие '+Math.floor(game.scores[0])+' : '+Math.floor(game.scores[1])+' Красные':'Режим: '+L('m'+({arena:'Arena',royale:'Royale',core:'Core',race:'Race'}[mode]))):'Mode: '+configs[mode].title;
 $('r-place').textContent=rank+'/'+game.people.length;$('r-kills').textContent=p.kills;$('r-mass').textContent=Math.floor(p.mass);$('result').classList.add('active');$('touch-stick').style.display='none';
 try{const key='infinity-space-arena-v1',saved=JSON.parse(localStorage.getItem(key)||'{}');saved.matches=(saved.matches||0)+1;saved.wins=(saved.wins||0)+(won?1:0);saved.kills=(saved.kills||0)+p.kills;saved.bestMass=Math.max(saved.bestMass||0,p.mass);saved.lastMode=mode;localStorage.setItem(key,JSON.stringify(saved));}catch(e){}
@@ -213,6 +216,7 @@ if(game.state==='playing'&&!p.alive){ctx.fillStyle='#050713a8';ctx.fillRect(0,sh
 function tick(now){requestAnimationFrame(tick);let dt=clamp((now-last)/1000,0,.047);last=now;frameClock=now*.001;if(game&&game.state==='playing'){step(dt);uiTick-=dt;if(uiTick<=0){updateUI();uiTick=.16;}}if(game&&game.state!=='menu'){draw(frameClock);}else if(!game){ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#060713';ctx.fillRect(0,0,sw,sh);}if(toastUntil&&now>toastUntil){toastUntil=0;$('toast').classList.remove('show');}}
 requestAnimationFrame(tick);
 const initial=new URLSearchParams(location.search).get('mode');if(configs[initial])init(initial);
+document.addEventListener('DOMContentLoaded',()=>{Promise.resolve(window.SpacePlatform?.startup).catch(()=>{}).then(()=>{window.SpacePlatform?.loaded?.();window.SpacePlatform?.playing?.(!!game&&game.state==='playing');});});
 })();
 </script>
 </body>
