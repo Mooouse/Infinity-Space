@@ -65,7 +65,7 @@ const lang=(navigator.language||'en').toLowerCase().startsWith('ru')?'ru':'en', 
 document.documentElement.lang=lang;document.querySelectorAll('[data-l]').forEach(n=>n.textContent=L(n.dataset.l));
 const $=id=>document.getElementById(id),canvas=$('arena'),ctx=canvas.getContext('2d',{alpha:false}),mini=$('mini'),mc=mini.getContext('2d');
 const TAU=Math.PI*2,world={w:2520,h:1760},clamp=(v,a,b)=>Math.min(b,Math.max(a,v)),rand=(a,b)=>a+Math.random()*(b-a),rnd=n=>Math.floor(Math.random()*n),dist2=(a,b)=>{let x=a.x-b.x,y=a.y-b.y;return x*x+y*y};
-const configs={arena:{title:'COSMIC ARENA',duration:210,bots:13},royale:{title:'LAST SINGULARITY',duration:195,bots:15},core:{title:'CORE CONQUEST',duration:210,bots:13},race:{title:'EVOLUTION RUSH',duration:195,bots:11}};
+const configs={arena:{title:'COSMIC ARENA',duration:300,bots:13},royale:{title:'LAST SINGULARITY',duration:195,bots:15},core:{title:'CORE CONQUEST',duration:210,bots:13},race:{title:'EVOLUTION RUSH',duration:195,bots:11}};
 let mode='arena',game=null,sw=innerWidth,sh=innerHeight,dpr=1,mouse={x:innerWidth/2,y:innerHeight/2,active:false},keys={},touch={x:0,y:0,active:false,id:null},camera={x:0,y:0},bg=[],fx=[],toastUntil=0,last=performance.now(),frameClock=0,uiTick=0,starsCanvas=null,audio=null;
 const colors=['#a887ff','#39d9e5','#ff9f6e','#78f29d','#f3cc60','#ff6fa6','#a2c4ff','#d7a1ff','#ff715e','#a9e278','#56c5ff','#e9e5ff','#fcabcb','#7dffbf','#fcdd8b','#bd88ff'];
 const botNames=['Nova','Orion','Voidling','Nebula','Pulsar','Quasar','Luna','Vortex','Astra','Rift','Zenith','Cosmo','Eclipse','Astro','Kepler','Hyperion','Aether','Triton','Lyra','Photon'];
@@ -81,9 +81,9 @@ if(mode==='core'){people[0].team=0;people.forEach((p,i)=>p.team=i%2);people[0].x
 let hazards=[{x:world.w*.28,y:world.h*.32,r:44,phase:0},{x:world.w*.73,y:world.h*.7,r:54,phase:2.1}];
 game={state:'playing',mode,elapsed:0,left:c.duration,people,food:Array.from({length:300},createFood),relics:[createRelic(),createRelic(),createRelic()],relicTimer:7,hazards,portals:[{x:world.w*.17,y:world.h*.75},{x:world.w*.83,y:world.h*.25}],scores:[0,0],coreHold:-1,stormR:1550,stormCx:world.w/2,stormCy:world.h/2,finishReason:'',firstPlace:false,eventClock:0};
 mouse.active=false;touch.active=false;keys={};camera.x=world.w*.5-sw*.5;camera.y=world.h*.5-sh*.5;fx=[];uiTick=0;
-$('hud').hidden=false;$('team-box').hidden=mode!=='core';$('mode-caption').textContent=c.title;
+$('hud').hidden=false;$('team-box').hidden=mode!=='core';$('mode-caption').textContent=L('m'+({arena:'Arena',royale:'Royale',core:'Core',race:'Race'}[mode]))+(mode==='race'?' · 680':mode==='core'?' · 100':'');
 $('menu').classList.remove('active');$('result').classList.remove('active');$('paused').classList.remove('active');$('touch-stick').style.display='';
-$('hint').textContent=lang==='ru'?'МЫШЬ / WASD — ПОЛЁТ · ПРОБЕЛ — РЫВОК · E — ИМПУЛЬС · Q — ЩИТ':'MOUSE / WASD — MOVE · SPACE — DASH · E — PULSE · Q — SHIELD';
+$('hint').textContent=(lang==='ru'?'МЫШЬ / WASD — ПОЛЁТ · ПРОБЕЛ — РЫВОК · E — ИМПУЛЬС · Q — ЩИТ':'MOUSE / WASD — MOVE · SPACE — DASH · E — PULSE · Q — SHIELD')+(mode==='race'?(lang==='ru'?' · ЦЕЛЬ: 680 МАССЫ':' · TARGET: 680 MASS'):'');
 last=performance.now();window.SpacePlatform?.playing?.(true);updateUI();
 try{const params=new URLSearchParams(location.search);params.set('mode',mode);history.replaceState(null,'','cosmic-arena.html?'+params.toString())}catch(e){}
 }
