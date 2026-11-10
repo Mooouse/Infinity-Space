@@ -129,7 +129,11 @@ def build_page(sound_dir: Path) -> str:
         js = (ROOT / file_name).read_text(encoding="utf-8")
         if re.search(r"</script", js, re.I):
             raise RuntimeError("Unsafe literal </script in " + file_name)
-        prefix = config_js if file_name == "playgama-platform.js" else ""
+        # Dedicated Playgama ZIP must always activate Bridge. Uploads are
+        # served from arbitrary CDN / sandbox domains with no referrer or
+        # ?playgama=1 parameter. Set the flag before platform.js executes.
+        prefix = ('<script>window.SpacePlaygamaBuild=true;</script>' if file_name == "platform.js" else
+                  config_js if file_name == "playgama-platform.js" else "")
         body = '<script data-origin="' + file_name + '">\n' + js + "\n</script>"
         if file_name == "music-tracks.js":
             inserted["music"] = True
