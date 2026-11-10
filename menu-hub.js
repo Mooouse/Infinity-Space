@@ -72,6 +72,7 @@
   overlay.innerHTML='<header class="hub-mode-story-top">'+
     '<button class="hub-mode-story-back" type="button">← <span></span></button>'+
     '<div class="hub-mode-story-brand">INFINITY SPACE <span>/</span> GAME MODES</div>'+
+    '<div class="hub-story-quick" aria-label="Daily rewards"></div>'+
     '<span class="hub-mode-story-counter"></span></header>'+
     '<div class="hub-mode-story-copy" aria-live="polite">'+
       '<p class="hub-mode-story-kicker"></p>'+
@@ -88,6 +89,20 @@
       '<span class="hub-mode-gesture"></span>'+
     '</footer>';
   root.append(overlay);
+  // Daily rewards are visible directly on the home screen. Move the original
+  // buttons with their registered reward callbacks, never clone dead controls.
+  const quick=q(overlay,'.hub-story-quick');
+  for(const kind of ['daily','roulette']){
+   const original=q(root,'[data-reward-page="'+kind+'"]');
+   if(original){
+    original.classList.add('hub-story-reward');
+    original.setAttribute('aria-label',kind==='daily'?
+      t(['Daily rewards','Ежедневные награды','Recompensas diarias']):
+      t(['Roulette','Рулетка','Ruleta']));
+    original.title=original.getAttribute('aria-label');
+    quick.append(original);
+   }
+  }
   const setMode=(next)=>{
    current=Math.max(0,Math.min(modeStories.length-1,next));
    const entry=modeStories[current];
