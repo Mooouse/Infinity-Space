@@ -37,6 +37,10 @@
    if(provider==='playgama')pgMessage('player_got_achievement');
    else crazyCall('happytime');
   },
+  saveLanguage(language){
+   if(provider!=='playgama'||!ready||!['en','ru','es'].includes(language))return;
+   Promise.resolve(bridge.storage.set(['infiniti-space-language'],[language])).catch(()=>{});
+  },
   saveSnapshot(key,value){
    if(provider!=='playgama'||!ready||!bridge?.storage?.set||key!==cloudKey||typeof value!=='string')return;
    cloudPending=value;cloudRevision++;
@@ -191,7 +195,10 @@
   try{
    bridge=await loadBridgeScript();
    if(!bridge||typeof bridge.initialize!=='function')throw Error('Bridge unavailable');
-   await bridge.initialize();
+   await Promise.race([
+    bridge.initialize(),
+    new Promise((_,reject)=>setTimeout(()=>reject(Error('Bridge initialization timed out')),12000))
+   ]);
    ready=true;api.status='ready';api.provider='playgama';
    const platform=bridge.platform;
    platformMuted=platform?.isAudioEnabled===false;
@@ -209,7 +216,10 @@
     // Restore cloud progress before game.js reads the existing save key.
     // Never replace a local save with missing/invalid remote data.
     try{
-     const stored=await bridge.storage.get([cloudKey,'infiniti-space-language']);
+     const stored=await Promise.race([
+      bridge.storage.get([cloudKey,'infiniti-space-language']),
+      new Promise((_,reject)=>setTimeout(()=>reject(Error('Bridge cloud load timed out')),9000))
+     ]);
      const raw=stored?.[cloudKey];
      if(typeof raw==='string'&&raw.length>2){
       const data=JSON.parse(raw);
