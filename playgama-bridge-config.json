@@ -1,0 +1,21 @@
+{
+  "advertisement": {
+    "minimumDelayBetweenInterstitial": 90,
+    "interstitial": {
+      "placementFallback": "natural_break",
+      "placements": [
+        {
+          "id": "natural_break"
+        }
+      ]
+    },
+    "rewarded": {
+      "placementFallback": "extra_spin_or_revival",
+      "placements": [
+        {
+          "id": "extra_spin_or_revival"
+        }
+      ]
+    }
+  }
+}
