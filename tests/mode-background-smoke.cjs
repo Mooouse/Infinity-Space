@@ -18,9 +18,24 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   assert.equal(await page.locator('#screen-menu .hub-menu').isVisible(),false);
   assert.equal(await page.evaluate(()=>window.SpaceMenuSceneMode),null);
   assert.equal(await page.locator('.hub-mode-dots button').count(),5);
+  assert.equal(await page.locator('.hub-story-shortcut').count(),8,
+   'All main sections must be visible without opening a drawer');
+  for(const section of ['map','evolution','achievements','music','bestiary','statistics','settings','new']){
+   assert.equal(await page.locator('.hub-story-shortcut[data-shortcut="'+section+'"]').isVisible(),true,
+    section+' main-menu shortcut must be visible');
+  }
+  await page.locator('.hub-story-shortcut[data-shortcut="settings"]').click();
+  await page.locator('#screen-settings').waitFor({state:'visible',timeout:6000});
+  await page.locator('#screen-settings .br-head-back').click();
+  await page.locator('#hub-mode-story').waitFor({state:'visible',timeout:6000});
+  console.log('PASS: all eight real menu shortcuts are exposed and Settings opens and returns');
+
   const forward=page.locator('.hub-mode-step[data-dir="1"]');
   await forward.click();
   await page.waitForFunction(()=>window.SpaceMenuSceneMode==='arena',null,{timeout:5000});
+  await page.waitForFunction(()=>document.querySelector('.hub-mode-story-copy')?.getAnimations().some(a=>a.playState==='running'),null,{timeout:2000});
+  assert.equal(await page.evaluate(()=>typeof window.SpaceMenuBeginTransition),'function',
+   'Background crossfade must be connected to the original universe renderer');
   await page.waitForTimeout(360);
   const sample=async()=>{
     return await page.evaluate(()=>{
@@ -70,6 +85,9 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   await mobile.goto(base+'/?tester=1',{waitUntil:'domcontentloaded',timeout:60000});
   await mobile.locator('#hub-mode-story').waitFor({state:'visible',timeout:45000});
   assert.equal(await mobile.locator('#screen-menu .hub-modes').count(),0);
+  assert.equal(await mobile.locator('.hub-story-shortcut').count(),8,
+   'Mobile must expose all sections without hiding them under More');
+  assert.equal(await mobile.locator('.hub-story-shortcut[data-shortcut="settings"]').isVisible(),true);
   const box=await mobile.locator('#hub-mode-story').boundingBox();
   const y=Math.round(box.height*.45),left=Math.round(box.width*.78),right=Math.round(box.width*.2);
   await mobile.evaluate(({y,left,right})=>{
