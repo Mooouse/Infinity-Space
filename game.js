@@ -2709,6 +2709,28 @@ function renderGameModeBackdrop(mode,time){
  ctx.restore();
 }
 
+// A mode swipe crossfades and displaces the PREVIOUS universe frame over
+// the newly rendered real scene. No image assets, repaint loops or card hacks.
+const menuTransitionCanvas=document.createElement('canvas');
+const menuTransitionCtx=menuTransitionCanvas.getContext('2d');
+let menuSceneTransition=null;
+if(typeof window!=='undefined'){
+ window.SpaceMenuBeginTransition=(direction=1)=>{
+  if(!menuVisible||!screenCtx?.canvas?.width)return;
+  if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){
+   menuSceneTransition=null;return;
+  }
+  const maxSide=1700,scale=Math.min(1,maxSide/Math.max(1,W,H));
+  menuTransitionCanvas.width=Math.max(1,Math.round(W*scale));
+  menuTransitionCanvas.height=Math.max(1,Math.round(H*scale));
+  menuTransitionCtx.setTransform(1,0,0,1,0,0);
+  menuTransitionCtx.clearRect(0,0,menuTransitionCanvas.width,menuTransitionCanvas.height);
+  // The public canvas contains the complete previous scene without DOM labels.
+  menuTransitionCtx.drawImage(screenCtx.canvas,0,0,menuTransitionCanvas.width,menuTransitionCanvas.height);
+  menuSceneTransition={started:performance.now(),direction:direction<0?-1:1,duration:650};
+ };
+}
+
 function renderMenuScene(time){
  const key=[frameCanvas.width,frameCanvas.height,W,H].join(':');
  if(menuBackdropKey!==key){menuBackdrop=makeSkyDepthTexture(0x638ab,1.2);menuBackdropKey=key;}
@@ -2742,7 +2764,22 @@ function render(time){
  // Restore the compositing baseline every frame; otherwise a previous
  // effect can accidentally carry semi-transparency onto the next frame.
  ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
- if(menuVisible){renderMenuScene(time);}else{
+ if(menuVisible){
+  renderMenuScene(time);
+  if(menuSceneTransition){
+   const t=clamp((performance.now()-menuSceneTransition.started)/menuSceneTransition.duration,0,1);
+   if(t>=1){menuSceneTransition=null;}
+   else{
+    const ease=1-Math.pow(1-t,3);
+    ctx.save();
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    // The old sky slides away as the new living sky emerges underneath.
+    ctx.globalAlpha=(1-ease)*(1-.1*t);
+    ctx.drawImage(menuTransitionCanvas,-menuSceneTransition.direction*W*.16*ease,0,W,H);
+    ctx.restore();
+   }
+  }
+ }else{
  sky(time);renderBackgroundComets();
  ctx.save();renderDistantBodies();renderMacroField(time);ctx.restore();
  ctx.save();
