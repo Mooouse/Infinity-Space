@@ -17,6 +17,7 @@
   platform.isPlaygama = onPlaygama;
   platform.adBlockDetected = false;
   platform.paused = false;
+  platform.gamePlaying = false;
 
   if (!onPlaygama) {
     platform.startup = Promise.resolve();
@@ -66,6 +67,7 @@
     const next = !!value;
     if (playing === next) return;
     playing = next;
+    platform.gamePlaying = next;
     if (loaded) sendMessage(next ? 'level_started' : 'level_paused');
   };
   platform.loaded = () => {
@@ -120,7 +122,7 @@
       const name = rewarded ?
         bridge.EVENT_NAME.REWARDED_STATE_CHANGED :
         bridge.EVENT_NAME.INTERSTITIAL_STATE_CHANGED;
-      const timeout = setTimeout(() => finish(false), 120000);
+      const timeout = setTimeout(() => finish(false), rewarded ? 120000 : 15000);
       function finish(ok) {
         if (settled) return;
         settled = true;
