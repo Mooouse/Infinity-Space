@@ -90,19 +90,12 @@ const { chromium } = require('playwright');
       assert.equal(state.tracks,12);
       assert.equal(state.cover,true);
       assert.equal(state.audio,true);
-      assert.equal(state.remoteAudio,!variant.externalConfig,
-        'Standalone must stream original MP3; Playgama must load local original MP3');
+      assert.equal(state.remoteAudio,true,
+        'Both distributions must stream the same untouched MP3s used by CrazyGames');
       assert.equal(state.twelfthAudio,true);
       assert.equal(state.hasLossyEmbeddedAudio,false,
         'Previously transcoded AAC must not be present in HTML');
-      if(variant.externalConfig){
-        const response=await page.request.get(
-          'http://127.0.0.1:8766/playgama/assets/music/track-01.mp3'
-        );
-        assert.equal(response.status(),200,'original track must exist in archive');
-        assert.ok((await response.body()).length>5_000_000,
-          'full-quality original track 01 must be intact');
-      }
+      assert.ok(state.audio,'Original track-01 must retain the MP3 URL');
       assert.equal(state.density,'32');
       assert.equal(state.description.title,'Infinity Space');
 
@@ -123,7 +116,7 @@ const { chromium } = require('playwright');
       assert.deepEqual(errors,[],
         'JS errors in '+variant.name+': '+errors.join('\n').slice(0,1800));
       console.log('PASS:',variant.name,
-        'SDK, config, original-quality MP3 music URLs, rewards and controls');
+        'SDK, config, original-quality remotely streamed MP3 URLs, rewards and controls');
       await page.close();
     }
   } finally {
