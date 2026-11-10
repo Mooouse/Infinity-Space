@@ -60,14 +60,14 @@
          'Evoluciona de polvo a asteroide, planeta y estrella. Cada etapa requiere tiempo. Llega primero a agujero negro.'],
    tags:[['04:45 MATCH','МАТЧ 04:45','04:45 PARTIDA'],['15 RIVALS','15 СОПЕРНИКОВ','15 RIVALES'],['5 FORMS','5 ФОРМ','5 FORMAS']]}
  ];
- function buildMainMenuModeSelector(root,button,play,code){
+ function buildMainMenuModeSelector(root,play,code){
   const langIndex=code==='en'?0:code==='es'?2:1;
   const t=(translations)=>translations[langIndex];
   let current=0,originX=0,originY=0,dragging=false,lastWheel=0;
   const overlay=document.createElement('section');
   overlay.id='hub-mode-story';
   overlay.className='hub-mode-story';
-  overlay.hidden=true;
+  overlay.hidden=false;
   overlay.setAttribute('aria-label',t(['Game mode selection','Выбор режима игры','Elegir modo de juego']));
   overlay.innerHTML='<header class="hub-mode-story-top">'+
     '<button class="hub-mode-story-back" type="button">← <span></span></button>'+
@@ -117,26 +117,33 @@
    dot.setAttribute('aria-label',t(entry.title));
    dot.onclick=()=>setMode(i);dots.append(dot);
   });
-  q(overlay,'.hub-mode-story-back span').textContent=t(['BACK','НАЗАД','VOLVER']);
+  // The left header button opens the utility/navigation drawer.
   q(overlay,'.hub-mode-gesture').textContent=t(['← SWIPE · WHEEL · ARROWS →','← СВАЙП · КОЛЕСО · СТРЕЛКИ →','← DESLIZA · RUEDA · FLECHAS →']);
-  const close=()=>{
-   overlay.hidden=true;
-   root.classList.remove('hub-modes-open');
-   window.SpaceMenuSceneMode=null;
-   delete root.dataset.previewMode;
-   button.focus({preventScroll:true});
+  // The carousel IS the main menu, not an extra overlay opened by a tile.
+  // Secondary navigation uses the original clickable controls in a drawer.
+  const sectionsButton=q(overlay,'.hub-mode-story-back');
+  sectionsButton.setAttribute('aria-controls','hub-sections-drawer');
+  const sectionsLabel=t(['SECTIONS','РАЗДЕЛЫ','SECCIONES']);
+  const closeLabel=t(['CLOSE','ЗАКРЫТЬ','CERRAR']);
+  const optionsOpened=()=>root.classList.contains('hub-options-open');
+  const showOptions=(show)=>{
+   root.classList.toggle('hub-options-open',show);
+   sectionsButton.setAttribute('aria-expanded',String(show));
+   q(sectionsButton,'span').textContent=show?closeLabel:sectionsLabel;
+   if(show){q(root,'.hub-menu')?.scrollTo({top:0,behavior:'instant'});}
   };
-  const open=()=>{
-   root.classList.add('hub-modes-open');overlay.hidden=false;
-   setMode(0);q(overlay,'.hub-mode-story-back').focus({preventScroll:true});
-  };
-  button.onclick=open;
-  q(overlay,'.hub-mode-story-back').onclick=close;
+  sectionsButton.onclick=()=>showOptions(!optionsOpened());
+  sectionsButton.setAttribute('aria-expanded','false');
+  sectionsButton.setAttribute('aria-label',sectionsLabel);
+  // Keep swipe selection permanently visible as the first scene.
+  root.classList.add('hub-main-carousel');
+  overlay.hidden=false;
+  setMode(0);
   overlay.querySelectorAll('.hub-mode-step').forEach(b=>b.onclick=()=>setMode(current+Number(b.dataset.dir)));
   q(overlay,'.hub-mode-story-play').onclick=()=>{
    const entry=modeStories[current];
    window.SpaceMenuSceneMode=null;
-   if(entry.id==='endless'){close();play.click();}
+   if(entry.id==='endless'){showOptions(false);play.click();}
    else location.assign('cosmic-arena.html?mode='+encodeURIComponent(entry.id)+'&v=5');
   };
   overlay.addEventListener('wheel',ev=>{
@@ -161,16 +168,16 @@
   // Capturing phase prevents the game's global Escape=resumeGame shortcut
   // from interpreting Close Modes as "launch the game".
   const onKey=(e)=>{
-   if(overlay.hidden||!root.isConnected)return;
-   if(e.code==='Escape'){
-    e.preventDefault();e.stopImmediatePropagation();close();
-   }else if(e.code==='ArrowLeft'||e.code==='ArrowRight'){
+   if(!root.isConnected||!root.classList.contains('active'))return;
+   if(e.code==='Escape'&&optionsOpened()){
+    e.preventDefault();e.stopImmediatePropagation();showOptions(false);
+   }else if((e.code==='ArrowLeft'||e.code==='ArrowRight')&&!optionsOpened()){
     e.preventDefault();e.stopImmediatePropagation();
     setMode(current+(e.code==='ArrowRight'?1:-1));
    }
   };
   window.addEventListener('keydown',onKey,true);
-  return close;
+  return ()=>showOptions(false);
  }
 
  function reshape(root){
@@ -178,9 +185,7 @@
   const main=q(root,'.menu-main'),grid=q(root,'.menu-grid'),actions=q(root,'.menu-buttons');
   const play=q(actions,'.primary.big-play'),reset=q(actions,'.quiet-btn');
   const daily=q(root,'[data-reward-page="daily"]'),roulette=q(root,'[data-reward-page="roulette"]');
-  const modes=[...root.querySelectorAll('.modes-menu-entry')].find(b=>!b.textContent.toLowerCase().includes('arena')&&!b.textContent.toLowerCase().includes('арена'))||
-    [...root.querySelectorAll('.modes-menu-entry')].at(-1);
-  if(!main||!grid||!actions||!play||!reset||!daily||!roulette||!modes)return;
+  if(!main||!grid||!actions||!play||!reset||!daily||!roulette)return;
   root.dataset.hubReady='true';
   const code=q(root,'#current-language-code')?.textContent?.trim()?.toLowerCase()||'ru';
   const w=words[code]||words.ru;
@@ -189,13 +194,9 @@
   actions.classList.add('hub-actions');
   play.classList.add('hub-continue');
   reset.classList.add('hub-new-world');
-  modes.classList.add('hub-modes');
-  modes.removeAttribute('title');
-  modes.setAttribute('aria-label',w.modes);
-  // Keep the native SVG and click handler; move the button instead of cloning.
-  const modeText=modes.children[1];
-  if(modeText){modeText.innerHTML='<strong>'+esc(w.modes)+'</strong><small>'+esc(w.modesSub)+'</small>';}
-  actions.insertBefore(modes,reset);
+  // No "Game modes" entry: this mode carousel is the start screen.
+  // Remove both old arcade tiles to avoid dead or redundant navigation.
+  root.querySelectorAll('.modes-menu-entry').forEach(node=>node.remove());
   const description=document.createElement('div');
   description.className='hub-reset-description';
   description.textContent=w.newSub;reset.appendChild(description);
@@ -253,7 +254,8 @@
   // The quick "Arena" link was redundant with the modes selector.
   grid.remove();
   main.scrollTop=0;
-  buildMainMenuModeSelector(root,modes,play,code);
+  main.id='hub-sections-drawer';
+  buildMainMenuModeSelector(root,play,code);
  }
  function refresh(){
   const root=document.querySelector('#modal #screen-menu');
