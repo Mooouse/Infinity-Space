@@ -374,8 +374,135 @@ function paintBlackHole(x,y,r,time){
 }
 
 
+function makeSkyDepthTexture(seed,density){
+ const skyLayer=document.createElement('canvas');skyLayer.width=Math.min(1900,Math.max(640,Math.round(sw*dpr)));skyLayer.height=Math.min(1200,Math.max(480,Math.round(sh*dpr)));
+ const c=skyLayer.getContext('2d'),rng=chunkRandom(seed);
+ // Thousands of bright single-render-pixel stars, baked at the exact frame size.
+ // Integer coordinates prevent subpixel coverage from making the stars dim.
+ c.setTransform(1,0,0,1,0,0);
+ const count=Math.min(72000,Math.max(4500,Math.floor(sw*sh/48)))*density;
+ // Each association has a coherent hue, several knots and a curved outline.
+ // Most stars belong to associations; sparse field stars leave dark gaps.
+ const palettes=[['#a54dff','#c675ff','#d9a2ff'],['#35aaff','#60c6ff','#8ddbff'],
+  ['#ff53b9','#ff7bd4','#ff9cde'],['#ffac3d','#ffc660','#ffdc8b'],
+  ['#7860ff','#a18aff','#beadff']];
+ const groups=Array.from({length:9},(_,i)=>{
+  const angle=rng()*TAU,rx=sw*(.055+rng()*.095)*1.65,ry=sh*(.025+rng()*.045)*1.65;
+  return {x:sw*(.08+rng()*.84),y:sh*(.09+rng()*.82),rx,ry,
+   cos:Math.cos(angle),sin:Math.sin(angle),bend:(rng()-.5)*2.3,palette:palettes[i%palettes.length],
+   knots:Array.from({length:3},()=>({x:(rng()-.5)*2.3,y:(rng()-.5)*1.1}))};
+ });
+ // Soft unresolved starlight follows the same irregular knots, so group hues
+ // remain readable when a monitor or adaptive rendering downsamples the points.
+ c.save();c.scale(skyLayer.width/sw,skyLayer.height/sh);
+ for(const group of groups)for(const knot of group.knots){
+  const u=knot.x*group.rx,v=(knot.y+Math.sin(knot.x*1.9)*group.bend)*group.ry;
+  const cx=((group.x+u*group.cos-v*group.sin)%sw+sw)%sw,cy=((group.y+u*group.sin+v*group.cos)%sh+sh)%sh;
+  const rx=group.rx*.85,ry=group.ry*1.1,bound=Math.max(rx,ry)*1.6;
+  // Wrap each glow with its stars so tiled edges never expose a seam.
+  for(let iy=-1;iy<=1;iy++)for(let ix=-1;ix<=1;ix++){
+   const x=cx+ix*sw,y=cy+iy*sh;if(x+bound<0||x-bound>sw||y+bound<0||y-bound>sh)continue;
+   c.save();c.translate(x,y);c.transform(group.cos,group.sin,-group.sin,group.cos,0,0);c.scale(rx,ry);
+   const light=c.createRadialGradient(0,0,0,0,0,1.6);
+   light.addColorStop(0,group.palette[0]+'24');light.addColorStop(.5,group.palette[0]+'0e');light.addColorStop(1,group.palette[0]+'00');
+   c.fillStyle=light;c.fillRect(-1.6,-1.6,3.2,3.2);c.restore();
+  }
+ }
+ c.restore();
+ const gaussian=()=>Math.sqrt(-2*Math.log(Math.max(1e-8,rng())))*Math.cos(rng()*TAU);
+ for(let i=0;i<count;i++){
+  let x,y,color;
+  if(rng()<.94){
+   const group=groups[Math.floor(rng()*groups.length)],knot=group.knots[Math.floor(rng()*3)];
+   const along=knot.x+gaussian()*.55;
+   const across=knot.y+gaussian()*.6+Math.sin(along*1.9)*group.bend;
+   const u=along*group.rx,v=across*group.ry;
+   x=group.x+u*group.cos-v*group.sin;y=group.y+u*group.sin+v*group.cos;
+   color=rng()<.025?'#f5f0ff':group.palette[Math.floor(rng()*group.palette.length)];
+  }else{x=rng()*sw;y=rng()*sh;color=['#e4edff','#ffffff','#fff2d9','#d4e7ff'][i%4];}
+  c.globalAlpha=.94+rng()*.06;c.fillStyle=color;
+  c.fillRect(Math.floor(((x%sw+sw)%sw)*skyLayer.width/sw),Math.floor(((y%sh+sh)%sh)*skyLayer.height/sh),1,1);
+ }
+ c.globalAlpha=1;return skyLayer;
+}
+
+let skyArt=[],distantGalaxies=[],skyComets=[];
+function refreshSkyArt(){
+ skyArt=[makeSkyDepthTexture(0x638ab,.96),makeSkyDepthTexture(0x912ad,.32)];
+ const rng=chunkRandom(0xe4ca93);
+ skyComets=Array.from({length:4},(_,i)=>({start:i*5.4+rng()*3,interval:19+rng()*10,angle:rand(-.45,-.14),speed:rand(210,360),row:rng()}));
+}
+function buildDistantGalaxies(){
+ const rng=chunkRandom(0x28ca39+(mode==='royale'?131:mode==='core'?709:mode==='race'?919:0));
+ const hues=['#b88af9','#85bcff','#ef9dcb','#7adcd9','#d7b7ff','#a999ef'];
+ distantGalaxies=Array.from({length:65},(_,i)=>({
+ x:rng()*world.w,y:rng()*world.h,
+ r:28+rng()*64,color:hues[Math.floor(rng()*hues.length)],
+ phase:rng()*TAU,alpha:.14+rng()*.13
+ }));
+}
+function paintSkyComets(time){
+ ctx.save();ctx.lineCap='round';
+ for(let i=0;i<skyComets.length;i++){
+  const c=skyComets[i];
+  const t=(time-c.start+c.interval*1000)%c.interval;
+  if(t<0||t>4.1)continue;
+  const x=(t*c.speed-180)%Math.max(sw+400,640),y=c.row*sh+Math.sin(c.angle)*(x+180);
+  if(y<-150||y>sh+150)continue;
+  let tail=140+t*20;
+  const x2=x-tail,y2=y-tail*Math.sin(c.angle);
+  let gr=ctx.createLinearGradient(x2,y2,x,y);
+  gr.addColorStop(0,'#adcfff00');gr.addColorStop(.83,'#baddff5b');gr.addColorStop(1,'#ffffffdb');
+  ctx.globalAlpha=Math.min(1,t*.9,(4.1-t)*1.4);
+  ctx.strokeStyle=gr;ctx.lineWidth=.85;
+  ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x,y);ctx.stroke();
+  ctx.fillStyle='#e5efff';ctx.fillRect(x-1,y-1,2,2);
+ }
+ ctx.restore();
+}
+function renderSpaceSky(time){
+ ctx.fillStyle='#02040b';ctx.fillRect(0,0,sw,sh);
+ if(!skyArt.length)refreshSkyArt();
+ for(let i=0;i<skyArt.length;i++){
+  const layer=skyArt[i],w=sw,h=sh;
+  const factor=i===0?.047:.17;
+  const scrollX=(camera.x*factor+(i?time*1.8:time*.35))%w;
+  const scrollY=(camera.y*factor+(i?time*.5:time*.08))%h;
+  ctx.save();ctx.globalAlpha=i===0?.91:.32;
+  for(let y=-((scrollY%h+h)%h);y<sh;y+=h){
+   for(let x=-((scrollX%w+w)%w);x<sw;x+=w)ctx.drawImage(layer,x,y,w,h);
+  }
+  ctx.restore();
+ }
+ paintSkyComets(time);
+}
+function paintFarGalaxies(time){
+ const margin=150;
+ for(const galaxy of distantGalaxies){
+  if(galaxy.x<camera.x-margin||galaxy.y<camera.y-margin||
+     galaxy.x>camera.x+sw/camera.zoom+margin||galaxy.y>camera.y+sh/camera.zoom+margin)continue;
+  ctx.save();ctx.globalAlpha=galaxy.alpha;
+  paintGalaxy(galaxy.x,galaxy.y,galaxy.r,galaxy.color,time+galaxy.phase);
+  ctx.restore();
+ }
+}
+function paintSkyBlackHole(time){
+ const x=sw*.78,y=sh*.56,R=Math.min(sw,sh)*.91;
+ ctx.save();
+ const haze=ctx.createRadialGradient(x,y,R*.11,x,y,R*.91);
+ haze.addColorStop(0,'#05051000');haze.addColorStop(.55,'#38267618');haze.addColorStop(1,'#05051000');
+ ctx.fillStyle=haze;ctx.beginPath();ctx.arc(x,y,R*.91,0,TAU);ctx.fill();
+ ctx.translate(x,y);
+ ctx.rotate(time*.028);
+ const glow=ctx.createRadialGradient(0,0,R*.18,0,0,R*.46);
+ glow.addColorStop(0,'#05050d00');glow.addColorStop(.45,'#b4caff13');glow.addColorStop(.7,'#84baff2c');glow.addColorStop(1,'#86a9ff00');
+ ctx.fillStyle=glow;ctx.beginPath();ctx.ellipse(0,0,R*.48,R*.18,-.23,0,TAU);ctx.fill();
+ ctx.restore();
+ paintBlackHole(x,y,R,time);
+}
+
 function resize(){sw=Math.max(320,innerWidth);sh=Math.max(200,innerHeight);dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(sw*dpr);canvas.height=Math.round(sh*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);refreshStars();}
-function refreshStars(){bg=Array.from({length:Math.min(9000,Math.ceil(world.w*world.h/7200))},()=>({x:Math.random()*world.w,y:Math.random()*world.h,r:rand(.55,1.5),t:rand(0,6)}));}
+function refreshStars(){bg=Array.from({length:Math.min(3400,Math.ceil(world.w*world.h/15000))},()=>({x:Math.random()*world.w,y:Math.random()*world.h,r:rand(.5,1.2),t:rand(0,6)}));refreshSkyArt();}
 addEventListener('resize',resize);resize();
 function createActor(name,player,team,index){return {name,player,team,index,x:rand(200,world.w-200),y:rand(200,world.h-200),vx:0,vy:0,dirX:1,dirY:0,mass:player?40:rand(34,52),r:29,kills:0,alive:true,respawn:0,shield:0,pulseCD:0,dashCD:0,shieldCD:0,dash:0,portalCD:0,think:0,target:null,personality:rnd(4),color:player?'#bb90ff':colors[index%colors.length],invuln:2.4,stage:0}};
 function createFood(){
@@ -424,7 +551,7 @@ function updateFood(dt){
 }
 function createRelic(){return {x:rand(160,world.w-160),y:rand(160,world.h-160),type:['mass','shield','boost'][rnd(3)],r:17,life:22};}
 function init(type){
-mode=configs[type]?type:'arena';const c=configs[mode];world.w=c.w;world.h=c.h;refreshStars();
+mode=configs[type]?type:'arena';const c=configs[mode];world.w=c.w;world.h=c.h;refreshStars();buildDistantGalaxies();
 let people=[createActor('YOU',true,0,0)];
 people[0].x=world.w*.5+rand(-480,480);people[0].y=world.h*.5+rand(-350,350);
 for(let i=1;i<=c.bots;i++){
