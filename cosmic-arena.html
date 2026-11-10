@@ -256,12 +256,25 @@ html,body{font-family:Inter,"Segoe UI",Arial,system-ui,sans-serif}
  #menu .mode-carousel-viewport{scroll-behavior:auto}
 }
 
+
+/* Show why an evolution is not instantaneous; mass and form-time are separate. */
+.hud .arena-stage-hud{margin-top:10px;min-width:190px}
+.hud .arena-stage-top{display:flex;align-items:center;justify-content:space-between;gap:9px}
+.hud .arena-stage-name{color:#d7c6ff;font-weight:900;font-size:10px;letter-spacing:.03em;white-space:nowrap}
+.hud .arena-stage-wait{color:#a5c3e9;font-size:8px;font-weight:800;white-space:nowrap}
+.hud .arena-stage-bar{height:5px;margin-top:7px;background:#2f274c;overflow:hidden;border-radius:4px}
+.hud .arena-stage-bar>span{display:block;height:100%;width:0;background:linear-gradient(90deg,#6946e0,#bca6ff);transition:width .18s;border-radius:4px}
+@media(max-width:700px){
+ .hud .arena-stage-hud{min-width:0;max-width:160px;margin-top:7px}
+ .hud .arena-stage-name{font-size:9px}
+ .hud .arena-stage-wait{font-size:7px}
+}
 </style>
 </head>
 <body>
 <canvas id="arena" aria-label="Cosmic battle arena"></canvas>
 <div class="hud" id="hud" hidden>
- <div class="top"><div class="brand"><b>INFINITY <em>SPACE</em></b><small id="mode-caption">COSMIC ARENA</small></div><div class="stats"><div class="stat"><label data-l="mass">MASS</label><b id="mass">0</b></div><div class="stat"><label data-l="time">TIME</label><b id="clock">03:00</b></div><div class="stat"><label data-l="place">POSITION</label><b class="accent" id="place">1 / 12</b></div><div class="stat" id="team-box" hidden><label data-l="core">CONTROL</label><b id="team-score">0 : 0</b></div></div></div>
+ <div class="top"><div class="brand"><b>INFINITY <em>SPACE</em></b><small id="mode-caption">COSMIC ARENA</small><div class="arena-stage-hud"><div class="arena-stage-top"><b id="arena-stage-name">COSMIC DUST</b><span id="arena-stage-wait"></span></div><div class="arena-stage-bar"><span id="arena-stage-fill"></span></div></div></div><div class="stats"><div class="stat"><label data-l="mass">MASS</label><b id="mass">0</b></div><div class="stat"><label data-l="time">TIME</label><b id="clock">03:00</b></div><div class="stat"><label data-l="place">POSITION</label><b class="accent" id="place">1 / 12</b></div><div class="stat" id="team-box" hidden><label data-l="core">CONTROL</label><b id="team-score">0 : 0</b></div></div></div>
  <div class="left"><h3 data-l="ranking">LEADERBOARD</h3><div id="ranks"></div></div>
  <div id="radar"><canvas id="mini" width="160" height="112"></canvas><small data-l="radar">ARENA RADAR</small></div>
  <button id="pause" data-l="pause">Ⅱ PAUSE</button>
@@ -1075,6 +1088,19 @@ try{const key='infinity-space-arena-v1',saved=JSON.parse(localStorage.getItem(ke
 sound(won?680:180,.42,'sine',.048);
 }
 function updateUI(){if(!game)return;let g=game,p=g.people[0],ranked=g.people.slice().sort((a,b)=>b.mass-a.mass),rank=ranked.indexOf(p)+1;$('mass').textContent=Math.floor(p.mass);$('clock').textContent=Math.floor(g.left/60).toString().padStart(2,'0')+':'+Math.floor(g.left%60).toString().padStart(2,'0');$('place').textContent=rank+' / '+g.people.length;$('team-score').textContent=Math.floor(g.scores[0])+' : '+Math.floor(g.scores[1]);$('ranks').innerHTML=ranked.slice(0,6).map((q,i)=>'<div class="rank'+(q.player?' mine':'')+'"><span>'+String(i+1).padStart(2,'0')+' · '+q.name+'</span><b>'+Math.floor(q.mass)+'</b></div>').join('');
+const stageLabels=lang==='ru'?FORM_RU:FORM_EN;
+$('arena-stage-name').textContent=stageLabels[p.stage];
+const next=p.stage+1;
+if(next>=FORM_MASS.length){
+ $('arena-stage-fill').style.width='100%';
+ $('arena-stage-wait').textContent='∞';
+}else{
+ const massProgress=clamp((p.mass-FORM_MASS[p.stage])/(FORM_MASS[next]-FORM_MASS[p.stage]),0,1);
+ const remain=Math.max(0,FORM_DWELL[next]-(g.elapsed-(p.stageAt||0)));
+ $('arena-stage-fill').style.width=Math.round(massProgress*100)+'%';
+ $('arena-stage-wait').textContent=remain>0?(lang==='ru'?'ФОРМА ЧЕРЕЗ ':'NEXT IN ')+Math.ceil(remain)+'s':
+  (lang==='ru'?'ДО СМЕНЫ: ':'NEXT: ')+Math.max(0,Math.ceil(FORM_MASS[next]-p.mass));
+}
 for(const [name,cd] of [['dash',p.dashCD],['pulse',p.pulseCD],['shield',p.shieldCD]]){const el=$(name);el.classList.toggle('cooling',cd>0);el.querySelector('.cool').style.width=(100*clamp(1-cd/({dash:5.2,pulse:8.5,shield:12}[name]),0,1))+'%';}
 drawMini();
 }
