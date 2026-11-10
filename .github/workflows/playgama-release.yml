@@ -1,0 +1,71 @@
+name: Build and verify Infinity Space for Playgama
+on:
+  push:
+    branches: [integrate-playgama-bridge-v2-20261110]
+    paths:
+      - platform.js
+      - game.js
+      - index.html
+      - i18n.js
+      - playgama-game-loader.js
+      - playgama-bridge-config.json
+      - scripts/build_playgama.py
+      - tests/playgama-bridge.cjs
+      - tests/playgama-package.cjs
+      - .github/workflows/playgama-release.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  playgama-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check adapter syntax, Bridge behavior and existing regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check platform.js
+          node --check game.js
+          node --check playgama-game-loader.js
+          node tests/playgama-bridge.cjs
+          node tests/regressions.cjs
+      - name: Package original-quality assets for Playgama
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/build_playgama.py
+          mkdir -p dist/playgama-smoke
+          unzip -q dist/Infinity-Space-Playgama-v3.60.0.zip -d dist/playgama-smoke
+          test -f dist/playgama-smoke/index.html
+      - name: Run browser QA against actual ZIP on desktop and mobile
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --silent --no-audit --no-fund --prefix "$RUNNER_TEMP/playgama-test" playwright@1.56.1
+          export PLAYWRIGHT_BROWSERS_PATH="$RUNNER_TEMP/playgama-chromium"
+          "$RUNNER_TEMP/playgama-test/node_modules/.bin/playwright" install chromium --only-shell
+          python3 -m http.server 8765 --bind 127.0.0.1 --directory dist/playgama-smoke > "$RUNNER_TEMP/playgama-server.log" 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          export NODE_PATH="$RUNNER_TEMP/playgama-test/node_modules"
+          node tests/playgama-package.cjs
+      - name: Publish Playgama upload-ready ZIP
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="infinity-space-playgama-v3.60.0"
+          FILE="dist/Infinity-Space-Playgama-v3.60.0.zip"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$FILE" --clobber
+          else
+            gh release create "$TAG" "$FILE" \
+              --target "$GITHUB_SHA" \
+              --title "Infinity Space v3.60.0 — Playgama Bridge v2" \
+              --notes "Ready-to-upload Playgama ZIP: root index.html, Playgama Bridge v2 config, 12 full-quality music tracks, Cloud Storage support and verified rewarded/interstitial ad adapter. Real ad supply and cloud behavior must also be checked in Playgama sandbox before publication." \
+              --latest=false
+          fi
+          gh release view "$TAG" --json assets --jq '.assets[] | [.name,.size,.url]'
