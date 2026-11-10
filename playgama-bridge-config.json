@@ -1,0 +1,23 @@
+{
+  "advertisement": {
+    "minimumDelayBetweenInterstitial": 60,
+    "interstitial": {
+      "disable": false,
+      "placementFallback": "infinity_menu",
+      "placements": [
+        {
+          "id": "infinity_menu"
+        }
+      ]
+    },
+    "rewarded": {
+      "disable": false,
+      "placementFallback": "infinity_rewarded",
+      "placements": [
+        {
+          "id": "infinity_rewarded"
+        }
+      ]
+    }
+  }
+}
