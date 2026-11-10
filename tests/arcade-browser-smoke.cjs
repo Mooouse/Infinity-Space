@@ -42,15 +42,18 @@ const modeNames=['arena','royale','core','race'];
    assert.equal(errors.length,0,mode+' page errors: '+errors.join('\n'));
    console.log('PASS: '+mode+' black-space artwork, visible matter, ability input, pause and resume');
   }
-  await page.setViewportSize({width:390,height:844});
-  await page.goto(base+'/cosmic-arena.html',{waitUntil:'domcontentloaded'});
-  await page.locator('.mode[data-mode="race"]').waitFor({state:'visible'});
-  assert.equal(await page.locator('.mode[data-mode="race"]').isVisible(),true);
-  const layout=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth}));
+  const mobileContext=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:1});
+  const mobile=await mobileContext.newPage();
+  mobile.on('pageerror',e=>errors.push(String(e.stack||e)));
+  await mobile.goto(base+'/cosmic-arena.html',{waitUntil:'domcontentloaded'});
+  await mobile.locator('.mode[data-mode="race"]').waitFor({state:'visible'});
+  assert.equal(await mobile.locator('.mode[data-mode="race"]').isVisible(),true);
+  const layout=await mobile.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth}));
   assert.ok(layout.scroll<=layout.width+2,'No mobile horizontal overflow: '+JSON.stringify(layout));
-  await page.locator('.mode[data-mode="arena"]').click();
-  await page.locator('#hud:not([hidden])').waitFor({state:'visible'});
-  assert.equal(await page.locator('#touch-stick').isVisible(),true);
+  await mobile.locator('.mode[data-mode="arena"]').click();
+  await mobile.locator('#hud:not([hidden])').waitFor({state:'visible'});
+  assert.equal(await mobile.locator('#touch-stick').isVisible(),true);
+  await mobileContext.close();
   assert.equal(errors.length,0,'No page errors: '+errors.join('\n'));
   console.log('PASS: mobile mode selector and touch joystick');
  }finally{await browser.close()}
