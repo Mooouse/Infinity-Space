@@ -1,23 +1,12 @@
 {
+  "$schema": "https://bridge.playgama.com/v2/stable/schema.json",
   "advertisement": {
-    "minimumDelayBetweenInterstitial": 60,
     "interstitial": {
-      "disable": false,
-      "placementFallback": "infinity_menu",
-      "placements": [
-        {
-          "id": "infinity_menu"
-        }
-      ]
+      "preloadOnStart": true
     },
     "rewarded": {
-      "disable": false,
-      "placementFallback": "infinity_rewarded",
-      "placements": [
-        {
-          "id": "infinity_rewarded"
-        }
-      ]
-    }
+      "preloadOnStart": true
+    },
+    "useBuiltInErrorPopup": false
   }
 }
