@@ -1,0 +1,103 @@
+/* Infinity Space v15.3 — visible arcade entry on the real main menu. */
+body.ui-v15 #screen-menu .v15-arcade-launch{
+  margin:14px 0 0;
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+body.ui-v15 #screen-menu .v15-arcade-label{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  color:#c7b5ff;
+  font-size:10px;
+  line-height:15px;
+  font-weight:950;
+  letter-spacing:.13em;
+}
+body.ui-v15 #screen-menu .v15-arcade-dot{
+  width:7px;height:7px;flex:none;border-radius:50%;
+  background:#bb93ff;box-shadow:0 0 12px #bf91ff;
+}
+body.ui-v15 #screen-menu .v15-arcade-label small{
+  margin-left:auto;color:#8b79c1;font-weight:900;letter-spacing:.1em;
+}
+body.ui-v15 #screen-menu .v15-arcade-buttons{
+  display:grid;grid-template-columns:1.17fr 1fr;gap:12px;width:100%;
+}
+body.ui-v15 #screen-menu .v15-arcade-buttons button{
+  all:unset;box-sizing:border-box;
+  width:100%;height:66px;min-width:0;
+  cursor:pointer;
+  display:flex;align-items:center;gap:11px;
+  padding:8px 12px;
+  background:linear-gradient(118deg,rgba(67,38,121,.95),rgba(30,20,64,.98));
+  border:2px solid #825ad4;border-bottom:4px solid #432478;
+  border-radius:9px;color:#eee5ff;
+  box-shadow:0 6px 24px #170a3545,inset 0 1px #c29cff20;
+  transition:transform .16s ease,filter .16s ease,border-color .16s ease;
+}
+body.ui-v15 #screen-menu .v15-arcade-buttons .v15-arcade-select{
+  background:linear-gradient(120deg,#292044ec,#16132fe9);
+  border-color:#66548f;border-bottom-color:#40325e;
+}
+body.ui-v15 #screen-menu .v15-arcade-buttons button:hover{
+  transform:translateY(-2px);filter:brightness(1.15);border-color:#bb98ff;
+}
+body.ui-v15 #screen-menu .v15-arcade-buttons button:active{transform:translateY(1px)}
+body.ui-v15 #screen-menu .v15-arcade-buttons button:focus-visible{
+  outline:2px solid #dec6ff;outline-offset:3px;
+}
+body.ui-v15 #screen-menu .v15-arcade-icon{
+  width:34px;height:34px;flex:none;
+  display:grid;place-items:center;
+  border:1px solid #ad89ff87;
+  border-radius:7px;background:#502a95a6;color:#cbb4ff;
+}
+body.ui-v15 #screen-menu .v15-arcade-icon .ui-symbol{width:23px;height:23px}
+body.ui-v15 #screen-menu .v15-arcade-copy{display:flex;flex-direction:column;min-width:0;gap:4px;flex:1}
+body.ui-v15 #screen-menu .v15-arcade-copy strong{
+  font-size:12px;line-height:1.05;font-weight:950;letter-spacing:.022em;
+}
+body.ui-v15 #screen-menu .v15-arcade-copy small{
+  font-size:8px;line-height:1.15;letter-spacing:.05em;
+  font-weight:750;color:#b49dd8;
+}
+body.ui-v15 #screen-menu .v15-arcade-arrow{
+  display:grid;place-items:center;flex:none;color:#c2a3ff;
+}
+body.ui-v15 #screen-menu .v15-arcade-arrow .ui-symbol{width:18px;height:18px}
+body.ui-v15 #screen-menu .menu-divider{margin-top:13px;margin-bottom:5px}
+body.ui-v15 #screen-menu .menu-main{
+  max-height:calc(100dvh - clamp(116px,15.8vh,165px) - 60px);
+  overflow-x:hidden;overflow-y:auto;
+  padding-right:7px;padding-bottom:14px;
+  scrollbar-width:thin;scrollbar-color:#6747a980 transparent;
+  overscroll-behavior:contain;
+}
+body.ui-v15 #screen-menu .menu-main::-webkit-scrollbar{width:5px}
+body.ui-v15 #screen-menu .menu-main::-webkit-scrollbar-thumb{background:#7755b875;border-radius:8px}
+@media(max-width:800px){
+  body.ui-v15 #screen-menu .menu-main{
+    max-height:calc(100dvh - 104px);
+    overflow-y:auto;overscroll-behavior:contain;
+    padding-right:7px;padding-bottom:26px;
+  }
+  body.ui-v15 #screen-menu .v15-arcade-buttons{gap:8px}
+  body.ui-v15 #screen-menu .v15-arcade-buttons button{height:58px;gap:7px;padding:6px 7px}
+  body.ui-v15 #screen-menu .v15-arcade-icon{width:28px;height:28px}
+  body.ui-v15 #screen-menu .v15-arcade-icon .ui-symbol{width:20px;height:20px}
+  body.ui-v15 #screen-menu .v15-arcade-copy strong{font-size:10px}
+  body.ui-v15 #screen-menu .v15-arcade-copy small{font-size:7px}
+}
+@media(max-width:520px){
+  body.ui-v15 #screen-menu .v15-arcade-buttons{grid-template-columns:1fr}
+  body.ui-v15 #screen-menu .v15-arcade-buttons button{height:53px;padding:6px 10px}
+  body.ui-v15 #screen-menu .v15-arcade-copy strong{font-size:11px}
+  body.ui-v15 #screen-menu .v15-arcade-label{font-size:9px}
+}
+@media(max-height:570px){
+  body.ui-v15 #screen-menu .menu-main{max-height:calc(100dvh - 93px);padding-bottom:40px}
+  body.ui-v15 #screen-menu .v15-arcade-launch{margin-top:8px}
+}
