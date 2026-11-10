@@ -1437,7 +1437,7 @@ assert.ok(!game.includes('coinsCost:'),'Dead runs may not cost stardust');
  assert.equal(saved.get('cosmic-evolution-save-v1'),'PRODUCTION');
  assert.equal(saved.get('infiniti-space-language'),'ru');
  assert.equal(reloads,1);
- assert.ok(game.includes('function save(){if(testerAbsoluteResetPending)return;'));
+ assert.ok(/function save\(\)\s*\{\s*if\(testerAbsoluteResetPending\)return;/.test(game), 'Save guard prevents tester wipe from being overwritten');
  assert.ok(page.includes('id="tester-full-reset"'));
  console.log('PASS: confirmed tester-only absolute wipe deletes all test data, never the real save');
 }
