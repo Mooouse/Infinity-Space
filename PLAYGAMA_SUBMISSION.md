@@ -1,10 +1,21 @@
 # Infinity Space — Playgama publication fields
 
-The distribution package is a **single index.html**. The Playgama Bridge v2 config
-is embedded through \`initialize({configFilePath: "data:application/json,..."} )\`;
-the SDK script itself is loaded from Playgama's official CDN. The game's
-12 compressed soundtracks, 12 covers, CSS, JavaScript and favicon are embedded
-in the HTML and do not require a separate assets folder.
+The **Playgama release ZIP** contains exactly these two files at its root:
+
+```text
+index.html
+playgama-bridge-config.json
+```
+
+Playgama Bridge v2 reads the sibling JSON file through its default
+`bridge.initialize()` configuration path. This physical configuration file
+is required by Playgama's archive validator and must not be replaced by a
+`data:` URL inside HTML. The 12 compressed soundtracks, covers, game
+JavaScript, CSS and favicon are all embedded in the HTML.
+
+A separate **single-file preview/download index.html** also exists. It
+embeds the JSON as a data URL for standalone convenience, but **do not upload
+the standalone HTML as the Playgama release**; use the two-file ZIP.
 
 **Playgama publishing step:** the descriptions and controls below still need
 to be pasted into the game's fields in the Playgama developer dashboard. HTML
@@ -98,6 +109,6 @@ para cambiar el zoom.
 - **Orientation:** Set according to the actual mobile QA result
 - **Game features:** Progression, achievements, upgrades, daily rewards, roulette,
   background music collection, local and SDK/cloud save, rewarded advertising
-- **Main file:** index.html (only file within release ZIP)
+- **Archive root:** index.html + playgama-bridge-config.json (both required)
 - **Testing:** verify real rewarded ads, AdBlock detection, cloud saves, pause/mute
   events, mobile safe areas and return navigation in the Playgama sandbox
