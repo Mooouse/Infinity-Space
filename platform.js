@@ -73,10 +73,10 @@
    sync();
   }catch(_){ready=false;sdk=null;api.status='standalone';}
  }
- const playgamaHost=typeof location!=='undefined'&&(
+ const playgamaHost=window.SpacePlaygamaBuild===true||(typeof location!=='undefined'&&(
   /(^|\.)playgama\.(com|io)$/.test((location.hostname||'').toLowerCase())||
   (typeof document!=='undefined'&&/playgama\.(com|io)/.test((document.referrer||'').toLowerCase()))||
-  new URLSearchParams(location.search||'').get('playgama')==='1');
+  new URLSearchParams(location.search||'').get('playgama')==='1'));
  if(playgamaHost){api.status='loading';}
  else if(window.CrazyGames?.SDK)initialize();
  else{
