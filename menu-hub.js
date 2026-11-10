@@ -93,7 +93,10 @@
    extraBtn.classList.toggle('open',show);
    q(extraBtn,'strong').textContent=show?w.less:w.more;
   };
-  utilityRow.append(extraBtn);bonuses.append(utilityRow,extraPanel);main.append(bonuses);
+  utilityRow.append(extraBtn);bonuses.append(utilityRow,extraPanel);
+  // Important: reward entry buttons must be physically on-screen, even at 760px
+  // height, so restored menu click hitboxes remain accessible after a spin.
+  main.insertBefore(bonuses,progress);
   // The quick "Arena" link was redundant with the modes selector.
   grid.remove();
   main.scrollTop=0;
