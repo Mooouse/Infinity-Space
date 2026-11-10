@@ -25,6 +25,75 @@
 @media(hover:none),(pointer:coarse){#touch-stick{display:block}.hint{display:none}.actions{right:13px;bottom:calc(34px + env(safe-area-inset-bottom))}.ability{width:58px;height:58px}.left{top:88px;padding:10px;max-width:164px}.brand{padding:8px 10px;min-width:0}.brand b{font-size:11px}.stat{min-width:69px;padding:7px 9px}.stat b{font-size:15px}.stat label{font-size:8px}#radar{top:91px;padding:4px}#radar canvas{width:115px;height:82px}#pause{top:auto;bottom:calc(10px + env(safe-area-inset-bottom));font-size:10px;padding:9px 12px}}
 @media(max-width:640px){.mode-grid{grid-template-columns:1fr;gap:9px}.mode{min-height:102px;padding:13px}.mode strong{margin:11px 0 4px;font-size:18px}.mode .symbol{font-size:42px}.panel{max-height:95vh;padding:18px}.hero{font-size:45px}.desc{font-size:12px;margin:7px 0 13px}.left{top:82px;max-width:130px}.left h3{font-size:9px}.rank{font-size:10px;padding:4px 0}#radar{top:81px}.stats .stat:nth-child(2){display:none}.top{gap:5px}.brand small{font-size:8px}#result-stat{gap:5px}.result-cell{padding:10px 5px}.result-cell b{font-size:23px}}
 @media(max-height:510px){.left{top:76px}.panel{max-height:98vh}.mode{min-height:85px}.mode strong{margin:8px 0 4px}.hint{bottom:5px}}
+
+/* V15 PRODUCTION THEME — arcade/mode screens use the same geometry as Infinity Space. */
+:root{--purple:#4d22c6;--glow:#a888ff;--stroke:#664b9f;--panel:#151020;--muted:#b7a7d5}
+html,body{font-family:Inter,"Segoe UI",Arial,system-ui,sans-serif}
+.shade{background:rgba(6,4,15,.83);backdrop-filter:blur(12px);padding:14px}
+.panel{border:2px solid #7250bb;border-bottom:5px solid #3c2674;background:linear-gradient(150deg,#231639 0%,#130d24 56%,#0e0a1b 100%);border-radius:12px;box-shadow:0 30px 105px #000c,0 0 45px #54229b35,inset 0 1px #ab8bff20;padding:clamp(15px,3vw,30px);max-height:calc(100dvh - 26px)}
+#menu .panel{width:min(930px,100%)}
+.mode-menu-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 18px}
+.mode-back,.text-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;color:#e7dcff;background:linear-gradient(180deg,#292040,#171126);border:2px solid #73609b;border-bottom:4px solid #3c2b64;border-radius:8px;padding:10px 14px;font-size:11px;font-weight:950;letter-spacing:.045em}
+.mode-back span:first-child{font-size:20px;line-height:8px}
+.mode-back:hover,.text-btn:hover{color:white;background:#342455;border-color:#ab8bf4}
+.eyebrow{font-size:10px;color:#bfa5ff;font-weight:950;letter-spacing:.13em}
+.hero{font-family:"Arial Black",Inter,system-ui,sans-serif;font-weight:1000;font-size:clamp(40px,5vw,69px);line-height:.93;letter-spacing:-.055em;margin:5px 0 11px}
+.hero em{background:none;color:#a98bff}
+.desc{color:#c1b5d3;font-size:13px;line-height:1.5;margin:0 0 19px;max-width:760px}
+.mode-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.mode-grid .mode{box-sizing:border-box;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;position:relative;min-width:0;min-height:134px;margin:0;padding:15px 61px 13px 17px;border:2px solid #685099;border-bottom:5px solid #3d2a68;border-radius:9px;background:linear-gradient(112deg,rgba(42,28,77,.98),rgba(22,16,41,.97));box-shadow:0 4px 15px #09051d59,inset 0 1px #af8de020;color:#eee9ff;text-decoration:none;overflow:hidden;cursor:pointer;transform:none;transition:border-color .15s,background .15s,transform .15s}
+.mode-grid .mode:hover{transform:translateY(-2px);border-color:#ad86ff;border-bottom-color:#7750d4;background:linear-gradient(115deg,#3b206c,#211539)}
+.mode-grid .mode:active{transform:translateY(1px)}
+.mode-grid .mode:focus-visible{outline:2px solid #ddc6ff;outline-offset:3px}
+.mode-grid .mode .num{font-size:10px;font-weight:900;letter-spacing:.11em;color:#bc9cf9}
+.mode-grid .mode .symbol{top:13px;right:13px;display:grid;place-items:center;width:40px;height:40px;border:1px solid #9770e6;border-radius:7px;background:rgba(77,34,198,.28);font-size:25px;line-height:1;color:#d1bbff}
+.mode-grid .mode strong{display:block;margin:22px 0 8px;font-size:19px;line-height:1.05;font-weight:950;letter-spacing:-.02em;color:#fff}
+.mode-grid .mode small{font-size:11px;line-height:1.42;color:#b9abcd;display:block;font-weight:600}
+.mode-grid .mode:after{content:'➜';position:absolute;right:24px;bottom:12px;font-size:20px;font-weight:900;color:#bd9bff}
+.mode-grid .mode-endless{grid-column:1/-1;min-height:82px;flex-direction:column;justify-content:center}
+.mode-grid .mode-endless strong{margin:5px 0 4px}
+.mode-grid .mode-endless:after{top:35px;bottom:auto}
+.menu-foot{margin-top:15px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.pill{border:1px solid #7959b1;background:#27173e;color:#d8c4ff;border-radius:5px;padding:7px 10px;font-size:10px;font-weight:950;letter-spacing:.08em}
+.menu-foot .sub{margin:0;color:#b6a6d0;font-size:11px}
+.stat,.brand,.left,#radar,.hint{border:1px solid #6b4b98;border-bottom:3px solid #382258;border-radius:8px;background:#130e25ed;box-shadow:0 5px 18px #03000980}
+.brand{padding:10px 13px}.brand b{color:#fff}.brand b em{color:#ab8dff}
+#pause,.ability{border:2px solid #7d59bd;border-bottom:4px solid #482978;border-radius:8px;background:linear-gradient(180deg,#38205a,#1c1331);font-weight:950;color:#f2e9ff}
+#pause:hover,.ability:hover{filter:brightness(1.18)}
+.ability{width:65px;height:65px}
+#radar{padding:9px}
+.primary{border:2px solid #ab86ff;border-bottom:5px solid #341475;border-radius:8px;background:linear-gradient(180deg,#673cdf,#4d22c6);padding:13px 18px;color:#fff;font-weight:950;font-size:12px}
+.result-cell{border:1px solid #715199;border-bottom:3px solid #3a265a;border-radius:7px;background:#1c1430}
+#touch-stick{border:2px solid #9168d2;background:#351e6970}
+#thumb{border:2px solid #e2cbff;background:linear-gradient(#865cda,#4d22c6)}
+.toast{border:2px solid #9e78e6;border-bottom:4px solid #51378b;border-radius:8px}
+@media(max-width:640px){
+ .shade{padding:8px}
+ #menu .panel{padding:15px;max-height:calc(100dvh - 12px)}
+ .mode-menu-top{margin:0 0 9px}
+ .mode-back{padding:8px 10px;font-size:9px}
+ .hero{font-size:38px;margin:3px 0 8px}
+ .desc{font-size:11px;margin-bottom:12px}
+ .mode-grid{grid-template-columns:1fr;gap:7px}
+ .mode-grid .mode{min-height:92px;padding:11px 59px 10px 13px}
+ .mode-grid .mode strong{font-size:16px;margin:10px 0 4px}
+ .mode-grid .mode small{font-size:10px;line-height:1.35}
+ .mode-grid .mode .symbol{right:10px;top:10px;width:35px;height:35px;font-size:22px}
+ .mode-grid .mode .num{font-size:9px}
+ .mode-grid .mode:after{font-size:17px;right:20px;bottom:9px}
+ .mode-grid .mode-endless{grid-column:auto;min-height:77px}
+ .mode-grid .mode-endless strong{margin:4px 0}
+ .menu-foot{margin-top:10px}
+ .stat{padding:6px 8px}
+ .ability{width:58px;height:58px}
+}
+@media(max-height:560px) and (min-width:641px){
+ .mode-grid .mode{min-height:101px;padding-top:9px;padding-bottom:8px}
+ .mode-grid .mode strong{margin:10px 0 5px;font-size:17px}
+ .hero{font-size:35px}
+ .mode-menu-top{margin-bottom:5px}
+ .desc{margin-bottom:8px}
+}
 </style>
 </head>
 <body>
@@ -40,14 +109,15 @@
 <div id="touch-stick"><div id="thumb"></div></div>
 <div class="toast" id="toast"></div>
 <div class="shade active" id="menu">
- <div class="panel"><span class="eyebrow">INFINITY SPACE / ARCADE PROTOCOL</span><h1 class="hero">COSMIC<br><em>ARENA</em></h1><p class="desc" data-l="intro">Four competitive space modes. Grow, hunt rivals, exploit gravity, and dominate the arena. All opponents are AI-controlled.</p>
+ <div class="panel"><div class="mode-menu-top"><span class="eyebrow">INFINITY SPACE / GAME MODES</span><a class="mode-back" href="index.html"><span aria-hidden="true">‹</span> <span data-l="back">BACK TO MENU</span></a></div><h1 class="hero" data-l="modesHeader">GAME <em>MODES.</em></h1><p class="desc" data-l="intro">Four competitive space modes. Grow, hunt rivals, exploit gravity, and dominate the arena. All opponents are AI-controlled.</p>
   <div class="mode-grid">
    <button class="mode" data-mode="arena"><span class="num">01 / FREE-FOR-ALL</span><span class="symbol">✦</span><strong data-l="mArena">Cosmic Arena</strong><small data-l="dArena">Absorb matter and rivals. Top the leaderboard before the timer ends.</small></button>
    <button class="mode" data-mode="royale"><span class="num">02 / SURVIVAL</span><span class="symbol">◉</span><strong data-l="mRoyale">Last Singularity</strong><small data-l="dRoyale">The storm collapses inward. One survivor takes the victory.</small></button>
    <button class="mode" data-mode="core"><span class="num">03 / TEAM BATTLE</span><span class="symbol">✧</span><strong data-l="mCore">Core Conquest</strong><small data-l="dCore">Blue vs red. Hold the energy core to earn 100 control points.</small></button>
    <button class="mode" data-mode="race"><span class="num">04 / EVOLUTION RACE</span><span class="symbol">⟡</span><strong data-l="mRace">Evolution Rush</strong><small data-l="dRace">Reach critical mass before everyone else. Powerful relics change the race.</small></button>
+   <a class="mode mode-endless" href="index.html"><span class="num">05 / INFINITE UNIVERSE</span><span class="symbol">∞</span><strong data-l="endless">∞ Endless Space</strong><small data-l="dEndless">Original endless exploration and evolution · saved progress</small></a>
   </div>
-  <div class="menu-foot"><span class="pill" data-l="bots">OFFLINE · AI RIVALS</span><span class="sub" data-l="saved">The endless universe uses separate saves.</span><a class="text-btn" href="index.html" data-l="endless">∞ Endless Space</a></div>
+  <div class="menu-foot"><span class="pill" data-l="bots">OFFLINE · AI RIVALS</span><span class="sub" data-l="saved">The endless universe uses separate saves.</span></div>
  </div>
 </div>
 <div class="shade" id="result"><div class="panel" style="max-width:560px"><span class="eyebrow" id="outcome-kicker">MATCH COMPLETE</span><h2 class="hero" id="outcome">VICTORY</h2><p class="desc" id="outcome-detail"></p><div id="result-stat"><div class="result-cell"><b id="r-place">1</b><small data-l="place">POSITION</small></div><div class="result-cell"><b id="r-kills">0</b><small data-l="kills">ELIMINATIONS</small></div><div class="result-cell"><b id="r-mass">0</b><small data-l="mass">MASS</small></div></div><div class="row"><button class="primary" id="again" data-l="again">PLAY AGAIN</button><button class="text-btn" id="change" data-l="change">CHANGE MODE</button><a class="text-btn" href="index.html" data-l="endless">∞ Endless Space</a></div></div></div>
@@ -59,8 +129,8 @@
 'use strict';
 (()=>{
 const T={
-en:{mass:'MASS',time:'TIME',place:'POSITION',core:'CONTROL',ranking:'LEADERBOARD',radar:'ARENA RADAR',pause:'Ⅱ PAUSE',intro:'Four competitive space modes. Grow, hunt rivals, exploit gravity, and dominate the arena. All opponents are AI-controlled.',mArena:'Cosmic Arena',dArena:'Absorb matter and rivals. Top the leaderboard before the timer ends.',mRoyale:'Last Singularity',dRoyale:'The storm collapses inward. One survivor takes the victory.',mCore:'Core Conquest',dCore:'Blue vs red. Hold the energy core to earn 100 control points.',mRace:'Evolution Rush',dRace:'Reach critical mass before everyone else. Powerful relics change the race.',bots:'OFFLINE · AI RIVALS',saved:'Endless Space keeps its own save.',endless:'∞ Endless Space',kills:'ELIMINATIONS',again:'PLAY AGAIN',change:'CHANGE MODE',paused:'PAUSED',pausedDesc:'Resume the fight, change mode, or return to the endless universe.',resume:'RESUME',win:'VICTORY',lose:'DEFEAT',finish:'MATCH COMPLETE',hunt:'You absorbed a rival!',killed:'Absorbed by a rival — respawning',storm:'Warning: cosmic storm!',shielded:'Gravity shield enabled',charge:'Pulse wave!',portal:'Wormhole jump!',relic:'Relic acquired!',lead:'YOU ARE LEADING',overtake:'RIVAL LEADS',race:'Critical mass reached!',coreLead:'Energy core captured',spectate:'YOU WERE ELIMINATED',draw:'TIME IS UP'},
-ru:{mass:'МАССА',time:'ВРЕМЯ',place:'МЕСТО',core:'КОНТРОЛЬ',ranking:'ЛИДЕРЫ МАТЧА',radar:'РАДАР АРЕНЫ',pause:'Ⅱ ПАУЗА',intro:'Четыре соревновательных космических режима. Расти, охоться на соперников и используй гравитацию. Все соперники управляются ИИ.',mArena:'Космическая арена',dArena:'Поглощай материю и противников. Стань первым в таблице лидеров.',mRoyale:'Последняя сингулярность',dRoyale:'Космический шторм сжимает безопасную область. Выживет только один.',mCore:'Захват ядра',dCore:'Синие против красных. Удерживай ядро, чтобы набрать 100 очков.',mRace:'Гонка эволюции',dRace:'Первым достигни критической массы. Реликвии меняют ход гонки.',bots:'ОФЛАЙН · СОПЕРНИКИ ИИ',saved:'Бесконечный космос хранит отдельный прогресс.',endless:'∞ Бесконечный космос',kills:'ПОГЛОЩЕНО',again:'СЫГРАТЬ ЕЩЁ',change:'СМЕНИТЬ РЕЖИМ',paused:'ПАУЗА',pausedDesc:'Продолжи бой, выбери другой режим или вернись в бесконечный космос.',resume:'ПРОДОЛЖИТЬ',win:'ПОБЕДА',lose:'ПОРАЖЕНИЕ',finish:'МАТЧ ЗАВЕРШЁН',hunt:'Соперник поглощён!',killed:'Тебя поглотили — возрождение',storm:'Осторожно: космический шторм!',shielded:'Гравитационный щит активирован',charge:'Гравитационный импульс!',portal:'Прыжок через червоточину!',relic:'Реликвия получена!',lead:'ТЫ ЛИДИРУЕШЬ',overtake:'СОПЕРНИК ВПЕРЕДИ',race:'Критическая масса достигнута!',coreLead:'Ядро захвачено',spectate:'ТЫ ВЫБЫЛ',draw:'ВРЕМЯ ИСТЕКЛО'}};
+en:{back:'BACK TO MENU',modesHeader:'GAME MODES',dEndless:'Original endless exploration and evolution · saved progress',mass:'MASS',time:'TIME',place:'POSITION',core:'CONTROL',ranking:'LEADERBOARD',radar:'ARENA RADAR',pause:'Ⅱ PAUSE',intro:'Four competitive space modes. Grow, hunt rivals, exploit gravity, and dominate the arena. All opponents are AI-controlled.',mArena:'Cosmic Arena',dArena:'Absorb matter and rivals. Top the leaderboard before the timer ends.',mRoyale:'Last Singularity',dRoyale:'The storm collapses inward. One survivor takes the victory.',mCore:'Core Conquest',dCore:'Blue vs red. Hold the energy core to earn 100 control points.',mRace:'Evolution Rush',dRace:'Reach critical mass before everyone else. Powerful relics change the race.',bots:'OFFLINE · AI RIVALS',saved:'Endless Space keeps its own save.',endless:'∞ Endless Space',kills:'ELIMINATIONS',again:'PLAY AGAIN',change:'CHANGE MODE',paused:'PAUSED',pausedDesc:'Resume the fight, change mode, or return to the endless universe.',resume:'RESUME',win:'VICTORY',lose:'DEFEAT',finish:'MATCH COMPLETE',hunt:'You absorbed a rival!',killed:'Absorbed by a rival — respawning',storm:'Warning: cosmic storm!',shielded:'Gravity shield enabled',charge:'Pulse wave!',portal:'Wormhole jump!',relic:'Relic acquired!',lead:'YOU ARE LEADING',overtake:'RIVAL LEADS',race:'Critical mass reached!',coreLead:'Energy core captured',spectate:'YOU WERE ELIMINATED',draw:'TIME IS UP'},
+ru:{back:'НАЗАД В МЕНЮ',modesHeader:'РЕЖИМЫ ИГРЫ',dEndless:'Оригинальная бесконечная Вселенная · сохранённый прогресс',mass:'МАССА',time:'ВРЕМЯ',place:'МЕСТО',core:'КОНТРОЛЬ',ranking:'ЛИДЕРЫ МАТЧА',radar:'РАДАР АРЕНЫ',pause:'Ⅱ ПАУЗА',intro:'Четыре соревновательных космических режима. Расти, охоться на соперников и используй гравитацию. Все соперники управляются ИИ.',mArena:'Космическая арена',dArena:'Поглощай материю и противников. Стань первым в таблице лидеров.',mRoyale:'Последняя сингулярность',dRoyale:'Космический шторм сжимает безопасную область. Выживет только один.',mCore:'Захват ядра',dCore:'Синие против красных. Удерживай ядро, чтобы набрать 100 очков.',mRace:'Гонка эволюции',dRace:'Первым достигни критической массы. Реликвии меняют ход гонки.',bots:'ОФЛАЙН · СОПЕРНИКИ ИИ',saved:'Бесконечный космос хранит отдельный прогресс.',endless:'∞ Бесконечный космос',kills:'ПОГЛОЩЕНО',again:'СЫГРАТЬ ЕЩЁ',change:'СМЕНИТЬ РЕЖИМ',paused:'ПАУЗА',pausedDesc:'Продолжи бой, выбери другой режим или вернись в бесконечный космос.',resume:'ПРОДОЛЖИТЬ',win:'ПОБЕДА',lose:'ПОРАЖЕНИЕ',finish:'МАТЧ ЗАВЕРШЁН',hunt:'Соперник поглощён!',killed:'Тебя поглотили — возрождение',storm:'Осторожно: космический шторм!',shielded:'Гравитационный щит активирован',charge:'Гравитационный импульс!',portal:'Прыжок через червоточину!',relic:'Реликвия получена!',lead:'ТЫ ЛИДИРУЕШЬ',overtake:'СОПЕРНИК ВПЕРЕДИ',race:'Критическая масса достигнута!',coreLead:'Ядро захвачено',spectate:'ТЫ ВЫБЫЛ',draw:'ВРЕМЯ ИСТЕКЛО'}};
 const lang=(navigator.language||'en').toLowerCase().startsWith('ru')?'ru':'en', L=(k)=>T[lang][k]||T.en[k]||k;
 document.documentElement.lang=lang;document.querySelectorAll('[data-l]').forEach(n=>n.textContent=L(n.dataset.l));
 const $=id=>document.getElementById(id),canvas=$('arena'),ctx=canvas.getContext('2d',{alpha:false}),mini=$('mini'),mc=mini.getContext('2d');
@@ -269,7 +339,25 @@ if(mode==='royale'){ctx.save();ctx.beginPath();ctx.rect(0,0,world.w,world.h);ctx
 if(mode==='core'){let core=ctx.createRadialGradient(world.w/2,world.h/2,8,world.w/2,world.h/2,265),color=game.coreHold<0?'#ae85ff':game.coreHold?'#ff6c89':'#68d8ff';core.addColorStop(0,color+'56');core.addColorStop(1,color+'00');ctx.fillStyle=core;ctx.beginPath();ctx.arc(world.w/2,world.h/2,265,0,TAU);ctx.fill();ctx.strokeStyle=color+'a6';ctx.lineWidth=5;ctx.setLineDash([18,12]);ctx.beginPath();ctx.arc(world.w/2,world.h/2,240,0,TAU);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#f5eaff';ctx.textAlign='center';ctx.font='900 28px system-ui';ctx.fillText('✦',world.w/2,world.h/2+8);}
 for(let k=0;k<game.portals.length;k++){let a=game.portals[k];ctx.save();ctx.translate(a.x,a.y);ctx.rotate(time*(k?-.8:.8));ctx.strokeStyle='#9c69f7c9';ctx.shadowColor='#ae68ff';ctx.shadowBlur=24;for(let i=0;i<3;i++){ctx.lineWidth=2+i*1.2;ctx.beginPath();ctx.ellipse(0,0,44+i*8,31+i*8,.2,0,TAU*.76);ctx.stroke();}ctx.restore();}
 for(const h of game.hazards){ctx.save();ctx.translate(h.x,h.y);let halo=ctx.createRadialGradient(0,0,5,0,0,150);halo.addColorStop(0,'#000000');halo.addColorStop(.24,'#08060e');halo.addColorStop(.38,'#ff9e54bb');halo.addColorStop(.53,'#633b9b68');halo.addColorStop(1,'#22194a00');ctx.fillStyle=halo;ctx.beginPath();ctx.arc(0,0,150,0,TAU);ctx.fill();ctx.rotate(time*.26);ctx.strokeStyle='#d6a4ffa6';ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(0,0,h.r*1.17,h.r*.5,.35,0,TAU);ctx.stroke();ctx.fillStyle='#02020a';ctx.beginPath();ctx.arc(0,0,h.r*.56,0,TAU);ctx.fill();ctx.restore();}
-for(const f of game.food){ctx.fillStyle=f.type?'#f4cd79':'#8edbf9';ctx.globalAlpha=f.type?.95:.74;ctx.shadowColor=ctx.fillStyle;ctx.shadowBlur=f.type?12:5;ctx.beginPath();ctx.arc(f.x,f.y,f.r*(1+.06*Math.sin(time*3+f.phase)),0,TAU);ctx.fill();}ctx.globalAlpha=1;ctx.shadowBlur=0;
+for(const f of game.food){
+ if(f.x<camera.x-25||f.x>camera.x+sw+25||f.y<camera.y-25||f.y>camera.y+sh+25)continue;
+ const t=f.type,rr=f.r*(1+.035*Math.sin(time*2+f.phase));
+ ctx.fillStyle=t===0?'#8fc7f9':t===1?'#cd9eff':t===2?'#daa579':'#dceaff';
+ ctx.globalAlpha=t===0?.82:.97;
+ ctx.strokeStyle=ctx.fillStyle;
+ // Trailing streaks point opposite the REAL velocity of the drifting matter.
+ const speed=Math.hypot(f.vx,f.vy);
+ if(speed>26){ctx.lineWidth=t===2?1.3:1;ctx.globalAlpha*=.58;ctx.beginPath();ctx.moveTo(f.x-f.vx*.15,f.y-f.vy*.15);ctx.lineTo(f.x,f.y);ctx.stroke();ctx.globalAlpha=t===0?.82:.97;}
+ if(t===2){
+  ctx.save();ctx.translate(f.x,f.y);ctx.rotate(f.phase+time*.12);ctx.beginPath();
+  ctx.moveTo(rr,0);ctx.lineTo(rr*.34,rr*.88);ctx.lineTo(-rr*.79,rr*.42);
+  ctx.lineTo(-rr*.78,-rr*.6);ctx.lineTo(rr*.19,-rr);ctx.closePath();
+  ctx.fill();ctx.strokeStyle='#f9d7a1a8';ctx.lineWidth=1;ctx.stroke();ctx.restore();
+ }else{
+  ctx.beginPath();ctx.arc(f.x,f.y,rr,0,TAU);ctx.fill();
+  if(t===1){ctx.lineWidth=1;ctx.strokeStyle='#f4e3ffb6';ctx.beginPath();ctx.arc(f.x,f.y,rr*1.4,0,TAU);ctx.stroke();}
+ }
+}ctx.globalAlpha=1;
 for(const relic of game.relics){ctx.save();ctx.translate(relic.x,relic.y);ctx.rotate(time*1.15);ctx.shadowColor='#ffce6d';ctx.shadowBlur=20;ctx.fillStyle=relic.type==='mass'?'#ffdd7a':relic.type==='shield'?'#8fe9ff':'#cf9aff';ctx.beginPath();for(let k=0;k<6;k++){let a=TAU*k/6;ctx.lineTo(Math.cos(a)*18,Math.sin(a)*18);}ctx.closePath();ctx.fill();ctx.restore();}
 for(const q of game.people){if(!q.alive)continue;sphere(q,time);}
 for(const f of fx){ctx.globalAlpha=clamp(f.t/f.max,0,1);ctx.fillStyle=f.color;ctx.fillRect(f.x,f.y,f.r,f.r);}ctx.globalAlpha=1;ctx.restore();
