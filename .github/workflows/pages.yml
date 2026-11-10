@@ -10,11 +10,11 @@ permissions:
   actions: write
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   test-and-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -49,14 +49,29 @@ jobs:
           timeout 220 node tests/browser-smoke.cjs
       - name: Configure Pages
         uses: actions/configure-pages@v5
+      - name: Prepare lean website payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/space-pages/assets"
+          cp index.html cosmic-arena.html ./*.js ./*.css ./*.svg "$RUNNER_TEMP/space-pages/"
+          cp -R assets/music "$RUNNER_TEMP/space-pages/assets/"
+          test -s "$RUNNER_TEMP/space-pages/index.html"
+          test -s "$RUNNER_TEMP/space-pages/cosmic-arena.html"
+          test -s "$RUNNER_TEMP/space-pages/assets/music/track-01.mp3"
+          echo "Deploying only the website, game scripts, styles and original music:"
+          du -sh "$RUNNER_TEMP/space-pages"
       - name: Upload game for Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: ${{ runner.temp }}/space-pages
           retention-days: 1
       - name: Deploy to Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          timeout: 1200000
+          reporting_interval: 10000
       - name: Clean up temporary Pages archive
         if: always()
         env:
