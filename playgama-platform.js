@@ -168,8 +168,15 @@
       if (!bridge || typeof bridge.initialize !== 'function') {
         throw new Error('Playgama Bridge script could not load');
       }
+      // In the single-HTML package, Bridge v2 reads its JSON configuration
+      // from an inline data: URL; the normal website uses the sidecar JSON.
+      const inlineConfig = window.SpaceInlineBridgeConfig;
+      const initOptions = inlineConfig && typeof inlineConfig === 'object'
+        ? { configFilePath: 'data:application/json;charset=utf-8,' +
+            encodeURIComponent(JSON.stringify(inlineConfig)) }
+        : undefined;
       await Promise.race([
-        bridge.initialize(),
+        bridge.initialize(initOptions),
         new Promise((_, reject) => setTimeout(() => reject(new Error('SDK init timed out')), 8000))
       ]);
       if (bridge.platform?.id !== 'playgama' && params.get('playgama') !== '1') {
