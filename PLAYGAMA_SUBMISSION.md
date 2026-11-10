@@ -1,31 +1,25 @@
 # Infinity Space — Playgama publication fields
 
-The **Playgama release ZIP** preserves the exact original MP3 soundtracks
-used by the CrazyGames version. Do **not** recompress the music to 40 kbps:
-doing so destroyed sound quality.
+The **Playgama ZIP is under 20 MB**, containing only the game's HTML and
+the required SDK configuration JSON:
 
 ```text
 index.html
 playgama-bridge-config.json
-assets/
-  music/
-    track-01.mp3
-    track-02.mp3
-    ...
-    track-12.mp3
 ```
 
-The 12 original MP3 files total about **62.1 MB**. The ZIP is larger than
-the previously heavily-compressed package, but safely under Playgama's
-300 MB game archive limit. All 12 covers, all game JavaScript and CSS,
-and the favicon are still embedded directly in the Playgama HTML.
-The SDK reads the real sibling JSON configuration via `bridge.initialize()`.
+**All 12 songs play using the exact same original MP3 files as the
+CrazyGames version** (no FFmpeg, no transcoding, no reduction in audio
+quality). The original MP3 files total about 62.1 MB, so they cannot
+physically be embedded in a <20 MB ZIP while preserving identical bytes.
+Instead, the game streams those original MP3s directly from
+https://mooouse.github.io/Infinity-Space/assets/music/
 
-A separate **single-file index.html** is downloadable under 20 MB, but that
-version **streams the same original quality MP3 files from
-https://mooouse.github.io/Infinity-Space/assets/music/**. The single-file
-download requires an internet connection for music. **Upload the Playgama
-ZIP**, not the single HTML file; the Playgama ZIP has all tracks locally.
+**Internet access is required for the music**, and Playgama/partner sites
+must allow external audio requests. If a distribution partner blocks
+external assets, use a self-contained larger ZIP (up to Playgama's
+300 MB archive limit) instead. Other game code and cover images are
+bundled in HTML so the game itself does not depend on the audio host.
 
 **Playgama publishing step:** the descriptions and controls below still need
 to be pasted into the game's fields in the Playgama developer dashboard. HTML
@@ -119,6 +113,6 @@ para cambiar el zoom.
 - **Orientation:** Set according to the actual mobile QA result
 - **Game features:** Progression, achievements, upgrades, daily rewards, roulette,
   background music collection, local and SDK/cloud save, rewarded advertising
-- **Archive root:** index.html + playgama-bridge-config.json, plus assets/music with 12 original MP3s
+- **Archive root:** index.html + playgama-bridge-config.json; music streams from an external origin
 - **Testing:** verify real rewarded ads, AdBlock detection, cloud saves, pause/mute
   events, mobile safe areas and return navigation in the Playgama sandbox
