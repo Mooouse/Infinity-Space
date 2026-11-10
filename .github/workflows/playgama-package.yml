@@ -1,0 +1,49 @@
+name: Package Infinity Space for Playgama
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - '*.js'
+      - '*.css'
+      - '*.svg'
+      - 'assets/**'
+      - 'playgama-bridge-config.json'
+      - '.github/workflows/playgama-package.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Playgama adapter
+        run: |
+          set -euo pipefail
+          node --check game.js
+          node --check platform.js
+          node --check playgama-platform.js
+          node --check playgama-ui.js
+          node -e "JSON.parse(require('fs').readFileSync('playgama-bridge-config.json','utf8'))"
+          node tests/meta.cjs
+          node tests/regressions.cjs
+      - name: Build upload-ready Playgama archive
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/playgama"
+          cp -v index.html *.js *.css *.svg playgama-bridge-config.json "$RUNNER_TEMP/playgama/"
+          cp -a assets "$RUNNER_TEMP/playgama/assets"
+          cd "$RUNNER_TEMP/playgama"
+          zip -q -r "$GITHUB_WORKSPACE/infinity-space-playgama.zip" .
+          test -s "$GITHUB_WORKSPACE/infinity-space-playgama.zip"
+          unzip -tq "$GITHUB_WORKSPACE/infinity-space-playgama.zip" >/dev/null
+          ls -lh "$GITHUB_WORKSPACE/infinity-space-playgama.zip"
+      - name: Provide Playgama upload ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: infinity-space-playgama
+          path: infinity-space-playgama.zip
+          retention-days: 1
+          if-no-files-found: error
