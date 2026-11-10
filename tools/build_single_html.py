@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""Build a truly single-file Infinity Space HTML for Playgama.
+"""Build a 19 MB standalone HTML and a Playgama upload with an external JSON config.
 
-All game JS/CSS, 12 compressed soundtracks and 12 covers are embedded.
-Bridge itself is loaded from Playgama's official CDN, and its configuration
-is passed as an inline data: URL (supported by Bridge v2 initialize()).
+All game JavaScript, CSS, 12 compressed soundtracks, and 12 covers are embedded
+in both HTML variants. Playgama validates a real config file in the ZIP root,
+so the upload edition uses the standard ./playgama-bridge-config.json path.
 """
 import base64
 import json
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -46,15 +47,16 @@ def run_ffmpeg(source: Path, target: Path, bitrate: int) -> None:
         raise RuntimeError("Audio transcode unexpectedly small: " + str(target))
 
 
-def build_page(sound_dir: Path) -> str:
+def build_page(sound_dir: Path, inline_bridge_config: bool = True) -> str:
     html = (ROOT / "index.html").read_text(encoding="utf-8")
     config = json.loads((ROOT / "playgama-bridge-config.json").read_text(encoding="utf-8"))
 
-    # Bridge v2 accepts a data: URL in initialize({configFilePath:...}).
-    # This permits a genuine 1-file Playgama upload without a sidecar JSON.
-    config_js = ("<script>window.SpaceInlineBridgeConfig=" +
-                 json.dumps(config, ensure_ascii=False, separators=(",", ":")) +
-                 ";</script>")
+    # The standalone file embeds the config for standalone preview. The
+    # Playgama upload deliberately OMITS it: Bridge.initialize() will fetch
+    # ./playgama-bridge-config.json from beside index.html, as required.
+    config_js = (("<script>window.SpaceInlineBridgeConfig=" +
+                  json.dumps(config, ensure_ascii=False, separators=(",", ":")) +
+                  ";</script>") if inline_bridge_config else "")
 
     def inline_css(match: re.Match) -> str:
         href = match.group(1).split("?", 1)[0]
@@ -163,8 +165,8 @@ def build_page(sound_dir: Path) -> str:
     html = html.replace("</head>", meta_tags + "</head>", 1)
     if re.search(r'(?:src|href)=["\'](?:assets/|[\w.-]+\.(?:js|css|svg|jpg|mp3))', html):
         raise RuntimeError("Unexpected unbundled static asset link")
-    if "window.SpaceInlineBridgeConfig" not in html:
-        raise RuntimeError("Missing inline Playgama config")
+    if ('<script>window.SpaceInlineBridgeConfig=' in html) != inline_bridge_config:
+        raise RuntimeError("Bridge config mode does not match requested output")
     return html
 
 
@@ -187,8 +189,23 @@ def main() -> None:
             size = len(result.encode("utf-8"))
             print("One HTML: %s bytes (%.2f MB)" % (size, size / 1_000_000), flush=True)
             if size < LIMIT:
+                # Preview/download edition: literally one HTML file.
                 output.write_text(result, encoding="utf-8")
-                print("SUCCESS: %s (%.2f MB)" % (output, size / 1_000_000))
+
+                # Playgama release: the validator requires BOTH root-level
+                # files and Bridge.initialize() must use its default path.
+                upload_dir = output.parent / 'playgama'
+                upload_dir.mkdir(parents=True, exist_ok=True)
+                upload_html = build_page(audio, inline_bridge_config=False)
+                upload_bytes = len(upload_html.encode('utf-8'))
+                if upload_bytes >= LIMIT:
+                    raise RuntimeError('Playgama HTML exceeds 20 MB')
+                (upload_dir / 'index.html').write_text(upload_html, encoding='utf-8')
+                shutil.copy2(ROOT / 'playgama-bridge-config.json',
+                             upload_dir / 'playgama-bridge-config.json')
+                print('SUCCESS: standalone %s (%.2f MB)' % (output, size / 1_000_000))
+                print('SUCCESS: Playgama %s + root config JSON (%.2f MB)' %
+                      (upload_dir / 'index.html', upload_bytes / 1_000_000))
                 return
         raise RuntimeError("Could not get below 20 MB without dropping music tracks")
 
