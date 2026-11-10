@@ -34,6 +34,11 @@ jobs:
           node tests/regressions.cjs
           node tests/music.cjs
 
+      - name: Install FFmpeg for audio compression
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg
+
       - name: Re-encode all 12 songs and bundle game as ONE HTML under 20 MB
         run: |
           set -euo pipefail
