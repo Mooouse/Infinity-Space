@@ -506,13 +506,13 @@ function refreshStars(){bg=Array.from({length:Math.min(3400,Math.ceil(world.w*wo
 addEventListener('resize',resize);resize();
 function createActor(name,player,team,index){return {name,player,team,index,x:rand(200,world.w-200),y:rand(200,world.h-200),vx:0,vy:0,dirX:1,dirY:0,mass:player?40:rand(34,52),r:29,kills:0,alive:true,respawn:0,shield:0,pulseCD:0,dashCD:0,shieldCD:0,dash:0,portalCD:0,think:0,target:null,personality:rnd(4),color:player?'#bb90ff':colors[index%colors.length],invuln:2.4,stage:0}};
 function createFood(){
- const chance=Math.random(),type=chance<.55?0:chance<.80?1:chance<.94?2:3;
- const angle=rand(0,TAU),speed=rand(type===3?52:18,type===3?110:58);
+ const chance=Math.random(),type=chance<.4?0:chance<.62?1:chance<.78?2:chance<.9?3:chance<.97?4:5;
+ const angle=rand(0,TAU),speed=type===3?rand(12,40):type>=4?rand(54,124):rand(18,58);
  // Nebula lanes make the map interesting without leaving empty sectors.
  let x=rand(35,world.w-35),y=rand(35,world.h-35);
  if(Math.random()<.34){const lane=rnd(5),a=(lane+.5)*TAU/5,px=world.w*(.5+.32*Math.cos(a)),py=world.h*(.5+.32*Math.sin(a));x=clamp(px+rand(-680,680),35,world.w-35);y=clamp(py+rand(-500,500),35,world.h-35);}
- const size=type===0?rand(2.3,4.6):type===1?rand(4,8):type===2?rand(8,14):rand(4,6);
- return {x,y,r:size,value:type===0?rand(2,4):type===1?rand(5,9):type===2?rand(11,19):rand(7,13),type,phase:angle,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,noise:rand(0,1000)};
+ const size=type===0?rand(2.3,4.6):type===1?rand(4,8):type===2?rand(8,14):type===3?rand(10,17):type===4?rand(4,7):rand(4,6);
+ return {x,y,r:size,value:type===0?rand(2,4):type===1?rand(5,9):type===2?rand(11,19):type===3?rand(8,15):type===4?rand(13,22):rand(18,30),type,phase:angle,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,noise:rand(0,1000)};
 }
 function updateFood(dt){
  const g=game;if(!g)return;
@@ -539,7 +539,7 @@ function updateFood(dt){
   if(g.food[i]!==f)continue;
   const friction=Math.exp(-dt*.12);
   f.vx=(f.vx+ax*dt)*friction;f.vy=(f.vy+ay*dt)*friction;
-  const speed=Math.hypot(f.vx,f.vy),limit=f.type===3?240:175;
+  const speed=Math.hypot(f.vx,f.vy),limit=f.type>=4?240:175;
   if(speed>limit){f.vx*=limit/speed;f.vy*=limit/speed;}
   f.x+=f.vx*dt;f.y+=f.vy*dt;
   const pad=f.r+12;
@@ -765,9 +765,9 @@ for(const f of game.food){
  const pad=f.r*2.2+30;
  if(f.x<camera.x-pad||f.x>camera.x+sw/camera.zoom+pad||
     f.y<camera.y-pad||f.y>camera.y+sh/camera.zoom+pad)continue;
- const size=f.r*3.2,material=['ore','crystal','ice','plasma'][f.type];
+ const size=f.r*3.2,material=['ore','crystal','ice','gas','plasma','exotic'][f.type];
  const art=matterArtwork(material,(Math.floor(f.noise)||0)%6);
- if(f.type===3&&Math.hypot(f.vx,f.vy)>30){
+ if(f.type>=4&&Math.hypot(f.vx,f.vy)>30){
   ctx.save();const len=Math.min(60,Math.hypot(f.vx,f.vy)*.30);
   const speed=Math.hypot(f.vx,f.vy)||1;
   const gr=ctx.createLinearGradient(f.x-f.vx/speed*len,f.y-f.vy/speed*len,f.x,f.y);
@@ -777,7 +777,14 @@ for(const f of game.food){
  }
  ctx.drawImage(art,f.x-size*.5,f.y-size*.5,size,size);
 }
-for(const relic of game.relics){ctx.save();ctx.translate(relic.x,relic.y);ctx.rotate(time*1.15);ctx.shadowColor='#ffce6d';ctx.shadowBlur=20;ctx.fillStyle=relic.type==='mass'?'#ffdd7a':relic.type==='shield'?'#8fe9ff':'#cf9aff';ctx.beginPath();for(let k=0;k<6;k++){let a=TAU*k/6;ctx.lineTo(Math.cos(a)*18,Math.sin(a)*18);}ctx.closePath();ctx.fill();ctx.restore();}
+for(const relic of game.relics){
+ const icon=relic.type==='mass'?'plasma':relic.type==='shield'?'ice':'exotic';
+ const ring=19+Math.sin(time*3+relic.x)*2;
+ ctx.save();ctx.globalAlpha=.67;ctx.strokeStyle=relic.type==='mass'?'#ffcb8b':relic.type==='shield'?'#a4e6ff':'#bf9aff';ctx.lineWidth=1.4;
+ ctx.beginPath();ctx.arc(relic.x,relic.y,ring,0,TAU);ctx.stroke();ctx.restore();
+ const sprite=matterArtwork(icon,Math.floor(relic.x)%6);
+ ctx.drawImage(sprite,relic.x-32,relic.y-32,64,64);
+}
 for(const q of game.people){if(!q.alive)continue;sphere(q,time);}
 for(const f of fx){ctx.globalAlpha=clamp(f.t/f.max,0,1);ctx.fillStyle=f.color;ctx.fillRect(f.x,f.y,f.r,f.r);}ctx.globalAlpha=1;ctx.restore();
 if(game.state==='playing'&&!p.alive){ctx.fillStyle='#050713a8';ctx.fillRect(0,sh*.41,sw,90);ctx.fillStyle='#f4eaff';ctx.textAlign='center';ctx.font='900 23px system-ui';ctx.fillText(lang==='ru'?'ВОЗРОЖДЕНИЕ ЧЕРЕЗ '+Math.max(0,Math.ceil(p.respawn)):'RESPAWN IN '+Math.max(0,Math.ceil(p.respawn)),sw/2,sh*.41+52);}
