@@ -218,9 +218,13 @@
       // Playgama cloud save BEFORE the game executes to preserve game semantics.
       if (!tester) {
         try {
-          const saved = await bridge.storage.get([CLOUD_KEY]);
-          const json = Array.isArray(saved) ? saved[0] : null;
-          if (typeof json === 'string' && json.length > 0) {
+          // Bridge v2 parses JSON by default; request the original string to
+          // avoid silently discarding cloud saves on every fresh session.
+          const saved = await bridge.storage.get([CLOUD_KEY], false);
+          const entry = Array.isArray(saved) ? saved[0] : null;
+          const json = typeof entry === 'string' ? entry :
+            entry && typeof entry === 'object' ? JSON.stringify(entry) : null;
+          if (json && json.length > 0) {
             const value = JSON.parse(json);
             if (value && value.version === 1 && Number.isFinite(value.tier)) {
               localStorage.setItem(SAVE_KEY, json);
