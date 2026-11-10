@@ -1,24 +1,23 @@
 #!/usr/bin/env python3
-"""Build a 19 MB standalone HTML and a Playgama upload with an external JSON config.
+"""Build Infinity Space without recompressing or degrading the original music.
 
-All game JavaScript, CSS, 12 compressed soundtracks, and 12 covers are embedded
-in both HTML variants. Playgama validates a real config file in the ZIP root,
-so the upload edition uses the standard ./playgama-bridge-config.json path.
+Standalone index.html uses the original high-quality MP3 files hosted on the
+game's GitHub Pages site (requires internet). The Playgama ZIP includes ALL
+original MP3 bytes locally and a root-level Playgama Bridge JSON configuration.
+CSS, game JS, cover art and favicon remain inlined in both HTML variants.
 """
 import base64
 import json
 import re
 import shutil
-import subprocess
 import sys
-import tempfile
 from pathlib import Path
 from html import escape
 
 ROOT = Path(__file__).resolve().parents[1]
 LIMIT = 20_000_000  # user requested <20 MB (decimal, not MiB)
 TRACKS = list(range(1, 13))
-BITRATES = [40, 38, 36, 34, 32]
+MUSIC_ORIGIN = "https://mooouse.github.io/Infinity-Space/assets/music/"
 
 DESCRIPTION = {
     "title": "Infinity Space",
@@ -33,21 +32,7 @@ DESCRIPTION = {
 }
 
 
-def run_ffmpeg(source: Path, target: Path, bitrate: int) -> None:
-    command = [
-        "ffmpeg", "-hide_banner", "-loglevel", "error", "-nostdin",
-        "-y", "-i", str(source), "-map", "0:a:0",
-        "-vn", "-ac", "2", "-ar", "32000",
-        "-c:a", "aac", "-b:a", str(bitrate) + "k",
-        "-movflags", "+faststart",
-        str(target)
-    ]
-    subprocess.run(command, check=True, timeout=90)
-    if target.stat().st_size < 100_000:
-        raise RuntimeError("Audio transcode unexpectedly small: " + str(target))
-
-
-def build_page(sound_dir: Path, inline_bridge_config: bool = True) -> str:
+def build_page(inline_bridge_config: bool = True) -> str:
     html = (ROOT / "index.html").read_text(encoding="utf-8")
     config = json.loads((ROOT / "playgama-bridge-config.json").read_text(encoding="utf-8"))
 
@@ -87,35 +72,25 @@ def build_page(sound_dir: Path, inline_bridge_config: bool = True) -> str:
             cover.read_bytes()).decode("ascii")
     covers_js = json.dumps(covers, separators=(",", ":"))
 
-    # Avoid parsing 17+ MB of base64 as JavaScript. Audio lives in inert
-    # script elements and the Audio() constructor receives a data URI on demand.
-    audio_html = []
-    for num in TRACKS:
-        sound = sound_dir / ("track-%02d.m4a" % num)
-        encoded = base64.b64encode(sound.read_bytes()).decode("ascii")
-        audio_html.append(
-            '<script type="application/octet-stream" id="inline-audio-%02d">' % num
-            + encoded + "</script>"
-        )
-
-    audio_bootstrap = r"""<script>
+    # Original MP3s are used without transcoding. The standalone HTML remains
+    # small by fetching the exact original files from the game's public site.
+    # In the Playgama ZIP the same MP3s are packaged at their catalog paths.
+    music_bootstrap = r"""<script>
 (function () {
   "use strict";
   var covers = __COVERS__;
+  var remoteBase = __BASE__;
   var tracks = window.SpaceMusicTracks || [];
   tracks.forEach(function (track) {
     var number = String(track.id).padStart(2, "0");
     track.cover = covers[String(track.id)] || track.cover;
-    Object.defineProperty(track, "src", {
-      configurable: true, enumerable: true,
-      get: function () {
-        var node = document.getElementById("inline-audio-" + number);
-        return node ? "data:audio/mp4;base64," + node.textContent.trim() : "";
-      }
-    });
+    if (remoteBase) {
+      track.src = remoteBase + "track-" + number + ".mp3";
+    }
   });
 })();
-</script>""".replace("__COVERS__", covers_js)
+</script>""".replace("__COVERS__", covers_js).replace(
+        "__BASE__", json.dumps(MUSIC_ORIGIN if inline_bridge_config else "", separators=(",", ":")))
 
     inserted = {"music": False, "bridge": False}
     def inline_js(match: re.Match) -> str:
@@ -139,7 +114,7 @@ def build_page(sound_dir: Path, inline_bridge_config: bool = True) -> str:
         body = '<script data-origin="' + file_name + '">\n' + js + "\n</script>"
         if file_name == "music-tracks.js":
             inserted["music"] = True
-            body += "\n" + "\n".join(audio_html) + "\n" + audio_bootstrap
+            body += "\n" + music_bootstrap
         return prefix + body
 
     html, num_js = re.subn(
@@ -173,41 +148,48 @@ def build_page(sound_dir: Path, inline_bridge_config: bool = True) -> str:
 def main() -> None:
     output = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "dist" / "index.html"
     output.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="infinity-audio-") as tmp:
-        audio = Path(tmp)
-        for num in TRACKS:
-            source = ROOT / "assets" / "music" / ("track-%02d.mp3" % num)
-            if not source.is_file():
-                raise RuntimeError("Missing source track: " + str(source))
-        for bitrate in BITRATES:
-            print("Encoding 12 soundtracks at %s kbps AAC..." % bitrate, flush=True)
-            for num in TRACKS:
-                name = "track-%02d" % num
-                run_ffmpeg(ROOT / "assets" / "music" / (name + ".mp3"),
-                           audio / (name + ".m4a"), bitrate)
-            result = build_page(audio)
-            size = len(result.encode("utf-8"))
-            print("One HTML: %s bytes (%.2f MB)" % (size, size / 1_000_000), flush=True)
-            if size < LIMIT:
-                # Preview/download edition: literally one HTML file.
-                output.write_text(result, encoding="utf-8")
 
-                # Playgama release: the validator requires BOTH root-level
-                # files and Bridge.initialize() must use its default path.
-                upload_dir = output.parent / 'playgama'
-                upload_dir.mkdir(parents=True, exist_ok=True)
-                upload_html = build_page(audio, inline_bridge_config=False)
-                upload_bytes = len(upload_html.encode('utf-8'))
-                if upload_bytes >= LIMIT:
-                    raise RuntimeError('Playgama HTML exceeds 20 MB')
-                (upload_dir / 'index.html').write_text(upload_html, encoding='utf-8')
-                shutil.copy2(ROOT / 'playgama-bridge-config.json',
-                             upload_dir / 'playgama-bridge-config.json')
-                print('SUCCESS: standalone %s (%.2f MB)' % (output, size / 1_000_000))
-                print('SUCCESS: Playgama %s + root config JSON (%.2f MB)' %
-                      (upload_dir / 'index.html', upload_bytes / 1_000_000))
-                return
-        raise RuntimeError("Could not get below 20 MB without dropping music tracks")
+    # Verify every source file still exists and is an original full-quality MP3.
+    # Never run FFmpeg or ship transcoded replacements to Playgama.
+    originals = []
+    for num in TRACKS:
+        source = ROOT / "assets" / "music" / ("track-%02d.mp3" % num)
+        if not source.is_file() or source.stat().st_size < 1_000_000:
+            raise RuntimeError("Missing/invalid original-quality MP3: " + str(source))
+        originals.append(source)
+
+    standalone = build_page(inline_bridge_config=True)
+    standalone_bytes = len(standalone.encode("utf-8"))
+    if standalone_bytes >= LIMIT:
+        raise RuntimeError("Standalone HTML exceeded 20 MB")
+    output.write_text(standalone, encoding="utf-8")
+
+    upload_dir = output.parent / "playgama"
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    upload_html = build_page(inline_bridge_config=False)
+    upload_bytes = len(upload_html.encode("utf-8"))
+    if upload_bytes >= LIMIT:
+        raise RuntimeError("Playgama HTML exceeded 20 MB")
+    (upload_dir / "index.html").write_text(upload_html, encoding="utf-8")
+    shutil.copy2(ROOT / "playgama-bridge-config.json",
+                 upload_dir / "playgama-bridge-config.json")
+
+    audio_dir = upload_dir / "assets" / "music"
+    audio_dir.mkdir(parents=True, exist_ok=True)
+    for source in originals:
+        shutil.copy2(source, audio_dir / source.name)
+
+    total_mp3_bytes = sum(source.stat().st_size for source in originals)
+    # The Playgama ZIP is permitted to contain up to 300 MB of files.
+    if upload_bytes + total_mp3_bytes > 300_000_000:
+        raise RuntimeError("Playgama total files exceed 300 MB")
+
+    print("SUCCESS: standalone %s (%.2f MB, original MP3 streaming from GitHub Pages)" %
+          (output, standalone_bytes / 1_000_000))
+    print("SUCCESS: Playgama %s + JSON config + 12 UNMODIFIED original MP3s" %
+          (upload_dir / "index.html"))
+    print("Original 12 soundtracks: %.2f MB (no extra loss)" %
+          (total_mp3_bytes / 1_000_000))
 
 
 if __name__ == "__main__":
