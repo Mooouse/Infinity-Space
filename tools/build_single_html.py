@@ -90,7 +90,7 @@ def build_page(inline_bridge_config: bool = True) -> str:
   });
 })();
 </script>""".replace("__COVERS__", covers_js).replace(
-        "__BASE__", json.dumps(MUSIC_ORIGIN if inline_bridge_config else "", separators=(",", ":")))
+        "__BASE__", json.dumps(MUSIC_ORIGIN, separators=(",", ":")))
 
     inserted = {"music": False, "bridge": False}
     def inline_js(match: re.Match) -> str:
@@ -149,47 +149,43 @@ def main() -> None:
     output = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "dist" / "index.html"
     output.parent.mkdir(parents=True, exist_ok=True)
 
-    # Verify every source file still exists and is an original full-quality MP3.
-    # Never run FFmpeg or ship transcoded replacements to Playgama.
+    # Both editions stream the EXACT original CrazyGames MP3s.
+    # Their 62.1 MB of audio cannot be stored inside a 20 MB ZIP losslessly.
+    # Hosting once on the game's GitHub Pages retains identical fidelity.
     originals = []
     for num in TRACKS:
         source = ROOT / "assets" / "music" / ("track-%02d.mp3" % num)
         if not source.is_file() or source.stat().st_size < 1_000_000:
-            raise RuntimeError("Missing/invalid original-quality MP3: " + str(source))
+            raise RuntimeError("Missing original MP3: " + str(source))
         originals.append(source)
 
     standalone = build_page(inline_bridge_config=True)
     standalone_bytes = len(standalone.encode("utf-8"))
     if standalone_bytes >= LIMIT:
-        raise RuntimeError("Standalone HTML exceeded 20 MB")
+        raise RuntimeError("Standalone HTML exceeds 20 MB")
     output.write_text(standalone, encoding="utf-8")
 
+    # The platform ZIP uses a physical SDK config beside index.html.
     upload_dir = output.parent / "playgama"
     upload_dir.mkdir(parents=True, exist_ok=True)
     upload_html = build_page(inline_bridge_config=False)
     upload_bytes = len(upload_html.encode("utf-8"))
     if upload_bytes >= LIMIT:
-        raise RuntimeError("Playgama HTML exceeded 20 MB")
+        raise RuntimeError("Playgama HTML exceeds 20 MB")
     (upload_dir / "index.html").write_text(upload_html, encoding="utf-8")
     shutil.copy2(ROOT / "playgama-bridge-config.json",
                  upload_dir / "playgama-bridge-config.json")
 
-    audio_dir = upload_dir / "assets" / "music"
-    audio_dir.mkdir(parents=True, exist_ok=True)
-    for source in originals:
-        shutil.copy2(source, audio_dir / source.name)
+    # Never accidentally retain bundled originals from an older local build.
+    old_assets = upload_dir / "assets"
+    if old_assets.exists():
+        shutil.rmtree(old_assets)
 
-    total_mp3_bytes = sum(source.stat().st_size for source in originals)
-    # The Playgama ZIP is permitted to contain up to 300 MB of files.
-    if upload_bytes + total_mp3_bytes > 300_000_000:
-        raise RuntimeError("Playgama total files exceed 300 MB")
-
-    print("SUCCESS: standalone %s (%.2f MB, original MP3 streaming from GitHub Pages)" %
-          (output, standalone_bytes / 1_000_000))
-    print("SUCCESS: Playgama %s + JSON config + 12 UNMODIFIED original MP3s" %
-          (upload_dir / "index.html"))
-    print("Original 12 soundtracks: %.2f MB (no extra loss)" %
-          (total_mp3_bytes / 1_000_000))
+    print("SUCCESS: standalone HTML: %.2f MB" % (standalone_bytes / 1_000_000))
+    print("SUCCESS: Playgama HTML: %.2f MB + SDK JSON" % (upload_bytes / 1_000_000))
+    print("Music: 12 UNMODIFIED MP3 files streamed from %s" % MUSIC_ORIGIN)
+    print("Original music: %.2f MB kept on the existing music host" %
+          (sum(src.stat().st_size for src in originals) / 1_000_000))
 
 
 if __name__ == "__main__":
