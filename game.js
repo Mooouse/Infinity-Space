@@ -2619,14 +2619,109 @@ function menuBlackHoleGeometry(){
  const R=.85*Math.min(W*.48,H*.72),outer=Math.min(R*2.30,W*.63);
  return {p,R,outer};
 }
+// Mode selection renders in the ORIGINAL main-menu universe, never as a
+// separate card wallpaper. The four scenes reuse the core game's painters.
+function renderGameModeBackdrop(mode,time){
+ const compact=W<720,cx=W*(compact?.69:.76),cy=H*(compact?.57:.52);
+ const span=Math.min(W,H),rad=span*(compact?.105:.175);
+ const mood={arena:['#342477','#276bb3'],royale:['#4a1b72','#254268'],
+             core:['#12689b','#a34293'],race:['#715395','#dd9a46']}[mode];
+ if(!mood)return;
+ ctx.save();
+ const glow=ctx.createRadialGradient(cx,cy,5,cx,cy,span*.86);
+ glow.addColorStop(0,cssColor(mood[0],.35));
+ glow.addColorStop(.48,cssColor(mood[1],.18));glow.addColorStop(1,cssColor(mood[0],0));
+ ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
+ const dustColor=mode==='core'?'#89cfff':mode==='race'?'#edc0ff':'#ad91ff';
+ for(let i=0;i<45;i++){
+  const a=i*2.39996+time*.012,rr=span*(.08+.44*Math.sqrt((i+1)/45));
+  const x=cx+Math.cos(a)*rr*1.23,y=cy+Math.sin(a)*rr*.76;
+  if(x<0||y<0||x>W||y>H)continue;
+  const size=i%6===0?2.4:1.1;
+  ctx.globalAlpha=.2+(i%5)*.12;ctx.fillStyle=dustColor;
+  ctx.fillRect(x,y,size,size);
+ }
+ ctx.globalAlpha=1;
+ if(mode==='arena'){
+  // Gravity duel: a mass-rich planet, two rival bodies and moving debris.
+  paintPlanet(cx+rad*.06,cy-rad*.09,rad*.95,'#8ab7ee',false,2);
+  paintPlanet(cx-rad*1.54,cy+rad*.96,rad*.39,'#c892ba',false,5);
+  paintRock(cx+rad*1.74,cy+rad*.74,rad*.37,'#c6a7a9',time*.17,5,4);
+  for(let k=0;k<18;k++){
+   const a=k*2.399+time*.075,rr=rad*(.95+(k%7)*.16);
+   paintRock(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr*.87,Math.max(2.4,rad*.05),
+             k%3===0?'#b0cde5':'#a08bb4',a,3,k%7);
+  }
+  ctx.strokeStyle='#a9cbff7c';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(cx-rad*1.54,cy+rad*.95);
+  ctx.quadraticCurveTo(cx-rad*.25,cy+rad*1.7,cx+rad*.06,cy+rad*.8);ctx.stroke();
+ }else if(mode==='royale'){
+  // The REAL Einstein lens from the game's original singularity renderer.
+  const R=rad*1.62,p={x:cx,y:cy};
+  const target={p,R,outer:Math.min(span*.84,R*2.3)};
+  const previousMap=lensPixelMap,previousKey=lensPixelMapKey;
+  lensPixelMap=menuLensMap;lensPixelMapKey=menuLensKey;
+  try{if(time>=menuLensRetryAt){
+    renderBlackHoleLensing(target);
+    menuLensMap=lensPixelMap;menuLensKey=lensPixelMapKey;
+  }}catch(_){menuLensRetryAt=time+2;}
+  finally{lensPixelMap=previousMap;lensPixelMapKey=previousKey;}
+  ctx.save();ctx.strokeStyle='#bb86ffad';ctx.lineWidth=2;
+  ctx.setLineDash([12,11]);ctx.beginPath();ctx.arc(cx,cy,R*1.56+
+    Math.sin(time*.42)*R*.06,0,TAU);ctx.stroke();ctx.restore();
+  paintBlackHole(cx,cy,R,time);
+  for(let k=0;k<7;k++){
+   const a=k*2.399+time*.07,r=R*(1.6+(k%3)*.21);
+   paintRock(cx+Math.cos(a)*r,cy+Math.sin(a)*r*.83,
+             rad*(.072+(k%3)*.028),'#879ab2',a,4,k);
+  }
+ }else if(mode==='core'){
+  // A contested luminous core, with blue and crimson fleets around it.
+  const a=rad*1.48;
+  const halo=ctx.createRadialGradient(cx,cy,0,cx,cy,a*1.9);
+  halo.addColorStop(0,'#c1f4ff93');halo.addColorStop(.17,'#4384da70');
+  halo.addColorStop(.55,'#713db91c');halo.addColorStop(1,'#18133300');
+  ctx.fillStyle=halo;ctx.beginPath();ctx.arc(cx,cy,a*1.9,0,TAU);ctx.fill();
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(time*.09);ctx.strokeStyle='#89d8ffcc';
+  ctx.lineWidth=3;ctx.setLineDash([15,10]);ctx.beginPath();ctx.arc(0,0,a,0,TAU);ctx.stroke();
+  ctx.setLineDash([]);ctx.rotate(-time*.21);ctx.strokeStyle='#f6d4ff70';ctx.lineWidth=1.6;
+  ctx.beginPath();ctx.ellipse(0,0,a*.83,a*.45,-.32,0,TAU);ctx.stroke();ctx.restore();
+  paintStar(cx,cy,rad*.55,'#b8deff');
+  for(let k=0;k<8;k++){
+   const a=k*TAU/8+time*.03;
+   const r=rad*1.64,x=cx+Math.cos(a)*r*1.3,y=cy+Math.sin(a)*r*.77;
+   paintPlanet(x,y,rad*.23,k%2?'#dc80ad':'#78cce9',false,k);
+   ctx.strokeStyle=k%2?'#e994bb5a':'#86cff76b';ctx.lineWidth=1;
+   ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(cx,cy);ctx.stroke();
+  }
+ }else if(mode==='race'){
+  // Visually teach the exact progression: rock -> planet -> star -> black hole.
+  const xs=[cx-rad*2.08,cx-rad*.65,cx+rad*.67,cx+rad*2.05];
+  const ys=[cy+rad*.81,cy+rad*.22,cy-rad*.28,cy-rad*.83];
+  ctx.save();ctx.lineWidth=2;ctx.setLineDash([6,10]);ctx.strokeStyle='#a8bfff85';
+  ctx.beginPath();ctx.moveTo(xs[0],ys[0]);
+  for(let k=1;k<xs.length;k++)ctx.lineTo(xs[k],ys[k]);ctx.stroke();ctx.restore();
+  paintRock(xs[0],ys[0],rad*.3,'#a9bacc',time*.12,4,2);
+  paintPlanet(xs[1],ys[1],rad*.53,'#80bdc8',false,3);
+  paintStar(xs[2],ys[2],rad*.48,'#ffce8b');
+  paintBlackHole(xs[3],ys[3],rad*1.16,time);
+ }
+ ctx.restore();
+}
+
 function renderMenuScene(time){
  const key=[frameCanvas.width,frameCanvas.height,W,H].join(':');
  if(menuBackdropKey!==key){menuBackdrop=makeSkyDepthTexture(0x638ab,1.2);menuBackdropKey=key;}
  ctx.fillStyle='#02040b';ctx.fillRect(0,0,W,H);
  const dx=(time*4)%W,dy=(time*1.3)%H;
  for(let y=-dy;y<H;y+=H)for(let x=-dx;x<W;x+=W)ctx.drawImage(menuBackdrop,x,y,W,H);
- const target=menuBlackHoleGeometry(),{p,R}=target;
  renderMenuComets(time);
+ const previewMode=window.SpaceMenuSceneMode;
+ if(previewMode&&['arena','royale','core','race'].includes(previewMode)){
+  renderGameModeBackdrop(previewMode,time);
+  return;
+ }
+ const target=menuBlackHoleGeometry(),{p,R}=target;
  const previousMap=lensPixelMap,previousKey=lensPixelMapKey;
  lensPixelMap=menuLensMap;lensPixelMapKey=menuLensKey;
  try{
