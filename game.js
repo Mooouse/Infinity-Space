@@ -2716,7 +2716,7 @@ function renderMenuScene(time){
  const dx=(time*4)%W,dy=(time*1.3)%H;
  for(let y=-dy;y<H;y+=H)for(let x=-dx;x<W;x+=W)ctx.drawImage(menuBackdrop,x,y,W,H);
  renderMenuComets(time);
- const previewMode=window.SpaceMenuSceneMode;
+ const previewMode=typeof window!=='undefined'?window.SpaceMenuSceneMode:null;
  if(previewMode&&['arena','royale','core','race'].includes(previewMode)){
   renderGameModeBackdrop(previewMode,time);
   return;
