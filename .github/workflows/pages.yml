@@ -47,6 +47,7 @@ jobs:
           export NODE_PATH="$RUNNER_TEMP/infiniti-browser-test/node_modules"
           export INFINITI_SMOKE_URL="http://127.0.0.1:8765"
           timeout 220 node tests/browser-smoke.cjs
+          timeout 180 node tests/arcade-browser-smoke.cjs
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Prepare lean website payload
