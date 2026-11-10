@@ -324,7 +324,7 @@ function refresh(root=document.body){
  }
  document.documentElement.lang=language;
 }
-function setLanguage(value){if(!['en','ru','es'].includes(value))return;language=value;try{localStorage.setItem('infiniti-space-language',value);}catch(_){}refresh();}
+function setLanguage(value){if(!['en','ru','es'].includes(value))return;language=value;try{localStorage.setItem('infiniti-space-language',value);}catch(_){}window.SpacePlatform?.saveLanguage?.(value);refresh();}
 function context(c){if(!c||c._translated)return c;c._translated=true;const original=c.fillText;c.fillText=function(text,...args){return original.call(this,t(text),...args);};return c;}
 window.SpaceI18n={get language(){return language;},t,refresh,setLanguage,context};
 refresh();let queued=false;new MutationObserver(()=>{if(!queued){queued=true;queueMicrotask(()=>{queued=false;refresh();});}}).observe(document.body,{subtree:true,childList:true,characterData:true});
