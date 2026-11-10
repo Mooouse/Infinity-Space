@@ -40,7 +40,7 @@ const modeNames=['arena','royale','core','race'];
    await page.waitForTimeout(900);
    const stage=await page.locator('#arena-stage-name').textContent();
    assert.equal(stage==='Cosmic Dust'||stage==='Космическая пыль',true,mode+' must not skip its initial evolution stage');
-   assert.equal(await page.locator('#arena-stage-bar').count(),1);
+   assert.equal(await page.locator('.arena-stage-bar').count(),1);
    const sample=await page.evaluate(()=>{
     const cvs=document.getElementById('arena'),c=cvs.getContext('2d');
     const w=cvs.width,h=cvs.height,arr=c.getImageData(0,0,w,h).data;
