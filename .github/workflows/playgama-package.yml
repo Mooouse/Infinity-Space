@@ -1,4 +1,4 @@
-name: Package Infinity Space for Playgama
+name: Package one-file Infinity Space for Playgama
 on:
   push:
     branches: [main]
@@ -9,6 +9,8 @@ on:
       - '*.svg'
       - 'assets/**'
       - 'playgama-bridge-config.json'
+      - 'tools/build_single_html.py'
+      - 'tests/single-html-smoke.cjs'
       - '.github/workflows/playgama-package.yml'
   workflow_dispatch:
 permissions:
@@ -16,31 +18,67 @@ permissions:
 jobs:
   package:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Validate Playgama adapter
+      - name: Validate the original game and the one-file builder
         run: |
           set -euo pipefail
           node --check game.js
           node --check platform.js
           node --check playgama-platform.js
           node --check playgama-ui.js
+          python3 -m py_compile tools/build_single_html.py
           node -e "JSON.parse(require('fs').readFileSync('playgama-bridge-config.json','utf8'))"
           node tests/meta.cjs
           node tests/regressions.cjs
-      - name: Build upload-ready Playgama archive
+          node tests/music.cjs
+
+      - name: Re-encode all 12 songs and bundle game as ONE HTML under 20 MB
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/playgama"
-          cp -v index.html *.js *.css *.svg playgama-bridge-config.json "$RUNNER_TEMP/playgama/"
-          cp -a assets "$RUNNER_TEMP/playgama/assets"
-          cd "$RUNNER_TEMP/playgama"
-          zip -q -r "$GITHUB_WORKSPACE/infinity-space-playgama.zip" .
-          test -s "$GITHUB_WORKSPACE/infinity-space-playgama.zip"
-          unzip -tq "$GITHUB_WORKSPACE/infinity-space-playgama.zip" >/dev/null
-          ls -lh "$GITHUB_WORKSPACE/infinity-space-playgama.zip"
-      - name: Provide Playgama upload ZIP
+          mkdir -p dist
+          python3 tools/build_single_html.py dist/index.html
+          python3 - <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          p = Path('dist/index.html')
+          s = p.read_text(encoding='utf-8')
+          assert p.stat().st_size < 20_000_000
+          assert s.count('type="application/octet-stream" id="inline-audio-') == 12
+          assert s.count('data:image/jpeg;base64,') >= 12
+          assert "data:audio/mp4;base64," in s
+          assert "window.SpaceInlineBridgeConfig" in s
+          assert 'https://bridge.playgama.com/v2/stable/playgama-bridge.js' in s
+          print("PASS: single HTML, full 12-track music collection, 12 covers, inline SDK config", p.stat().st_size)
+          PY
+          (cd dist && zip -q -9 ../infinity-space-playgama.zip index.html)
+          unzip -tq infinity-space-playgama.zip
+          test "$(unzip -Z1 infinity-space-playgama.zip)" = "index.html"
+          ls -lh dist/index.html infinity-space-playgama.zip
+
+      - name: Test actual single HTML in Chromium (menu, roulette, music, Bridge config)
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --silent --no-audit --no-fund --prefix "$RUNNER_TEMP/infinity-single-test" playwright@1.56.1
+          export PLAYWRIGHT_BROWSERS_PATH="$RUNNER_TEMP/infinity-single-chromium"
+          "$RUNNER_TEMP/infinity-single-test/node_modules/.bin/playwright" install chromium --only-shell
+          python3 -m http.server 8766 --directory dist --bind 127.0.0.1 > "$RUNNER_TEMP/infinity-single-server.log" 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          export NODE_PATH="$RUNNER_TEMP/infinity-single-test/node_modules"
+          timeout 120 node tests/single-html-smoke.cjs
+
+      - name: Upload ONE HTML as a download
+        uses: actions/upload-artifact@v4
+        with:
+          name: infinity-space-single-html
+          path: dist/index.html
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Upload Playgama ZIP (contains only index.html)
         uses: actions/upload-artifact@v4
         with:
           name: infinity-space-playgama
