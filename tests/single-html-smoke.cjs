@@ -1,92 +1,120 @@
-// Smoke-test generated single index.html with real Chromium and a mocked
-// Playgama SDK, without needing credentials or making real ad requests.
+// Test both distributions in real Chromium:
+// (1) downloadable one-file HTML with data: config,
+// (2) Playgama ZIP's index.html with real sibling JSON config.
+// Runs without real ads, platform account, or external SDK network calls.
 const assert = require('node:assert/strict');
 const { chromium } = require('playwright');
 
 (async () => {
-  const browser = await chromium.launch({headless:true,args:[
-    '--no-sandbox','--disable-dev-shm-usage',
-    '--use-gl=angle','--use-angle=swiftshader-webgl'
-  ]});
-  const errors = [];
+  const browser = await chromium.launch({
+    headless: true,
+    args: ['--no-sandbox','--disable-dev-shm-usage',
+      '--use-gl=angle','--use-angle=swiftshader-webgl']
+  });
+  const sdkMock = [
+    'window.bridge={',
+    ' EVENT_NAME:{AUDIO_STATE_CHANGED:"audio",PAUSE_STATE_CHANGED:"pause",',
+    '  REWARDED_STATE_CHANGED:"rewarded",INTERSTITIAL_STATE_CHANGED:"interstitial"},',
+    ' initialize:async function(opts){',
+    '  window.__bridgeInitOptions=opts;',
+    '  const configPath=opts?.configFilePath||"./playgama-bridge-config.json";',
+    '  const response=await fetch(configPath);',
+    '  if(!response.ok)throw new Error("Bridge config missing: "+configPath);',
+    '  window.__bridgeConfig=await response.json();',
+    '  window.__bridgeConfigPath=configPath;',
+    ' },',
+    ' platform:{id:"playgama_sandbox",language:"en",isPaused:false,',
+    '   isAudioEnabled:true,sendMessage:()=>Promise.resolve(),on:()=>{},off:()=>{}},',
+    ' advertisement:{isRewardedSupported:true,isInterstitialSupported:true,',
+    '   checkAdBlock:async()=>false,on:()=>{},off:()=>{},',
+    '   showRewarded:async()=>{},showInterstitial:async()=>{}},',
+    ' storage:{get:async(keys,parse)=>{window.__cloudGet={keys,parse};return[];},',
+    '   set:async()=>{}}',
+    '};'
+  ].join('\n');
+
   try {
-    const page = await browser.newPage({viewport:{width:1100,height:760}});
-    page.on('pageerror', error => errors.push(error.stack || String(error)));
-    await page.route('https://bridge.playgama.com/**', route => route.fulfill({
-      status:200, contentType:'application/javascript', body: [
-        'window.bridge = {',
-        ' EVENT_NAME: { AUDIO_STATE_CHANGED:"audio", PAUSE_STATE_CHANGED:"pause",',
-        '  REWARDED_STATE_CHANGED:"rewarded", INTERSTITIAL_STATE_CHANGED:"interstitial" },',
-        ' initialize: async function(opts) { window.__bridgeInitOptions = opts; },',
-        ' platform: { id:"playgama_sandbox", language:"en", isPaused:false,',
-        '  isAudioEnabled:true, sendMessage:()=>Promise.resolve(), on:()=>{}, off:()=>{} },',
-        ' advertisement: { isRewardedSupported:true, isInterstitialSupported:true,',
-        '  checkAdBlock:async ()=>false, on:()=>{}, off:()=>{},',
-        '  showRewarded:async ()=>{}, showInterstitial:async ()=>{} },',
-        ' storage: { get:async (keys, parse) => { window.__cloudGet = {keys,parse}; return []; }, set:async ()=>{} }',
-        '};'
-      ].join('\n')
-    }));
-    await page.goto('http://127.0.0.1:8766/',
-      {waitUntil:'domcontentloaded',timeout:90000});
-    await page.locator('#screen-menu [data-reward-page="roulette"]')
-      .waitFor({state:'visible',timeout:30000});
+    for (const variant of [
+      { name:'Standalone one-file HTML', url:'http://127.0.0.1:8766/',
+        externalConfig:false },
+      { name:'Playgama archive root HTML + sibling JSON',
+        url:'http://127.0.0.1:8766/playgama/index.html',
+        externalConfig:true }
+    ]) {
+      const errors=[];
+      const page=await browser.newPage({viewport:{width:1100,height:760}});
+      page.on('pageerror',err=>errors.push(err.stack||String(err)));
+      await page.route('https://bridge.playgama.com/**',route=>route.fulfill({
+        status:200,contentType:'application/javascript',body:sdkMock
+      }));
 
-    const state = await page.evaluate(() => {
-      const opts = window.__bridgeInitOptions;
-      const path = opts && opts.configFilePath;
-      let parsedConfig = null;
-      if (path?.startsWith('data:application/json;')) {
-        parsedConfig = JSON.parse(decodeURIComponent(path.slice(path.indexOf(',') + 1)));
-      }
-      return {
-        playgama:window.SpacePlatform?.isPlaygama,
-        dedicated:window.SpacePlaygamaBuild===true,
-        platformId:window.bridge?.platform?.id,
-        cloudRaw:window.__cloudGet?.parse===false,
-        crazyScript:!!document.querySelector('script[src*=\"crazygames-sdk\"]'),
-        ready:window.SpacePlatform?.status,
-        inlineConfig:!!parsedConfig?.advertisement?.rewarded?.preloadOnStart,
-        tracks:window.SpaceMusicTracks?.length,
-        cover:window.SpaceMusicTracks?.[0]?.cover?.startsWith('data:image/jpeg;base64,'),
-        audio:window.SpaceMusicTracks?.[0]?.src?.startsWith('data:audio/mp4;base64,'),
-        audioLength:window.SpaceMusicTracks?.[0]?.src?.length,
-        lastAudio:!!document.getElementById('inline-audio-12'),
-        density:document.querySelector('[data-test="density"]')?.value,
-        description:JSON.parse(document.getElementById('playgama-submission-info').textContent)
-      };
-    });
-    assert.equal(state.playgama,true);
-    assert.equal(state.dedicated,true,'Dedicated build must enable SDK without URL flags');
-    assert.equal(state.platformId,'playgama_sandbox');
-    assert.equal(state.cloudRaw,true,'Cloud save must read original JSON text');
-    assert.equal(state.crazyScript,false,'Do not load CrazyGames SDK in Playgama ZIP');
-    assert.equal(state.ready,'ready');
-    assert.equal(state.inlineConfig,true,'Bridge config must use inline data URL');
-    assert.equal(state.tracks,12,'All 12 musical tracks must remain');
-    assert.equal(state.cover,true);
-    assert.equal(state.audio,true);
-    assert.ok(state.audioLength>300_000,'Music bytes must be embedded');
-    assert.equal(state.lastAudio,true);
-    assert.equal(state.density,'32');
-    assert.equal(state.description.title,'Infinity Space');
-    assert.ok(state.description.how_to_play_ru.includes('колесо'));
-    console.log('PASS: plain URL activates Bridge even on unrecognized CDN host, with sandbox platform and 12 AAC songs');
+      await page.goto(variant.url,{waitUntil:'domcontentloaded',timeout:90000});
+      await page.locator('#screen-menu [data-reward-page="roulette"]')
+        .waitFor({state:'visible',timeout:35000});
 
-    await page.locator('#screen-menu [data-reward-page="roulette"]').click({timeout:12000});
-    await page.waitForFunction(() => document.querySelector('#modal')?.dataset.screen==='roulette',
-      null,{timeout:12000});
-    assert.equal(await page.locator('#rewards-tab-daily').isVisible(),true);
-    console.log('PASS: embedded game opens roulette');
+      const state=await page.evaluate(()=>{
+        const opts=window.__bridgeInitOptions;
+        const configPath=window.__bridgeConfigPath;
+        const cfg=window.__bridgeConfig;
+        return {
+          status:window.SpacePlatform?.status,
+          dedicated:window.SpacePlaygamaBuild===true,
+          platformId:window.bridge?.platform?.id,
+          cloudRaw:window.__cloudGet?.parse===false,
+          loadedConfig:!!cfg?.advertisement?.rewarded?.preloadOnStart,
+          externalConfig:configPath==='./playgama-bridge-config.json',
+          isDataConfig:typeof configPath==='string'&&configPath.startsWith('data:'),
+          inlineConfig:!!window.SpaceInlineBridgeConfig,
+          crazyScript:!!document.querySelector('script[src*="crazygames-sdk"]'),
+          tracks:window.SpaceMusicTracks?.length,
+          cover:window.SpaceMusicTracks?.[0]?.cover?.startsWith('data:image/jpeg;base64,'),
+          audio:window.SpaceMusicTracks?.[0]?.src?.startsWith('data:audio/mp4;base64,'),
+          audioSize:window.SpaceMusicTracks?.[0]?.src?.length,
+          twelfthAudio:!!document.getElementById('inline-audio-12'),
+          density:document.querySelector('[data-test="density"]')?.value,
+          description:JSON.parse(document.getElementById('playgama-submission-info').textContent)
+        };
+      });
 
-    await page.locator('#rewards-tab-daily').click();
-    await page.waitForFunction(() => document.querySelector('#modal')?.dataset.screen==='daily',
-      null,{timeout:12000});
-    assert.equal(await page.locator('#rewards-tab-roulette').isVisible(),true);
-    console.log('PASS: embedded game switches rewards screens');
+      assert.equal(state.status,'ready',variant.name+' SDK not ready');
+      assert.equal(state.dedicated,true);
+      assert.equal(state.platformId,'playgama_sandbox');
+      assert.equal(state.cloudRaw,true);
+      assert.equal(state.loadedConfig,true,'Bridge initialization must load real configuration');
+      assert.equal(state.externalConfig,variant.externalConfig,
+        variant.name+' must use correct SDK config path');
+      assert.equal(state.isDataConfig,!variant.externalConfig);
+      assert.equal(state.inlineConfig,!variant.externalConfig);
+      assert.equal(state.crazyScript,false);
+      assert.equal(state.tracks,12);
+      assert.equal(state.cover,true);
+      assert.equal(state.audio,true);
+      assert.ok(state.audioSize>300_000);
+      assert.equal(state.twelfthAudio,true);
+      assert.equal(state.density,'32');
+      assert.equal(state.description.title,'Infinity Space');
 
-    assert.deepEqual(errors,[],'Uncaught errors: '+errors.join('\n').slice(0,2000));
+      await page.locator('#screen-menu [data-reward-page="roulette"]')
+        .click({timeout:12000});
+      await page.waitForFunction(
+        ()=>document.querySelector('#modal')?.dataset.screen==='roulette',
+        null,{timeout:12000}
+      );
+      assert.equal(await page.locator('#rewards-tab-daily').isVisible(),true);
+      await page.locator('#rewards-tab-daily').click({timeout:12000});
+      await page.waitForFunction(
+        ()=>document.querySelector('#modal')?.dataset.screen==='daily',
+        null,{timeout:12000}
+      );
+      assert.equal(await page.locator('#rewards-tab-roulette').isVisible(),true);
+
+      assert.deepEqual(errors,[],
+        'JS errors in '+variant.name+': '+errors.join('\n').slice(0,1800));
+      console.log('PASS:',variant.name,
+        'SDK ready, correct config location, 12 tracks, rewards and controls');
+      await page.close();
+    }
   } finally {
     await browser.close();
   }
-})().catch(error => { console.error(error); process.exitCode=1; });
+})().catch(error=>{console.error(error);process.exitCode=1;});
