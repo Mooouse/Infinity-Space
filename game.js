@@ -4385,6 +4385,15 @@ if(window.SpaceUIv15Templates && document.createElement('template').content){
   if(dailyReady)dailyBtn.classList.add('reward-available');
   if(rouletteReady)rouletteBtn.classList.add('reward-available');
   menuGrid.prepend(dailyBtn,rouletteBtn);
+  // Competitive modes are part of the actual v15 menu, not the legacy menu
+  // discarded by mount('menu'). Keep this row next to Continue/New Universe.
+  const arcadeRow=document.createElement('section');
+  arcadeRow.className='v15-arcade-launch';
+  arcadeRow.setAttribute('aria-label',L('Game modes','Режимы игры','Modos de juego'));
+  arcadeRow.innerHTML=`<div class="v15-arcade-label"><span class="v15-arcade-dot"></span>${L('GAME MODES','РЕЖИМЫ ИГРЫ','MODOS DE JUEGO')} <small>01 — 05</small></div><div class="v15-arcade-buttons"><button type="button" class="v15-arcade-quick"><span class="v15-arcade-icon">${icon('orbit')}</span><span class="v15-arcade-copy"><strong>${L('COSMIC ARENA','КОСМИЧЕСКАЯ АРЕНА','ARENA CÓSMICA')}</strong><small>${L('QUICK MATCH · AI RIVALS','БЫСТРЫЙ МАТЧ · БОТЫ','PARTIDA RÁPIDA · BOTS')}</small></span><span class="v15-arcade-arrow">${icon('arrow-right')}</span></button><button type="button" class="v15-arcade-select"><span class="v15-arcade-icon">${icon('star')}</span><span class="v15-arcade-copy"><strong>${L('SELECT MODE','ВЫБРАТЬ РЕЖИМ','ELEGIR MODO')}</strong><small>${L('4 COMPETITIVE MODES','4 СОРЕВНОВАТЕЛЬНЫХ РЕЖИМА','4 MODOS COMPETITIVOS')}</small></span><span class="v15-arcade-arrow">${icon('arrow-right')}</span></button></div>`;
+  q(root,'.menu-buttons').insertAdjacentElement('afterend',arcadeRow);
+  q(arcadeRow,'.v15-arcade-quick').onclick=()=>{location.assign('cosmic-arena.html?mode=arena');};
+  q(arcadeRow,'.v15-arcade-select').onclick=()=>{location.assign('cosmic-arena.html');};
   // Use the exact same playlist glyph as the in-game music collection button.
   const collectionIcon=q(menuGrid,'[data-page="music"] > span:first-child');
   if(collectionIcon){collectionIcon.removeAttribute('data-icon');collectionIcon.innerHTML=uiIcon('playlist');}
