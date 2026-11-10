@@ -49,10 +49,10 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   // Sections are an optional drawer, not a gateway to the mode chooser.
   const sections=page.locator('#screen-menu .hub-mode-story-back');
   await sections.click();
-  assert.equal(await page.locator('#screen-menu .hub-menu').isVisible(),true);
+  await page.locator('#screen-menu .hub-menu').waitFor({state:'visible',timeout:6000});
   assert.equal(await page.locator('#hub-mode-story').isVisible(),true);
   await page.keyboard.press('Escape');
-  assert.equal(await page.locator('#screen-menu .hub-menu').isVisible(),false);
+  await page.locator('#screen-menu .hub-menu').waitFor({state:'hidden',timeout:6000});
   assert.equal(await page.locator('#hub-mode-story').isVisible(),true);
   assert.equal(await page.evaluate(()=>window.SpaceMenuSceneMode),'race');
   console.log('PASS: arrow navigation stays on the original main menu; Escape closes only the sections drawer');
