@@ -1,21 +1,31 @@
 # Infinity Space — Playgama publication fields
 
-The **Playgama release ZIP** contains exactly these two files at its root:
+The **Playgama release ZIP** preserves the exact original MP3 soundtracks
+used by the CrazyGames version. Do **not** recompress the music to 40 kbps:
+doing so destroyed sound quality.
 
 ```text
 index.html
 playgama-bridge-config.json
+assets/
+  music/
+    track-01.mp3
+    track-02.mp3
+    ...
+    track-12.mp3
 ```
 
-Playgama Bridge v2 reads the sibling JSON file through its default
-`bridge.initialize()` configuration path. This physical configuration file
-is required by Playgama's archive validator and must not be replaced by a
-`data:` URL inside HTML. The 12 compressed soundtracks, covers, game
-JavaScript, CSS and favicon are all embedded in the HTML.
+The 12 original MP3 files total about **62.1 MB**. The ZIP is larger than
+the previously heavily-compressed package, but safely under Playgama's
+300 MB game archive limit. All 12 covers, all game JavaScript and CSS,
+and the favicon are still embedded directly in the Playgama HTML.
+The SDK reads the real sibling JSON configuration via `bridge.initialize()`.
 
-A separate **single-file preview/download index.html** also exists. It
-embeds the JSON as a data URL for standalone convenience, but **do not upload
-the standalone HTML as the Playgama release**; use the two-file ZIP.
+A separate **single-file index.html** is downloadable under 20 MB, but that
+version **streams the same original quality MP3 files from
+https://mooouse.github.io/Infinity-Space/assets/music/**. The single-file
+download requires an internet connection for music. **Upload the Playgama
+ZIP**, not the single HTML file; the Playgama ZIP has all tracks locally.
 
 **Playgama publishing step:** the descriptions and controls below still need
 to be pasted into the game's fields in the Playgama developer dashboard. HTML
@@ -109,6 +119,6 @@ para cambiar el zoom.
 - **Orientation:** Set according to the actual mobile QA result
 - **Game features:** Progression, achievements, upgrades, daily rewards, roulette,
   background music collection, local and SDK/cloud save, rewarded advertising
-- **Archive root:** index.html + playgama-bridge-config.json (both required)
+- **Archive root:** index.html + playgama-bridge-config.json, plus assets/music with 12 original MP3s
 - **Testing:** verify real rewarded ads, AdBlock detection, cloud saves, pause/mute
   events, mobile safe areas and return navigation in the Playgama sandbox
