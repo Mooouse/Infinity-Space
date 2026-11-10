@@ -10,7 +10,8 @@
   const host = location.hostname.toLowerCase();
   const referrer = document.referrer.toLowerCase();
   const params = new URLSearchParams(location.search);
-  const onPlaygama = /(^|\.)playgama\.(com|io)$/.test(host) ||
+  const onPlaygama = window.SpacePlaygamaBuild === true ||
+    /(^|\.)playgama\.(com|io)$/.test(host) ||
     /(^|\.)playgama\.(com|io)(\/|:)/.test(referrer.replace(/^https?:\/\//, '')) ||
     params.get('playgama') === '1';
   const tester = params.get('tester') === '1';
@@ -179,9 +180,10 @@
         bridge.initialize(initOptions),
         new Promise((_, reject) => setTimeout(() => reject(new Error('SDK init timed out')), 8000))
       ]);
-      if (bridge.platform?.id !== 'playgama' && params.get('playgama') !== '1') {
-        throw new Error('Host is not Playgama');
-      }
+      // Bridge may report playgama_sandbox, qa_tool, or a distribution
+      // partner platform. These are valid SDK contexts. Do not reject them
+      // by hostname or platform id after successful Bridge initialization.
+      // The dedicated HTML deliberately initializes Bridge on every host.
       active = true;
       platform.status = 'ready';
       try {
