@@ -201,3 +201,154 @@ body.ui-v15 #screen-menu .hub-mode-gesture{
 @media(prefers-reduced-motion:reduce){
  body.ui-v15 #screen-menu .hub-mode-story :is(button,span){transition:none!important}
 }
+
+
+/* v3.66 — the mode selector IS the main menu. No launcher, secondary page or modal. */
+body.ui-v15 #screen-menu.hub-main-carousel{
+ display:block;
+}
+body.ui-v15 #screen-menu.hub-main-carousel>.menu-orbit-info,
+body.ui-v15 #screen-menu.hub-main-carousel>.menu-foot{
+ display:none!important;
+}
+/* Existing language, sound and settings controls remain operational at the
+   upper right while the universe and selected mode occupy the home screen. */
+body.ui-v15 #screen-menu.hub-main-carousel>.menu-top{
+ position:absolute!important;top:15px!important;right:24px!important;left:auto!important;
+ z-index:205!important;width:auto!important;max-width:60vw;
+ visibility:visible!important;pointer-events:auto!important;
+ display:flex!important;gap:10px!important;align-items:center!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel>.menu-top .small-brand,
+body.ui-v15 #screen-menu.hub-main-carousel>.menu-top .micro{
+ display:none!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel>.menu-top .language-control,
+body.ui-v15 #screen-menu.hub-main-carousel>.menu-top .menu-actions{
+ pointer-events:auto!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story{
+ display:flex!important;
+ padding-top:77px;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top{
+ margin-top:0;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-brand{
+ max-width:calc(100% - 225px);
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-back{
+ position:relative;z-index:4;
+}
+/* The old dense hub becomes a compact optional drawer with all of its native
+   working controls. It never obscures or replaces the main menu by default. */
+body.ui-v15 #screen-menu.hub-main-carousel>.menu-main.hub-menu{
+ visibility:hidden!important;pointer-events:none!important;
+ opacity:0!important;
+ position:absolute!important;z-index:190!important;
+ top:140px!important;left:clamp(15px,5.5vw,87px)!important;right:auto!important;
+ width:min(445px,calc(100vw - 30px))!important;
+ max-height:calc(100dvh - 151px)!important;
+ padding:18px 17px 20px!important;
+ overflow-x:hidden!important;overflow-y:auto!important;
+ background:linear-gradient(155deg,#1c1233fa,#0b0a1dfa)!important;
+ border:2px solid #8769bd;border-bottom:5px solid #49307b;
+ border-radius:11px;
+ box-shadow:0 24px 80px #030009e3,0 0 0 100vmax #0605117a;
+ transform:translateX(-14px);transition:opacity .2s,transform .2s,visibility .2s;
+ overscroll-behavior:contain;
+}
+body.ui-v15 #screen-menu.hub-main-carousel.hub-options-open>.menu-main.hub-menu{
+ visibility:visible!important;pointer-events:auto!important;
+ opacity:1!important;transform:translateX(0);
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-menu::before{
+ content:attr(data-title);display:block;
+ font-size:12px;line-height:1.3;font-weight:950;letter-spacing:.16em;
+ color:#d8c3ff;margin-bottom:15px;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-menu>.eyeline,
+body.ui-v15 #screen-menu.hub-main-carousel .hub-menu>.hero-title,
+body.ui-v15 #screen-menu.hub-main-carousel .hub-menu>.hero-desc{
+ display:none!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-menu .hub-actions{
+ display:block!important;grid-template-columns:none!important;
+ margin:0!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-menu .hub-continue{
+ display:none!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-menu .hub-new-world{
+ display:flex!important;width:100%!important;height:43px!important;
+ min-height:43px!important;
+ font-size:10px!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-menu .hub-current{
+ margin:12px 0 0!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-menu .hub-progress,
+body.ui-v15 #screen-menu.hub-main-carousel .hub-menu .hub-bonuses{
+ margin-top:15px!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-menu .hub-progress-grid{
+ gap:7px!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-menu .hub-progress-tile{
+ min-height:45px!important;height:45px!important;
+ padding:5px 8px!important;font-size:10px!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-menu .hub-utility-row{
+ grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-menu .hub-utility-row>.hub-more-button{
+ grid-column:1/-1;
+ height:36px!important;justify-content:center!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-menu .hub-section-head small{
+ display:none;
+}
+body.ui-v15 #screen-menu.hub-main-carousel.hub-options-open .hub-mode-story-copy,
+body.ui-v15 #screen-menu.hub-main-carousel.hub-options-open .hub-mode-story-footer{
+ opacity:.36;pointer-events:none;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-back[aria-expanded="true"]{
+ background:linear-gradient(160deg,#7044d6,#4d22c6);
+ border-color:#b6a0ff;
+}
+@media(max-width:700px){
+ body.ui-v15 #screen-menu.hub-main-carousel>.menu-top{
+  top:12px!important;right:12px!important;max-width:66vw;
+  gap:6px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel>.menu-top .menu-actions{
+  gap:5px!important;margin:0!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story{
+  padding-top:max(76px,calc(env(safe-area-inset-top) + 66px))!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-brand{
+  display:none;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top{
+  min-height:40px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel>.menu-main.hub-menu{
+  top:max(125px,calc(env(safe-area-inset-top) + 109px))!important;
+  left:11px!important;right:11px!important;width:auto!important;
+  max-height:calc(100dvh - max(136px,env(safe-area-inset-top) + 120px))!important;
+  padding:13px 12px 18px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-menu .hub-progress-tile{
+  font-size:10px!important;
+ }
+}
+@media(max-height:580px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story{
+  padding-top:57px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel>.menu-top{top:8px!important;}
+ body.ui-v15 #screen-menu.hub-main-carousel>.menu-main.hub-menu{
+  top:105px!important;max-height:calc(100dvh - 115px)!important;
+ }
+}
