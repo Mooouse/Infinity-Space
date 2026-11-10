@@ -37,14 +37,14 @@ jobs:
           node tests/regressions.cjs
           node tests/music.cjs
 
-      - name: Bundle all 12 original-quality CrazyGames MP3 tracks (no transcoding)
+      - name: Build Playgama ZIP under 20 MB with original unmodified audio served online
         run: |
           set -euo pipefail
           mkdir -p dist
           python3 tools/build_single_html.py dist/index.html
           python3 - <<'PY'
           from pathlib import Path
-          import hashlib, json
+          import json
           root = Path('dist')
           standalone = root / 'index.html'
           upload = root / 'playgama' / 'index.html'
@@ -55,39 +55,30 @@ jobs:
           assert '<script>window.SpaceInlineBridgeConfig=' in standalone.read_text('utf-8')
           assert '<script>window.SpaceInlineBridgeConfig=' not in upload.read_text('utf-8')
           assert json.loads(cfg.read_text('utf-8')) == json.loads(Path('playgama-bridge-config.json').read_text('utf-8'))
-          for page in [standalone,upload]:
-              content=page.read_text('utf-8')
-              assert content.count('data:image/jpeg;base64,') >= 12
-              assert 'https://bridge.playgama.com/v2/stable/playgama-bridge.js' in content
-              assert 'data:audio/mp4;base64,' not in content
-              assert 'inline-audio-' not in content
-          assert 'https://mooouse.github.io/Infinity-Space/assets/music/' in standalone.read_text('utf-8')
-          for number in range(1,13):
-              name=f'track-{number:02d}.mp3'
-              source=Path('assets/music')/name
-              packaged=root/'playgama'/'assets'/'music'/name
-              assert source.stat().st_size > 1_000_000
-              assert source.stat().st_size == packaged.stat().st_size
-              assert hashlib.sha256(source.read_bytes()).digest() == hashlib.sha256(packaged.read_bytes()).digest()
-          assert all(f'assets/music/track-{n:02d}.mp3' in upload.read_text('utf-8') for n in range(1,13))
-          print('PASS: all 12 Playgama MP3 files byte-for-byte match CrazyGames originals')
+          for page in [standalone, upload]:
+              html = page.read_text('utf-8')
+              assert html.count('data:image/jpeg;base64,') >= 12
+              assert 'https://bridge.playgama.com/v2/stable/playgama-bridge.js' in html
+              assert 'data:audio/mp4;base64,' not in html
+              assert 'inline-audio-' not in html
+              assert 'https://mooouse.github.io/Infinity-Space/assets/music/' in html
+          for n in range(1, 13):
+              original = Path(f'assets/music/track-{n:02d}.mp3')
+              assert original.stat().st_size > 1_000_000
+              assert f'assets/music/track-{n:02d}.mp3' in upload.read_text('utf-8')
+          print('PASS: Playgama streaming URLs point to original 12 full-quality MP3s')
           PY
           (cd dist/playgama && zip -q -9 ../../infinity-space-playgama.zip index.html playgama-bridge-config.json)
-          (cd dist/playgama && zip -q -0 -r ../../infinity-space-playgama.zip assets/music)
           python3 - <<'PY'
-          import hashlib
-          from pathlib import Path
           from zipfile import ZipFile
-          with ZipFile('infinity-space-playgama.zip') as z:
-              expected={'index.html','playgama-bridge-config.json'} | {f'assets/music/track-{n:02d}.mp3' for n in range(1,13)}
-              # Zip may include directory entries; ignore folder names.
-              actual={i.filename for i in z.infolist() if not i.is_dir()}
-              assert actual == expected,actual.symmetric_difference(expected)
+          p = 'infinity-space-playgama.zip'
+          with ZipFile(p) as z:
+              actual = {x.filename for x in z.infolist() if not x.is_dir()}
+              assert actual == {'index.html', 'playgama-bridge-config.json'}, actual
               assert z.testzip() is None
-              for n in range(1,13):
-                  name=f'assets/music/track-{n:02d}.mp3'
-                  assert hashlib.sha256(z.read(name)).digest() == hashlib.sha256(Path(name).read_bytes()).digest()
-              print('PASS: Playgama ZIP has SDK JSON + game HTML + all 12 ORIGINAL MP3s')
+          import os
+          assert os.path.getsize(p) < 20_000_000
+          print('PASS: standalone SDK+HTML ZIP under 20 MB, music unchanged on external host')
           PY
           ls -lh dist/index.html dist/playgama/index.html infinity-space-playgama.zip
 
@@ -112,7 +103,7 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
-      - name: Upload Playgama ZIP (HTML, Bridge JSON and 12 original MP3s)
+      - name: Upload small Playgama ZIP (HTML and Bridge JSON, stream HQ MP3s)
         uses: actions/upload-artifact@v4
         with:
           name: infinity-space-playgama
@@ -131,7 +122,7 @@ jobs:
           if ! gh release view "$TAG" >/dev/null 2>&1; then
             gh release create "$TAG" --target "$GITHUB_SHA" \
               --title "Infinity Space — One HTML (Playgama)" \
-              --notes "Standalone HTML under 20 MB streams full-quality original tracks. Playgama ZIP includes index.html, playgama-bridge-config.json and all 12 original high-quality MP3 music files. No audio transcoding. Release files are overwritten with each new build." \
+              --notes "Standalone and Playgama ZIP both stream exact untouched original MP3s from the game's GitHub Pages. Playgama ZIP contains HTML and required Bridge JSON, under 20 MB. Needs internet to play music. Release files are overwritten with each new build." \
               --latest=false
           fi
           gh release upload "$TAG" dist/index.html --clobber
