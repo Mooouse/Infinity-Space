@@ -5,7 +5,7 @@ on:
       - '.github/workflows/direct-html-release.yml'
   workflow_run:
     workflows:
-      - 'Package one-file Infinity Space for Playgama'
+      - 'Package Infinity Space HQ music for Playgama'
     types: [completed]
 permissions:
   actions: read
@@ -38,14 +38,18 @@ jobs:
           import os, json, zipfile
           path = os.path.join(os.environ['RUNNER_TEMP'], 'zip', 'infinity-space-playgama.zip')
           with zipfile.ZipFile(path) as z:
-              assert set(z.namelist()) == {'index.html', 'playgama-bridge-config.json'}, z.namelist()
+              expected = {'index.html','playgama-bridge-config.json'} | {f'assets/music/track-{i:02d}.mp3' for i in range(1,13)}
+              present = {x.filename for x in z.infolist() if not x.is_dir()}
+              assert present == expected, present.symmetric_difference(expected)
               assert z.testzip() is None
               config = json.loads(z.read('playgama-bridge-config.json'))
               assert config['advertisement']['rewarded']['preloadOnStart'] is True
               html = z.read('index.html')
               assert len(html) < 20_000_000
               assert b'<script>window.SpaceInlineBridgeConfig=' not in html
-          print('Verified: Playgama ZIP has both root-level files and default config path')
+              assert b'data:audio/mp4;base64,' not in html
+              assert all(len(z.read(f'assets/music/track-{i:02d}.mp3')) > 1_000_000 for i in range(1,13))
+          print('Verified: Playgama ZIP has HTML, SDK config and 12 full MP3 music files')
           PY
           python3 -c 'import pathlib,os; p=pathlib.Path(os.environ["RUNNER_TEMP"])/"single"/"index.html"; assert p.stat().st_size < 20_000_000; print("Verified HTML size",p.stat().st_size)'
 
@@ -59,7 +63,7 @@ jobs:
           if ! gh release view "$TAG" >/dev/null 2>&1; then
             gh release create "$TAG" --target "$GITHUB_SHA" \
               --title "Infinity Space — One HTML (Playgama)" \
-              --notes "Single HTML file under 20 MB; 12 compressed soundtracks, 12 covers, game code, visual styles and inline Playgama SDK configuration. Playgama ZIP contains index.html plus playgama-bridge-config.json at its root." \
+              --notes "Single HTML under 20 MB streams original-quality MP3s. Playgama ZIP includes index.html, playgama-bridge-config.json, and all 12 original unmodified MP3 music tracks." \
               --latest=false
           fi
           gh release upload "$TAG" "$RUNNER_TEMP/single/index.html" --clobber
