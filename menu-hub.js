@@ -63,7 +63,7 @@
  function buildMainMenuModeSelector(root,play,code){
   const langIndex=code==='en'?0:code==='es'?2:1;
   const t=(translations)=>translations[langIndex];
-  let current=0,originX=0,originY=0,dragging=false,lastWheel=0;
+  let current=0,originX=0,originY=0,dragging=false,lastWheel=0,hasSelection=false;
   const overlay=document.createElement('section');
   overlay.id='hub-mode-story';
   overlay.className='hub-mode-story';
@@ -87,7 +87,7 @@
       '<div class="hub-mode-dots" aria-label="Choose mode"></div>'+
       '<button class="hub-mode-step" data-dir="1" type="button" aria-label="Next mode">›</button>'+
       '<span class="hub-mode-gesture"></span>'+
-    '</footer>';
+    '</footer><nav class="hub-story-nav" aria-label="Quick access to game sections"></nav>';
   root.append(overlay);
   // Daily rewards are visible directly on the home screen. Move the original
   // buttons with their registered reward callbacks, never clone dead controls.
@@ -104,7 +104,12 @@
    }
   }
   const setMode=(next)=>{
-   current=Math.max(0,Math.min(modeStories.length-1,next));
+   const target=Math.max(0,Math.min(modeStories.length-1,next));
+   if(hasSelection&&target===current)return;
+   const previous=current,changed=hasSelection;
+   const direction=target>previous?1:-1;
+   if(changed)window.SpaceMenuBeginTransition?.(direction);
+   current=target;hasSelection=true;
    const entry=modeStories[current];
    window.SpaceMenuSceneMode=entry.id==='endless'?null:entry.id;
    root.dataset.previewMode=entry.id;
@@ -125,7 +130,45 @@
     dot.classList.toggle('current',i===current);
     dot.setAttribute('aria-current',String(i===current));
    });
+   // Entering a new mode glides the whole copy rather than teleporting text.
+   const copy=q(overlay,'.hub-mode-story-copy');
+   if(changed&&copy&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    copy.getAnimations().forEach(a=>a.cancel());
+    copy.animate([
+      {opacity:.13,transform:'translate3d('+direction*52+'px,0,0) scale(.985)',filter:'blur(5px)'},
+      {opacity:.89,transform:'translate3d('+direction*-3+'px,0,0) scale(1)',filter:'blur(0)'},
+      {opacity:1,transform:'translate3d(0,0,0) scale(1)',filter:'blur(0)'}
+    ],{duration:590,easing:'cubic-bezier(.16,1,.3,1)'});
+   }
   };
+  // Visible bottom dock. Each shortcut delegates to the already wired
+  // original button, preserving map, progression, settings and save handlers.
+  const nav=q(overlay,'.hub-story-nav');
+  const shortcuts=[
+   ['map',['Map','Карта','Mapa']],
+   ['evolution',['Evolution','Эволюция','Evolución']],
+   ['achievements',['Achievements','Достижения','Logros']],
+   ['music',['Music','Музыка','Música']],
+   ['bestiary',['Bestiary','Бестиарий','Bestiario']],
+   ['statistics',['Statistics','Статистика','Estadísticas']],
+   ['settings',['Settings','Настройки','Ajustes']],
+   ['new',['New universe','Новая игра','Nuevo universo']]
+  ];
+  for(const [name,labels] of shortcuts){
+   const source=name==='new'?q(root,'.hub-new-world'):q(root,'[data-page="'+name+'"].hub-progress-tile, [data-page="'+name+'"].hub-extra-tile');
+   if(!source)continue;
+   const item=document.createElement('button');
+   item.type='button';item.className='hub-story-shortcut';
+   item.dataset.shortcut=name;
+   const iconSource=q(source,'span:first-child');
+   const svg=iconSource?.querySelector('svg');
+   const iconMarkup=svg?.outerHTML||'<span class="hub-fallback-icon">✦</span>';
+   item.innerHTML='<span class="hub-story-shortcut-icon" aria-hidden="true">'+iconMarkup+'</span>'+
+    '<span class="hub-story-shortcut-label">'+esc(t(labels))+'</span>';
+   item.setAttribute('aria-label',t(labels));
+   item.onclick=()=>source.click();
+   nav.append(item);
+  }
   const dots=q(overlay,'.hub-mode-dots');
   modeStories.forEach((entry,i)=>{
    const dot=document.createElement('button');dot.type='button';
@@ -162,6 +205,8 @@
    else location.assign('cosmic-arena.html?mode='+encodeURIComponent(entry.id)+'&v=5');
   };
   overlay.addEventListener('wheel',ev=>{
+   // Scrolling a section, tooltip or button must not change the game mode.
+   if(ev.target.closest('button,a,nav,.hub-menu'))return;
    const now=performance.now();
    if(Math.abs(ev.deltaX)+Math.abs(ev.deltaY)<13)return;
    ev.preventDefault();
@@ -171,15 +216,30 @@
    setMode(current+(delta>0?1:-1));
   },{passive:false});
   overlay.addEventListener('pointerdown',e=>{
-   if(e.target.closest('button,a'))return;
+   if(e.target.closest('button,a,nav,.hub-menu'))return;
    originX=e.clientX;originY=e.clientY;dragging=true;
+   overlay.classList.add('hub-dragging');
   });
-  overlay.addEventListener('pointerup',e=>{
+  overlay.addEventListener('pointermove',e=>{
    if(!dragging)return;
-   dragging=false;const dx=e.clientX-originX,dy=e.clientY-originY;
-   if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)*1.2)setMode(current+(dx<0?1:-1));
+   const dx=e.clientX-originX,dy=e.clientY-originY;
+   if(Math.abs(dx)>Math.abs(dy)*1.05){
+    overlay.style.setProperty('--hub-swipe-offset',Math.max(-90,Math.min(90,dx*.23))+'px');
+   }
+  },{passive:true});
+  const finishSwipe=e=>{
+   if(!dragging)return;
+   dragging=false;
+   overlay.classList.remove('hub-dragging');
+   overlay.style.removeProperty('--hub-swipe-offset');
+   const dx=e.clientX-originX,dy=e.clientY-originY;
+   if(Math.abs(dx)>38&&Math.abs(dx)>Math.abs(dy)*1.15)setMode(current+(dx<0?1:-1));
+  };
+  overlay.addEventListener('pointerup',finishSwipe);
+  overlay.addEventListener('pointercancel',()=>{
+   dragging=false;overlay.classList.remove('hub-dragging');
+   overlay.style.removeProperty('--hub-swipe-offset');
   });
-  overlay.addEventListener('pointercancel',()=>{dragging=false;});
   // Capturing phase prevents the game's global Escape=resumeGame shortcut
   // from interpreting Close Modes as "launch the game".
   const onKey=(e)=>{
