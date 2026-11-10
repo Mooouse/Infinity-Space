@@ -34,6 +34,7 @@ const delay=t=>new Promise(resolve=>setTimeout(resolve,t));
  const audio=[],pauses=[];
  const window={
   __INFINITY_PLAYGAMA:true,bridge:b,
+  addEventListener(){},
   dispatchEvent(e){if(e.type==='space-platform-audio')audio.push(e.type);if(e.type==='space-platform-pause')pauses.push(e.detail?.paused)},
   SpaceI18n:{setLanguage(v){local.set('infiniti-space-language',v)}}
  };
