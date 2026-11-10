@@ -1,4 +1,4 @@
-name: Package one-file Infinity Space for Playgama
+name: Package Infinity Space HQ music for Playgama
 on:
   push:
     branches: [main]
@@ -37,56 +37,61 @@ jobs:
           node tests/regressions.cjs
           node tests/music.cjs
 
-      - name: Install static FFmpeg (without slow apt repository refresh)
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 -m pip install --disable-pip-version-check --quiet --target "$RUNNER_TEMP/ffmpeg-python" imageio-ffmpeg==0.8.1
-          FFMPEG_EXE="$(PYTHONPATH="$RUNNER_TEMP/ffmpeg-python" python3 -c 'import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())')"
-          mkdir -p "$RUNNER_TEMP/ffmpeg-bin"
-          ln -s "$FFMPEG_EXE" "$RUNNER_TEMP/ffmpeg-bin/ffmpeg"
-          echo "$RUNNER_TEMP/ffmpeg-bin" >> "$GITHUB_PATH"
-          "$FFMPEG_EXE" -version | head -1
-
-      - name: Build under-20-MB HTML and Playgama ZIP with real root-level config
+      - name: Bundle all 12 original-quality CrazyGames MP3 tracks (no transcoding)
         run: |
           set -euo pipefail
           mkdir -p dist
           python3 tools/build_single_html.py dist/index.html
           python3 - <<'PY'
           from pathlib import Path
-          import json
+          import hashlib, json
           root = Path('dist')
           standalone = root / 'index.html'
           upload = root / 'playgama' / 'index.html'
-          config = root / 'playgama' / 'playgama-bridge-config.json'
-          assert standalone.is_file() and upload.is_file() and config.is_file()
+          cfg = root / 'playgama' / 'playgama-bridge-config.json'
+          assert standalone.is_file() and upload.is_file() and cfg.is_file()
           assert standalone.stat().st_size < 20_000_000
           assert upload.stat().st_size < 20_000_000
-          for page in [standalone, upload]:
-              content = page.read_text(encoding='utf-8')
-              assert content.count('type="application/octet-stream" id="inline-audio-') == 12
+          assert '<script>window.SpaceInlineBridgeConfig=' in standalone.read_text('utf-8')
+          assert '<script>window.SpaceInlineBridgeConfig=' not in upload.read_text('utf-8')
+          assert json.loads(cfg.read_text('utf-8')) == json.loads(Path('playgama-bridge-config.json').read_text('utf-8'))
+          for page in [standalone,upload]:
+              content=page.read_text('utf-8')
               assert content.count('data:image/jpeg;base64,') >= 12
-              assert 'data:audio/mp4;base64,' in content
               assert 'https://bridge.playgama.com/v2/stable/playgama-bridge.js' in content
-          assert '<script>window.SpaceInlineBridgeConfig=' in standalone.read_text(encoding='utf-8')
-          # Crucial: no embedded config URL in Playgama upload. Bridge.initialize()
-          # must fetch its DEFAULT relative file (which is physically in ZIP).
-          assert '<script>window.SpaceInlineBridgeConfig=' not in upload.read_text(encoding='utf-8')
-          assert json.loads(config.read_text(encoding='utf-8')) == json.loads(Path('playgama-bridge-config.json').read_text(encoding='utf-8'))
-          print('PASS: 12 tracks, covers, standalone inline config, upload defaults to root JSON')
+              assert 'data:audio/mp4;base64,' not in content
+              assert 'inline-audio-' not in content
+          assert 'https://mooouse.github.io/Infinity-Space/assets/music/' in standalone.read_text('utf-8')
+          for number in range(1,13):
+              name=f'track-{number:02d}.mp3'
+              source=Path('assets/music')/name
+              packaged=root/'playgama'/'assets'/'music'/name
+              assert source.stat().st_size > 1_000_000
+              assert source.stat().st_size == packaged.stat().st_size
+              assert hashlib.sha256(source.read_bytes()).digest() == hashlib.sha256(packaged.read_bytes()).digest()
+          assert all(f'assets/music/track-{n:02d}.mp3' in upload.read_text('utf-8') for n in range(1,13))
+          print('PASS: all 12 Playgama MP3 files byte-for-byte match CrazyGames originals')
           PY
           (cd dist/playgama && zip -q -9 ../../infinity-space-playgama.zip index.html playgama-bridge-config.json)
+          (cd dist/playgama && zip -q -0 -r ../../infinity-space-playgama.zip assets/music)
           python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
           from zipfile import ZipFile
           with ZipFile('infinity-space-playgama.zip') as z:
-              assert set(z.namelist()) == {'index.html', 'playgama-bridge-config.json'}, z.namelist()
+              expected={'index.html','playgama-bridge-config.json'} | {f'assets/music/track-{n:02d}.mp3' for n in range(1,13)}
+              # Zip may include directory entries; ignore folder names.
+              actual={i.filename for i in z.infolist() if not i.is_dir()}
+              assert actual == expected,actual.symmetric_difference(expected)
               assert z.testzip() is None
-              print('PASS: Playgama ZIP root has index.html AND playgama-bridge-config.json')
+              for n in range(1,13):
+                  name=f'assets/music/track-{n:02d}.mp3'
+                  assert hashlib.sha256(z.read(name)).digest() == hashlib.sha256(Path(name).read_bytes()).digest()
+              print('PASS: Playgama ZIP has SDK JSON + game HTML + all 12 ORIGINAL MP3s')
           PY
           ls -lh dist/index.html dist/playgama/index.html infinity-space-playgama.zip
 
-      - name: Browser-test standalone and actual Playgama archive HTML with root config
+      - name: Browser-test high-quality music sources and Playgama root config
         shell: bash
         run: |
           set -euo pipefail
@@ -99,7 +104,7 @@ jobs:
           export NODE_PATH="$RUNNER_TEMP/infinity-single-test/node_modules"
           timeout 120 node tests/single-html-smoke.cjs
 
-      - name: Upload ONE HTML as a download
+      - name: Upload high-quality-music single HTML (streams original MP3s)
         uses: actions/upload-artifact@v4
         with:
           name: infinity-space-single-html
@@ -107,7 +112,7 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
-      - name: Upload Playgama ZIP (root HTML plus Bridge JSON config)
+      - name: Upload Playgama ZIP (HTML, Bridge JSON and 12 original MP3s)
         uses: actions/upload-artifact@v4
         with:
           name: infinity-space-playgama
@@ -126,7 +131,7 @@ jobs:
           if ! gh release view "$TAG" >/dev/null 2>&1; then
             gh release create "$TAG" --target "$GITHUB_SHA" \
               --title "Infinity Space — One HTML (Playgama)" \
-              --notes "One-file HTML under 20 MB with all 12 compressed music tracks, covers, inlined code and Playgama Bridge v2. Playgama ZIP includes index.html and playgama-bridge-config.json in its root, as required. Release files are overwritten with each new build." \
+              --notes "Standalone HTML under 20 MB streams full-quality original tracks. Playgama ZIP includes index.html, playgama-bridge-config.json and all 12 original high-quality MP3 music files. No audio transcoding. Release files are overwritten with each new build." \
               --latest=false
           fi
           gh release upload "$TAG" dist/index.html --clobber
