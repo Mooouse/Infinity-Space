@@ -34,7 +34,19 @@ jobs:
             --name infinity-space-playgama -D "$RUNNER_TEMP/zip"
           test -s "$RUNNER_TEMP/single/index.html"
           test -s "$RUNNER_TEMP/zip/infinity-space-playgama.zip"
-          test "$(unzip -Z1 "$RUNNER_TEMP/zip/infinity-space-playgama.zip")" = "index.html"
+          python3 - <<'PY'
+          import os, json, zipfile
+          path = os.path.join(os.environ['RUNNER_TEMP'], 'zip', 'infinity-space-playgama.zip')
+          with zipfile.ZipFile(path) as z:
+              assert set(z.namelist()) == {'index.html', 'playgama-bridge-config.json'}, z.namelist()
+              assert z.testzip() is None
+              config = json.loads(z.read('playgama-bridge-config.json'))
+              assert config['advertisement']['rewarded']['preloadOnStart'] is True
+              html = z.read('index.html')
+              assert len(html) < 20_000_000
+              assert b'<script>window.SpaceInlineBridgeConfig=' not in html
+          print('Verified: Playgama ZIP has both root-level files and default config path')
+          PY
           python3 -c 'import pathlib,os; p=pathlib.Path(os.environ["RUNNER_TEMP"])/"single"/"index.html"; assert p.stat().st_size < 20_000_000; print("Verified HTML size",p.stat().st_size)'
 
       - name: Maintain fixed direct download URLs
@@ -47,7 +59,7 @@ jobs:
           if ! gh release view "$TAG" >/dev/null 2>&1; then
             gh release create "$TAG" --target "$GITHUB_SHA" \
               --title "Infinity Space — One HTML (Playgama)" \
-              --notes "Single HTML file under 20 MB; 12 compressed soundtracks, 12 covers, game code, visual styles and inline Playgama SDK configuration. Playgama ZIP contains just index.html." \
+              --notes "Single HTML file under 20 MB; 12 compressed soundtracks, 12 covers, game code, visual styles and inline Playgama SDK configuration. Playgama ZIP contains index.html plus playgama-bridge-config.json at its root." \
               --latest=false
           fi
           gh release upload "$TAG" "$RUNNER_TEMP/single/index.html" --clobber
