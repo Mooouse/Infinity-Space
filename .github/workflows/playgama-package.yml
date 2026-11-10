@@ -17,7 +17,7 @@ permissions:
   contents: write
 concurrency:
   group: infinity-space-single-html-release
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   package:
     runs-on: ubuntu-latest
@@ -37,10 +37,16 @@ jobs:
           node tests/regressions.cjs
           node tests/music.cjs
 
-      - name: Install FFmpeg for audio compression
+      - name: Install static FFmpeg (without slow apt repository refresh)
+        shell: bash
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq ffmpeg
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --quiet --target "$RUNNER_TEMP/ffmpeg-python" imageio-ffmpeg==0.8.1
+          FFMPEG_EXE="$(PYTHONPATH="$RUNNER_TEMP/ffmpeg-python" python3 -c 'import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())')"
+          mkdir -p "$RUNNER_TEMP/ffmpeg-bin"
+          ln -s "$FFMPEG_EXE" "$RUNNER_TEMP/ffmpeg-bin/ffmpeg"
+          echo "$RUNNER_TEMP/ffmpeg-bin" >> "$GITHUB_PATH"
+          "$FFMPEG_EXE" -version | head -1
 
       - name: Re-encode all 12 songs and bundle game as ONE HTML under 20 MB
         run: |
