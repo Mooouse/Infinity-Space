@@ -255,6 +255,7 @@
   grid.remove();
   main.scrollTop=0;
   main.id='hub-sections-drawer';
+  main.dataset.title=code==='en'?'SECTIONS':code==='es'?'SECCIONES':'РАЗДЕЛЫ';
   buildMainMenuModeSelector(root,play,code);
  }
  function refresh(){
