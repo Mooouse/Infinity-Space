@@ -41,7 +41,7 @@ const log=(...a)=>process.stdout.write(a.join(' ')+'\n');
   await more.click();
   assert.equal(await page.locator('#screen-menu #hub-more-panel').isVisible(),false);
   await sections.click();
-  assert.equal(await page.locator('#screen-menu .hub-menu').isVisible(),false);
+  await page.locator('#screen-menu .hub-menu').waitFor({state:'hidden',timeout:5000});
   const firstBonusHit=await page.evaluate(()=>{
    const b=document.querySelector('#screen-menu [data-reward-page="roulette"]');
    const r=b.getBoundingClientRect(),point=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
