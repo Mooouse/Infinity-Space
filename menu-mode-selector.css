@@ -352,3 +352,49 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-back[aria-expanded="t
   top:105px!important;max-height:calc(100dvh - 115px)!important;
  }
 }
+
+/* Reward shortcuts are native buttons on the first mode scene, with concise
+   icon-only chrome and accessible text for screen readers. */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick{
+ display:flex;align-items:center;justify-content:center;gap:8px;
+ flex:none;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward{
+ width:43px!important;height:43px!important;min-width:43px!important;min-height:43px!important;
+ padding:0!important;box-sizing:border-box;
+ display:grid!important;place-items:center!important;
+ flex:0 0 43px!important;
+ border:2px solid #6e53a3!important;border-bottom:4px solid #3c286d!important;
+ border-radius:8px!important;color:#d8c6ff!important;
+ background:linear-gradient(175deg,#33204df4,#1b142eef)!important;
+ cursor:pointer!important;position:relative!important;
+ transition:border-color .16s,background .16s,filter .16s;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward:hover{
+ border-color:#b391fb!important;background:#402563!important;filter:brightness(1.12);
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward>span:first-child{
+ display:grid!important;place-items:center!important;
+ flex:none!important;width:29px!important;height:29px!important;margin:0!important;
+ color:#d4bbff!important;border:0!important;background:transparent!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward svg{
+ width:22px!important;height:22px!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward>span:nth-child(2),
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward>span:nth-child(3){
+ display:none!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward.reward-available::after{
+ content:"";position:absolute;top:4px;right:4px;
+ width:7px;height:7px;border-radius:50%;
+ background:#d5b4ff;box-shadow:0 0 8px #a677ff;
+}
+@media(max-width:700px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick{gap:5px;margin-left:auto}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward{
+  width:35px!important;height:38px!important;min-width:35px!important;min-height:38px!important;
+  flex-basis:35px!important;border-bottom-width:3px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward svg{width:20px!important;height:20px!important}
+}
