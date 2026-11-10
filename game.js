@@ -333,7 +333,18 @@ function scheduleMusic(){}
 
 function startMusic(){const t=MUSIC_TRACKS.find(t=>t.id===g.activeTrack&&g.ownedTracks.includes(t.id));if(!t){if(externalMusic)externalMusic.pause();externalMusic=null;g.activeTrack=null;}else if(!externalMusic){externalMusic=new Audio(t.src);externalMusic.loop=true;}initAudio();setMusicVolume();}
 addEventListener('space-platform-audio',()=>setMusicVolume());
-function save(){if(testerAbsoluteResetPending)return;g.worldX=player.x;g.worldY=player.y;try{localStorage.setItem(SAVE_KEY,JSON.stringify(g));}catch(_){toastStorageWarning();}}
+addEventListener('space-platform-pause',event=>{
+ if(event.detail?.paused&&running&&!window.SpacePlatform?.adBusy)showPause();
+ // Never resume automatically: the player may have opened a menu manually.
+});
+function save(){
+ if(testerAbsoluteResetPending)return;
+ g.worldX=player.x;g.worldY=player.y;
+ const snapshot=JSON.stringify(g);
+ try{localStorage.setItem(SAVE_KEY,snapshot);}catch(_){toastStorageWarning();}
+ // Queue a rate-limited Playgama cloud save. Cloud sync never blocks a frame.
+ if(!TEST_MODE)window.SpacePlatform?.saveSnapshot?.(SAVE_KEY,snapshot);
+}
 let storageWarned=false;function toastStorageWarning(){if(!storageWarned){storageWarned=true;console.warn('Infinity Space: сохранение мира не помещается в localStorage');}}
 
 function makeSky(){
@@ -3368,12 +3379,12 @@ function showCosmicRoulette(origin){
  const bonus=$('daily-ad-spin');
  bonus.title=window.SpacePlatform?.adsAvailable?
   L('Complete a rewarded video for one extra spin today.','Досмотри рекламу и получи одну дополнительную попытку сегодня.','Mira el anuncio completo para conseguir un giro extra hoy.'):
-  L('Rewarded ads are only available inside CrazyGames.','Реклама доступна только при запуске на CrazyGames.','Los anuncios solo están disponibles en CrazyGames.');
+  L('Rewarded ads are only available on supported game platforms.','Реклама доступна только на поддерживаемых игровых площадках.','Los anuncios solo están disponibles en plataformas compatibles.');
  bonus.onclick=async()=>{
   if(awaitingAd||!meta.canAdSpin(g))return;
   if(!window.SpacePlatform?.adsAvailable){
    $('daily-result').hidden=false;
-   $('daily-result').textContent=L('Ad not available here. Try on CrazyGames.','Реклама здесь недоступна. Запусти игру на CrazyGames.','El anuncio no está disponible aquí. Prueba en CrazyGames.');
+   $('daily-result').textContent=L('Ad unavailable here. Play on a supported game platform.','Реклама здесь недоступна. Запусти игру на игровой платформе.','Anuncio no disponible aquí. Prueba en una plataforma de juegos.');
    return;
   }
   awaitingAd=true;bonus.disabled=true;
@@ -3931,7 +3942,15 @@ function showMap(){
  requestAnimationFrame(drawAtlas);
 }
 
-function showPause(){showMainMenu(true);}
+function showPause(){
+ const naturalBreak=running&&!pendingDeath&&!awaitingAd&&
+   !document.hidden&&document.hasFocus()&&g.time>=60;
+ showMainMenu(true);
+ // Interstitial only at a deliberate pause, not while the player is flying.
+ // Playgama Bridge also enforces its own minimum interval between ads.
+ if(naturalBreak&&window.SpacePlatform?.provider==='playgama')
+  window.SpacePlatform.requestAd('midgame').catch(()=>{});
+}
 
 function showSettings(){show(`<label class="settings-line"><span>Language / Язык / Idioma</span>${languageSelect()}</label><div class="eyebrow">ПАРАМЕТРЫ ПОЛЁТА</div><div class="overlay-title">НАСТРОЙКИ</div><div class="settings-line"><span>Управление мышью</span><select id="set-control-mode"><option value="hold" ${g.controlMode==='hold'?'selected':''}>Зажать кнопку и направлять</option><option value="follow" ${g.controlMode==='follow'?'selected':''}>Следовать за курсором</option><option value="keys" ${g.controlMode==='keys'?'selected':''}>Только клавиатура</option></select></div><div class="settings-line"><span>Отклик движения</span><select id="set-flight-feel"><option value="direct" ${g.flightFeel==='direct'?'selected':''}>Точный, без инерции</option><option value="smooth" ${g.flightFeel==='smooth'?'selected':''}>Плавный, с инерцией</option></select></div><p class="overlay-copy" style="text-align:left">WASD / стрелки — точное движение. По умолчанию объект плавно следует за курсором без нажатия. WASD — точное движение, на телефоне — джойстик. E — необязательный импульс, Shift — рывок.</p><div class="settings-line"><span>Кинематографичная космическая музыка</span><input id="set-music" type="checkbox" ${g.music?'checked':''}></div><div class="settings-line"><span>Громкость музыки</span><input id="set-music-volume" type="range" min="0" max="100" value="${Math.round(g.musicVolume*100)}" aria-label="Громкость музыки"></div><p class="overlay-copy" style="text-align:left">Оригинальный саундтрек: медленное органное звучание и пространственный эмбиент. Музыка запускается после нажатия «Играть».</p><div class="settings-line"><span>Звуковые эффекты</span><input id="set-sound" type="checkbox" ${g.sound?'checked':''}></div><label class="settings-line"><span>${L('Effects volume','Громкость эффектов','Volumen de efectos')}</span><input id="set-sound-volume" type="range" min="0" max="100" value="${Math.round((g.soundVolume??.7)*100)}"></label><div class="settings-line"><span>Частицы и вспышки</span><input id="set-particles" type="checkbox" ${g.particles?'checked':''}></div><label class="settings-line"><span>${L('Automatic graphics reduction','Автоматическое снижение графики','Reducción gráfica automática')}</span><input id="set-auto-quality" type="checkbox" ${g.autoQuality!==false?'checked':''}></label><p class="overlay-copy" style="text-align:left">${L('Off: full screen resolution and full-resolution black hole distortion, even at low FPS.','Выключено: полное разрешение экрана и искажения чёрных дыр, даже при низком FPS.','Desactivado: resolución completa de pantalla y distorsión de agujeros negros, incluso con pocos FPS.')}</p><div class="settings-line"><span>Качество эффектов</span><select id="set-quality" ${g.autoQuality===false?'disabled':''}><option value="1" ${g.autoQuality===false||g.quality===1?'selected':''}>Высокое</option><option value="0.5" ${g.autoQuality!==false&&g.quality===.5?'selected':''}>Экономное</option></select></div><p class="overlay-copy" style="text-align:left">M — карта, P — пауза. Схема управления сохраняется между запусками.</p><div class="modal-actions"><button id="settings-music" class="secondary-button">${L('Music collection','Коллекция музыки','Colección de música')}</button><button id="settings-tutorial" class="secondary-button">${L('Flight tutorial','Обучение','Tutorial de vuelo')}</button>${continueButton('СОХРАНИТЬ И ИГРАТЬ')}<button class="secondary-button" id="btn-new-universe">НОВАЯ ИГРА</button></div>`);$('modal').dataset.screen='settings';setNavigationState('settings');attachContinue();$('set-language').onchange=e=>{window.SpaceI18n.setLanguage(e.target.value);renderUI();showSettings();};$('settings-music').onclick=showMusicShop;$('settings-tutorial').onclick=()=>showTutorial();$('set-sound-volume').oninput=e=>{g.soundVolume=+e.target.value/100;save();};$('btn-new-universe').onclick=restartCampaign;$('set-control-mode').onchange=e=>{g.controlMode=e.target.value;clearFlightInput();syncHeadingControl();save();};$('set-flight-feel').onchange=e=>{g.flightFeel=e.target.value;save();};$('set-music').onchange=e=>{g.music=e.target.checked;initAudio();setMusicVolume();save();};$('set-music-volume').oninput=e=>{g.musicVolume=+e.target.value/100;setMusicVolume();save();};$('set-sound').onchange=e=>{g.sound=e.target.checked;save();};$('set-particles').onchange=e=>{g.particles=e.target.checked;save();};$('set-auto-quality').onchange=e=>{setAutoQuality(e.target.checked);$('set-quality').disabled=!e.target.checked;$('set-quality').value=String(e.target.checked?g.quality:1);};$('set-quality').onchange=e=>{g.quality=Number(e.target.value);performanceScale=1;applyResolution();save();};}
 function resetCampaignState(resetModifiers=false){
@@ -3994,7 +4013,7 @@ function dieInAbyss(h){
     if(awaitingAd||!pendingDeath||g.reviveUsed)return;
     const fb=$('revive-feedback');
     if(!window.SpacePlatform?.adsAvailable){
-     fb.textContent=L('Rewarded ads are only available on CrazyGames.','Рекламное возрождение доступно только на CrazyGames.','Los anuncios solo están disponibles en CrazyGames.');
+     fb.textContent=L('Rewarded ads are available on supported portals.','Рекламное возрождение доступно на игровых площадках.','Los anuncios están disponibles en plataformas compatibles.');
      return;
     }
     awaitingAd=true;ad.disabled=true;
@@ -4039,9 +4058,9 @@ function showDeathOffer(){
    L('▶ WATCH AD · REVIVE','▶ РЕКЛАМА · ВОЗРОДИТЬСЯ','▶ VER ANUNCIO · REVIVIR')+'</button>';
  const adExplanation=!eligible?
   L('Revival has already been used in this run.','Возрождение уже использовано в этом прохождении.','La reanimación ya se usó en esta partida.'):
-  !ads?L('Ads are available when playing on CrazyGames. On GitHub Pages you can test the death screen, but an ad cannot start.',
-  'Реклама доступна на CrazyGames. На GitHub Pages можно проверить экран смерти, но запустить рекламу нельзя.',
-  'Los anuncios están disponibles en CrazyGames. En GitHub Pages no se pueden iniciar anuncios.') :'';
+  !ads?L('Ads are available on supported portals, including Playgama. On GitHub Pages ads cannot start.',
+  'Реклама доступна на игровых площадках, включая Playgama. На GitHub Pages реклама не запускается.',
+  'Los anuncios están disponibles en plataformas como Playgama; no en GitHub Pages.') :'';
  show('<div class="revive-screen"><div class="revive-eyebrow">'+
   L('EVENT HORIZON CROSSED','ГОРИЗОНТ СОБЫТИЙ ПЕРЕСЕЧЁН','HORIZONTE CRUZADO')+'</div>'+
   '<h2>'+L('SWALLOWED BY THE VOID','ПОГЛОЩЁН БЕЗДНОЙ','DEVORADO POR EL VACÍO')+'</h2>'+
