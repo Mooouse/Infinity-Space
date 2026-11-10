@@ -2711,8 +2711,8 @@ function renderGameModeBackdrop(mode,time){
 
 // A mode swipe crossfades and displaces the PREVIOUS universe frame over
 // the newly rendered real scene. No image assets, repaint loops or card hacks.
-const menuTransitionCanvas=document.createElement('canvas');
-const menuTransitionCtx=menuTransitionCanvas.getContext('2d');
+const menuTransitionCanvas=typeof document!=='undefined'?document.createElement('canvas'):null;
+const menuTransitionCtx=menuTransitionCanvas?.getContext('2d')||null;
 let menuSceneTransition=null;
 if(typeof window!=='undefined'){
  window.SpaceMenuBeginTransition=(direction=1)=>{
