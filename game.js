@@ -1,6 +1,8 @@
 /* Infinity Space — dependency-free 2D Canvas game. No 3D / external game engines. */
-(() => {
+(async () => {
 'use strict';
+// Restore Playgama cloud save before creating the game state.
+await window.SpacePlatform?.startup;
 const $ = id => document.getElementById(id);
 const canvas = $('universe');
 // Present only complete frames. The old low-latency front buffer exposed
@@ -333,7 +335,7 @@ function scheduleMusic(){}
 
 function startMusic(){const t=MUSIC_TRACKS.find(t=>t.id===g.activeTrack&&g.ownedTracks.includes(t.id));if(!t){if(externalMusic)externalMusic.pause();externalMusic=null;g.activeTrack=null;}else if(!externalMusic){externalMusic=new Audio(t.src);externalMusic.loop=true;}initAudio();setMusicVolume();}
 addEventListener('space-platform-audio',()=>setMusicVolume());
-function save(){if(testerAbsoluteResetPending)return;g.worldX=player.x;g.worldY=player.y;try{localStorage.setItem(SAVE_KEY,JSON.stringify(g));}catch(_){toastStorageWarning();}}
+function save(){if(testerAbsoluteResetPending)return;g.worldX=player.x;g.worldY=player.y;let json;try{json=JSON.stringify(g);localStorage.setItem(SAVE_KEY,json);}catch(_){toastStorageWarning();}if(json&&!TEST_MODE)window.SpacePlatform?.persist?.(json);}
 let storageWarned=false;function toastStorageWarning(){if(!storageWarned){storageWarned=true;console.warn('Infinity Space: сохранение мира не помещается в localStorage');}}
 
 function makeSky(){
