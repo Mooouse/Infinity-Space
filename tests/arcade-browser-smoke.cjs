@@ -15,12 +15,32 @@ const modeNames=['arena','royale','core','race'];
   await page.goto(base+'/cosmic-arena.html',{waitUntil:'domcontentloaded',timeout:45000});
   await page.locator('#menu .mode[data-mode="arena"]').waitFor({state:'visible',timeout:15000});
   assert.equal(await page.locator('#menu .mode[data-mode]').count(),4);
-  assert.equal(await page.locator('#menu .mode-endless').count(),1);
+  assert.equal(await page.locator('#menu .mode-gallery-endless').count(),1);
+  await page.waitForFunction(()=>{
+   const c=document.querySelector('.mode-preview-art');
+   if(!c)return false;
+   const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
+   let pixels=0;
+   for(let i=0;i<d.length;i+=1812)if(d[i]+d[i+1]+d[i+2]>70)pixels++;
+   return pixels>55;
+  },null,{timeout:12000});
+  await page.locator('#mode-next').click();
+  await page.waitForFunction(()=>document.getElementById('menu')?.dataset.selection==='royale',null,{timeout:7000});
+  assert.equal(await page.locator('#mode-page-indicator').innerText().then(x=>x.includes('02')),true);
+  await page.locator('#mode-carousel-viewport').focus();
+  await page.keyboard.press('ArrowRight');
+  await page.waitForFunction(()=>document.getElementById('menu')?.dataset.selection==='core',null,{timeout:7000});
+  await page.locator('#mode-prev').click();
+  await page.waitForFunction(()=>document.getElementById('menu')?.dataset.selection==='royale',null,{timeout:7000});
+  console.log('PASS: illustrated carousel changes mode backgrounds and supports arrow navigation');
   console.log('PASS: selection screen includes all competitive modes and endless universe');
   for(const mode of modeNames){
    await page.goto(base+'/cosmic-arena.html?mode='+mode,{waitUntil:'domcontentloaded',timeout:45000});
    await page.waitForFunction(()=>document.querySelector('#hud:not([hidden])')&&Number(document.querySelector('#mass')?.textContent)>0,null,{timeout:18000});
    await page.waitForTimeout(900);
+   const stage=await page.locator('#arena-stage-name').textContent();
+   assert.equal(stage==='Cosmic Dust'||stage==='Космическая пыль',true,mode+' must not skip its initial evolution stage');
+   assert.equal(await page.locator('#arena-stage-bar').count(),1);
    const sample=await page.evaluate(()=>{
     const cvs=document.getElementById('arena'),c=cvs.getContext('2d');
     const w=cvs.width,h=cvs.height,arr=c.getImageData(0,0,w,h).data;
