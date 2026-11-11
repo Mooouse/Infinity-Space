@@ -1,0 +1,82 @@
+/* Infinity Space / Cosmic Worms: shared neutral visual system and segmented skin studio */
+.ws-overlay,.ws-overlay *{box-sizing:border-box}
+.ws-overlay{
+ position:fixed;inset:0;z-index:2147483600;display:flex;align-items:center;justify-content:center;
+ padding:calc(14px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right))
+  calc(14px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left));
+ background:rgba(3,6,15,.84);backdrop-filter:blur(14px);color:#eef3ff;
+ font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;
+}
+.ws-overlay button{font:inherit;cursor:pointer;color:inherit;touch-action:manipulation}
+.ws-dialog{
+ width:min(940px,100%);max-height:min(94dvh,920px);overflow:hidden;display:flex;flex-direction:column;
+ border:1px solid #38455f;border-radius:16px;
+ background:#111724;box-shadow:0 25px 100px #000c,0 1px #65718b40 inset;
+}
+.ws-header{display:flex;justify-content:space-between;gap:24px;padding:24px 28px 17px;border-bottom:1px solid #2f394d}
+.ws-eyebrow{font-size:10px;font-weight:850;color:#6e97ff;letter-spacing:.13em}
+.ws-title{margin:7px 0 8px;font-size:clamp(23px,3.2vw,32px);font-weight:900;letter-spacing:-.035em;color:#f3f6ff}
+.ws-desc{margin:0;max-width:690px;font-size:13px;line-height:1.5;color:#b4bfd4}
+.ws-x{flex:none;width:39px;height:39px;display:grid;place-items:center;border-radius:9px;border:1px solid #44536d;background:#182232;font-size:26px!important;line-height:1;color:#dfe7ff!important}
+.ws-x:hover{border-color:#648bff;background:#202f4a}
+.ws-body{overflow-y:auto;min-height:0;overscroll-behavior:contain;padding:17px 28px 12px;scrollbar-color:#4b5a78 #111724}
+.ws-body h3{color:#f0f4ff;font-size:12px;text-transform:uppercase;letter-spacing:.11em;margin:8px 0 12px;font-weight:850}
+.ws-presets{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}
+.ws-preset{min-width:0;display:flex;flex-direction:column;gap:10px;justify-content:center;align-items:center;padding:10px 5px 11px;border-radius:10px;background:#1a2333;border:1px solid #35435c;min-height:81px;color:#e8edfa;font-size:11px!important;font-weight:800!important;line-height:1.24;text-align:center}
+.ws-preset:hover{border-color:#7290ca;background:#202d43}
+.ws-preset.selected{border-color:#6e97ff;background:#21334d;box-shadow:0 0 0 1px #2860ff52 inset}
+.ws-preset-beads{display:flex;justify-content:center;align-items:center;height:24px;padding-left:3px}
+.ws-preset-beads i{display:block;height:23px;width:23px;border-radius:50%;margin-left:-5px;border:2px solid #0c1223;box-shadow:0 2px 5px #0006}
+.ws-preset>span:last-child{min-height:2.5em;display:grid;place-items:center}
+.ws-section{margin-top:20px;padding-top:16px;border-top:1px solid #303c52}
+.ws-part-head{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.ws-part-head h3{margin-bottom:8px}
+.ws-indicator{font-size:11px;font-weight:800;color:#ffe500;font-variant-numeric:tabular-nums}
+.ws-tip{font-size:12px;line-height:1.5;margin:0 0 14px;color:#aeb9d1}
+.ws-segments{display:flex;flex-wrap:wrap;align-items:center;gap:7px;min-height:53px}
+.ws-bead{position:relative;width:30px;height:30px;flex:none;border-radius:50%!important;background:var(--bead-color)!important;border:2px solid #0a1020!important;box-shadow:0 2px 5px #0008,inset -4px -5px 7px #0004,inset 3px 3px 5px #ffffff66;transition:transform .12s,border-color .12s}
+.ws-bead:hover{transform:translateY(-3px) scale(1.1)}
+.ws-bead.selected{outline:2px solid #e8efff;outline-offset:2px}
+.ws-bead:focus-visible{outline:2px solid #ffe500;outline-offset:3px}
+.ws-palette{display:flex;flex-wrap:wrap;gap:9px}
+.ws-color{height:33px;width:33px;flex:none;border-radius:7px;border:2px solid #101621!important;background:var(--bead-color)!important;box-shadow:inset 0 1px #ffffff55,0 2px 7px #0009;transition:transform .13s}
+.ws-color:hover{transform:translateY(-3px)}
+.ws-color.selected{outline:2px solid #ffffff;outline-offset:2px}
+.ws-custom-label{display:inline-flex;align-items:center;gap:10px;margin-top:13px;font-size:12px;color:#d0d9eb}
+.ws-custom{width:49px;height:32px;padding:2px;cursor:pointer;background:#101726;border-radius:6px;border:1px solid #52627f}
+.ws-footer{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:9px;padding:16px 28px;border-top:1px solid #303c52;background:#141c2b}
+.ws-footer button{min-height:43px;min-width:104px;border-radius:8px;border:1px solid #41516d;background:#202a3d;font-size:12px!important;font-weight:850!important;padding:10px 15px;letter-spacing:.01em}
+.ws-footer button:hover{background:#293750;border-color:#7292ca}
+.ws-footer .ws-done{background:#264fbb;color:#fff;border-color:#5282ff}
+.ws-footer .ws-done:hover{background:#3664d6;border-color:#97b1ff}
+.ws-footer .ws-reset{margin-right:auto;color:#ffb2bf;border-color:#753e54;background:#32202d}
+.ws-footer .ws-reset:hover{background:#482332;border-color:#ff1744}
+.ws-dialog :focus-visible{outline:2px solid #ffe500;outline-offset:2px}
+@media(max-width:740px){
+ .ws-overlay{padding:8px calc(8px + env(safe-area-inset-right)) 8px calc(8px + env(safe-area-inset-left))}
+ .ws-dialog{max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 16px);border-radius:12px}
+ .ws-header{padding:15px 16px 12px;gap:9px}
+ .ws-title{font-size:22px}
+ .ws-desc{font-size:11px}
+ .ws-body{padding:9px 14px}
+ .ws-presets{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+ .ws-preset{min-height:65px;padding:5px 3px;gap:5px;font-size:10px!important}
+ .ws-preset-beads i{height:18px;width:18px}
+ .ws-section{margin-top:12px;padding-top:10px}
+ .ws-segments{gap:6px}
+ .ws-bead{width:27px;height:27px}
+ .ws-footer{padding:10px;gap:6px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ws-footer button{min-width:0;min-height:40px;font-size:11px!important}
+ .ws-footer .ws-reset{margin:0}
+}
+@media(max-height:540px) and (orientation:landscape){
+ .ws-header{padding:10px 14px}
+ .ws-title{font-size:19px;margin:2px 0}
+ .ws-body{padding:8px 14px}
+ .ws-presets{grid-template-columns:repeat(6,minmax(0,1fr))}
+ .ws-preset{min-height:57px;gap:2px}
+ .ws-section{margin-top:8px;padding-top:6px}
+ .ws-footer{display:flex;padding:7px 12px}
+ .ws-footer button{min-height:33px;padding:6px}
+}
+@media(prefers-reduced-motion:reduce){.ws-overlay *, .ws-overlay *::before,.ws-overlay *::after{transition:none!important;animation:none!important}}
