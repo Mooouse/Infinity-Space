@@ -1144,6 +1144,12 @@ if(new URLSearchParams(location.search).has('tester')){
    if(!game)return null;
    const p=game.people[0];
    return {mass:p.mass,stage:p.stage,zoom:camera.zoom,state:game.state,mode};
+  },
+  forceFinish(won=true){
+   if(!game||DEMO_MODE)return;
+   if(game.state==='guide')closeGuide();
+   const p=game.people[0];p.mass=Math.max(p.mass,1200);p.absorbed=23;p.kills=3;
+   finish(won,'test');
   }
  };
 }
