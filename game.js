@@ -34,7 +34,7 @@ function fmt(value){
 }
 const timeFmt = sec => {let h=Math.floor(sec/3600),m=Math.floor(sec/60)%60,s=Math.floor(sec)%60;return h?`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`:`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`};
 const TA = [
- ['Космическая пыль','Рождение материи','Каждый великий мир начинается с одной частицы.','dust','#72d8ff'],
+ ['Космическая пыль','Рождение материи','Каждый великий мир начинается с одной частицы.','dust','#2860ff'],
  ['Микрометеор','Рождение материи','Собери первые осколки древнего космоса.','rock','#87caff'],
  ['Каменный обломок','Рождение материи','Гравитация становится ощутимой.','rock','#b5bfd7'],
  ['Хондрит','Рождение материи','Материя соединяется в прочное ядро.','rock','#c1b6ad'],
@@ -42,9 +42,9 @@ const TA = [
  ['Крупный астероид','Рождение материи','Сотни осколков образуют твой путь.','rock','#bc987d'],
  ['Планетезималь','Планетарная эра','Первые шаги к настоящей планете.','rock','#94adcc'],
  ['Карликовая планета','Планетарная эра','Вокруг ядра появляются спутники.','planet','#baa3ed'],
- ['Ледяной мир','Планетарная эра','Холодные океаны света и льда.','planet','#90deef'],
- ['Океаническая планета','Планетарная эра','Голубое сердце далёкого космоса.','planet','#3dbbdb'],
- ['Каменная планета','Планетарная эра','Горы и континенты на твоей поверхности.','planet','#79c4b2'],
+ ['Ледяной мир','Планетарная эра','Холодные океаны света и льда.','planet','#2860ff'],
+ ['Океаническая планета','Планетарная эра','Голубое сердце далёкого космоса.','planet','#2860ff'],
+ ['Каменная планета','Планетарная эра','Горы и континенты на твоей поверхности.','planet','#27ff40'],
  ['Газовый гигант','Планетарная эра','Потоки материи создают гигантские бури.','gas','#efbd9e'],
  ['Ледяной гигант','Планетарная эра','Мощная гравитация удерживает целые кольца.','gas','#83b7f5'],
  ['Коричневый карлик','Звёздная эра','В ядре пробуждается древнее тепло.','star','#e88978'],
@@ -55,11 +55,11 @@ const TA = [
  ['Гипергигант','Звёздная эра','Вещество и энергия подчиняются тебе.','star','#a9a1ff'],
  ['Звёздная туманность','Галактическая эра','Рождение новых светил в твоих потоках.','nebula','#ac80f9'],
  ['Звёздное скопление','Галактическая эра','Ты управляешь тысячами сияющих звёзд.','cluster','#85b4ff'],
- ['Звёздная система','Галактическая эра','Планеты и орбиты вокруг общего ядра.','cluster','#82d8eb'],
+ ['Звёздная система','Галактическая эра','Планеты и орбиты вокруг общего ядра.','cluster','#2860ff'],
  ['Протогалактика','Галактическая эра','Спиральные рукава начинают вращение.','galaxy','#ae90ff'],
  ['Спиральная галактика','Галактическая эра','Миллиарды звёзд формируют твой мир.','galaxy','#b5a1ff'],
  ['Группа галактик','Сверхмасштаб','Отдельные галактики становятся пылинками.','cluster','#a6b9ff'],
- ['Скопление галактик','Сверхмасштаб','Ты притягиваешь целые галактические миры.','cluster','#8de6f3'],
+ ['Скопление галактик','Сверхмасштаб','Ты притягиваешь целые галактические миры.','cluster','#2860ff'],
  ['Космическая паутина','Сверхмасштаб','Нити гравитации соединяют всё сущее.','web','#bf9bff'],
  ['БЕСКОНЕЧНАЯ ЧЁРНАЯ ДЫРА','Бесконечность','Поглощай всё вокруг: горизонт событий продолжает расти.','blackhole','#ffb269']
 ].map((a,i)=>({name:a[0],epoch:a[1],desc:a[2],type:a[3],color:a[4],required:Math.round(180+100*Math.pow(i+1,1.47))}));
@@ -71,7 +71,7 @@ const upgrades = [
  {id:'harvest',name:'Синтез материи',label:'Бонус к поглощению',glyph:'✦',base:65,growth:1.31,max:65},
  {id:'shield',name:'Стабильность',label:'Защита от опасностей',glyph:'⬡',base:80,growth:1.28,max:45}
 ];
-const MATERIALS={ore:{label:'Минералы',symbol:'⬡',color:'#64c7ff'},crystal:{label:'Кристаллы',symbol:'◆',color:'#48f0ff'},ice:{label:'Лёд',symbol:'❄',color:'#8df5ff'},gas:{label:'Газ',symbol:'◌',color:'#b68aff'},plasma:{label:'Плазма',symbol:'✺',color:'#ffb34d'},exotic:{label:'Экзоматерия',symbol:'✧',color:'#ec75ff'}};
+const MATERIALS={ore:{label:'Минералы',symbol:'⬡',color:'#64c7ff'},crystal:{label:'Кристаллы',symbol:'◆',color:'#2860ff'},ice:{label:'Лёд',symbol:'❄',color:'#2860ff'},gas:{label:'Газ',symbol:'◌',color:'#b68aff'},plasma:{label:'Плазма',symbol:'✺',color:'#ffb34d'},exotic:{label:'Экзоматерия',symbol:'✧',color:'#ec75ff'}};
 const MATERIAL_KEYS=Object.keys(MATERIALS);
 function stageRecipe(t=g.tier){
  // Gradually introduce one new resource every epoch. No deliberately huge mass caps.
@@ -132,7 +132,7 @@ function normaliseMapPins(value){
  if(!Array.isArray(value))return [];
  const ids=new Set();
  return value.filter(p=>p&&Number.isSafeInteger(p.id)&&p.id>0&&!ids.has(p.id)&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&(ids.add(p.id),true)).slice(0,64)
-  .map(p=>({id:p.id,x:p.x,y:p.y,zoom:clamp(Number(p.zoom)||1,1e-155,12),name:String(p.name||'Метка').slice(0,32),color:/^#[0-9a-f]{6}$/i.test(p.color)?p.color:'#7ddcff'}));
+  .map(p=>({id:p.id,x:p.x,y:p.y,zoom:clamp(Number(p.zoom)||1,1e-155,12),name:String(p.name||'Метка').slice(0,32),color:/^#[0-9a-f]{6}$/i.test(p.color)?p.color:'#2860ff'}));
 }
 g.freeFlights=Object.fromEntries(Object.entries(g.freeFlights||{}).filter(([key,e])=>e&&[e.x,e.y,e.vx,e.vy,e.flightTime,e.r].every(Number.isFinite)&&e.r>0&&(typeof e.chunk==='string'||(e.cosmic&&Number.isFinite(e.gx)&&Number.isFinite(e.gy)))&&Number.isInteger(e.index)&&e.index>=0&&e.index<32));
 g.viewZoom=Number.isFinite(g.viewZoom)?clamp(g.viewZoom,.05,10):1;
@@ -271,7 +271,7 @@ function advanceHarvestChain(){
  if(g.tier>=13)return 1;
  harvestChain=harvestChainTime>0?harvestChain+1:1;harvestChainTime=5;g.bestChain=Math.max(g.bestChain||0,harvestChain);
  if(harvestChain%4===0){
-  const color=harvestChain>=12?'#ffd6a0':'#86eaff';
+  const color=harvestChain>=12?'#ffd6a0':'#2860ff';
   shockwaves.push({x:player.x,y:player.y,r:player.r,life:.7,max:.7,color,range:110});
   sound(330+Math.min(12,harvestChain)*22,'sine',.18,.012);
  }
@@ -489,7 +489,7 @@ function buy(id){
  const quote=upgradeQuote(u);
  if(!quote.count||!Number.isFinite(quote.cost)||quote.cost>g.credits){toast('Недостаточно звёздной пыли');return;}
  g.credits=Math.max(0,g.credits-quote.cost);g.upgrade[id]+=quote.count;
- sound(590,'triangle',.13);burst(player.x,player.y,20,'#81e5ec',1);renderUI(true);save();
+ sound(590,'triangle',.13);burst(player.x,player.y,20,'#2860ff',1);renderUI(true);save();
 }
 function flightSpeed(){
  const power=upgradePower('speed');
@@ -754,10 +754,10 @@ function streamMacroBodies(){
  macroEntities=macroEntities.filter(e=>!e.dead&&((!e.freeFlight&&active.has(e.chunk))||e.absorbing||e.gravityBound));
 }
 const GALAXY_PALETTES=[
- ['#43caff','#9eeaff','#fff3c6'],['#a56aff','#e4a0ff','#fff5ef'],
- ['#ffad4a','#ffe1a0','#fff8e8'],['#39f4d9','#8cafff','#e7fffa'],
+ ['#2860ff','#2860ff','#fff3c6'],['#a56aff','#e4a0ff','#fff5ef'],
+ ['#ffad4a','#ffe1a0','#fff8e8'],['#27ff40','#8cafff','#e7fffa'],
  ['#ff69b1','#ffaceb','#fff3c5'],['#e2e8fa','#a4bbda','#f5f9ff'],
- ['#9ed18a','#e2f5ae','#fff6e0'],['#68a0ff','#8bdee8','#f6d2fd'],
+ ['#9ed18a','#e2f5ae','#fff6e0'],['#68a0ff','#2860ff','#f6d2fd'],
  ['#ffc4a5','#e8a0ff','#d6fcff']
 ];
 function cosmicSprite(material,shape,style=0,palette=0){
@@ -851,7 +851,7 @@ function bodySprite(e){
  if(bodySpriteCache.has(key))return bodySpriteCache.get(key);
  const cv=document.createElement('canvas');cv.width=cv.height=256;
  const previous=ctx;ctx=cv.getContext('2d');
- const colors=['#d6b99b','#80b5ee','#f5c374','#55dce0','#ef95c1','#e0eeff','#b5d784','#68b2ff','#eea17b'];
+ const colors=['#d6b99b','#80b5ee','#f5c374','#2860ff','#ef95c1','#e0eeff','#b5d784','#68b2ff','#eea17b'];
  const color=colors[palette],rng=chunkRandom(style*93+palette*791+173);
  try{
   if(type==='asteroid')paintRock(128,128,88,color,style*.3,5,style);
@@ -890,7 +890,7 @@ function drawMacro(e,time,zoom,opacity=1){
  const fade=absorptionLight(e); // Preserve the previous ring image; fade only after full entry.
  ctx.save();ctx.globalAlpha=macroOpacity(e,radius,opacity)*fade;
  if(e.kind==='blackhole'){
-  if(drawR<3){ctx.fillStyle=['#69c9ed','#cda1f9','#ffcc8e'][e.holeType||0];ctx.fillRect(x-1,y-1,2,2);}
+  if(drawR<3){ctx.fillStyle=['#2860ff','#cda1f9','#ffcc8e'][e.holeType||0];ctx.fillRect(x-1,y-1,2,2);}
   else {const cv=blackHoleSprite(e.holeType||0);ctx.drawImage(cv,x-drawR*2,y-drawR*2,drawR*4,drawR*4);}
  }else if(drawR<3){ctx.fillStyle=GALAXY_PALETTES[(e.palette||0)%9][0];ctx.fillRect(x-1.2,y-1.2,2.4,2.4);}
  else {const cv=bodySprite(e);
@@ -1581,7 +1581,7 @@ function testerVisitAbyss(){
  toast('Снаружи поля притяжения. Вход за горизонт уничтожит тестовый прогресс.');
 }
 
-function burst(x,y,n,color='#7ed9ff',scale=1){const cap=g.particles?Math.min(30,n):Math.min(5,n);for(let i=0;i<cap;i++){const a=rand(0,TAU),sp=rand(35,180)*scale;particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:rand(.3,.9),max:.9,r:rand(1,3.4)*scale,color});}if(particles.length>420)particles.splice(0,particles.length-420);}
+function burst(x,y,n,color='#2860ff',scale=1){const cap=g.particles?Math.min(30,n):Math.min(5,n);for(let i=0;i<cap;i++){const a=rand(0,TAU),sp=rand(35,180)*scale;particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:rand(.3,.9),max:.9,r:rand(1,3.4)*scale,color});}if(particles.length>420)particles.splice(0,particles.length-420);}
 function popText(x,y,text,color='#c7ebff'){texts.push({x,y,text,color,life:1.1});if(texts.length>35)texts.shift();}
 // Per-form calibration: comparable-sized bodies matter; dust never grants a flat
 // percentage of a planet/galaxy. No elapsed-time gate or passive mass income.
@@ -1601,7 +1601,7 @@ function absorb(e){advanceHarvestChain();const mat=resourceOf(e);const boost=(1+
  let credits=val*(e.kind==='relic'?1.7:.75);g.credits+=credits;if(e.kind==='relic'){g.materials.exotic=(g.materials.exotic||0)+.1;g.stageRare++;g.rare++;if(!g.endless&&player.r<CHUNK*4)burst(e.x,e.y,22,'#f9d797',.9);pickupFeedback(val,true);}else if(!g.endless&&player.r<CHUNK*4&&Math.random()<.24){burst(e.x,e.y,4,MATERIALS[mat].color,.35);}
  // The current physical size reacts to each collected object, not just to a stage transition.
  player.targetR=currentRadius();
- if(e.kind!=='relic')pickupFeedback(val,false);if(!g.endless&&player.r<CHUNK*4&&g.particles&&Math.random()<.36)energyArcs.push({x:e.x,y:e.y,toX:player.x,toY:player.y,r:e.r,life:.24,max:.24,color:e.kind==='relic'?'#ffe7af':'#77dfff'});respawn(e);if(!g.complete&&g.matter>=TA[g.tier].required&&missionsDone())evolve();}
+ if(e.kind!=='relic')pickupFeedback(val,false);if(!g.endless&&player.r<CHUNK*4&&g.particles&&Math.random()<.36)energyArcs.push({x:e.x,y:e.y,toX:player.x,toY:player.y,r:e.r,life:.24,max:.24,color:e.kind==='relic'?'#ffe7af':'#2860ff'});respawn(e);if(!g.complete&&g.matter>=TA[g.tier].required&&missionsDone())evolve();}
 // Bodies larger than you stay in the universe; avoid them until you outgrow them.
 function applyGiantPull(dt,speed){
  if(g.endless)return;
@@ -1654,7 +1654,7 @@ function flashAbilityButton(id){
 function activatePulse(){
  if(!running||pulseCd>0)return;pulseCd=13;flashAbilityButton('pulse');g.pulses++;g.stagePulses++;
  const range=Math.max(270+upgradePower('gravity')*7,ordinaryGravityRadius()*1.25);
- shockwaves.push({x:player.x,y:player.y,r:player.r,max:1.2,life:1.2,color:'#84dfff',range});
+ shockwaves.push({x:player.x,y:player.y,r:player.r,max:1.2,life:1.2,color:'#2860ff',range});
  for(const e of [...entities,...macroEntities,...cosmicAbsorptions]){
   if(e.dead||e.absorbing||e.gathering||!canAbsorbBody(e))continue;
   const dx=player.x-e.x,dy=player.y-e.y,d=Math.hypot(dx,dy);if(d>=range||!d)continue;
@@ -1816,7 +1816,7 @@ function makeSkyDepthTexture(seed,density){
  const count=Math.min(72000,Math.max(4500,Math.floor(W*H/48)))*density;
  // Each association has a coherent hue, several knots and a curved outline.
  // Most stars belong to associations; sparse field stars leave dark gaps.
- const palettes=[['#a54dff','#c675ff','#d9a2ff'],['#35aaff','#60c6ff','#8ddbff'],
+ const palettes=[['#a54dff','#c675ff','#d9a2ff'],['#35aaff','#60c6ff','#2860ff'],
   ['#ff53b9','#ff7bd4','#ff9cde'],['#ffac3d','#ffc660','#ffdc8b'],
   ['#7860ff','#a18aff','#beadff']];
  const groups=Array.from({length:9},(_,i)=>{
@@ -2019,9 +2019,9 @@ function planetArtwork(color,gas=false,variant=0){
  const S=224,C=112,R=86,cv=document.createElement('canvas');cv.width=cv.height=S;
  const c=cv.getContext('2d'),img=c.createImageData(S,S),pixels=img.data;
  const base=artRGB(color),seed=0x98a43+style*971+((base[0]<<16)|(base[1]<<8)|base[2]);
- const ice=!gas&&(color==='#90deef'||color==='#83b7f5'||color==='#8df5ff'||style===4);
- const ocean=!gas&&!ice&&(color==='#3dbbdb'||style===1||style===3);
- const lush=!gas&&!ice&&(color==='#79c4b2'||style===2);
+ const ice=!gas&&(color==='#2860ff'||color==='#83b7f5'||color==='#2860ff'||style===4);
+ const ocean=!gas&&!ice&&(color==='#2860ff'||style===1||style===3);
+ const lush=!gas&&!ice&&(color==='#27ff40'||style===2);
  const sea=artMix(base,[9,37,92],.69),shore=artMix(base,[197,220,197],.38);
  const earth=artMix(base,lush?[90,147,90]:ice?[191,226,239]:[194,140,96],.50);
  const frost=artMix(base,[232,245,255],.72);
@@ -2076,7 +2076,7 @@ function planetArtwork(color,gas=false,variant=0){
  const atmosphere=c.createRadialGradient(C,C,R*.70,C,C,R*1.18);
  atmosphere.addColorStop(0,'#00000000');
  atmosphere.addColorStop(.70,'#00000000');
- atmosphere.addColorStop(.85,gas?'#e4baff23':'#87d9ff27');
+ atmosphere.addColorStop(.85,gas?'#e4baff23':'#2860ff27');
  atmosphere.addColorStop(1,'#6badff00');
  c.putImageData(img,0,0);
  c.globalCompositeOperation='destination-over';
@@ -2483,7 +2483,7 @@ function paintPlayerForm(x,y,r,time,tier=g.tier){
   ctx.save();ctx.translate(x,y);
   if(tier===7){for(let i=0;i<2;i++)glowDot(Math.cos(phase+i*3)*r*1.5,Math.sin(phase+i*3)*r*.6,r*.17,'#dce2ff',.5);}
   if(tier===8){ctx.fillStyle='rgba(243,254,255,.78)';ctx.beginPath();ctx.ellipse(0,-r*.69,r*.67,r*.21,-.3,0,TAU);ctx.fill();}
-  if(tier===9){ctx.strokeStyle='#7af2ff';ctx.lineWidth=2;for(let i=0;i<3;i++){ctx.beginPath();ctx.arc(0,r*.05*i,r*.48+i*2.5,-2.7,-.5);ctx.stroke();}}
+  if(tier===9){ctx.strokeStyle='#2860ff';ctx.lineWidth=2;for(let i=0;i<3;i++){ctx.beginPath();ctx.arc(0,r*.05*i,r*.48+i*2.5,-2.7,-.5);ctx.stroke();}}
   if(tier===10){ctx.fillStyle='#76e3a5';for(let i=0;i<4;i++){let a=i*1.63;ctx.beginPath();ctx.ellipse(Math.cos(a)*r*.43,Math.sin(a)*r*.45,r*.19,r*.1,a,0,TAU);ctx.fill();}}
   if(tier===11){ctx.strokeStyle='#ffd2a4';ctx.lineWidth=3;for(let i=-2;i<=2;i++){ctx.beginPath();ctx.moveTo(-r*.72,i*r*.22);ctx.quadraticCurveTo(0,i*r*.17+r*.1,r*.72,i*r*.22);ctx.stroke();}}
   if(tier===12){ctx.strokeStyle='#dcf8ff';ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(0,0,r*1.8,r*.42,-.18,0,TAU);ctx.stroke();}
@@ -2497,10 +2497,10 @@ function paintPlayerForm(x,y,r,time,tier=g.tier){
  }else if(tier<=27){
   if(tier===19){ctx.globalAlpha=.9;paintGalaxy(x,y,r*1.38,t.color,time);ctx.globalAlpha=1;glowDot(x,y,r*.2,'#fff7ff');}
   else if(tier===20){for(let i=0;i<13;i++){let a=i*2.399+phase;let R=Math.sqrt(i/13)*r*1.1;glowDot(x+Math.cos(a)*R,y+Math.sin(a)*R,r*(i%3===0?.18:.1),i%2?'#ffe6b7':t.color,.32);}glowDot(x,y,r*.18,'#ffffff');}
-  else if(tier===21){paintStar(x,y,r*.46,'#ffedbb');ctx.strokeStyle=cssColor(t.color,.6);for(let i=1;i<=3;i++){ctx.beginPath();ctx.ellipse(x,y,r*(.55+i*.36),r*(.32+i*.17),-.3,0,TAU);ctx.stroke();let a=phase*(1.3/i)+i;glowDot(x+Math.cos(a)*r*(.55+i*.36),y+Math.sin(a)*r*(.32+i*.17),Math.max(2,r*.07),i===1?'#8befff':'#edc9ff',.4);}}
+  else if(tier===21){paintStar(x,y,r*.46,'#ffedbb');ctx.strokeStyle=cssColor(t.color,.6);for(let i=1;i<=3;i++){ctx.beginPath();ctx.ellipse(x,y,r*(.55+i*.36),r*(.32+i*.17),-.3,0,TAU);ctx.stroke();let a=phase*(1.3/i)+i;glowDot(x+Math.cos(a)*r*(.55+i*.36),y+Math.sin(a)*r*(.32+i*.17),Math.max(2,r*.07),i===1?'#2860ff':'#edc9ff',.4);}}
   else if(tier===22){ctx.globalAlpha=1;paintGalaxy(x,y,r*.83,t.color,time);ctx.globalAlpha=1;}
   else if(tier===23){paintGalaxy(x,y,r*1.3,t.color,time);}
-  else if(tier===24||tier===25){const num=tier===24?3:6;for(let i=0;i<num;i++){let a=i*TAU/num+phase*.17;let radius=r*(tier===24?.64:.88);paintGalaxy(x+Math.cos(a)*radius,y+Math.sin(a)*radius*.8,r*(tier===24?.45:.30),i%2?'#79dff7':t.color,time+i);}}
+  else if(tier===24||tier===25){const num=tier===24?3:6;for(let i=0;i<num;i++){let a=i*TAU/num+phase*.17;let radius=r*(tier===24?.64:.88);paintGalaxy(x+Math.cos(a)*radius,y+Math.sin(a)*radius*.8,r*(tier===24?.45:.30),i%2?'#2860ff':t.color,time+i);}}
   else if(tier===26){const nodes=[];for(let i=0;i<13;i++){let a=i*2.399+phase*.07;nodes.push([x+Math.cos(a)*r*(.3+i*.08),y+Math.sin(a)*r*(.25+i*.05)]);}ctx.strokeStyle='rgba(182,145,255,.6)';ctx.lineWidth=1.3;for(let i=0;i<nodes.length-2;i++){ctx.beginPath();ctx.moveTo(...nodes[i]);ctx.lineTo(...nodes[(i+5)%nodes.length]);ctx.stroke();}for(const [nx,ny]of nodes)glowDot(nx,ny,r*.09,'#d3c9ff',.5);}
   else paintBlackHole(x,y,r,time);
  }
@@ -2517,7 +2517,7 @@ function paintEvolutionDetails(x,y,r,time,tier){
  function orbit(rx,ry,angle,col,width=2){ctx.save();ctx.rotate(angle);ctx.strokeStyle=col;ctx.lineWidth=width;ctx.beginPath();ctx.ellipse(0,0,rx,ry,0,0,TAU);ctx.stroke();ctx.restore();}
  function spark(a,rr,size,col){const px=Math.cos(a)*rr,py=Math.sin(a)*rr;strokePath([[px-Math.cos(a)*size,py-Math.sin(a)*size],[px+Math.cos(a)*size,py+Math.sin(a)*size]],col,Math.max(.7,size*.26));}
  switch(tier){
-  case 0: for(let i=0;i<5;i++)moon(rot*.9+i*TAU/5,r*(1.1+i*.12),r*.07,'#b1f4ff');break;
+  case 0: for(let i=0;i<5;i++)moon(rot*.9+i*TAU/5,r*(1.1+i*.12),r*.07,'#2860ff');break;
   case 1: for(let i=0;i<3;i++){const a=.9+i*2.14;dot(Math.cos(a)*r*.44,Math.sin(a)*r*.43,r*.09,'#a0c1db');}break;
   case 2: for(let i=0;i<4;i++)moon(rot+i*TAU/4,r*1.18,r*.13,i%2?'#b5c8df':'#8995b4');break;
   case 3: for(let i=0;i<11;i++){let a=i*2.399,rr=r*(.18+.53*(i%4)/4);dot(Math.cos(a)*rr,Math.sin(a)*rr,r*.05,i%3?'#e5d5ba':'#524d63');}break;
@@ -2526,7 +2526,7 @@ function paintEvolutionDetails(x,y,r,time,tier){
   case 6: for(let i=0;i<5;i++){let a=i*TAU/5;strokePath([[0,0],[Math.cos(a)*r*.43,Math.sin(a)*r*.43],[Math.cos(a+.2)*r*.83,Math.sin(a+.2)*r*.83]],'#f3ad7d',Math.max(1.4,r*.055));}break;
   case 7: for(let i=0;i<5;i++){let a=i*2.48;dot(Math.cos(a)*r*.59,Math.sin(a)*r*.59,r*.10,'#847ca7');}moon(rot*1.9,r*1.75,r*.20,'#dbe6f5');break;
   case 8: for(let i=0;i<7;i++){const a=i*TAU/7;strokePath([[Math.cos(a)*r*.4,Math.sin(a)*r*.4],[Math.cos(a+.22)*r*.79,Math.sin(a+.22)*r*.79]],'#d7faff',Math.max(1.5,r*.07));}dot(-r*.27,-r*.25,r*.11,'#ffffffaa');break;
-  case 9: for(let i=0;i<4;i++){let yy=(-.58+i*.36)*r;strokePath([[-r*.68,yy],[-r*.33,yy-r*.08],[r*.24,yy+r*.06],[r*.66,yy-r*.04]],'#adeeff',Math.max(1.4,r*.065));}break;
+  case 9: for(let i=0;i<4;i++){let yy=(-.58+i*.36)*r;strokePath([[-r*.68,yy],[-r*.33,yy-r*.08],[r*.24,yy+r*.06],[r*.66,yy-r*.04]],'#2860ff',Math.max(1.4,r*.065));}break;
   case 10: for(let i=0;i<3;i++){let a=i*2.3+.6;const px=Math.cos(a)*r*.4,py=Math.sin(a)*r*.4;ctx.fillStyle=i%2?'#6ce5aa':'#4eaf81';ctx.beginPath();ctx.moveTo(px-r*.25,py-r*.11);ctx.lineTo(px-r*.05,py-r*.25);ctx.lineTo(px+r*.27,py-r*.07);ctx.lineTo(px+r*.18,py+r*.20);ctx.lineTo(px-r*.1,py+r*.17);ctx.closePath();ctx.fill();}break;
   case 11: ctx.strokeStyle='#ffe3bf';ctx.lineWidth=Math.max(2,r*.08);ctx.beginPath();ctx.ellipse(r*.28,r*.08,r*.21,r*.12,-.3,0,TAU);ctx.stroke();dot(r*.28,r*.08,r*.07,'#b96154');break;
   case 12: orbit(r*1.75,r*.45,-.23,'#c9e8ffbb',r*.12);orbit(r*1.9,r*.49,-.23,'#a5d4f9aa',r*.035);break;
@@ -2538,7 +2538,7 @@ function paintEvolutionDetails(x,y,r,time,tier){
   case 18: for(let i=0;i<12;i++)spark(i*TAU/12+rot*.12,r*(1.45+.08*pulse),r*.35,i%2?'#f1dcff':'#89d5ff');break;
   case 19: for(let i=0;i<5;i++){let a=i*TAU/5+rot*.12;dot(Math.cos(a)*r*.85,Math.sin(a)*r*.66,r*.23,i%2?'#d68fff66':'#82b9ff66');}break;
   case 20: for(let i=0;i<17;i++){let a=i*2.399+rot*.15,rr=r*(.28+.78*Math.sqrt(i/17));dot(Math.cos(a)*rr,Math.sin(a)*rr*.8,r*(i%6===0?.085:.034),i%3?'#dcf3ff':'#ffd5a4');}break;
-  case 21: for(let i=0;i<4;i++)moon(rot*(1.1/(i+1))+i*TAU/4,r*(.8+i*.28),r*(.07+i*.018),['#7bd5f4','#d8b5c7','#d8bd9b','#9fdab0'][i]);break;
+  case 21: for(let i=0;i<4;i++)moon(rot*(1.1/(i+1))+i*TAU/4,r*(.8+i*.28),r*(.07+i*.018),['#2860ff','#d8b5c7','#d8bd9b','#9fdab0'][i]);break;
   case 22: for(let i=0;i<2;i++){const a=rot+i*Math.PI;for(let j=0;j<12;j++)moon(a+j*.22,r*(.28+j*.055),Math.max(1,r*.024),'#e6bbff');}break;
   case 23: for(let i=0;i<4;i++){const a=rot*.3+i*TAU/4;for(let j=0;j<13;j++)moon(a+j*.19,r*(.15+j*.075),Math.max(1,r*.023),'#c8dfff');}break;
   case 24: for(let i=0;i<3;i++)orbit(r*(.6+i*.31),r*(.22+i*.12),rot*.08+i*.8,'#b4d6ff77',Math.max(1,r*.013));break;
@@ -2609,7 +2609,7 @@ function renderGatherFlow(time){
  const p=project(player.x,player.y),r=player.r*camera.zoom;
  const strength=clamp(bound/5+harvestChain/18,.15,1)*Math.min(1,Math.max(bound?1:0,harvestChainTime));
  ctx.save();ctx.translate(p.x,p.y);ctx.globalCompositeOperation='lighter';
- const color=harvestChain>=12?'#ffd4a0':'#8be4ff';
+ const color=harvestChain>=12?'#ffd4a0':'#2860ff';
  for(let arm=0;arm<4;arm++){
   const start=time*.85+arm*TAU/4;
   ctx.strokeStyle=color;ctx.globalAlpha=strength*.25;ctx.lineWidth=1;ctx.beginPath();
@@ -2637,14 +2637,14 @@ function renderGameModeBackdrop(mode,time){
  const compact=W<720,cx=W*(compact?.69:.76),cy=H*(compact?.57:.52);
  const span=Math.min(W,H),rad=span*(compact?.105:.175);
  const mood={arena:['#342477','#276bb3'],royale:['#4a1b72','#254268'],
-             core:['#12689b','#a34293'],race:['#715395','#dd9a46'],worms:['#5433a2','#1587a8']}[mode];
+             core:['#12689b','#a34293'],race:['#715395','#dd9a46'],worms:['#5433a2','#2860ff']}[mode];
  if(!mood)return;
  ctx.save();
  const glow=ctx.createRadialGradient(cx,cy,5,cx,cy,span*.86);
  glow.addColorStop(0,cssColor(mood[0],.35));
  glow.addColorStop(.48,cssColor(mood[1],.18));glow.addColorStop(1,cssColor(mood[0],0));
  ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
- const dustColor=mode==='core'?'#89cfff':mode==='race'?'#edc0ff':mode==='worms'?'#a5f6fb':'#ad91ff';
+ const dustColor=mode==='core'?'#89cfff':mode==='race'?'#edc0ff':mode==='worms'?'#2860ff':'#ad91ff';
  for(let i=0;i<45;i++){
   const a=i*2.39996+time*.012,rr=span*(.08+.44*Math.sqrt((i+1)/45));
   const x=cx+Math.cos(a)*rr*1.23,y=cy+Math.sin(a)*rr*.76;
@@ -2694,7 +2694,7 @@ function renderGameModeBackdrop(mode,time){
   halo.addColorStop(0,'#c1f4ff93');halo.addColorStop(.17,'#4384da70');
   halo.addColorStop(.55,'#713db91c');halo.addColorStop(1,'#18133300');
   ctx.fillStyle=halo;ctx.beginPath();ctx.arc(cx,cy,a*1.9,0,TAU);ctx.fill();
-  ctx.save();ctx.translate(cx,cy);ctx.rotate(time*.09);ctx.strokeStyle='#89d8ffcc';
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(time*.09);ctx.strokeStyle='#2860ffcc';
   ctx.lineWidth=3;ctx.setLineDash([15,10]);ctx.beginPath();ctx.arc(0,0,a,0,TAU);ctx.stroke();
   ctx.setLineDash([]);ctx.rotate(-time*.21);ctx.strokeStyle='#f6d4ff70';ctx.lineWidth=1.6;
   ctx.beginPath();ctx.ellipse(0,0,a*.83,a*.45,-.32,0,TAU);ctx.stroke();ctx.restore();
@@ -2702,7 +2702,7 @@ function renderGameModeBackdrop(mode,time){
   for(let k=0;k<8;k++){
    const a=k*TAU/8+time*.03;
    const r=rad*1.64,x=cx+Math.cos(a)*r*1.3,y=cy+Math.sin(a)*r*.77;
-   paintPlanet(x,y,rad*.23,k%2?'#dc80ad':'#78cce9',false,k);
+   paintPlanet(x,y,rad*.23,k%2?'#dc80ad':'#2860ff',false,k);
    ctx.strokeStyle=k%2?'#e994bb5a':'#86cff76b';ctx.lineWidth=1;
    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(cx,cy);ctx.stroke();
   }
@@ -2723,7 +2723,7 @@ function renderGameModeBackdrop(mode,time){
    ctx.arc(hx,hy,rad*.20,0,Math.PI*2);ctx.fill();
    ctx.restore();
   };
-  drawRibbon(-.54,'#a985ff',0);drawRibbon(.84,'#65cfee',2.4);
+  drawRibbon(-.54,'#a985ff',0);drawRibbon(.84,'#2860ff',2.4);
   for(let i=0;i<32;i++){
    const angle=i*2.4+time*.25,rr=rad*(.8+(i%7)*.21);
    ctx.fillStyle=i%3===0?'#ffb9e3':'#b3a1ff';ctx.globalAlpha=.45+(i%4)*.12;
@@ -2739,7 +2739,7 @@ function renderGameModeBackdrop(mode,time){
   ctx.beginPath();ctx.moveTo(xs[0],ys[0]);
   for(let k=1;k<xs.length;k++)ctx.lineTo(xs[k],ys[k]);ctx.stroke();ctx.restore();
   paintRock(xs[0],ys[0],rad*.3,'#a9bacc',time*.12,4,2);
-  paintPlanet(xs[1],ys[1],rad*.53,'#80bdc8',false,3);
+  paintPlanet(xs[1],ys[1],rad*.53,'#2860ff',false,3);
   paintStar(xs[2],ys[2],rad*.48,'#ffce8b');
   paintBlackHole(xs[3],ys[3],rad*1.16,time);
  }
@@ -3288,7 +3288,7 @@ function paintDailyGalaxySky(){
  c.fillStyle='#080c1d';c.fillRect(0,0,W,H);
  const palettes=[
   ['#e64684','#ff7ba6','#ffc3db'],['#ff9e40','#ffd16c','#fff1bf'],
-  ['#32cf8b','#72fbb1','#d8ffeb'],['#2ebdf1','#70e0ff','#e3f9ff'],
+  ['#32cf8b','#72fbb1','#d8ffeb'],['#2860ff','#2860ff','#e3f9ff'],
   ['#8757ff','#b995ff','#eedfff'],['#ff55c7','#ffa5e6','#ffe2f5'],
   ['#436af7','#88aaff','#d8e8ff'],['#eecb44','#fff17a','#fffad3']
  ];
@@ -3387,7 +3387,7 @@ function showDailyRewards(origin){
 }
 // The wheel is built from the REAL prize weights; the visible wedge size and
 // the pointer landing angle agree with the random selection logic.
-const ROULETTE_GALAXY_COLORS=['#ee4e6d','#ffa439','#f7d44a','#41d184','#31bddb','#438ef4','#e969c4','#ffe4a0'];
+const ROULETTE_GALAXY_COLORS=['#ee4e6d','#ffa439','#f7d44a','#41d184','#2860ff','#438ef4','#e969c4','#ffe4a0'];
 // Uses the same layered star-association design as makeSkyDepthTexture:
 // thousands of pinpoints across the game, with colorful clustered galaxies
 // and deep black gaps. Each weighted prize slice is its own clipped starfield.
@@ -3709,7 +3709,7 @@ function atlasFocusHoles(bodies){
 }
 function addMapPin(x,y,zoom=atlas.zoom){
  if(!Number.isFinite(x)||!Number.isFinite(y)||g.mapPins.length>=64)return null;
- const id=g.nextPinId++,pin={id,x,y,zoom:clamp(zoom,1e-155,12),name:L('Marker','Метка','Marca')+` ${id}`,color:'#7ddcff'};
+ const id=g.nextPinId++,pin={id,x,y,zoom:clamp(zoom,1e-155,12),name:L('Marker','Метка','Marca')+` ${id}`,color:'#2860ff'};
  g.mapPins.push(pin);g.activePin=id;save();return pin;
 }
 function removeMapPin(id){
@@ -3737,7 +3737,7 @@ function openPinEditor(px,py,clientX,clientY){
  const pin=g.mapPins.find(p=>Math.hypot(bounds.width/2+(p.x-atlas.x)*scale-px,bounds.height/2+(p.y-atlas.y)*scale-py)<18);
  const x=atlas.x+(px-bounds.width/2)/scale,y=atlas.y+(py-bounds.height/2)/scale;
  const el=document.createElement('form');el.id='pin-editor';el.className='pin-editor';el.setAttribute('aria-label',L('Map marker','Метка на карте','Marca del mapa'));
- el.innerHTML=`<strong>${pin?L('EDIT MARKER','ИЗМЕНИТЬ МЕТКУ','EDITAR MARCA'):L('CREATE MARKER','СОЗДАТЬ МЕТКУ','CREAR MARCA')}</strong><label>${L('Name','Название','Nombre')}<input id="pin-editor-name" data-no-translate maxlength="32" required></label><label class="pin-color-line">${L('Colour','Цвет','Color')}<input id="pin-editor-color" type="color" value="${pin?.color||'#7ddcff'}"></label><div><button class="primary-button" type="submit">${pin?L('Save','Сохранить','Guardar'):L('Create','Создать','Crear')}</button>${pin?`<button type="button" id="pin-editor-delete" class="secondary-button">${L('Delete','Удалить','Eliminar')}</button>`:''}<button type="button" id="pin-editor-cancel" class="secondary-button">${L('Cancel','Отмена','Cancelar')}</button></div>`;
+ el.innerHTML=`<strong>${pin?L('EDIT MARKER','ИЗМЕНИТЬ МЕТКУ','EDITAR MARCA'):L('CREATE MARKER','СОЗДАТЬ МЕТКУ','CREAR MARCA')}</strong><label>${L('Name','Название','Nombre')}<input id="pin-editor-name" data-no-translate maxlength="32" required></label><label class="pin-color-line">${L('Colour','Цвет','Color')}<input id="pin-editor-color" type="color" value="${pin?.color||'#2860ff'}"></label><div><button class="primary-button" type="submit">${pin?L('Save','Сохранить','Guardar'):L('Create','Создать','Crear')}</button>${pin?`<button type="button" id="pin-editor-delete" class="secondary-button">${L('Delete','Удалить','Eliminar')}</button>`:''}<button type="button" id="pin-editor-cancel" class="secondary-button">${L('Cancel','Отмена','Cancelar')}</button></div>`;
  $('modal').append(el);$('pin-editor-name').value=pin?.name||L('Marker','Метка','Marca')+' '+g.nextPinId;
  el.style.left=clamp(clientX,12,Math.max(12,W-292))+'px';el.style.top=clamp(clientY,90,Math.max(90,H-265))+'px';
  const finish=()=>{closePinEditor();refreshPinPanel();atlas.dirty=true;};
@@ -5089,8 +5089,8 @@ if(TEST_MODE)Object.defineProperty(window,'InfinityArtQA',{value:Object.freeze({
   out.fillStyle='#060b1c';out.fillRect(0,0,w,h);
   const mats=['ore','crystal','ice','gas','plasma','exotic'];
   const planets=[
-   ['#baa3ed',false,7],['#90deef',false,8],['#3dbbdb',false,9],
-   ['#79c4b2',false,10],['#efbd9e',true,11],['#83b7f5',true,12],
+   ['#baa3ed',false,7],['#2860ff',false,8],['#2860ff',false,9],
+   ['#27ff40',false,10],['#efbd9e',true,11],['#83b7f5',true,12],
    ['#f5c374',false,0],['#a56aff',false,3],['#e2eeff',false,4]];
   const cell=w/6;
   for(let i=0;i<mats.length;i++){
