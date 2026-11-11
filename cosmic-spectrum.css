@@ -177,6 +177,13 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut[data-shortcut="ne
  border-color:#765262!important;background:linear-gradient(160deg,#281825,#151324)!important;
 }
 @media(hover:hover) and (pointer:fine){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut[data-shortcut="new"]:hover{
+  border-color:var(--space-red)!important;
+  background:linear-gradient(160deg,#442132,#191629)!important;
+  box-shadow:0 0 13px #ff174455,0 4px 12px #0005!important;
+ }
+}
+@media(hover:hover) and (pointer:fine){
  body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut:hover{
   border-color:var(--interaction-accent)!important;
   background:linear-gradient(175deg,
