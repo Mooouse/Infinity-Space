@@ -60,6 +60,50 @@
          'Evoluciona de polvo a asteroide, planeta y estrella. Cada etapa requiere tiempo. Llega primero a agujero negro.'],
    tags:[['04:45 MATCH','МАТЧ 04:45','04:45 PARTIDA'],['15 RIVALS','15 СОПЕРНИКОВ','15 RIVALES'],['5 FORMS','5 ФОРМ','5 FORMAS']]}
  ];
+ // Each menu background is the actual arcade game running a small AI-only match
+ // inside a visual-only iframe. It uses the same physics, sprites and hazards.
+ function createLiveModeBackdrop(overlay){
+  const host=document.createElement('div');host.className='hub-live-demo';
+  host.setAttribute('aria-hidden','true');overlay.prepend(host);
+  let serial=0,active=null;
+  const setMode=(mode)=>{
+   const n=++serial;
+   const frames=[...host.children];
+   if(mode==='endless'){
+    for(const old of frames)old.classList.remove('ready');
+    active=null;
+    setTimeout(()=>{if(serial===n)host.replaceChildren();},760);
+    return;
+   }
+   const wrap=document.createElement('div');wrap.className='hub-demo-frame';
+   const iframe=document.createElement('iframe');iframe.tabIndex=-1;
+   iframe.setAttribute('aria-hidden','true');iframe.setAttribute('title','Live '+mode+' demonstration');
+   iframe.setAttribute('referrerpolicy','same-origin');
+   iframe.setAttribute('loading','eager');
+   iframe.allow='autoplay';
+   iframe.src='cosmic-arena.html?demo='+encodeURIComponent(mode)+'&v=8';
+   wrap.append(iframe);host.append(wrap);
+   active=wrap;
+   const reveal=()=>{
+    if(serial!==n){wrap.remove();return;}
+    wrap.classList.add('ready');
+    for(const old of [...host.children])if(old!==wrap){
+     old.classList.remove('ready');
+     setTimeout(()=>old.remove(),840);
+    }
+   };
+   iframe.addEventListener('load',()=>{
+    // The demo has its own canvas and animation loop; no HUD or controls.
+    setTimeout(reveal,160);
+   },{once:true});
+   setTimeout(()=>{if(serial===n&&!wrap.classList.contains('ready'))reveal();},1900);
+   // Rapid successive swipes must not leave several 60-FPS simulations alive.
+   if(host.children.length>2){
+    for(const old of [...host.children].slice(0,-2))old.remove();
+   }
+  };
+  return {setMode};
+ }
  function buildMainMenuModeSelector(root,play,code){
   const langIndex=code==='en'?0:code==='es'?2:1;
   const t=(translations)=>translations[langIndex];
@@ -73,6 +117,7 @@
     '<span class="hub-mode-story-home">INFINITY SPACE</span>'+
     '<div class="hub-mode-story-brand">INFINITY SPACE <span>/</span> GAME MODES</div>'+
     '<div class="hub-story-quick" aria-label="Daily rewards"></div>'+
+    '<button class="hub-profile-chip" type="button" aria-label="Profile"><span aria-hidden="true">✧</span><span class="hub-profile-name">PLAYER</span></button>'+
     '<span class="hub-mode-story-counter"></span></header>'+
     '<div class="hub-mode-story-copy" aria-live="polite">'+
       '<p class="hub-mode-story-kicker"></p>'+
@@ -89,6 +134,19 @@
       '<span class="hub-mode-gesture"></span>'+
     '</footer><nav class="hub-story-nav" aria-label="Quick access to game sections"></nav>';
   root.append(overlay);
+  const demoBackground=createLiveModeBackdrop(overlay);
+  const profile=window.InfinityProfile;
+  const chip=q(overlay,'.hub-profile-chip');
+  const syncNickname=()=>{
+   q(chip,'.hub-profile-name').textContent=profile?.getName()||'PLAYER';
+   chip.title=(profile?.getName()||'PLAYER')+' · '+(profile?.text?.('edit')||'Change nickname');
+  };
+  syncNickname();
+  chip.onclick=()=>profile?.promptName(false,syncNickname);
+  window.addEventListener('infinity-profile-updated',syncNickname);
+  if(profile&&!profile.getName())setTimeout(()=>{
+   if(root.isConnected&&!document.querySelector('.infinity-nickname-prompt'))profile.promptName(true,syncNickname);
+  },0);
   // Daily rewards are visible directly on the home screen. Move the original
   // buttons with their registered reward callbacks, never clone dead controls.
   const quick=q(overlay,'.hub-story-quick');
@@ -112,6 +170,7 @@
    current=target;hasSelection=true;
    const entry=modeStories[current];
    window.SpaceMenuSceneMode=entry.id==='endless'?null:entry.id;
+   demoBackground.setMode(entry.id);
    root.dataset.previewMode=entry.id;
    window.SpaceMenuLastSelected=entry.id;
    // Universe map is meaningful only for the original persistent sandbox.
