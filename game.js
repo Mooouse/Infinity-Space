@@ -2637,14 +2637,14 @@ function renderGameModeBackdrop(mode,time){
  const compact=W<720,cx=W*(compact?.69:.76),cy=H*(compact?.57:.52);
  const span=Math.min(W,H),rad=span*(compact?.105:.175);
  const mood={arena:['#342477','#276bb3'],royale:['#4a1b72','#254268'],
-             core:['#12689b','#a34293'],race:['#715395','#dd9a46']}[mode];
+             core:['#12689b','#a34293'],race:['#715395','#dd9a46'],worms:['#5433a2','#1587a8']}[mode];
  if(!mood)return;
  ctx.save();
  const glow=ctx.createRadialGradient(cx,cy,5,cx,cy,span*.86);
  glow.addColorStop(0,cssColor(mood[0],.35));
  glow.addColorStop(.48,cssColor(mood[1],.18));glow.addColorStop(1,cssColor(mood[0],0));
  ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
- const dustColor=mode==='core'?'#89cfff':mode==='race'?'#edc0ff':'#ad91ff';
+ const dustColor=mode==='core'?'#89cfff':mode==='race'?'#edc0ff':mode==='worms'?'#a5f6fb':'#ad91ff';
  for(let i=0;i<45;i++){
   const a=i*2.39996+time*.012,rr=span*(.08+.44*Math.sqrt((i+1)/45));
   const x=cx+Math.cos(a)*rr*1.23,y=cy+Math.sin(a)*rr*.76;
@@ -2706,6 +2706,31 @@ function renderGameModeBackdrop(mode,time){
    ctx.strokeStyle=k%2?'#e994bb5a':'#86cff76b';ctx.lineWidth=1;
    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(cx,cy);ctx.stroke();
   }
+ }else if(mode==='worms'){
+  // Two luminous serpents chase living stardust while the real AI demo loads.
+  const drawRibbon=(start,color,phase)=>{
+   ctx.save();ctx.strokeStyle=color;ctx.lineCap='round';ctx.lineJoin='round';
+   ctx.lineWidth=rad*.29;ctx.shadowColor=color;ctx.shadowBlur=18;
+   ctx.beginPath();
+   let hx=0,hy=0;
+   for(let i=0;i<=30;i++){
+    const x=cx-rad*2.3+i*rad*.125;
+    const y=cy+start*rad*.72+Math.sin(i*.28+time*.85+phase)*rad*.37;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    hx=x;hy=y;
+   }
+   ctx.stroke();ctx.shadowBlur=13;ctx.fillStyle=color;ctx.beginPath();
+   ctx.arc(hx,hy,rad*.20,0,Math.PI*2);ctx.fill();
+   ctx.restore();
+  };
+  drawRibbon(-.54,'#a985ff',0);drawRibbon(.84,'#65cfee',2.4);
+  for(let i=0;i<32;i++){
+   const angle=i*2.4+time*.25,rr=rad*(.8+(i%7)*.21);
+   ctx.fillStyle=i%3===0?'#ffb9e3':'#b3a1ff';ctx.globalAlpha=.45+(i%4)*.12;
+   ctx.beginPath();ctx.arc(cx+Math.cos(angle)*rr,cy+Math.sin(angle)*rr*.86,
+    Math.max(1.8,rad*.028),0,Math.PI*2);ctx.fill();
+  }
+  ctx.globalAlpha=1;
  }else if(mode==='race'){
   // Visually teach the exact progression: rock -> planet -> star -> black hole.
   const xs=[cx-rad*2.08,cx-rad*.65,cx+rad*.67,cx+rad*2.05];
@@ -2751,7 +2776,7 @@ function renderMenuScene(time){
  for(let y=-dy;y<H;y+=H)for(let x=-dx;x<W;x+=W)ctx.drawImage(menuBackdrop,x,y,W,H);
  renderMenuComets(time);
  const previewMode=typeof window!=='undefined'?window.SpaceMenuSceneMode:null;
- if(previewMode&&['arena','royale','core','race'].includes(previewMode)){
+ if(previewMode&&['arena','royale','core','race','worms'].includes(previewMode)){
   renderGameModeBackdrop(previewMode,time);
   return;
  }
