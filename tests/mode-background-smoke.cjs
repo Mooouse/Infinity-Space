@@ -18,7 +18,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   assert.equal(await page.locator('#screen-menu .hub-mode-story-play').isVisible(),true);
   assert.equal(await page.locator('#screen-menu .hub-menu').isVisible(),false);
   assert.equal(await page.evaluate(()=>window.SpaceMenuSceneMode),null);
-  assert.equal(await page.locator('.hub-mode-dots button').count(),5);
+  assert.equal(await page.locator('.hub-mode-dots button').count(),6);
   assert.equal(await page.locator('.hub-story-shortcut').count(),8,
    'All main sections must be visible without opening a drawer');
   for(const section of ['map','evolution','achievements','music','bestiary','statistics','settings','new']){
