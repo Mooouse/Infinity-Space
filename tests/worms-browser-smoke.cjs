@@ -109,12 +109,12 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.ok(afkBots.length>=2&&activeBots.length>=2,'Need both AFK and active pro bots');
     for(const b of afkBots){
      const before=beforeById.get(b.id);
-     assert.ok(Math.hypot(b.x-before.x,b.y-before.y)<.0001,'AFK bot must stand still');
+     assert.ok(Math.hypot(b.x-before.x,b.y-before.y)>5,'Idle rivals must keep gliding forward');
     }
     assert.ok(activeBots.some(b=>{
      const before=beforeById.get(b.id);
      return Math.hypot(b.x-before.x,b.y-before.y)>20;
-    }),'Professional bots should actively move while AFK players stand still');
+    }),'Professional rivals should move and react even while idle rivals coast');
     assert.ok(new Set(botsAfter.filter(b=>b.alive).map(b=>Math.round(b.reaction*100))).size>=8,
      'Different rivals must have different reaction times');
     a=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
