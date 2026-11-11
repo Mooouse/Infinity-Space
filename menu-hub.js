@@ -88,7 +88,7 @@
    iframe.setAttribute('referrerpolicy','same-origin');
    iframe.setAttribute('loading','eager');
    iframe.allow='autoplay';
-   iframe.src=window.SpaceModeDemoURL?.(mode)||(mode==='worms'?'cosmic-worms.html?demo=1&v=5':'cosmic-arena.html?demo='+encodeURIComponent(mode)+'&v=9');
+   iframe.src=window.SpaceModeDemoURL?.(mode)||(mode==='worms'?'cosmic-worms.html?demo=1&v=6':'cosmic-arena.html?demo='+encodeURIComponent(mode)+'&v=10');
    wrap.append(iframe);host.append(wrap);
    active=wrap;
    const reveal=()=>{
@@ -259,8 +259,8 @@
    window.SpaceMenuSceneMode=null;
    if(entry.id==='endless'){play.click();}
    else if(window.SpaceOpenMode?.(entry.id))return;
-   else if(entry.id==='worms')location.assign('cosmic-worms.html?mode=worms&v=5');
-    else location.assign('cosmic-arena.html?mode='+encodeURIComponent(entry.id)+'&v=7');
+   else if(entry.id==='worms')location.assign('cosmic-worms.html?mode=worms&v=6');
+    else location.assign('cosmic-arena.html?mode='+encodeURIComponent(entry.id)+'&v=8');
   };
   overlay.addEventListener('wheel',ev=>{
    // Scrolling a section, tooltip or button must not change the game mode.
