@@ -22,7 +22,7 @@ const modes=['arena','royale','core','race'];
   assert.equal(await page.locator('.hub-mode-dots button').count(),5);
   console.log('PASS: standalone legacy mode gallery removed; home is the only selector');
   for(const mode of modes){
-   await page.goto(base+'/cosmic-arena.html?mode='+mode,{waitUntil:'domcontentloaded',timeout:45000});
+   await page.goto(base+'/cosmic-arena.html?mode='+mode+(mode==='arena'?'&tester=1':''),{waitUntil:'domcontentloaded',timeout:45000});
    await page.locator('#hud:not([hidden])').waitFor({state:'visible',timeout:20000});
    await page.waitForFunction(()=>Number(document.getElementById('mass')?.textContent)>0,null,{timeout:15000});
    const tutorial=page.locator('#guide');
@@ -36,6 +36,26 @@ const modes=['arena','royale','core','race'];
    assert.equal(await page.locator('#arena-stage-name').textContent()==='Cosmic Dust'||
     await page.locator('#arena-stage-name').textContent()==='Космическая пыль',true,
     mode+' first form should not advance without sufficient collected mass');
+   if(mode==='arena'){
+    const readings=await page.evaluate(()=>{
+     const qa=window.InfinityArenaQA;
+     if(!qa)return null;
+     const masses=[40,349,350,1049,1050,2449,2450,5099,5100];
+     return masses.map(mass=>({mass,form:qa.formForMass(mass)}));
+    });
+    assert.ok(readings,'Tester mass/zoom diagnostic must be available');
+    assert.deepEqual(readings.map(x=>x.form),[0,0,1,1,2,2,3,3,4],
+     'Evolution must depend on mass thresholds alone, not elapsed time');
+    await page.evaluate(()=>window.InfinityArenaQA.setMass(5100));
+    await page.waitForTimeout(1100);
+    const largeZoom=await page.evaluate(()=>window.InfinityArenaQA.snapshot().zoom);
+    await page.evaluate(()=>window.InfinityArenaQA.setMass(40));
+    await page.waitForTimeout(1100);
+    const smallZoom=await page.evaluate(()=>window.InfinityArenaQA.snapshot().zoom);
+    assert.ok(largeZoom<smallZoom-.25,
+     'Camera should zoom out as mass increases: '+JSON.stringify({largeZoom,smallZoom}));
+    console.log('PASS: form derives exclusively from mass, camera zoom follows physical growth');
+   }
    const snapshot=await page.evaluate(()=>{
     const cvs=document.getElementById('arena'),c=cvs.getContext('2d');
     const w=cvs.width,h=cvs.height,arr=c.getImageData(0,0,w,h).data;
