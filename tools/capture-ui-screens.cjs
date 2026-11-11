@@ -31,6 +31,7 @@ async function capture(browser,id,url,action,width=1280,height=720,suffix=''){
  const ctx=await browser.newContext({viewport:{width,height},deviceScaleFactor:1,reducedMotion:'reduce',locale:'ru-RU'});
  await ctx.addInitScript(()=>{
   localStorage.setItem('infiniti-space-language','ru');
+  localStorage.setItem('infinity-space-player-v1',JSON.stringify({version:1,nickname:'UI REVIEW'}));
   localStorage.setItem('infinity-space-mode-guide-v2:worms','1');
   for(const name of ['arena','royale','core','race'])
    localStorage.setItem('infinity-space-mode-guide-v2:'+name,'1');
