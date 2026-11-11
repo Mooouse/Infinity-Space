@@ -8279,3 +8279,272 @@ body.ui-v15 #modal #screen-settings :is(.br-select,.game-select-trigger) .ui-sym
   animation-duration:0.01ms!important;transition-duration:0.01ms!important;
  }
 }
+
+
+/* SETTINGS PILOT — reuse the universe map's approved surfaces and controls.
+   Scoped only to the Settings screen; no other game page is recolored. */
+body.ui-v15 #modal #screen-settings{
+ --map-ui-ink:#f6f0ff;
+ --map-ui-muted:#a99fc5;
+ --map-ui-subtle:#b29acb;
+ --map-ui-line:#654897;
+ --map-ui-lavender:#b99cff;
+ --map-ui-cta:#4d22c6;
+ --map-ui-panel:linear-gradient(150deg,rgba(28,19,52,.96),rgba(15,11,33,.96));
+ --map-ui-secondary:linear-gradient(155deg,#1b2848,#11182d);
+ color:var(--map-ui-ink);
+ background:linear-gradient(150deg,#0b091d 0%,#0a0c1e 50%,#090718 100%);
+}
+body.ui-v15 #modal #screen-settings .br-head{
+ left:0;right:0;padding:0 4%;height:104px;
+ background:linear-gradient(180deg,rgba(18,12,37,.98),rgba(12,10,26,.94))!important;
+ border-bottom:1px solid #4a3475!important;
+}
+body.ui-v15 #modal #screen-settings .br-head h2{color:#f7f0ff;font-size:clamp(23px,2.2vw,33px)}
+body.ui-v15 #modal #screen-settings .br-serial,
+body.ui-v15 #modal #screen-settings .br-dot{color:var(--map-ui-lavender)!important}
+body.ui-v15 #modal #screen-settings .br-head-tag{
+ color:#c8b8e9!important;background:#1b1233;border:1px solid #59427c;
+ border-radius:5px;padding:9px 12px;
+}
+body.ui-v15 #modal #screen-settings .br-head-tag b{color:var(--map-ui-lavender)!important}
+body.ui-v15 #modal #screen-settings .br-head-back,
+body.ui-v15 #modal #screen-settings .br-foot-secondary,
+body.ui-v15 #modal #screen-settings .br-small-action:not(.warn){
+ --interaction-accent:#2860ff;
+ background:var(--map-ui-secondary)!important;
+ border:1px solid #465b8b!important;border-bottom:4px solid #26395e!important;
+ border-radius:5px!important;color:#eef3ff!important;
+ box-shadow:inset 0 1px #ffffff11,0 3px 10px #0006!important;
+}
+body.ui-v15 #modal #screen-settings .br-settings-layout{
+ top:125px;bottom:102px;width:min(1100px,94vw);
+ grid-template-columns:230px minmax(0,1fr);gap:20px;
+}
+body.ui-v15 #modal #screen-settings .br-settings-nav{
+ min-width:0;padding:4px 0 0;gap:9px;
+}
+body.ui-v15 #modal #screen-settings .br-side-label{color:#b9a8d3!important;letter-spacing:.16em}
+body.ui-v15 #modal #screen-settings .br-settings-side-note{
+ color:var(--map-ui-muted)!important;
+ border-top:1px solid #493665;padding-top:16px;
+}
+body.ui-v15 #modal #screen-settings .br-tab{
+ --interaction-accent:#2860ff;
+ min-width:0;min-height:65px;
+ background:var(--map-ui-secondary)!important;
+ border:1px solid #465b8b!important;border-bottom:4px solid #26395e!important;
+ border-radius:5px!important;color:#f0eaff!important;
+ box-shadow:inset 0 1px #ffffff11,0 3px 10px #0005!important;
+ transition:background .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease!important;
+}
+body.ui-v15 #modal #screen-settings .br-tab :is(svg,.ui-symbol){
+ color:#b6c8ff!important;filter:none!important;
+}
+body.ui-v15 #modal #screen-settings .br-tab small,
+body.ui-v15 #modal #screen-settings .br-tab>b{color:#b8aacd!important}
+body.ui-v15 #modal #screen-settings .br-tab.active{
+ --interaction-accent:#986eff;
+ background:linear-gradient(180deg,#6940e3,#4d22c6)!important;
+ border:1px solid #b99cff!important;border-bottom:4px solid #381481!important;
+ box-shadow:inset 0 1px #ffffff27,0 5px 18px #190b4573!important;
+ color:#fff!important;
+}
+body.ui-v15 #modal #screen-settings .br-tab.active :is(svg,.ui-symbol,b,small){color:#fff!important}
+body.ui-v15 #modal #screen-settings .br-settings-main{
+ min-width:0;overflow-x:hidden;
+ padding:clamp(16px,2vw,27px)!important;
+ background:var(--map-ui-panel)!important;
+ border:2px solid var(--map-ui-line)!important;
+ border-bottom:5px solid #40236c!important;
+ border-radius:10px!important;
+ box-shadow:0 20px 45px #0008!important;
+ scrollbar-color:#60438d #160f2a;
+}
+body.ui-v15 #modal #screen-settings .br-pane-title{
+ padding:0 0 18px;border-bottom:1px solid #503971!important;
+}
+body.ui-v15 #modal #screen-settings .br-pane-title>span{color:var(--map-ui-lavender)!important}
+body.ui-v15 #modal #screen-settings .br-pane-title h3{
+ font-size:clamp(21px,2.1vw,30px);color:#f7f0ff!important;
+ line-height:1.15;overflow-wrap:anywhere;
+}
+body.ui-v15 #modal #screen-settings .br-pane-title p,
+body.ui-v15 #modal #screen-settings .br-option small{color:var(--map-ui-muted)!important}
+body.ui-v15 #modal #screen-settings .br-option{
+ grid-template-columns:minmax(0,1fr) minmax(170px,250px)!important;
+ gap:14px!important;min-width:0;padding:17px 2px!important;
+ background:transparent!important;
+ border:0!important;border-bottom:1px solid #503971!important;
+ box-shadow:none!important;border-radius:0!important;
+}
+body.ui-v15 #modal #screen-settings .br-option>*{min-width:0}
+body.ui-v15 #modal #screen-settings .br-option strong{color:#f5efff!important}
+body.ui-v15 #modal #screen-settings :is(.br-select,.game-select-trigger){
+ color:#f6f0ff!important;background:#0f0c21!important;
+ border:1px solid #7551bd!important;border-bottom:3px solid #40236c!important;
+ border-radius:5px!important;
+ box-shadow:inset 0 1px #ffffff0e!important;
+}
+body.ui-v15 #modal #screen-settings :is(.br-select,.game-select-trigger):focus-visible{
+ outline:2px solid var(--map-ui-lavender)!important;outline-offset:2px;
+}
+body.ui-v15 #modal #screen-settings .br-select option{
+ color:#f6f0ff;background:#160f2a;
+}
+body.ui-v15 #modal #screen-settings .br-switch{
+ --interaction-accent:#956eff;
+ width:54px!important;min-width:54px!important;height:31px!important;min-height:31px!important;
+ padding:0!important;border:2px solid #6b528e!important;border-radius:5px!important;
+ background:#241a39!important;box-shadow:inset 0 2px 5px #0904159e!important;
+}
+body.ui-v15 #modal #screen-settings .br-switch.active{
+ border-color:#b99cff!important;background:#4d22c6!important;
+}
+body.ui-v15 #modal #screen-settings .br-switch::before{
+ width:19px!important;height:19px!important;top:4px!important;left:4px!important;
+ background:linear-gradient(#c6b6e9,#8c75b7)!important;border:1px solid #d1c0f8!important;
+ border-radius:3px!important;box-shadow:0 1px 4px #0007!important;
+}
+body.ui-v15 #modal #screen-settings .br-switch.active::before{
+ transform:translateX(23px)!important;
+ background:linear-gradient(#f4ecff,#aa87ff)!important;
+}
+body.ui-v15 #modal #screen-settings .br-switch i{display:none!important}
+body.ui-v15 #modal #screen-settings .br-slider{
+ min-width:0;width:100%;max-width:260px;gap:11px;justify-self:start;
+}
+body.ui-v15 #modal #screen-settings .br-slider input[type=range]{
+ appearance:none!important;-webkit-appearance:none!important;min-width:0;width:100%;
+ height:14px!important;margin:6px 0!important;
+ border:1px solid #7958bb!important;border-radius:4px!important;
+ background:linear-gradient(90deg,#7246e0 0 var(--val,50%),#302347 var(--val,50%) 100%)!important;
+ box-shadow:inset 0 1px 3px #0007!important;
+}
+body.ui-v15 #modal #screen-settings .br-slider input[type=range]::-webkit-slider-thumb{
+ appearance:none!important;-webkit-appearance:none!important;
+ width:19px!important;height:19px!important;margin-top:0!important;
+ border:2px solid #ede2ff!important;border-radius:3px!important;
+ background:linear-gradient(160deg,#c6affd,#8259eb)!important;
+ box-shadow:0 2px 0 #39217a,0 2px 7px #0007!important;
+}
+body.ui-v15 #modal #screen-settings .br-slider input[type=range]::-moz-range-thumb{
+ width:19px!important;height:19px!important;
+ border:2px solid #ede2ff!important;border-radius:3px!important;
+ background:#9670ef!important;
+}
+body.ui-v15 #modal #screen-settings .br-slider output{
+ color:#d8c6ff!important;min-width:44px;font-variant-numeric:tabular-nums;
+}
+body.ui-v15 #modal #screen-settings .br-controls{gap:9px;margin-top:22px}
+body.ui-v15 #modal #screen-settings .br-controls>div{
+ background:var(--map-ui-panel)!important;
+ border:1px solid #654897!important;border-bottom:3px solid #40236c!important;
+ border-radius:5px!important;
+}
+body.ui-v15 #modal #screen-settings .br-controls kbd{
+ background:#412579!important;border:1px solid #8560d8!important;color:#f4ebff!important;
+}
+body.ui-v15 #modal #screen-settings .br-controls span{color:#b5a6cc!important}
+body.ui-v15 #modal #screen-settings .br-warning{
+ background:linear-gradient(145deg,#251a3a,#140f29)!important;
+ border:1px solid #654b90!important;border-left:3px solid #9a79e7!important;
+ border-radius:6px!important;color:#e6dbff!important;
+ box-shadow:none!important;
+}
+body.ui-v15 #modal #screen-settings .br-warning :is(strong,p){color:#d3c5ea!important}
+body.ui-v15 #modal #screen-settings .br-warning svg{color:#b99cff!important}
+body.ui-v15 #modal #screen-settings .br-inline-cta,
+body.ui-v15 #modal #screen-settings .br-foot-primary{
+ --interaction-accent:#986eff;
+ background:linear-gradient(180deg,#6940e3,#4d22c6)!important;
+ border:1px solid #b99cff!important;border-bottom:4px solid #381481!important;
+ border-radius:6px!important;color:#fff!important;font-weight:950!important;
+ box-shadow:0 8px 22px #190b4573!important;
+}
+body.ui-v15 #modal #screen-settings .br-small-action.warn{
+ --interaction-accent:#ff1744;
+ background:linear-gradient(155deg,#392029,#1b101e)!important;
+ border:1px solid #91587e!important;border-bottom:3px solid #6a3045!important;
+ border-radius:5px!important;color:#ffc5d1!important;
+}
+body.ui-v15 #modal #screen-settings .br-settings-foot{
+ left:0;right:0;padding:0 5%;height:83px;
+ background:rgba(15,10,30,.97)!important;
+ border-top:1px solid #5a4385!important;
+ color:#a69bc1!important;
+}
+body.ui-v15 #modal #screen-settings .br-foot-secondary,
+body.ui-v15 #modal #screen-settings .br-foot-primary{
+ min-height:42px;padding:9px 15px;justify-content:center;
+}
+@media(hover:hover) and (pointer:fine){
+ body.ui-v15 #modal #screen-settings :is(.br-head-back,.br-foot-secondary,.br-small-action:not(.warn),.br-tab:not(.active)):hover{
+  --interaction-accent:#2860ff;
+  border-color:#2860ff!important;
+  background:linear-gradient(155deg,#202e60,#141b37)!important;
+  box-shadow:0 0 12px #2860ff35,0 4px 12px #0007!important;
+  filter:brightness(1.08)!important;
+ }
+ body.ui-v15 #modal #screen-settings :is(.br-tab.active,.br-inline-cta,.br-foot-primary):hover{
+  --interaction-accent:#986eff;
+  border-color:#cbb3ff!important;
+  background:linear-gradient(180deg,#7a54f2,#572bd4)!important;
+  box-shadow:0 0 15px #986eff50,0 7px 18px #0007!important;
+  filter:brightness(1.07)!important;
+ }
+ body.ui-v15 #modal #screen-settings .br-small-action.warn:hover{
+  border-color:#ff1744!important;
+  box-shadow:0 0 12px #ff174436!important;
+ }
+}
+body.ui-v15 #modal #screen-settings button:focus-visible{
+ outline:2px solid var(--interaction-accent,#b99cff)!important;outline-offset:3px!important;
+}
+@media(max-width:980px){
+ body.ui-v15 #modal #screen-settings .br-settings-layout{
+  grid-template-columns:190px minmax(0,1fr);gap:13px;
+ }
+}
+@media(max-width:800px){
+ body.ui-v15 #modal #screen-settings .br-head{height:86px;padding:0 3%}
+ body.ui-v15 #modal #screen-settings .br-settings-layout{
+  top:94px;bottom:87px;width:94vw;display:flex;flex-direction:column;gap:10px;
+ }
+ body.ui-v15 #modal #screen-settings .br-settings-nav{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;flex:none;padding:0;
+ }
+ body.ui-v15 #modal #screen-settings .br-side-label,
+ body.ui-v15 #modal #screen-settings .br-settings-side-note{display:none}
+ body.ui-v15 #modal #screen-settings .br-tab{min-height:58px;padding:8px 5px!important}
+ body.ui-v15 #modal #screen-settings .br-settings-main{
+  flex:1;min-height:0;padding:14px!important;
+ }
+ body.ui-v15 #modal #screen-settings .br-settings-foot{
+  height:78px;padding:0 3%;gap:8px;
+ }
+}
+@media(max-width:540px){
+ body.ui-v15 #modal #screen-settings .br-option{
+  grid-template-columns:minmax(0,1fr)!important;gap:9px!important;
+  padding:12px 1px!important;
+ }
+ body.ui-v15 #modal #screen-settings .br-select,
+ body.ui-v15 #modal #screen-settings .game-select,
+ body.ui-v15 #modal #screen-settings .game-select-trigger{width:100%!important;max-width:100%!important}
+ body.ui-v15 #modal #screen-settings .br-slider{width:100%;max-width:300px}
+ body.ui-v15 #modal #screen-settings .br-settings-foot>span{display:none}
+ body.ui-v15 #modal #screen-settings .br-settings-foot>div{
+  width:100%;display:flex;gap:8px;justify-content:stretch;
+ }
+ body.ui-v15 #modal #screen-settings .br-settings-foot button{
+  flex:1;min-width:0;padding:8px!important;min-height:43px;font-size:10px!important;
+ }
+ body.ui-v15 #modal #screen-settings .br-controls{grid-template-columns:repeat(2,minmax(0,1fr))}
+ body.ui-v15 #modal #screen-settings .br-tab>span:nth-child(2){font-size:9px!important}
+}
+@media(max-height:520px){
+ body.ui-v15 #modal #screen-settings .br-head{height:72px!important}
+ body.ui-v15 #modal #screen-settings .br-settings-layout{top:78px!important;bottom:66px!important}
+ body.ui-v15 #modal #screen-settings .br-settings-foot{height:60px!important}
+}

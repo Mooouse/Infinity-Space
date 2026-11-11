@@ -6,6 +6,7 @@ on:
       - '.github/workflows/ui-atlas-snapshots.yml'
       - 'tools/ui-capture.cjs'
       - 'ui-review.html'
+      - 'ui-app.css'
   workflow_dispatch:
 permissions:
   contents: write
