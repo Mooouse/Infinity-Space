@@ -91,7 +91,7 @@ const BOT_ROSTER=[
  'casual','hunter','casual','pro','cautious','newcomer','casual','reckless'
 ];
 const BOT_PERSONAS={
- afk:      {reaction:[1.6,3],    sight:0,   samples:0,  look:[90],            awareness:0,   error:0,    hunt:0,   boost:0,    speed:0},
+ afk:      {reaction:[1.6,3],    sight:0,   samples:0,  look:[90],            awareness:0,   error:0,    hunt:0,   boost:0,    speed:1},
  newcomer: {reaction:[.55,.95],  sight:360, samples:4,  look:[100],           awareness:.14, error:.65,  hunt:0,   boost:.07,  speed:.83},
  casual:   {reaction:[.25,.44],  sight:680, samples:8,  look:[100,200],       awareness:.48, error:.26,  hunt:.13, boost:.24,  speed:.98},
  cautious: {reaction:[.17,.28],  sight:960, samples:15, look:[90,190,320],    awareness:1.2, error:.09,  hunt:0,   boost:.06,  speed:.91},
@@ -166,13 +166,12 @@ function createWorm(name,human,index,preferEncounter=false){
   segments:[],boost:false,dropClock:0,think:rand(.1,.2),targetFood:null,kills:0,
   foodEaten:0,bestRank:99,leadTime:0,deathDelay:0,
   persona:human?'human':BOT_ROSTER[(Math.max(1,index)-1)%BOT_ROSTER.length],
-  wiggle:rand(0,TAU),speed:0,boostFlash:0,afkTimer:0,goalUntil:0};
+  wiggle:rand(0,TAU),speed:172,boostFlash:0,afkTimer:0,goalUntil:0};
  if(!human){
   const type=BOT_PERSONAS[w.persona];
   w.reaction=rand(type.reaction[0],type.reaction[1])*rand(.86,1.14);
   w.think=rand(0,w.reaction);
-  // Some newcomers briefly step away mid-match. Fully AFK players simply
-  // stand where they joined until someone hits them.
+  // AFK rivals coast forward without steering; they never stand still.
   w.afkTimer=w.persona==='afk'?Infinity:0;
  }
  applySkin(w,human?options.skin:SKINS[index%SKINS.length].id);
@@ -429,18 +428,17 @@ function updateWorm(w,dt){
  if(!w.alive)return;
  w.invulnerable=Math.max(0,w.invulnerable-dt);
  if(!w.human){
+  // Worms always glide forward. AFK only disables steering and boosting.
   if(w.afkTimer>0){
-   // A few real-life-style idle rivals stand motionless. Occasional short
-   // disconnections happen to newcomers and casual players too.
    if(Number.isFinite(w.afkTimer))w.afkTimer=Math.max(0,w.afkTimer-dt);
-   w.speed=0;w.boost=false;return;
+   w.target=w.angle;w.boost=false;
+  }else{
+   const awayRate=w.persona==='newcomer'?.012:w.persona==='casual'?.004:.0008;
+   if(Math.random()<dt*awayRate){
+    w.afkTimer=rand(w.persona==='newcomer'?3:1,w.persona==='newcomer'?11:4);
+    w.target=w.angle;w.boost=false;
+   }else steerBot(w,dt);
   }
-  const awayRate=w.persona==='newcomer'?.012:w.persona==='casual'?.004:.0008;
-  if(Math.random()<dt*awayRate){
-   w.afkTimer=rand(w.persona==='newcomer'?3:1, w.persona==='newcomer'?11:4);
-   w.speed=0;w.boost=false;return;
-  }
-  steerBot(w,dt);
  }else{
   const keys=input.keys;
   let dx=(keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')?1:0);
