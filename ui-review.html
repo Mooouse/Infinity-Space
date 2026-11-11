@@ -94,31 +94,6 @@ footer{color:#8b9cb7;font-size:11px;padding-top:12px;border-top:1px solid #2f3c5
 @media(max-width:1050px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.palette{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:760px){header.page-head{padding:10px 12px}.layout{grid-template-columns:1fr}nav.sidebar{position:static;max-height:none;display:flex;overflow:auto;padding:8px;gap:3px;border-right:0;border-bottom:1px solid #2e3d53}nav.sidebar h2{display:none}nav.sidebar button{white-space:nowrap;width:auto;flex:none}main{padding:15px 12px 45px}.grid{grid-template-columns:1fr}.palette{grid-template-columns:repeat(2,minmax(0,1fr))}.frame-area{min-height:360px;padding:10px}.brand{font-size:13px}.subtitle{font-size:9px}.live-head{padding:12px}}
 
-/* Real screenshots: a single scan-ready view of every production screen. */
-.overview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,308px),1fr));gap:13px}
-.overview-card{
- text-align:left;display:flex;flex-direction:column;gap:0;
- padding:0;overflow:hidden;min-width:0;
- border:1px solid #34445e;border-radius:12px;
- background:#121c2c;color:#edf2ff;
- box-shadow:0 4px 14px #0003;transition:border-color .16s,transform .16s,box-shadow .16s;
-}
-.overview-card:hover,.overview-card:focus-visible{border-color:#648bff;transform:translateY(-2px);box-shadow:0 9px 25px #0007}
-.overview-card.active{border-color:#648bff;box-shadow:0 0 0 1px #2860ff55,0 7px 23px #0005}
-.overview-card .overview-image{position:relative;aspect-ratio:16/9;overflow:hidden;background:radial-gradient(circle at 55% 45%,#23385b,#0a1120)}
-.overview-image>img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;filter:saturate(.92)}
-.overview-card .overview-bottom{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 13px}
-.overview-card .overview-bottom strong{font-size:12px;font-weight:850}
-.overview-card .overview-bottom span{font-size:10px;color:#8fa5ce;white-space:nowrap}
-.overview-card .overview-mobile{position:absolute;right:6px;bottom:6px;width:25%;height:83%;object-fit:cover;object-position:top;
- border-radius:5px;border:2px solid #7788a7;box-shadow:0 3px 12px #000b}
-.overview-card .overview-image.missing::after{content:'Снимок обновляется';position:absolute;inset:0;display:grid;place-items:center;color:#b5c4da;font-size:11px}
-@media(max-width:740px){.overview-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
- .overview-card .overview-bottom{padding:8px}.overview-card .overview-bottom strong{font-size:10px}
- .overview-card .overview-bottom span{display:none}
-}
-@media(max-width:400px){.overview-grid{grid-template-columns:1fr 1fr}}
-
 .snap-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .snap-card{display:flex;min-width:0;flex-direction:column;overflow:hidden;text-align:left;
  border:1px solid #34435e;border-radius:10px;background:#131d2d;color:#f0f4ff;
@@ -164,10 +139,13 @@ footer{color:#8b9cb7;font-size:11px;padding-top:12px;border-top:1px solid #2f3c5
  <button data-jump="components"><span class="index">C</span>Все компоненты</button>
 </nav>
 <main>
-<section class="module" id="overview">
- <h1>Все экраны игры одновременно</h1>
- <p class="lead">Реальные снимки рабочих экранов из браузерной проверки, включая отдельные мобильные кадры. Кликни по любому экрану, чтобы открыть его живую версию ниже и проверить взаимодействия, размеры и наведение.</p>
- <div id="ui-overview-gallery" class="overview-grid"></div>
+<section class="module" id="gallery">
+ <h2>Все экраны рядом — настоящие снимки игры</h2>
+ <p class="lead">Галерея автоматически снята с игровых страниц в браузере Chromium. Нажатие на снимок открывает соответствующий живой экран выше. Отдельно показаны мобильные версии.</p>
+ <h3 class="snap-group-title">ПК · 1280 × 720</h3>
+ <div class="snap-grid" id="snap-grid-desktop" aria-label="Снимки экранов на ПК"></div>
+ <h3 class="snap-group-title">Телефон · 390 × 844</h3>
+ <div class="snap-grid" id="snap-grid-mobile" aria-label="Мобильные снимки экранов"></div>
 </section>
 <section class="module" id="live">
  <h1>Единая карта интерфейса</h1>
@@ -194,14 +172,6 @@ footer{color:#8b9cb7;font-size:11px;padding-top:12px;border-top:1px solid #2f3c5
   <div class="swatch"><div class="color-top" style="background:#a8b6cf"></div><small>Вторичный текст</small><code>#A8B6CF</code></div>
   <div class="swatch"><div class="color-top" style="background:#0b111d"></div><small>Фон</small><code>#0B111D</code></div>
  </div>
-</section>
-<section class="module" id="gallery">
- <h2>Все экраны рядом — настоящие снимки игры</h2>
- <p class="lead">Галерея автоматически снята с игровых страниц в браузере Chromium. Нажатие на снимок открывает соответствующий живой экран выше. Отдельно показаны мобильные версии.</p>
- <h3 class="snap-group-title">ПК · 1280 × 720</h3>
- <div class="snap-grid" id="snap-grid-desktop" aria-label="Снимки экранов на ПК"></div>
- <h3 class="snap-group-title">Телефон · 390 × 844</h3>
- <div class="snap-grid" id="snap-grid-mobile" aria-label="Мобильные снимки экранов"></div>
 </section>
 <section class="module" id="components">
  <h2>Все основные компоненты на одной странице</h2>
@@ -246,35 +216,6 @@ const screens={
  'worms-pause':['Пауза червей','cosmic-worms.html?tester=1&ui-review=1','pause-worms'],
  'worms-skins':['Конструктор червей','cosmic-worms.html?tester=1&ui-review=1','show-worms-skins']
 };
-const gallery=document.getElementById('ui-overview-gallery');
-const screenshotNames={
- menu:'main-menu',endless:'main-menu',map:'map',evolution:'evolution',
- achievements:'achievements',bestiary:'bestiary',statistics:'statistics',
- settings:'settings',music:'music',daily:'daily',roulette:'roulette',
- arena:'arena-play',royale:'royale',core:'core',race:'race',
- worms:'worms-play','worms-pause':'worms-pause','worms-skins':'worms-skins'
-};
-const mobileNames={menu:'main-menu-mobile',settings:'settings-mobile',
- worms:'worms-play-mobile','worms-skins':'worms-skins-mobile'};
-Object.entries(screens).forEach(([id,[name,url]])=>{
- const card=document.createElement('button');card.type='button';
- card.className='overview-card';card.dataset.id=id;
- card.setAttribute('aria-label','Посмотреть экран '+name);
- const visual=document.createElement('div');visual.className='overview-image';
- const img=document.createElement('img');img.loading='lazy';img.decoding='async';
- img.src='ui-snapshots/'+(screenshotNames[id]||id)+'.jpg?v=2';img.alt=name;img.onerror=()=>visual.classList.add('missing');
- visual.append(img);
- if(mobileNames[id]){
-  const mobile=document.createElement('img');mobile.loading='lazy';mobile.decoding='async';
-  mobile.className='overview-mobile';mobile.alt='Мобильная версия '+name;
-  mobile.src='ui-snapshots/'+mobileNames[id]+'.jpg?v=2';mobile.onerror=()=>mobile.remove();
-  visual.append(mobile);
- }
- const bottom=document.createElement('div');bottom.className='overview-bottom';
- const title=document.createElement('strong');title.textContent=name;
- const link=document.createElement('span');link.textContent='Открыть экран';
- bottom.append(title,link);card.append(visual,bottom);gallery.append(card);
-});
 const frame=document.getElementById('preview'),shell=document.getElementById('frame-shell'),status=document.getElementById('status');
 const title=document.getElementById('current-title'),label=document.getElementById('source-url'),open=document.getElementById('open-screen');
 let selected='menu',generation=0;
