@@ -28,13 +28,31 @@ const seed=()=>{localStorage.setItem('infinity-space-player-v1',JSON.stringify({
     try{
      const button=page.locator(selector).first();
      if(!await button.count()){issues.push({width,name,error:'button missing'});continue;}
-     if(!await button.isVisible())issues.push({width,name,error:'HUD button hidden'});
-     await button.evaluate(e=>e.click());
+     const visible=await button.isVisible();
+     let viaMenu=false;
+     if(!visible&&name==='settings'){
+      // The compact phone HUD deliberately consolidates Settings under the
+      // always-visible main-menu brand instead of crowding a fifth top button.
+      viaMenu=true;
+      await page.locator('#hud .v15-hud .brand-icon[data-page="menu"]').click();
+      await page.locator('#screen-menu .hub-mode-story-play').waitFor({state:'visible',timeout:9000});
+      await page.locator('#screen-menu .hub-story-shortcut[data-shortcut="settings"]').click();
+     }else if(!visible&&name==='evolution'){
+      // On mobile the entire progress panel is the touch shortcut.
+      await page.locator('#hud .v15-hud .evo-status').click();
+     }else{
+      if(!visible)issues.push({width,name,error:'no visible navigation target'});
+      await button.click({timeout:7000});
+     }
      await page.locator(target).waitFor({state:'visible',timeout:11000});
      const screen=await page.evaluate(()=>document.getElementById('modal').dataset.screen);
      if(screen!==name)issues.push({width,name,error:'incorrect-screen',screen});
      const back=page.locator(target+' .back,'+target+' .br-head-back').first();
      await back.click({timeout:6500});
+     if(viaMenu){
+      await page.locator('#screen-menu .hub-mode-story-play').waitFor({state:'visible',timeout:11000});
+      await page.locator('#screen-menu .hub-mode-story-play').click({timeout:7000});
+     }
      await page.waitForFunction(()=>document.getElementById('modal').classList.contains('off'),null,{timeout:10000});
      const after=await page.evaluate(()=>({screen:document.getElementById('modal').dataset.screen,game:!document.getElementById('hud').hidden}));
      if(after.screen!=='play'||!after.game)issues.push({width,name,error:'Back did not restore game',after});
