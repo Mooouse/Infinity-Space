@@ -4494,7 +4494,8 @@ if(window.SpaceUIv15Templates && document.createElement('template').content){
   if(navigationStack.length>18)navigationStack.splice(0,navigationStack.length-18);
  }
  function navigate(name){
-  if(name==='upgrades'){resumeGame();const toggle=q(hud,'#upgrades-open');if(toggle&&!toggle.getAttribute('aria-expanded')?.includes('true'))toggle.click();return;}
+  if(name==='play')navigationStack.length=0;
+  if(name==='upgrades'){navigationStack.length=0;resumeGame();const toggle=q(hud,'#upgrades-open');if(toggle&&!toggle.getAttribute('aria-expanded')?.includes('true'))toggle.click();return;}
   const destination=({menu:showMainMenu,play:resumeGame,map:showMap,settings:showSettings,
     evolution:showV15Evolution,achievements:showAchievements,bestiary:showBestiary,
     statistics:showStatistics,music:showMusicShop,tutorial:showTutorial})[name];
