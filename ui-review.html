@@ -306,7 +306,7 @@ function fillCaptures(id,mobile=false){
   host.append(button);
  }
 }
-fillCaptures('snap-grid-desktop');fillCaptures('snap-grid-mobile');
+fillCaptures('snap-grid-desktop');fillCaptures('snap-grid-mobile',true);
 const cs=['#9922ff','#ff1744','#2860ff','#27ff40','#ffe500','#9922ff','#2860ff','#ff1744','#27ff40','#ffe500','#9922ff','#2860ff'];
 const host=document.getElementById('sample-worm');
 cs.forEach(c=>{const bead=document.createElement('span');bead.className='bead';bead.style.background=c;host.append(bead)});
