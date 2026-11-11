@@ -2709,8 +2709,8 @@ function renderGameModeBackdrop(mode,time){
  ctx.restore();
 }
 
-// A mode swipe crossfades and displaces the PREVIOUS universe frame over
-// the newly rendered real scene. No image assets, repaint loops or card hacks.
+// Crossfade the PREVIOUS cosmic scene into the newly rendered scene without
+// sliding the entire universe sideways or producing mismatched black bars.
 const menuTransitionCanvas=typeof document!=='undefined'?document.createElement('canvas'):null;
 const menuTransitionCtx=menuTransitionCanvas?.getContext('2d')||null;
 let menuSceneTransition=null;
@@ -2727,7 +2727,7 @@ if(typeof window!=='undefined'){
   menuTransitionCtx.clearRect(0,0,menuTransitionCanvas.width,menuTransitionCanvas.height);
   // The public canvas contains the complete previous scene without DOM labels.
   menuTransitionCtx.drawImage(screenCtx.canvas,0,0,menuTransitionCanvas.width,menuTransitionCanvas.height);
-  menuSceneTransition={started:performance.now(),direction:direction<0?-1:1,duration:650};
+  menuSceneTransition={started:performance.now(),duration:680};
  };
 }
 
@@ -2770,12 +2770,12 @@ function render(time){
    const t=clamp((performance.now()-menuSceneTransition.started)/menuSceneTransition.duration,0,1);
    if(t>=1){menuSceneTransition=null;}
    else{
-    const ease=1-Math.pow(1-t,3);
+    const ease=t*t*(3-2*t);
     ctx.save();
     ctx.setTransform(dpr,0,0,dpr,0,0);
-    // The old sky slides away as the new living sky emerges underneath.
-    ctx.globalAlpha=(1-ease)*(1-.1*t);
-    ctx.drawImage(menuTransitionCanvas,-menuSceneTransition.direction*W*.16*ease,0,W,H);
+    // A clean cinematic dissolve. Never shift the whole sky or ghost its edges.
+    ctx.globalAlpha=1-ease;
+    ctx.drawImage(menuTransitionCanvas,0,0,W,H);
     ctx.restore();
    }
   }
