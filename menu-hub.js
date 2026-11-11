@@ -133,6 +133,7 @@
       '<p class="hub-mode-story-description"></p>'+
       '<div class="hub-mode-story-tags"></div>'+
       '<button class="hub-mode-story-play" type="button"><span></span><b aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="square" stroke-linejoin="miter"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></b></button>'+
+       '<button class="hub-mode-story-skins" type="button" hidden><span>'+t(['CUSTOMIZE YOUR WORM','НАСТРОИТЬ ЧЕРВЯ','PERSONALIZAR GUSANO'])+'</span><b aria-hidden="true">◉</b></button>'+
     '</div>'+
     '<footer class="hub-mode-story-footer">'+
       '<div class="hub-mode-nav-controls"><button class="hub-mode-step" data-dir="-1" type="button" aria-label="Previous mode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>'+
@@ -190,7 +191,8 @@
    q(overlay,'.hub-mode-story-tags').replaceChildren(...entry.tags.map(tags=>{
     const node=document.createElement('span');node.textContent=t(tags);return node;
    }));
-   q(overlay,'.hub-mode-story-play span').textContent=entry.id==='endless'?
+   q(overlay,'.hub-mode-story-skins').hidden=entry.id!=='worms';
+    q(overlay,'.hub-mode-story-play span').textContent=entry.id==='endless'?
     t(['CONTINUE EXPLORING','ПРОДОЛЖИТЬ ПОЛЁТ','CONTINUAR EXPLORANDO']):
     t(['PLAY THIS MODE','ИГРАТЬ В РЕЖИМ','JUGAR ESTE MODO']);
    q(overlay,'[data-dir="-1"]').disabled=current===0;
@@ -262,6 +264,7 @@
    else if(entry.id==='worms')location.assign('cosmic-worms.html?mode=worms&v=12');
     else location.assign('cosmic-arena.html?mode='+encodeURIComponent(entry.id)+'&v=8');
   };
+  q(overlay,'.hub-mode-story-skins').onclick=()=>window.WormSkinStudio?.open();
   overlay.addEventListener('wheel',ev=>{
    // Scrolling a section, tooltip or button must not change the game mode.
    if(ev.target.closest('button,a,nav,.hub-menu'))return;
