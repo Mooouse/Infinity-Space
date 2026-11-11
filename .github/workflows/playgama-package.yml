@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'cosmic-arena.html'
+      - 'cosmic-worms.html'
       - '*.js'
       - '*.css'
       - '*.svg'
@@ -11,6 +13,7 @@ on:
       - 'playgama-bridge-config.json'
       - 'tools/build_single_html.py'
       - 'tests/single-html-smoke.cjs'
+      - 'tests/embedded-modes-smoke.cjs'
       - '.github/workflows/playgama-package.yml'
   workflow_dispatch:
 permissions:
@@ -28,6 +31,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check game.js
+          node --check cosmic-worms.js
           node --check platform.js
           node --check playgama-platform.js
           node --check playgama-ui.js
@@ -58,6 +62,7 @@ jobs:
           for page in [standalone, upload]:
               html = page.read_text('utf-8')
               assert html.count('data:image/jpeg;base64,') >= 12
+              assert 'data-origin="embedded-arcade-router"' in html
               assert 'https://bridge.playgama.com/v2/stable/playgama-bridge.js' in html
               assert 'data:audio/mp4;base64,' not in html
               assert 'inline-audio-' not in html
@@ -94,6 +99,7 @@ jobs:
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
           export NODE_PATH="$RUNNER_TEMP/infinity-single-test/node_modules"
           timeout 120 node tests/single-html-smoke.cjs
+          timeout 150 node tests/embedded-modes-smoke.cjs
 
       - name: Upload high-quality-music single HTML (streams original MP3s)
         uses: actions/upload-artifact@v4
