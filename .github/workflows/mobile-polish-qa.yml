@@ -5,7 +5,7 @@ on:
     paths:
       - game.js
       - index.html
-      - mobile-ui-polish.css
+      - ui-app.css
       - tests/mobile-polish.cjs
       - .github/workflows/mobile-polish-qa.yml
       - tests/mobile-unified-qa.cjs
