@@ -418,8 +418,20 @@ function kill(w,killer,reason){
 function updateWorm(w,dt){
  if(!w.alive)return;
  w.invulnerable=Math.max(0,w.invulnerable-dt);
- if(!w.human)steerBot(w,dt);
- else {
+ if(!w.human){
+  if(w.afkTimer>0){
+   // A few real-life-style idle rivals stand motionless. Occasional short
+   // disconnections happen to newcomers and casual players too.
+   if(Number.isFinite(w.afkTimer))w.afkTimer=Math.max(0,w.afkTimer-dt);
+   w.speed=0;w.boost=false;return;
+  }
+  const awayRate=w.persona==='newcomer'?.012:w.persona==='casual'?.004:.0008;
+  if(Math.random()<dt*awayRate){
+   w.afkTimer=rand(w.persona==='newcomer'?3:1, w.persona==='newcomer'?11:4);
+   w.speed=0;w.boost=false;return;
+  }
+  steerBot(w,dt);
+ }else{
   const keys=input.keys;
   let dx=(keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')?1:0);
   let dy=(keys.has('KeyS')||keys.has('ArrowDown')?1:0)-(keys.has('KeyW')||keys.has('ArrowUp')?1:0);
@@ -438,7 +450,8 @@ function updateWorm(w,dt){
  }
  const boosting=w.boost&&w.mass>38;
  const targetSpeed=boosting?375:172;
- const scaled=targetSpeed*Math.max(.73,1-Math.log(Math.max(1,w.mass)/60)*.05);
+ const scaled=targetSpeed*Math.max(.73,1-Math.log(Math.max(1,w.mass)/60)*.05)*
+  (w.human?1:BOT_PERSONAS[w.persona].speed);
  w.speed+=(scaled-w.speed)*Math.min(1,dt*12);
  // Requested instant steering: no turn-rate clamp, lerp or circular radius.
  w.angle=w.target;
