@@ -123,6 +123,84 @@ def build_page(inline_bridge_config: bool = True) -> str:
     if num_js < 10 or not all(inserted.values()):
         raise RuntimeError("Game or Playgama SDK scripts were not bundled")
 
+
+    # The published platform build is ONE HTML: launch complete arcade pages
+    # from in-memory Blob URLs. Otherwise a relative cosmic-*.html link would
+    # 404 in the Playgama ZIP, which contains only index.html and its config.
+    def embedded_page(filename: str) -> str:
+        page = (ROOT / filename).read_text(encoding="utf-8")
+
+        def inline_mode_css(match: re.Match) -> str:
+            name = match.group(1).split("?", 1)[0]
+            if not re.fullmatch(r"[\w.-]+\.css", name):
+                raise RuntimeError("Unexpected embedded CSS: " + name)
+            css = (ROOT / name).read_text(encoding="utf-8")
+            if "</style" in css.lower():
+                raise RuntimeError("Unsafe embedded CSS: " + name)
+            return '<style data-origin="' + name + '">\n' + css + '\n</style>'
+
+        page = re.sub(r'<link\s+rel="stylesheet"\s+href="([^"]+)"\s*/?>',
+                      inline_mode_css, page, flags=re.I)
+
+        def inline_mode_js(match: re.Match) -> str:
+            src = match.group(1)
+            if src.startswith("https://bridge.playgama.com/"):
+                return match.group(0)
+            name = src.split("?", 1)[0]
+            if not re.fullmatch(r"[\w.-]+\.js", name):
+                raise RuntimeError("Unexpected embedded JavaScript: " + src)
+            js = (ROOT / name).read_text(encoding="utf-8")
+            if re.search(r"</script", js, re.I):
+                raise RuntimeError("Unsafe embedded JavaScript: " + name)
+            prefix = ""
+            if name == "platform.js":
+                prefix = '<script>window.SpacePlaygamaBuild=true;</script>'
+            if name == "playgama-platform.js":
+                # Blob pages inherit their origin, but have no relative
+                # playgama-bridge-config.json path; supply the exact config.
+                prefix = ('<script>window.SpaceInlineBridgeConfig=' +
+                          json.dumps(config, ensure_ascii=False, separators=(",", ":")) +
+                          ';</script>')
+            return prefix + '<script data-origin="' + name + '">\n' + js + '\n</script>'
+
+        page = re.sub(r'<script\s+src="([^"]+)"(?:\s+defer)?\s*></script>',
+                      inline_mode_js, page, flags=re.I)
+        if re.search(r'(?:src|href)=["\'](?:[\w.-]+\.(?:js|css))', page):
+            raise RuntimeError("Embedded game still relies on a local asset: " + filename)
+        return page
+
+    payload = {
+        "arena": base64.b64encode(embedded_page("cosmic-arena.html").encode("utf-8")).decode("ascii"),
+        "worms": base64.b64encode(embedded_page("cosmic-worms.html").encode("utf-8")).decode("ascii")
+    }
+    mode_router = r"""<script data-origin="embedded-arcade-router">
+(function(){
+  "use strict";
+  var payload=__PAYLOAD__, cache={};
+  function modeKind(mode){return mode==="worms"?"worms":["arena","royale","core","race"].includes(mode)?"arena":null;}
+  function modeURL(mode){
+    var kind=modeKind(mode);if(!kind)return null;
+    if(!cache[kind]){
+      var binary=atob(payload[kind]),bytes=new Uint8Array(binary.length);
+      for(var i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+      var html=new TextDecoder("utf-8").decode(bytes);
+      cache[kind]=URL.createObjectURL(new Blob([html],{type:"text/html"}));
+    }
+    return cache[kind];
+  }
+  window.SpaceModeDemoURL=function(mode){
+    var url=modeURL(mode);return url?url+"#demo="+encodeURIComponent(mode):null;
+  };
+  window.SpaceOpenMode=function(mode){
+    var url=modeURL(mode);if(!url)return false;
+    try{sessionStorage.setItem("infinity-space-embedded-return",location.href.split("#")[0]);}catch(_){}
+    location.assign(url+"#mode="+encodeURIComponent(mode));
+    return true;
+  };
+})();
+</script>""".replace("__PAYLOAD__", json.dumps(payload, separators=(",", ":")))
+    html = html.replace("</head>", mode_router + "\n</head>", 1)
+
     # Information is provided in the HTML for self-contained metadata.
     # Playgama still requires entering Description and How to Play in its UI.
     metadata = json.dumps(DESCRIPTION, ensure_ascii=False, separators=(",", ":"))
