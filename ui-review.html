@@ -247,19 +247,27 @@ const screens={
  'worms-skins':['Конструктор червей','cosmic-worms.html?tester=1&ui-review=1','show-worms-skins']
 };
 const gallery=document.getElementById('ui-overview-gallery');
-const phones=new Set(['menu','settings','worms','worms-skins']);
+const screenshotNames={
+ menu:'main-menu',endless:'main-menu',map:'map',evolution:'evolution',
+ achievements:'achievements',bestiary:'bestiary',statistics:'statistics',
+ settings:'settings',music:'music',daily:'daily',roulette:'roulette',
+ arena:'arena-play',royale:'royale',core:'core',race:'race',
+ worms:'worms-play','worms-pause':'worms-pause','worms-skins':'worms-skins'
+};
+const mobileNames={menu:'main-menu-mobile',settings:'settings-mobile',
+ worms:'worms-play-mobile','worms-skins':'worms-skins-mobile'};
 Object.entries(screens).forEach(([id,[name,url]])=>{
  const card=document.createElement('button');card.type='button';
  card.className='overview-card';card.dataset.id=id;
  card.setAttribute('aria-label','Посмотреть экран '+name);
  const visual=document.createElement('div');visual.className='overview-image';
  const img=document.createElement('img');img.loading='lazy';img.decoding='async';
- img.src='ui-snapshots/'+id+'.jpg?v=1';img.alt=name;img.onerror=()=>visual.classList.add('missing');
+ img.src='ui-snapshots/'+(screenshotNames[id]||id)+'.jpg?v=2';img.alt=name;img.onerror=()=>visual.classList.add('missing');
  visual.append(img);
- if(phones.has(id)){
+ if(mobileNames[id]){
   const mobile=document.createElement('img');mobile.loading='lazy';mobile.decoding='async';
   mobile.className='overview-mobile';mobile.alt='Мобильная версия '+name;
-  mobile.src='ui-snapshots/'+id+'-mobile.jpg?v=1';mobile.onerror=()=>mobile.remove();
+  mobile.src='ui-snapshots/'+mobileNames[id]+'.jpg?v=2';mobile.onerror=()=>mobile.remove();
   visual.append(mobile);
  }
  const bottom=document.createElement('div');bottom.className='overview-bottom';
