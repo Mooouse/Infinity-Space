@@ -80,7 +80,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.ok(a.food/(Math.PI*a.world.rx*a.world.ry)>720/(Math.PI*2630*1970),'Food density must increase, not fall with map growth');
     const clearance=await page.evaluate(()=>window.InfinityWormsQA.spawnProbe());
     assert.equal(clearance.safe,true,'No bot can appear inside an existing worm body: '+JSON.stringify(clearance));
-    assert.equal((await page.evaluate(()=>window.InfinityWormsQA.skins())).length,8);
+    assert.equal((await page.evaluate(()=>window.InfinityWormsQA.skins())).length,12,'All 12 distinct skins must be selectable');
     assert.equal(a.guideOpen,true,'First launch must explain mechanics');
     assert.equal(await page.locator('#worm-guide-counter').textContent(),'01 / 03');
     await page.locator('#worm-guide-next').click();
