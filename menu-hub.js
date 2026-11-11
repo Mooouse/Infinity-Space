@@ -4,15 +4,15 @@
  */
 (()=>{'use strict';
  const words={
-  ru:{modes:'РЕЖИМЫ ИГРЫ',modesSub:'Арена · Выживание · Захват · Гонка',world:'ТВОЯ ВСЕЛЕННАЯ',
+  ru:{modes:'РЕЖИМЫ ИГРЫ',modesSub:'Арена · Выживание · Захват · Гонка · Черви',world:'ТВОЯ ВСЕЛЕННАЯ',
       worldSub:'Прогресс и открытия',bonus:'БОНУСЫ',bonusSub:'Награды каждый день',
       more:'ЕЩЁ',less:'СВЕРНУТЬ',progress:'ТЕКУЩАЯ ЭВОЛЮЦИЯ',newSub:'Начать с начала',
       tabMap:'Карта',tap:'Открыть',progressTitle:'Прогресс'},
-  en:{modes:'GAME MODES',modesSub:'Arena · Royale · Conquest · Race',world:'YOUR UNIVERSE',
+  en:{modes:'GAME MODES',modesSub:'Arena · Royale · Conquest · Race · Worms',world:'YOUR UNIVERSE',
       worldSub:'Progress and discoveries',bonus:'BONUSES',bonusSub:'Claim daily rewards',
       more:'MORE',less:'COLLAPSE',progress:'CURRENT EVOLUTION',newSub:'Start over',
       tabMap:'Map',tap:'Open',progressTitle:'Progress'},
-  es:{modes:'MODOS DE JUEGO',modesSub:'Arena · Supervivencia · Control · Carrera',
+  es:{modes:'MODOS DE JUEGO',modesSub:'Arena · Supervivencia · Control · Carrera · Gusanos',
       world:'TU UNIVERSO',worldSub:'Progreso y descubrimientos',bonus:'BONOS',
       bonusSub:'Recompensas diarias',more:'MÁS',less:'CERRAR',
       progress:'EVOLUCIÓN ACTUAL',newSub:'Comenzar de nuevo',tabMap:'Mapa',
@@ -58,7 +58,14 @@
    desc:['Climb through dust, asteroid, planet and star forms. Every stage takes time. Reach the final black-hole form before the rivals.',
          'Развивайся от пыли через астероид, планету и звезду. Каждая стадия требует времени. Первым превратись в чёрную дыру.',
          'Evoluciona de polvo a asteroide, planeta y estrella. Cada etapa requiere tiempo. Llega primero a agujero negro.'],
-   tags:[['04:45 MATCH','МАТЧ 04:45','04:45 PARTIDA'],['15 RIVALS','15 СОПЕРНИКОВ','15 RIVALES'],['5 FORMS','5 ФОРМ','5 FORMAS']]}
+   tags:[['04:45 MATCH','МАТЧ 04:45','04:45 PARTIDA'],['15 RIVALS','15 СОПЕРНИКОВ','15 RIVALES'],['5 FORMS','5 ФОРМ','5 FORMAS']]},
+  {id:'worms',title:['Cosmic Worms','Космические черви','Gusanos cósmicos'],
+   subtitle:['SURVIVAL · COSMIC SERPENTS','ВЫЖИВАНИЕ · КОСМИЧЕСКИЕ ЧЕРВИ','SUPERVIVENCIA · SERPIENTES'],
+   goal:['Grow the longest worm in the galaxy','Вырастай в самого длинного червя','Conviértete en el gusano más largo'],
+   desc:['Gather glowing stardust, grow a luminous tail, encircle AI rivals and avoid crashing your head into another worm. Boost by spending your mass. Survive as long as you can.',
+         'Собирай светящуюся материю, отращивай длинный космический хвост, перекрывай путь соперникам и не врезайся головой в их тела. Ускоряйся за счёт массы.',
+         'Recoge polvo estelar, alarga tu cola, bloquea a los rivales y evita chocar contra sus cuerpos. Usa tu masa para acelerar.'],
+   tags:[['ENDLESS SURVIVAL','БЕСКОНЕЧНОЕ ВЫЖИВАНИЕ','SUPERVIVENCIA INFINITA'],['22 AI RIVALS','22 СОПЕРНИКА ИИ','22 RIVALES IA'],['BOOST COSTS MASS','РЫВОК ТРАТИТ МАССУ','IMPULSO GASTA MASA']]}
  ];
  // Each menu background is the actual arcade game running a small AI-only match
  // inside a visual-only iframe. It uses the same physics, sprites and hazards.
@@ -81,7 +88,7 @@
    iframe.setAttribute('referrerpolicy','same-origin');
    iframe.setAttribute('loading','eager');
    iframe.allow='autoplay';
-   iframe.src='cosmic-arena.html?demo='+encodeURIComponent(mode)+'&v=8';
+   iframe.src=mode==='worms'?'cosmic-worms.html?demo=1&v=1':'cosmic-arena.html?demo='+encodeURIComponent(mode)+'&v=8';
    wrap.append(iframe);host.append(wrap);
    active=wrap;
    const reveal=()=>{
@@ -179,7 +186,7 @@
    q(overlay,'.hub-mode-story-title').textContent=t(entry.title);
    q(overlay,'.hub-mode-story-goal').textContent=t(entry.goal);
    q(overlay,'.hub-mode-story-description').textContent=t(entry.desc);
-   q(overlay,'.hub-mode-story-counter').textContent=String(current+1).padStart(2,'0')+' / 05';
+   q(overlay,'.hub-mode-story-counter').textContent=String(current+1).padStart(2,'0')+' / '+String(modeStories.length).padStart(2,'0');
    q(overlay,'.hub-mode-story-tags').replaceChildren(...entry.tags.map(tags=>{
     const node=document.createElement('span');node.textContent=t(tags);return node;
    }));
@@ -250,7 +257,8 @@
    const entry=modeStories[current];
    window.SpaceMenuSceneMode=null;
    if(entry.id==='endless'){play.click();}
-   else location.assign('cosmic-arena.html?mode='+encodeURIComponent(entry.id)+'&v=6');
+   else if(entry.id==='worms')location.assign('cosmic-worms.html?mode=worms&v=1');
+    else location.assign('cosmic-arena.html?mode='+encodeURIComponent(entry.id)+'&v=6');
   };
   overlay.addEventListener('wheel',ev=>{
    // Scrolling a section, tooltip or button must not change the game mode.
