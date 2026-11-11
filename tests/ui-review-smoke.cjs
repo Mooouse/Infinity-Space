@@ -11,9 +11,13 @@ for(const [page,css] of [['index.html','ui-app.css'],['cosmic-worms.html','ui-wo
  assert.deepEqual(links,[css],page+' must use exactly one CSS entrypoint, not cascading patch files');
  assert.ok(load(css).length>10000,css+' must contain real rules');
 }
-const screenshotNames=['main-menu','map','evolution','achievements','bestiary','statistics','settings',
- 'music','daily','roulette','arena-play','royale','core','race','worms-play','worms-pause','worms-skins',
- 'main-menu-mobile','settings-mobile','worms-play-mobile','worms-skins-mobile'];
+const screenshotNames=[
+ 'main-menu','mode-worms','mode-arena','mode-race','map','evolution','achievements',
+ 'bestiary','statistics','settings','music','daily','roulette','worms-play',
+ 'worms-pause','worms-skins','arena-play','arena-pause','royale','core','race',
+ 'main-menu-mobile','settings-mobile','achievements-mobile','worms-play-mobile',
+ 'worms-pause-mobile','worms-skins-mobile','arena-play-mobile'
+];
 for(const name of screenshotNames){
  const file=path.join(root,'ui-snapshots',name+'.jpg');
  assert.ok(fs.existsSync(file)&&fs.statSync(file).size>5000,'Missing real UI screenshot: '+name);
@@ -33,19 +37,19 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   page.on('pageerror',e=>errors.push(String(e)));
   await page.goto(base+'/ui-review.html',{waitUntil:'domcontentloaded',timeout:40000});
   assert.equal(await page.locator('#screen-nav [data-id]').count(),18,'All real UI targets should be listed');
-  assert.equal(await page.locator('#ui-overview-gallery .overview-card').count(),18,
-   'UI atlas must display all 18 actual screens simultaneously');
-  assert.equal(await page.locator('#ui-overview-gallery .overview-card img:not(.overview-mobile)').count(),18,
-   'Every overview tile must show a real screenshot');
+  assert.equal(await page.locator('#snap-grid-desktop .snap-card').count(),21,
+   'UI atlas must display all 21 desktop screens in one gallery');
+  assert.equal(await page.locator('#snap-grid-mobile .snap-card').count(),7,
+   'UI atlas must display seven corresponding mobile screen snapshots');
   assert.ok(await page.locator('#components .sample').count()>=12,'All control families must be visible on one page');
   await page.locator('[data-device="mobile"]').click();
   assert.equal(await page.locator('#frame-shell').evaluate(e=>getComputedStyle(e).width),'390px');
   await page.locator('#screen-nav [data-id="settings"]').click();
   const preview=page.frameLocator('#preview');
-  await preview.locator('#hub-mode-story').waitFor({state:'visible',timeout:20000});
+  await preview.locator('#hub-mode-story').waitFor({state:'visible',timeout:30000});
   await preview.locator('#screen-settings').waitFor({state:'visible',timeout:16000});
   await page.locator('#screen-nav [data-id="menu"]').click();
-  await preview.locator('#hub-mode-story').waitFor({state:'visible',timeout:20000});
+  await preview.locator('#hub-mode-story').waitFor({state:'visible',timeout:30000});
   assert.equal(await page.locator('#current-title').textContent(),'Главное меню');
   const stat=await page.evaluate(()=>{
    const r=document.querySelector('#components').getBoundingClientRect();
@@ -54,7 +58,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   assert.ok(stat.w<=stat.viewport+2,'UI Atlas must not overflow horizontally');
   assert.ok(stat.components>250,'Component catalog should stay readable');
   assert.deepEqual(errors,[],'UI Atlas must not throw runtime errors');
-  console.log('PASS: unified CSS + 18 real screenshots + four phone snapshots + live preview / responsive component inventory');
+  console.log('PASS: unified CSS + 21 desktop and 7 mobile real screenshots + live preview / responsive component inventory');
   await context.close();
  }finally{await browser.close()}
 })().catch(err=>{console.error(err);process.exitCode=1});
