@@ -14,7 +14,7 @@ const WORDS={
  boost:'BOOST',paused:'PAUSED',pauseDesc:'Resume the flight, review the controls or return to mode selection.',
  resume:'CONTINUE',help:'HOW TO PLAY',menu:'EXIT TO MENU',guideTitle:'COSMIC WORMS',skip:'SKIP',next:'NEXT',start:'START',
  runOver:'FLIGHT COMPLETE',destroyed:'WORM DESTROYED',kills:'ELIMINATIONS',again:'PLAY AGAIN',
- hint:'MOUSE / WASD — TURN  ·  SPACE / CLICK — BOOST',bot:'AI RIVALS · OFFLINE',danger:'THE EDGE OF SPACE!',
+ hint:'MOUSE / WASD — TURN  ·  SPACE / CLICK — BOOST',bot:'COSMIC WORMS · SURVIVAL',danger:'THE EDGE OF SPACE!',
  eliminated:'A rival cut off your route.',wall:'You reached the outer boundary.',self:'A head-on collision.',
  lead:'YOU ARE #1',mass:'ORBS COLLECTED',guide:[
  ['GROW A COSMIC TAIL','Move toward glowing stardust. Each orb adds mass and segments to your cosmic serpent.','✦'],
@@ -25,7 +25,7 @@ const WORDS={
  boost:'РЫВОК',paused:'ПАУЗА',pauseDesc:'Продолжи полёт, посмотри обучение или вернись к выбору режима.',
  resume:'ПРОДОЛЖИТЬ',help:'КАК ИГРАТЬ',menu:'ВЫХОД В МЕНЮ',guideTitle:'КОСМИЧЕСКИЕ ЧЕРВИ',skip:'ПРОПУСТИТЬ',next:'ДАЛЕЕ',start:'ИГРАТЬ',
  runOver:'ПОЛЁТ ЗАВЕРШЁН',destroyed:'ЧЕРВЬ ПОГИБ',kills:'ПОГЛОЩЕНО',again:'СЫГРАТЬ СНОВА',
- hint:'МЫШЬ / WASD — ПОВОРОТ  ·  ПРОБЕЛ / КЛИК — РЫВОК',bot:'СОПЕРНИКИ ИИ · ОФЛАЙН',danger:'КРАЙ КОСМОСА!',
+ hint:'МЫШЬ / WASD — ПОВОРОТ  ·  ПРОБЕЛ / КЛИК — РЫВОК',bot:'КОСМИЧЕСКИЕ ЧЕРВИ · ВЫЖИВАНИЕ',danger:'КРАЙ КОСМОСА!',
  eliminated:'Соперник перекрыл тебе путь.',wall:'Ты достиг границы арены.',self:'Столкновение головами.',
  lead:'ТЫ НА ПЕРВОМ МЕСТЕ',mass:'СОБРАНО ЧАСТИЦ',guide:[
  ['РАСТИ И УДЛИНЯЙСЯ','Собирай светящиеся звёздные частицы. От них космический червь растёт и становится длиннее.','✦'],
@@ -36,7 +36,7 @@ const WORDS={
  boost:'IMPULSO',paused:'PAUSA',pauseDesc:'Continúa, revisa los controles o elige otro modo.',
  resume:'CONTINUAR',help:'CÓMO JUGAR',menu:'SALIR AL MENÚ',guideTitle:'GUSANOS CÓSMICOS',skip:'SALTAR',next:'SIGUIENTE',start:'JUGAR',
  runOver:'VUELO TERMINADO',destroyed:'GUSANO DESTRUIDO',kills:'ELIMINACIONES',again:'JUGAR DE NUEVO',
- hint:'RATÓN / WASD — GIRAR · ESPACIO / CLIC — IMPULSO',bot:'RIVALES IA · SIN CONEXIÓN',danger:'¡LÍMITE ESPACIAL!',
+ hint:'RATÓN / WASD — GIRAR · ESPACIO / CLIC — IMPULSO',bot:'GUSANOS CÓSMICOS · SUPERVIVENCIA',danger:'¡LÍMITE ESPACIAL!',
  eliminated:'Un rival bloqueó tu camino.',wall:'Alcanzaste el borde de la arena.',self:'Choque frontal.',
  lead:'¡VAS PRIMERO!',mass:'PARTÍCULAS RECOGIDAS',guide:[
  ['CRECE TU COLA','Recoge partículas luminosas. Cada esfera añade masa y alarga tu gusano cósmico.','✦'],
