@@ -20,7 +20,7 @@ const modes=['arena','royale','core','race'];
   await page.waitForURL(/index\.html/,{timeout:15000});
   await page.locator('#hub-mode-story').waitFor({state:'visible',timeout:20000});
   assert.equal(await page.locator('#mode-carousel-viewport').count(),0);
-  assert.equal(await page.locator('.hub-mode-dots button').count(),5);
+  assert.equal(await page.locator('.hub-mode-dots button').count(),6);
   console.log('PASS: standalone legacy mode gallery removed; home is the only selector');
   for(const mode of modes){
    await page.goto(base+'/cosmic-arena.html?mode='+mode+(mode==='arena'?'&tester=1':''),{waitUntil:'domcontentloaded',timeout:45000});
