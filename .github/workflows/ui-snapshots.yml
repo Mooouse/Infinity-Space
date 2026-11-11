@@ -36,4 +36,7 @@ jobs:
           git add ui-snapshots/
           if git diff --cached --quiet; then echo 'UI atlas screenshots unchanged'; exit 0; fi
           git commit -m 'Refresh real UI atlas screenshots [skip ci]'
+          # Other UI commits may land while Chromium captures 22 screens.
+          git fetch origin main
+          git rebase origin/main
           git push origin HEAD:main
