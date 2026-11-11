@@ -124,7 +124,7 @@ function showStats(selected){
   const s=getStats(),b=statsMode==='overall'?total(s):s[statsMode];
   [...tabs.children].forEach(button=>{const active=button.dataset.mode===statsMode;button.classList.toggle('active',active);button.setAttribute('aria-selected',String(active));});
   const list=[
-   ['matches',b.matches],['wins',b.wins],['winrate',b.matches?Math.round(b.wins/b.matches*100)+'%':'0%'],
+   ['matches',b.matches],['wins',b.wins],['winrate',(statsMode==='overall'?MODE_IDS.slice(1).reduce((sum,id)=>sum+s[id].matches,0):b.matches)?Math.round(b.wins/(statsMode==='overall'?MODE_IDS.slice(1).reduce((sum,id)=>sum+s[id].matches,0):b.matches)*100)+'%':'0%'],
    ['kills',b.kills],['objects',b.objects],['mass',b.maxMass],['time',clock(b.time)]
   ];
   if(statsMode==='endless'||statsMode==='overall')list.push(['stage',b.maxStage+1],['matter',b.matter],['rare',b.rare],['blackholes',b.blackholes]);
