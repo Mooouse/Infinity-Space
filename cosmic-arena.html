@@ -346,21 +346,27 @@ html,body{font-family:Inter,"Segoe UI",Arial,system-ui,sans-serif}
 'use strict';
 (()=>{
 const T={
-en:{playNow:'PLAY MODE',swipeHint:'← SWIPE, SCROLL OR USE ARROWS →',back:'BACK TO MENU',modesHeader:'GAME MODES',dEndless:'Original endless exploration and evolution · saved progress',mass:'MASS',time:'TIME',place:'POSITION',core:'CONTROL',ranking:'LEADERBOARD',radar:'ARENA RADAR',pause:'Ⅱ PAUSE',intro:'Four competitive space modes. Grow, hunt rivals, exploit gravity, and dominate the arena. All opponents are AI-controlled.',mArena:'Cosmic Arena',dArena:'Absorb matter and rivals. Top the leaderboard before the timer ends.',mRoyale:'Last Singularity',dRoyale:'The storm collapses inward. One survivor takes the victory.',mCore:'Core Conquest',dCore:'Blue vs red. Hold the energy core to earn 100 control points.',mRace:'Evolution Rush',dRace:'Evolve to a black hole before the rivals. Each form must be mastered.',bots:'OFFLINE · AI RIVALS',saved:'Endless Space keeps its own save.',endless:'∞ Endless Space',kills:'ELIMINATIONS',again:'PLAY AGAIN',change:'CHANGE MODE',paused:'PAUSED',pausedDesc:'Resume the fight, change mode, or return to the endless universe.',resume:'RESUME',win:'VICTORY',lose:'DEFEAT',finish:'MATCH COMPLETE',hunt:'You absorbed a rival!',killed:'Absorbed by a rival — respawning',storm:'Warning: cosmic storm!',shielded:'Gravity shield enabled',charge:'Pulse wave!',portal:'Wormhole jump!',relic:'Relic acquired!',lead:'YOU ARE LEADING',overtake:'RIVAL LEADS',race:'Critical mass reached!',coreLead:'Energy core captured',spectate:'YOU WERE ELIMINATED',draw:'TIME IS UP'},
-ru:{playNow:'ИГРАТЬ',swipeHint:'← СВАЙП · КОЛЕСО · СТРЕЛКИ →',back:'НАЗАД В МЕНЮ',modesHeader:'РЕЖИМЫ ИГРЫ',dEndless:'Оригинальная бесконечная Вселенная · сохранённый прогресс',mass:'МАССА',time:'ВРЕМЯ',place:'МЕСТО',core:'КОНТРОЛЬ',ranking:'ЛИДЕРЫ МАТЧА',radar:'РАДАР АРЕНЫ',pause:'Ⅱ ПАУЗА',intro:'Четыре соревновательных космических режима. Расти, охоться на соперников и используй гравитацию. Все соперники управляются ИИ.',mArena:'Космическая арена',dArena:'Поглощай материю и противников. Стань первым в таблице лидеров.',mRoyale:'Последняя сингулярность',dRoyale:'Космический шторм сжимает безопасную область. Выживет только один.',mCore:'Захват ядра',dCore:'Синие против красных. Удерживай ядро, чтобы набрать 100 очков.',mRace:'Гонка эволюции',dRace:'Первым эволюционируй в чёрную дыру. Каждая форма требует времени.',bots:'ОФЛАЙН · СОПЕРНИКИ ИИ',saved:'Бесконечный космос хранит отдельный прогресс.',endless:'∞ Бесконечный космос',kills:'ПОГЛОЩЕНО',again:'СЫГРАТЬ ЕЩЁ',change:'СМЕНИТЬ РЕЖИМ',paused:'ПАУЗА',pausedDesc:'Продолжи бой, выбери другой режим или вернись в бесконечный космос.',resume:'ПРОДОЛЖИТЬ',win:'ПОБЕДА',lose:'ПОРАЖЕНИЕ',finish:'МАТЧ ЗАВЕРШЁН',hunt:'Соперник поглощён!',killed:'Тебя поглотили — возрождение',storm:'Осторожно: космический шторм!',shielded:'Гравитационный щит активирован',charge:'Гравитационный импульс!',portal:'Прыжок через червоточину!',relic:'Реликвия получена!',lead:'ТЫ ЛИДИРУЕШЬ',overtake:'СОПЕРНИК ВПЕРЕДИ',race:'Критическая масса достигнута!',coreLead:'Ядро захвачено',spectate:'ТЫ ВЫБЫЛ',draw:'ВРЕМЯ ИСТЕКЛО'}};
+en:{playNow:'PLAY MODE',swipeHint:'← SWIPE, SCROLL OR USE ARROWS →',back:'BACK TO MENU',modesHeader:'GAME MODES',dEndless:'Original endless exploration and evolution · saved progress',mass:'MASS',time:'TIME',place:'POSITION',core:'CONTROL',ranking:'LEADERBOARD',radar:'ARENA RADAR',pause:'Ⅱ PAUSE',intro:'Four competitive space modes. Grow, hunt rivals, exploit gravity, and dominate the arena. All opponents are AI-controlled.',mArena:'Cosmic Arena',dArena:'Absorb matter and rivals. Top the leaderboard before the timer ends.',mRoyale:'Last Singularity',dRoyale:'The storm collapses inward. One survivor takes the victory.',mCore:'Core Conquest',dCore:'Blue vs red. Hold the energy core to earn 100 control points.',mRace:'Evolution Rush',dRace:'Gain enough mass to become a black hole before your rivals.',bots:'OFFLINE · AI RIVALS',saved:'Endless Space keeps its own save.',endless:'∞ Endless Space',kills:'ELIMINATIONS',again:'PLAY AGAIN',change:'CHANGE MODE',paused:'PAUSED',pausedDesc:'Resume the fight, change mode, or return to the endless universe.',resume:'RESUME',win:'VICTORY',lose:'DEFEAT',finish:'MATCH COMPLETE',hunt:'You absorbed a rival!',killed:'Absorbed by a rival — respawning',storm:'Warning: cosmic storm!',shielded:'Gravity shield enabled',charge:'Pulse wave!',portal:'Wormhole jump!',relic:'Relic acquired!',lead:'YOU ARE LEADING',overtake:'RIVAL LEADS',race:'Critical mass reached!',coreLead:'Energy core captured',spectate:'YOU WERE ELIMINATED',draw:'TIME IS UP'},
+ru:{playNow:'ИГРАТЬ',swipeHint:'← СВАЙП · КОЛЕСО · СТРЕЛКИ →',back:'НАЗАД В МЕНЮ',modesHeader:'РЕЖИМЫ ИГРЫ',dEndless:'Оригинальная бесконечная Вселенная · сохранённый прогресс',mass:'МАССА',time:'ВРЕМЯ',place:'МЕСТО',core:'КОНТРОЛЬ',ranking:'ЛИДЕРЫ МАТЧА',radar:'РАДАР АРЕНЫ',pause:'Ⅱ ПАУЗА',intro:'Четыре соревновательных космических режима. Расти, охоться на соперников и используй гравитацию. Все соперники управляются ИИ.',mArena:'Космическая арена',dArena:'Поглощай материю и противников. Стань первым в таблице лидеров.',mRoyale:'Последняя сингулярность',dRoyale:'Космический шторм сжимает безопасную область. Выживет только один.',mCore:'Захват ядра',dCore:'Синие против красных. Удерживай ядро, чтобы набрать 100 очков.',mRace:'Гонка эволюции',dRace:'Первым набери массу чёрной дыры — форма зависит только от массы.',bots:'ОФЛАЙН · СОПЕРНИКИ ИИ',saved:'Бесконечный космос хранит отдельный прогресс.',endless:'∞ Бесконечный космос',kills:'ПОГЛОЩЕНО',again:'СЫГРАТЬ ЕЩЁ',change:'СМЕНИТЬ РЕЖИМ',paused:'ПАУЗА',pausedDesc:'Продолжи бой, выбери другой режим или вернись в бесконечный космос.',resume:'ПРОДОЛЖИТЬ',win:'ПОБЕДА',lose:'ПОРАЖЕНИЕ',finish:'МАТЧ ЗАВЕРШЁН',hunt:'Соперник поглощён!',killed:'Тебя поглотили — возрождение',storm:'Осторожно: космический шторм!',shielded:'Гравитационный щит активирован',charge:'Гравитационный импульс!',portal:'Прыжок через червоточину!',relic:'Реликвия получена!',lead:'ТЫ ЛИДИРУЕШЬ',overtake:'СОПЕРНИК ВПЕРЕДИ',race:'Критическая масса достигнута!',coreLead:'Ядро захвачено',spectate:'ТЫ ВЫБЫЛ',draw:'ВРЕМЯ ИСТЕКЛО'}};
 const lang=(navigator.language||'en').toLowerCase().startsWith('ru')?'ru':'en', L=(k)=>T[lang][k]||T.en[k]||k;
 document.documentElement.lang=lang;document.querySelectorAll('[data-l]').forEach(n=>n.textContent=L(n.dataset.l));
 const $=id=>document.getElementById(id),canvas=$('arena'),ctx=canvas.getContext('2d',{alpha:false}),mini=$('mini'),mc=mini.getContext('2d');
 const TAU=Math.PI*2,world={w:7600,h:4800},clamp=(v,a,b)=>Math.min(b,Math.max(a,v)),rand=(a,b)=>a+Math.random()*(b-a),rnd=n=>Math.floor(Math.random()*n),dist2=(a,b)=>{let x=a.x-b.x,y=a.y-b.y;return x*x+y*y};
-// Evolve through five real forms. Mass rises continuously; forms cannot skip their stage dwell time.
-const FORM_MASS=[0,210,550,1050,1900], FORM_DWELL=[0,20,32,43,55];
+// A form is determined by MASS alone: no timers, gates or artificial waiting.
+// Wider thresholds give each evolution enough space to matter.
+const FORM_MASS=[0,350,1050,2450,5100];
+function massForm(mass){
+ let form=0;
+ for(let i=1;i<FORM_MASS.length;i++)if(mass>=FORM_MASS[i])form=i;
+ return form;
+}
 const FORM_RU=['Космическая пыль','Астероид','Планета','Звезда','Чёрная дыра'];
 const FORM_EN=['Cosmic Dust','Asteroid','Planet','Star','Black Hole'];
 const configs={
  arena:{title:'COSMIC ARENA',duration:300,bots:17,w:7600,h:4800,food:2400},
  royale:{title:'LAST SINGULARITY',duration:240,bots:19,w:8200,h:5200,food:2700},
  core:{title:'CORE CONQUEST',duration:260,bots:17,w:7200,h:4600,food:2050},
- race:{title:'EVOLUTION RUSH',duration:285,bots:15,w:9000,h:5600,food:3100}
+ race:{title:'EVOLUTION RUSH',duration:390,bots:15,w:9000,h:5600,food:3100}
 };
 let mode='arena',game=null,sw=innerWidth,sh=innerHeight,dpr=1,mouse={x:innerWidth/2,y:innerHeight/2,active:false},keys={},touch={x:0,y:0,active:false,id:null},camera={x:0,y:0,zoom:1},bg=[],fx=[],toastUntil=0,last=performance.now(),frameClock=0,uiTick=0,starsCanvas=null,audio=null;
 const colors=['#a887ff','#39d9e5','#ff9f6e','#78f29d','#f3cc60','#ff6fa6','#a2c4ff','#d7a1ff','#ff715e','#a9e278','#56c5ff','#e9e5ff','#fcabcb','#7dffbf','#fcdd8b','#bd88ff'];
@@ -760,7 +766,7 @@ function paintSkyBlackHole(time){
 function resize(){sw=Math.max(320,innerWidth);sh=Math.max(200,innerHeight);dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(sw*dpr);canvas.height=Math.round(sh*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);refreshStars();}
 function refreshStars(){bg=Array.from({length:Math.min(3400,Math.ceil(world.w*world.h/15000))},()=>({x:Math.random()*world.w,y:Math.random()*world.h,r:rand(.5,1.2),t:rand(0,6)}));refreshSkyArt();}
 addEventListener('resize',resize);resize();
-function createActor(name,player,team,index){return {name,player,team,index,x:rand(200,world.w-200),y:rand(200,world.h-200),vx:0,vy:0,dirX:1,dirY:0,mass:player?40:rand(34,52),r:29,kills:0,alive:true,respawn:0,shield:0,pulseCD:0,dashCD:0,shieldCD:0,dash:0,portalCD:0,think:0,target:null,personality:rnd(4),color:player?'#bb90ff':colors[index%colors.length],invuln:2.4,stage:0,stageAt:0}};
+function createActor(name,player,team,index){return {name,player,team,index,x:rand(200,world.w-200),y:rand(200,world.h-200),vx:0,vy:0,dirX:1,dirY:0,mass:player?40:rand(34,52),r:29,kills:0,alive:true,respawn:0,shield:0,pulseCD:0,dashCD:0,shieldCD:0,dash:0,portalCD:0,think:0,target:null,personality:rnd(4),color:player?'#bb90ff':colors[index%colors.length],invuln:2.4,stage:0}};
 function createFood(){
  const chance=Math.random(),type=chance<.4?0:chance<.62?1:chance<.78?2:chance<.9?3:chance<.97?4:5;
  const angle=rand(0,TAU),speed=type===3?rand(12,40):type>=4?rand(54,124):rand(18,58);
@@ -826,7 +832,7 @@ game={state:'playing',mode,elapsed:0,left:c.duration,people,food:Array.from({len
 mouse.active=false;touch.active=false;keys={};camera.zoom=1;camera.x=people[0].x-sw*.5;camera.y=people[0].y-sh*.5;fx=[];uiTick=0;
 $('hud').hidden=false;$('team-box').hidden=mode!=='core';$('mode-caption').textContent=L('m'+({arena:'Arena',royale:'Royale',core:'Core',race:'Race'}[mode]))+(mode==='race'?' · '+(lang==='ru'?'ДО ЧЁРНОЙ ДЫРЫ':'BECOME A BLACK HOLE'):mode==='core'?' · 100':'');
 $('menu').classList.remove('active');$('result').classList.remove('active');$('paused').classList.remove('active');$('touch-stick').style.display='';
-$('hint').textContent=(lang==='ru'?'МЫШЬ / WASD — ПОЛЁТ · ПРОБЕЛ — РЫВОК · E — ИМПУЛЬС · Q — ЩИТ':'MOUSE / WASD — MOVE · SPACE — DASH · E — PULSE · Q — SHIELD')+(mode==='race'?(lang==='ru'?' · ЦЕЛЬ: 680 МАССЫ':' · TARGET: 680 MASS'):'');
+$('hint').textContent=(lang==='ru'?'МЫШЬ / WASD — ПОЛЁТ · ПРОБЕЛ — РЫВОК · E — ИМПУЛЬС · Q — ЩИТ':'MOUSE / WASD — MOVE · SPACE — DASH · E — PULSE · Q — SHIELD')+(mode==='race'?(lang==='ru'?' · ЦЕЛЬ: ЧЁРНАЯ ДЫРА':' · GOAL: BLACK HOLE'):'');
 last=performance.now();window.SpacePlatform?.playing?.(true);updateUI();
 try{const params=new URLSearchParams(location.search);params.set('mode',mode);history.replaceState(null,'','cosmic-arena.html?'+params.toString())}catch(e){}
 }
@@ -1034,7 +1040,7 @@ const stormStart=Math.hypot(world.w/2,world.h/2)+150;
 g.stormR=mode==='royale'?stormStart-(stormStart-240)*Math.pow(clamp(g.elapsed/configs.royale.duration,0,1),.86):stormStart;
 updateFood(dt);
 for(const p of g.people){
-if(!p.alive){if(p.respawn>0){p.respawn-=dt;if(p.respawn<=0&&mode!=='royale'){p.alive=true;p.mass=42;p.stage=0;p.stageAt=g.elapsed;p.shield=1.7;p.invuln=2;p.x=rand(210,world.w-210);p.y=rand(210,world.h-210);p.vx=p.vy=0;if(p.player)notify(lang==='ru'?'Возрождение!':'Respawned!');}}continue;}
+if(!p.alive){if(p.respawn>0){p.respawn-=dt;if(p.respawn<=0&&mode!=='royale'){p.alive=true;p.mass=42;p.stage=0;p.shield=1.7;p.invuln=2;p.x=rand(210,world.w-210);p.y=rand(210,world.h-210);p.vx=p.vy=0;if(p.player)notify(lang==='ru'?'Возрождение!':'Respawned!');}}continue;}
 p.shield=Math.max(0,p.shield-dt);p.invuln=Math.max(0,p.invuln-dt);p.dashCD=Math.max(0,p.dashCD-dt);p.pulseCD=Math.max(0,p.pulseCD-dt);p.shieldCD=Math.max(0,p.shieldCD-dt);p.portalCD=Math.max(0,p.portalCD-dt);p.ring=Math.max(0,(p.ring||0)-dt*2.3);p.r=13+Math.sqrt(p.mass)*2.45;
 let dx=p.dirX,dy=p.dirY;
 if(p.player){let x=0,y=0;if(keys.KeyW||keys.ArrowUp)y--;if(keys.KeyS||keys.ArrowDown)y++;if(keys.KeyA||keys.ArrowLeft)x--;if(keys.KeyD||keys.ArrowRight)x++;if(x||y){dx=x;dy=y;}else if(touch.active){dx=touch.x;dy=touch.y;}else if(mouse.active){let sx=(p.x-camera.x)*camera.zoom,sy=(p.y-camera.y)*camera.zoom,ex=mouse.x-sx,ey=mouse.y-sy;if(Math.hypot(ex,ey)>28){dx=ex;dy=ey;}else{dx=dy=0;}}else{dx=dy=0;}}
@@ -1048,12 +1054,16 @@ p.x=clamp(p.x+p.vx*dt,p.r,world.w-p.r);p.y=clamp(p.y+p.vy*dt,p.r,world.h-p.r);
 for(let k=0;k<2;k++){let a=g.portals[k],b=g.portals[1-k];if(p.portalCD<=0&&dist2(p,a)<(a.r||50)**2){p.x=b.x+rand(-36,36);p.y=b.y+rand(-36,36);p.portalCD=4;addFx(p.x,p.y,'#cba6ff',22,140);if(p.player){notify(L('portal'));sound(600,.31);}}}
 if(mode==='royale'){let d=Math.hypot(p.x-g.stormCx,p.y-g.stormCy);if(d>g.stormR){p.mass-=dt*12;if(p.mass<20){kill(p,null);if(p.player)notify(L('spectate'));}else if(p.player&&g.eventClock%2<dt)notify(L('storm'));}}
 if(!p.alive)continue;
-// One evolutionary transition at a time; the stage lasts 20–55 seconds minimum.
-const nextForm=p.stage+1;
-if(nextForm<FORM_MASS.length && p.mass>=FORM_MASS[nextForm] && g.elapsed-(p.stageAt||0)>=FORM_DWELL[nextForm]){
- p.stage=nextForm;p.stageAt=g.elapsed;
- addFx(p.x,p.y,p.color,42,230);
- if(p.player){notify((lang==='ru'?'НОВАЯ ФОРМА: ':'NEW FORM: ')+(lang==='ru'?FORM_RU:FORM_EN)[nextForm]);sound(700,.28);}
+// Visual shape is a direct function of collected mass. It can fall back
+// if a storm or hole takes mass away, and never waits for a timer.
+const nextForm=massForm(p.mass);
+if(nextForm!==p.stage){
+ const upgraded=nextForm>p.stage;
+ p.stage=nextForm;
+ if(upgraded){
+  addFx(p.x,p.y,p.color,42,230);
+  if(p.player){notify((lang==='ru'?'НОВАЯ ФОРМА: ':'NEW FORM: ')+(lang==='ru'?FORM_RU:FORM_EN)[nextForm]);sound(700,.28);}
+ }
 }
 for(let i=0;i<g.food.length;i++){let f=g.food[i];if((p.x-f.x)**2+(p.y-f.y)**2<(p.r+f.r*.65)**2){p.mass+=f.value;g.food[i]=createFood();if(Math.random()<.3)addFx(f.x,f.y,f.type===2?'#e6ae83':f.type===3?'#bfa1ff':'#83d8ff',f.type===2?6:3,55);}}
 for(let i=g.relics.length-1;i>=0;i--){const item=g.relics[i];if(dist2(p,item)<(p.r+item.r)**2){if(item.type==='mass')p.mass+=45;if(item.type==='shield')p.shield=7;if(item.type==='boost'){p.dashCD=0;p.pulseCD=0;p.shieldCD=0;p.mass+=12;}addFx(item.x,item.y,'#ffde91',24,145);g.relics.splice(i,1);if(p.player){notify(L('relic'));sound(850,.22);} }}
@@ -1096,10 +1106,8 @@ if(next>=FORM_MASS.length){
  $('arena-stage-wait').textContent='∞';
 }else{
  const massProgress=clamp((p.mass-FORM_MASS[p.stage])/(FORM_MASS[next]-FORM_MASS[p.stage]),0,1);
- const remain=Math.max(0,FORM_DWELL[next]-(g.elapsed-(p.stageAt||0)));
  $('arena-stage-fill').style.width=Math.round(massProgress*100)+'%';
- $('arena-stage-wait').textContent=remain>0?(lang==='ru'?'ФОРМА ЧЕРЕЗ ':'NEXT IN ')+Math.ceil(remain)+'s':
-  (lang==='ru'?'ДО СМЕНЫ: ':'NEXT: ')+Math.max(0,Math.ceil(FORM_MASS[next]-p.mass));
+ $('arena-stage-wait').textContent=(lang==='ru'?'НУЖНО МАССЫ: ':'MASS TO GO: ')+Math.max(0,Math.ceil(FORM_MASS[next]-p.mass));
 }
 for(const [name,cd] of [['dash',p.dashCD],['pulse',p.pulseCD],['shield',p.shieldCD]]){const el=$(name);el.classList.toggle('cooling',cd>0);el.querySelector('.cool').style.width=(100*clamp(1-cd/({dash:5.2,pulse:8.5,shield:12}[name]),0,1))+'%';}
 drawMini();
@@ -1173,8 +1181,9 @@ function draw(time){
 ctx.setTransform(dpr,0,0,dpr,0,0);renderSpaceSky(time);
 if(!game){paintSkyBlackHole(time);return;}
 const p=game.people[0];
-const targetZoom=clamp(1.06-(Math.sqrt(p.mass)-6)*.012,.66,1.06);
-camera.zoom+=(targetZoom-camera.zoom)*.044;
+// Continuous logarithmic zoom: an enormous player always fits the camera.
+const targetZoom=clamp(1.20/(1+0.56*Math.pow(Math.max(1,p.mass)/600,0.60)),0.14,1.14);
+camera.zoom+=(targetZoom-camera.zoom)*.048;
 const visibleW=sw/camera.zoom,visibleH=sh/camera.zoom;
 const targetX=clamp(p.x-visibleW*.5,0,Math.max(0,world.w-visibleW));
 const targetY=clamp(p.y-visibleH*.5,0,Math.max(0,world.h-visibleH));
