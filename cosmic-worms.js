@@ -397,7 +397,12 @@ function kill(w,killer,reason){
  game.lastDeath={name:w.name,segments:body.length,dropped,head:{x:body[0].x,y:body[0].y},
   tip:{x:body[body.length-1].x,y:body[body.length-1].y}};
  if(w.human){
-  game.state='finished';
+  // Keep the arena fully alive while the player watches rivals collect
+  // the wreckage. The results only fade in after the replay window.
+  game.state='death-replay';
+  game.deathElapsed=0;
+  game.deathPosition={x:w.x,y:w.y};
+  document.body.classList.add('worm-death-replay');
   const won=w.leadTime>=20;
   if(!game.reported){
    game.reported=true;
@@ -410,8 +415,7 @@ function kill(w,killer,reason){
   $('worm-result-place').textContent='#'+Math.min(place,w.bestRank);
   $('worm-result-kills').textContent=w.kills;
   $('worm-result-info').textContent=reason==='wall'?T.wall:reason==='head'?T.self:T.eliminated;
-  $('worm-result').hidden=false;
-  window.SpacePlatform?.playing?.(false);
+  $('worm-result').hidden=true;
  }
 }
 
@@ -724,9 +728,12 @@ function paint(t){
  ctx.setTransform(dpr,0,0,dpr,0,0);
  backdrop(t);
  const p=game.player;if(!p)return;
- const targetZoom=clamp(((vw<700?.87:1.04)-Math.log(Math.max(1,p.mass)/60)*.115)/(options.zoom/100),.35,1.45);
+ const replay=game.state==='death-replay'||game.state==='finished';
+ const targetZoom=clamp(((vw<700?.87:1.04)-Math.log(Math.max(1,p.mass)/60)*.115)/
+  (options.zoom/100)*(replay?.89:1),.35,1.45);
  camera.zoom+=(targetZoom-camera.zoom)*.045;
- camera.x+=(p.x-camera.x)*.09;camera.y+=(p.y-camera.y)*.09;
+ const focus=replay&&game.deathPosition?game.deathPosition:p;
+ camera.x+=(focus.x-camera.x)*.09;camera.y+=(focus.y-camera.y)*.09;
  ctx.save();ctx.translate(vw*.5,vh*.5);ctx.scale(camera.zoom,camera.zoom);ctx.translate(-camera.x,-camera.y);
  ctx.strokeStyle='#8555d492';ctx.lineWidth=6;ctx.shadowColor='#8a4eea';ctx.shadowBlur=19;
  ctx.beginPath();ctx.ellipse(WORLD.cx,WORLD.cy,WORLD.rx,WORLD.ry,0,0,TAU);ctx.stroke();
@@ -777,6 +784,16 @@ function closeSettings(){
  game.state='paused';
  $('worm-settings').hidden=true;
  $('worm-pause-overlay').hidden=false;
+}
+
+function revealDeathResult(){
+ if(game.state!=='death-replay')return;
+ game.state='finished';
+ const overlay=$('worm-result');
+ overlay.hidden=false;
+ overlay.classList.add('is-revealing');
+ window.SpacePlatform?.playing?.(false);
+ if(!DEMO)updateUI();
 }
 
 function pause(){
@@ -878,9 +895,13 @@ function frame(now){
  requestAnimationFrame(frame);
  let dt=last?clamp((now-last)/1000,0,.047):.016;last=now;
  starTime=now*.001;
- if(game.state==='playing'){
+ if(game.state==='playing'||game.state==='death-replay'){
   simulate(dt);
   if(DEMO&&(!game.player.alive||game.time>80))init();
+  if(game.state==='death-replay'){
+   game.deathElapsed+=dt;
+   if(game.deathElapsed>=DEATH_REPLAY_SECONDS)revealDeathResult();
+  }
   uiClock+=dt;
   if(uiClock>.15){uiClock=0;if(!DEMO)updateUI();}
  }
