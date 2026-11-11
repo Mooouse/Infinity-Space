@@ -70,6 +70,11 @@ async function clickBack(page){
       const [from,to]=chain;
       await page.locator('.hub-story-shortcut[data-shortcut="'+from+'"]').click({timeout:7000});
       await page.locator('#screen-'+from).waitFor({state:'visible',timeout:11000});
+      // Links to audio and tutorial live inside their matching settings tabs.
+      if(from==='settings'){
+       await page.locator('#screen-settings [data-settings-tab="'+(to==='music'?'audio':'general')+'"]').click();
+       await page.waitForTimeout(90);
+      }
       const nav=page.locator('#screen-'+from+' [data-page="'+to+'"]').first();
       if(!await nav.count()){failures.push({width,chain,reason:'missing-nested-button'});await clickBack(page);continue;}
       await nav.click({timeout:7000});
@@ -90,7 +95,10 @@ async function clickBack(page){
   console.log('UI_AUDIT_LAYOUTS '+JSON.stringify(layouts));
   console.log('UI_AUDIT_FAILURES '+JSON.stringify(failures));
   console.log('UI_AUDIT_RUNTIME_ERRORS '+JSON.stringify(errors));
-  // While gathering a baseline keep the runner green; followup will enforce it.
-  console.log('PASS: 7 display sizes, 7 screens each, 4 cross-screen Back chains; audit logged');
+  assert.equal(failures.length,0,'Back navigation failures: '+JSON.stringify(failures));
+  assert.equal(errors.length,0,'JS runtime errors: '+JSON.stringify(errors));
+  const overflow=layouts.filter(x=>x.doc>x.width+2||x.outliers.length>0);
+  assert.equal(overflow.length,0,'Overflowing UI elements: '+JSON.stringify(overflow));
+  console.log('PASS: 7 viewports × 7 screens, every Back chain; zero empty pages, script errors or overflowing text');
  }finally{await browser.close();}
 })().catch(e=>{console.error(e.stack||e);process.exitCode=1;});
