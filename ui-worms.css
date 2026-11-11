@@ -25,7 +25,6 @@ button:disabled{cursor:default;opacity:.5}
 .worm-metric{padding:9px 13px;min-width:97px;text-align:right}
 .worm-metric small{display:block;font-size:9px;letter-spacing:.12em;color:#b5aacd;font-weight:850}
 .worm-metric strong{display:block;font-size:21px;line-height:1.22;font-weight:950;font-variant-numeric:tabular-nums;letter-spacing:-.035em}
-.worm-metric:nth-child(2) strong{}
 .worm-leaders{position:absolute;top:116px;left:clamp(12px,2.8vw,37px);width:205px;padding:13px 14px}
 .worm-leaders h3{margin:0 0 10px;font-weight:950;letter-spacing:.13em;font-size:10px;}
 .worm-rank{display:flex;justify-content:space-between;align-items:center;gap:6px;min-width:0;padding:5px 0;color:#c3b9d7;font-size:11px}
@@ -48,7 +47,6 @@ button:disabled{cursor:default;opacity:.5}
 .worm-boost-button{position:absolute;bottom:calc(25px + env(safe-area-inset-bottom));right:clamp(12px,2.8vw,37px);
  min-width:88px;min-height:82px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;padding:8px}
 .worm-boost-button svg{width:27px;height:27px}.worm-boost-button b{font-size:10px}
-.worm-boost-button.is-boosting{}
 .worm-boost-button:disabled{filter:grayscale(.4);opacity:.52}
 .worm-hint{position:absolute;bottom:calc(20px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);border:1px solid #705b9e7e;border-radius:7px;
  font-size:10px;font-weight:850;letter-spacing:.04em;text-align:center;padding:10px 16px;max-width:70%;white-space:normal}
@@ -72,7 +70,6 @@ button:disabled{cursor:default;opacity:.5}
 .worm-panel p{font-size:clamp(12px,2vw,14px);margin:8px 0 18px}
 .worm-actions{align-items:stretch;flex-wrap:wrap;}
 .worm-actions button{flex:1 1 155px;line-height:1.25;transition:filter .17s,transform .17s}
-.worm-actions button.worm-primary{}
 .worm-guide-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
 #worm-guide-counter{font-size:11px;color:#c9b7ed;letter-spacing:.10em;font-weight:950;white-space:nowrap}
 .worm-guide-visual{height:132px;position:relative;margin:20px 0 5px;overflow:hidden;
@@ -138,7 +135,6 @@ html.worm-demo #worm-field{pointer-events:none}
  padding:12px 6px 10px;text-align:center;border:2px solid #694d9a;border-bottom:4px solid #382459;
  border-radius:8px;overflow:hidden}
 .worm-skin-card.active{color:#fff;}
-.worm-skin-card:hover{}
 .worm-skin-card strong{font-size:clamp(9px,1.2vw,11px);font-weight:950;letter-spacing:.035em;line-height:1.2;overflow-wrap:anywhere}
 .worm-skin-preview{width:100%;height:43px;border-radius:5px;position:relative;overflow:hidden;
  --swatch-light:#bd9bff;--swatch-dark:#5430a9;--swatch-accent:#fff3ed}
@@ -154,9 +150,7 @@ html.worm-demo #worm-field{pointer-events:none}
 .worm-setting-toggle input{position:absolute;opacity:0;width:1px;height:1px}
 .worm-setting-toggle i{flex:none;width:38px;height:23px;position:relative;border:2px solid #8d75b9;border-radius:5px;transition:background .14s}
 .worm-setting-toggle i:after{content:"";position:absolute;top:3px;left:3px;width:13px;height:13px;background:#e1d3ff;transition:transform .14s}
-.worm-setting-toggle input:checked+i{}
 .worm-setting-toggle input:checked+i:after{transform:translateX(15px)}
-.worm-setting-toggle input:focus-visible+i{}
 .worm-setting-range{display:grid;grid-template-columns:1fr auto;gap:8px 12px;
  margin:9px 0 3px;padding:12px;border:1px solid #674981;border-radius:7px;background:#1c1530;
  font-weight:850;font-size:13px}
@@ -177,10 +171,6 @@ html.worm-demo #worm-field{pointer-events:none}
 body.worm-death-replay #worm-hud{
  opacity:0;pointer-events:none;
 }
-#worm-result.is-revealing{
-}
-#worm-result.is-revealing .worm-panel{
-}
 @keyframes worm-result-backdrop-in{
  from{opacity:0;backdrop-filter:blur(0)}
  to{opacity:1;backdrop-filter:blur(10px)}
@@ -189,10 +179,6 @@ body.worm-death-replay #worm-hud{
  0%{opacity:0;transform:translateY(28px) scale(.96)}
  70%{opacity:1;transform:translateY(-3px) scale(1.005)}
  100%{opacity:1;transform:translateY(0) scale(1)}
-}
-@media(prefers-reduced-motion:reduce){
- #worm-result.is-revealing,#worm-result.is-revealing .worm-panel{
- }
 }
 
 /* v5 — saturated cosmic palette: RED / GREEN / YELLOW / PURPLE / BLUE.
@@ -203,29 +189,15 @@ body.worm-death-replay #worm-hud{
  --space-green:#27ff40;--space-yellow:#ffe500;
  --space-purple:#9922ff;--space-blue:#2860ff;
 }
-.worm-brand{
-}
-.worm-brand em{}
-.worm-brand small{}
 .worm-metric:first-child{border-color:var(--space-green);border-bottom-color:#0c6622}
 .worm-metric:nth-child(2){border-color:var(--space-red);border-bottom-color:#790c22}
 .worm-metric:nth-child(3){border-color:var(--space-yellow);border-bottom-color:#7a6208}
-.worm-metric:first-child strong{}
-.worm-metric:nth-child(2) strong{}
-.worm-metric:nth-child(3) strong{}
-.worm-leaders{
-}
-.worm-leaders h3{}
 .worm-rank:nth-child(5n+1) b{color:var(--space-red)}
 .worm-rank:nth-child(5n+2) b{color:var(--space-green)}
 .worm-rank:nth-child(5n+3) b{color:var(--space-yellow)}
 .worm-rank:nth-child(5n+4) b{color:var(--space-purple)}
 .worm-rank:nth-child(5n) b{color:var(--space-blue)}
 .worm-rank.mine{color:#fff}
-.worm-radar{}
-.worm-radar small{}
-.worm-pause-button{
-}
 .worm-boost-button{
  border-color:var(--space-red);border-bottom-color:#640919;
 }
@@ -233,38 +205,9 @@ body.worm-death-replay #worm-hud{
  border-color:var(--space-yellow);
 }
 .worm-hint{border-color:var(--space-blue);background:#0a0c25ea;color:#fff}
-.worm-stick{
-}
-.worm-thumb{
-}
-.worm-toast{}
-.worm-eyebrow{}
-.worm-panel{
-}
-.worm-panel h1{}
-.worm-panel h2{}
-.worm-panel p{}
-.worm-actions button:not(.worm-primary){
-}
-.worm-actions button.worm-primary{
-}
 .worm-results>div:nth-child(1){border-color:var(--space-green);border-bottom-color:#125a21}
 .worm-results>div:nth-child(2){border-color:var(--space-red);border-bottom-color:#6d0e27}
 .worm-results>div:nth-child(3){border-color:var(--space-yellow);border-bottom-color:#645008}
-.worm-results>div:nth-child(1) strong{}
-.worm-results>div:nth-child(2) strong{}
-.worm-results>div:nth-child(3) strong{}
-.worm-setting-toggle,.worm-setting-range{
-}
-.worm-setting-toggle input:checked+i{
-}
-.worm-setting-range input{}
-.worm-settings-panel h2{}
-.worm-skin-card{
-}
-.worm-skin-card:hover{}
-.worm-skin-card.active{
-}
 .worm-skin-preview{
  background:radial-gradient(ellipse at 20% 20%,var(--swatch-light) 0%,transparent 49%),
  radial-gradient(ellipse at 80% 90%,var(--swatch-accent) 0%,transparent 52%),#04051b;
@@ -350,27 +293,17 @@ body.worm-death-replay #worm-hud{transition:opacity .85s ease}
 .worm-rank.mine,.worm-rank.mine b{color:#ffe500}
 .worm-radar{border-color:#425175;border-bottom-color:#293659}
 .worm-radar small{color:#ced5ed}
-.worm-panel{}
 .worm-panel h1{text-shadow:none}
 .worm-panel h2{color:#e5e7fc}
-.worm-eyebrow{}
 .worm-results>div:nth-child(n){border-color:#4a4c72;border-bottom-color:#2b3157;background:#15172d}
 .worm-results>div:nth-child(1) strong{color:#fff}
 .worm-results>div:nth-child(2) strong{color:#ffe500}
 .worm-results>div:nth-child(3) strong{color:#f4f4ff}
-.worm-pause-button{}
 .worm-boost-button{--worm-accent:#ff1744;background:linear-gradient(145deg,#83172d,#41142c)}
 .worm-boost-button.is-boosting{--worm-accent:#ffe500;}
 .worm-actions button{--worm-accent:#2860ff;}
-.worm-actions button.worm-primary{}
-.worm-actions button#worm-exit,.worm-actions button#worm-result-menu{}
-.worm-actions button#worm-settings-back{}
-.worm-setting-toggle,.worm-setting-range{}
-.worm-setting-toggle input:checked+i{}
-.worm-setting-range input{}
 .worm-settings-panel h2{color:#eeeefa}
 .worm-skin-card{--worm-accent:#2860ff;}
-.worm-skin-card.active{}
 .worm-skin-card:hover{border-color:var(--skin-accent,#2860ff);filter:brightness(1.05)}
 @media(hover:hover) and (pointer:fine){
  .worm-pause-button:hover,.worm-boost-button:hover,.worm-actions button:hover,
@@ -415,9 +348,7 @@ body.worm-death-replay #worm-hud{transition:opacity .85s ease}
  background:linear-gradient(155deg,#1b3074,#111c41);
 }
 .worm-panel{border-color:#3f496f;border-bottom-color:#242a50;}
-.worm-eyebrow{}
 .worm-panel h2,.worm-settings-panel h2{color:#f0f3ff}
-.worm-panel p{}
 .worm-results>div{background:#111a30;border-color:#3b486c;border-bottom-color:#222d4f}
 .worm-guide-visual{background:radial-gradient(ellipse at 58% 54%,#1c3c8260,transparent 73%),#090e20;border-color:#384b80}
 .worm-guide-ring{border-color:#2860ff77}
@@ -428,9 +359,6 @@ body.worm-death-replay #worm-hud{transition:opacity .85s ease}
 .worm-setting-toggle,.worm-setting-range{border-color:#3d4a6d;}
 .worm-setting-toggle i{border-color:#51617f;background:#1b2840}
 .worm-setting-toggle i::after{background:#e5ebff}
-.worm-setting-toggle input:checked+i{}
-.worm-setting-range strong{}
-.worm-setting-range input{}
 .worm-skin-card{
  border-color:#354462;border-bottom-color:#222d48;
  color:#e4e9fa;background:linear-gradient(155deg,#161e35,#0e1428);
@@ -511,11 +439,8 @@ body.worm-death-replay #worm-hud{transition:opacity .85s ease}
  .worm-pause-button{top:calc(env(safe-area-inset-top) + 6px);right:calc(env(safe-area-inset-right) + 9px)}
  .worm-stick{left:calc(env(safe-area-inset-left) + 15px);bottom:calc(env(safe-area-inset-bottom) + 9px);width:90px;height:90px}
  .worm-boost-button{bottom:calc(env(safe-area-inset-bottom) + 10px);width:72px;height:72px;min-width:72px;min-height:72px}
- .worm-panel{}
  .worm-panel h1{font-size:25px;margin:5px 0}
  .worm-panel p{margin:4px 0 8px;font-size:11px}
- .worm-actions{}
- .worm-actions button{}
  .worm-guide-visual{height:54px;margin:5px 0}
  .worm-skin-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
  .worm-skin-card{min-height:66px;padding:4px}
