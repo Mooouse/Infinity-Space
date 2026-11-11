@@ -15,6 +15,7 @@ const log=(...a)=>process.stdout.write(a.join(' ')+'\n');
   const page=await context.newPage();
   // The real report came from the RU interface; do not only test EN labels.
   await page.addInitScript(()=>localStorage.setItem('infiniti-space-language','ru'));
+   await page.addInitScript(()=>localStorage.setItem('infinity-space-player-v1',JSON.stringify({version:1,nickname:'QA Pilot'})));
   page.on('pageerror',e=>{errors.push(String(e.stack||e));log('PAGE ERROR:',String(e.stack||e).slice(0,1000));});
   page.on('console',m=>{if(m.type()==='error')log('BROWSER CONSOLE:',m.text().slice(0,700));});
   await page.goto(base+'/?tester=1',{waitUntil:'domcontentloaded',timeout:60000});
@@ -296,6 +297,7 @@ const log=(...a)=>process.stdout.write(a.join(' ')+'\n');
   const standaloneErrors=[];
   sp.on('pageerror',e=>standaloneErrors.push(String(e)));
   await sp.addInitScript(()=>{
+    localStorage.setItem('infinity-space-player-v1',JSON.stringify({version:1,nickname:'QA Pilot'}));
    localStorage.setItem('infiniti-space-language','ru');
    window.__disabledModuleReads=[];
    window.CrazyGames={SDK:{
