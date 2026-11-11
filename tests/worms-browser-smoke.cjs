@@ -2,6 +2,42 @@
 'use strict';
 const assert=require('node:assert/strict');
 const {chromium}=require('playwright');
+const fs=require('node:fs'),path=require('node:path');
+function rejectTurquoise(){
+ const dir=path.resolve(__dirname,'..');
+ const names=fs.readdirSync(dir).filter(n=>/\.(css|js|html)$/.test(n));
+ const issues=[];
+ function check(name,color){
+  if(color.some(v=>v<0||v>255||!Number.isFinite(v)))return;
+  const [R,G,B]=color.map(v=>v/255),max=Math.max(R,G,B),min=Math.min(R,G,B);
+  const delta=max-min;
+  if(delta===0)return;
+  let hue=max===R?((G-B)/delta)%6:max===G?(B-R)/delta+2:(R-G)/delta+4;
+  hue=(hue*60+360)%360;
+  const saturation=delta/(max||1);
+  // A brightly saturated blue-green shade is explicitly disallowed in the
+  // user's five-color game theme; dark neutral backgrounds are unaffected.
+  if(hue>=155&&hue<200&&saturation>.30&&max>.20)
+   issues.push({file:name,color:color.join(','),hue:Math.round(hue)});
+ }
+ for(const name of names){
+  const src=fs.readFileSync(path.join(dir,name),'utf8');
+  for(const m of src.matchAll(/#([0-9a-fA-F]{3,8})\b/g)){
+   const val=m[1],r=val.length===3||val.length===4?
+    val.slice(0,3).split('').map(ch=>parseInt(ch+ch,16)):
+    val.length===6||val.length===8?
+    [0,2,4].map(i=>parseInt(val.slice(i,i+2),16)):null;
+   if(r)check(name,r);
+  }
+  for(const m of src.matchAll(/rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})/g))
+   check(name,[Number(m[1]),Number(m[2]),Number(m[3])]);
+ }
+ assert.deepEqual(issues,[],'Turquoise is disallowed in the saturated cosmic palette');
+ const palette=fs.readFileSync(path.join(dir,'cosmic-spectrum.css'),'utf8');
+ for(const color of ['#ff1744','#27ff40','#ffe500','#9922ff','#2860ff'])
+  assert.ok(palette.includes(color),'Missing vivid palette color '+color);
+}
+rejectTurquoise();
 const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
 (async()=>{
  const browser=await chromium.launch({headless:true,args:['--no-sandbox','--disable-dev-shm-usage','--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader-webgl']});
