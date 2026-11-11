@@ -904,6 +904,7 @@ function renderSkinSettings(){
  for(const skin of SKINS){
   const btn=document.createElement('button');btn.type='button';
   btn.className='worm-skin-card'+(skin.id===options.skin?' active':'');
+  btn.style.setProperty('--skin-accent',skin.light);
   btn.dataset.skin=skin.id;btn.setAttribute('aria-pressed',String(skin.id===options.skin));
   const preview=document.createElement('span');preview.className='worm-skin-preview';
   const previewStars=document.createElement('span');previewStars.className='worm-preview-stars';
