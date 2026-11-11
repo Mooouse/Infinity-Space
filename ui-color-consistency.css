@@ -272,7 +272,7 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[da
 /* v10 — single coherent family of controls, with a subtle colored tint,
    rather than seven unrelated solid-filled gradients. */
 body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
- --dock-accent:#2860ff;--interaction-accent:var(--dock-accent);
+ --interaction-accent:var(--dock-accent);
  background:linear-gradient(140deg,
   color-mix(in srgb,var(--dock-accent) 15%,#192235) 0%,
   color-mix(in srgb,var(--dock-accent) 5%,#101827) 100%)!important;
