@@ -1,10 +1,10 @@
 /* Infinity Space: persistent nickname and unified, per-mode statistics.
-   Shared by the endless world and the four arcade game modes. */
+   Shared by the endless world, four arcade modes and Cosmic Worms. */
 (function(){
 'use strict';
 const PROFILE_KEY='infinity-space-player-v1', STATS_KEY='infinity-space-stats-v1';
-const MODE_IDS=['endless','arena','royale','core','race'];
-const NAMES={ru:['Общая','Бесконечный космос','Космическая арена','Последняя сингулярность','Захват ядра','Гонка эволюции'],en:['Overall','Endless Space','Cosmic Arena','Last Singularity','Core Conquest','Evolution Rush'],es:['General','Espacio infinito','Arena Cósmica','Última singularidad','Conquista del núcleo','Carrera evolutiva']};
+const MODE_IDS=['endless','arena','royale','core','race','worms'];
+const NAMES={ru:['Общая','Бесконечный космос','Космическая арена','Последняя сингулярность','Захват ядра','Гонка эволюции','Космические черви'],en:['Overall','Endless Space','Cosmic Arena','Last Singularity','Core Conquest','Evolution Rush','Cosmic Worms'],es:['General','Espacio infinito','Arena Cósmica','Última singularidad','Conquista del núcleo','Carrera evolutiva','Gusanos cósmicos']};
 const dict={
  ru:{nickname:'ТВОЙ ПОЗЫВНОЙ',prompt:'Введи никнейм — он будет виден в матчах и результатах.',placeholder:'Никнейм',save:'СОХРАНИТЬ',edit:'Сменить никнейм',error:'От 2 до 18 символов.',stats:'СТАТИСТИКА',close:'ЗАКРЫТЬ',matches:'Матчей',wins:'Побед',winrate:'Побед, %',kills:'Поглощено соперников',objects:'Поглощено объектов',mass:'Максимальная масса',time:'Время в игре',best:'Лучшее место',top3:'Топ-3',points:'Очки ядра',finish:'Лучшее время',stage:'Максимальная стадия',matter:'Всего материи',rare:'Реликвии',blackholes:'Поглощено чёрных дыр',deaths:'Поражений',forms:'Достигнуто форм',empty:'Пока нет матчей',profile:'ПРОФИЛЬ'},
  en:{nickname:'YOUR CALLSIGN',prompt:'Choose your nickname. It appears in matches, results and statistics.',placeholder:'Nickname',save:'SAVE',edit:'Change nickname',error:'Use 2–18 characters.',stats:'STATISTICS',close:'CLOSE',matches:'Matches',wins:'Wins',winrate:'Win rate',kills:'Rivals absorbed',objects:'Objects absorbed',mass:'Highest mass',time:'Time played',best:'Best rank',top3:'Top-3 finishes',points:'Core points',finish:'Best finish',stage:'Highest stage',matter:'Matter collected',rare:'Relics',blackholes:'Black holes absorbed',deaths:'Defeats',forms:'Forms reached',empty:'No matches recorded',profile:'PROFILE'},
@@ -128,7 +128,7 @@ function showStats(selected){
    ['kills',b.kills],['objects',b.objects],['mass',b.maxMass],['time',clock(b.time)]
   ];
   if(statsMode==='endless'||statsMode==='overall')list.push(['stage',b.maxStage+1],['matter',b.matter],['rare',b.rare],['blackholes',b.blackholes]);
-  if(statsMode==='arena'||statsMode==='royale'||statsMode==='overall')list.push(['best',b.bestPlace===null?'—':'#'+b.bestPlace],['top3',b.top3]);
+  if(['arena','royale','worms','overall'].includes(statsMode))list.push(['best',b.bestPlace===null?'—':'#'+b.bestPlace],['top3',b.top3]);
   if(statsMode==='core'||statsMode==='overall')list.push(['points',b.points]);
   if(statsMode==='race'||statsMode==='overall')list.push(['finish',b.bestFinish===null?'—':clock(b.bestFinish)]);
   if(statsMode==='race')list.push(['forms',b.forms.slice(1).join(' / ')]);
