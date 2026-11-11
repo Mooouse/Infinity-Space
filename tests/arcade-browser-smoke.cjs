@@ -12,6 +12,7 @@ const modes=['arena','royale','core','race'];
  });
  const context=await browser.newContext({viewport:{width:1280,height:720},deviceScaleFactor:1});
  const page=await context.newPage(),errors=[];
+ await page.addInitScript(()=>localStorage.setItem('infinity-space-player-v1',JSON.stringify({version:1,nickname:'QA Pilot'})));
  page.on('pageerror',err=>errors.push(String(err.stack||err)));
  try{
   // Obsolete standalone mode gallery must never be displayed.
@@ -93,6 +94,7 @@ const modes=['arena','royale','core','race'];
    viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:1
   });
   const mobile=await mobileContext.newPage();
+  await mobile.addInitScript(()=>localStorage.setItem('infinity-space-player-v1',JSON.stringify({version:1,nickname:'QA Pilot'})));
   const mobileErrors=[];mobile.on('pageerror',err=>mobileErrors.push(String(err.stack||err)));
   await mobile.goto(base+'/cosmic-arena.html?mode=arena',{waitUntil:'domcontentloaded',timeout:45000});
   await mobile.locator('#guide').waitFor({state:'visible',timeout:18000});
