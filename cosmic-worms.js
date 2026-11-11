@@ -229,22 +229,21 @@ function notify(text){
  const el=$('worm-toast');el.textContent=text;el.classList.add('show');toastTimer=1.8;
 }
 function init(){
- game={state:'playing',time:0,food:[],worms:[],fx:[],player:null,reported:false};
+ game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),worms:[],fx:[],player:null,reported:false};
  const human=!DEMO;
  const p=createWorm(DEMO?'Astra':(window.InfinityProfile?.getName()||'PILOT'),human,0);
- p.angle=-.28;p.target=p.angle;
  game.player=p;game.worms.push(p);
- for(let i=1;i<=(DEMO?14:22);i++){
-  const b=createWorm(NAMES[(i-1)%NAMES.length],false,i);b.mass=rand(48,175);b.bestMass=b.mass;
-  if(dist(b.x-p.x,b.y-p.y)<450){const pos=randomPos(.83);b.x=pos.x;b.y=pos.y;
-   b.segments.forEach((n,j)=>{n.x=b.x-Math.cos(b.angle)*(j+1)*11.5;n.y=b.y-Math.sin(b.angle)*(j+1)*11.5;});}
-  game.worms.push(b);
+ for(let i=1;i<=BOT_COUNT;i++){
+  const b=createWorm(NAMES[(i-1)%NAMES.length],false,i,i<=32);
+  if(b)game.worms.push(b);
  }
- fillFood(DEMO?370:720);
+ fillFood(FOOD_TARGET);
+ addBodyGrid();
  camera.x=p.x;camera.y=p.y;camera.zoom=1;
  input.mouseDown=input.boostKey=input.boostTouch=false;
- input.stickPower=0;input.touchAngle=null;input.keys.clear();
- $('worm-result').hidden=true;$('worm-pause-overlay').hidden=true;$('worm-guide').hidden=true;
+ input.stickPower=0;input.touchAngle=null;input.mouseMoved=false;input.keys.clear();
+ $('worm-result').hidden=true;$('worm-pause-overlay').hidden=true;
+ $('worm-guide').hidden=true;$('worm-settings').hidden=true;
  if(!DEMO){
   if(!window.InfinityProfile?.getName())window.InfinityProfile?.promptName?.(true,name=>{p.name=name;});
   let visited=false;try{visited=localStorage.getItem('infinity-space-mode-guide-v2:worms')==='1'}catch(_){}
