@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#080512">
 <meta name="description" content="Infinity Space — Cosmic Worms. Grow a glowing space serpent and survive a galaxy of AI rivals.">
 <title>Infinity Space — Cosmic Worms</title>
-<link rel="stylesheet" href="cosmic-worms.css?v=1">
+<link rel="stylesheet" href="cosmic-worms.css?v=2">
 </head>
 <body>
 <canvas id="worm-field" aria-label="Cosmic Worms playing field"></canvas>
@@ -32,7 +32,21 @@
   <span class="worm-eyebrow">INFINITY SPACE / COSMIC WORMS</span>
   <h1 data-word="paused">PAUSED</h1>
   <p data-word="pauseDesc">Resume your flight, review the controls or return to the main menu.</p>
-  <div class="worm-actions"><button class="worm-primary" id="worm-resume" data-word="resume">CONTINUE</button><button id="worm-open-guide" data-word="help">HOW TO PLAY</button><button id="worm-exit" data-word="menu">CHANGE MODE</button></div>
+  <div class="worm-actions"><button class="worm-primary" id="worm-resume" data-word="resume">CONTINUE</button><button id="worm-settings-open" data-word="settings">SETTINGS</button><button id="worm-open-guide" data-word="help">HOW TO PLAY</button><button id="worm-exit" data-word="menu">EXIT TO MENU</button></div>
+ </div>
+</div>
+<div id="worm-settings" class="worm-shade" hidden role="dialog" aria-modal="true" aria-labelledby="worm-settings-heading">
+ <div class="worm-panel worm-settings-panel">
+  <span class="worm-eyebrow">INFINITY SPACE / COSMIC WORMS</span>
+  <h1 id="worm-settings-heading" data-word="settings">SETTINGS</h1>
+  <h2 data-word="skins">COSMIC SKINS</h2>
+  <p data-word="skinDesc">Choose your worm's cosmic appearance. All skins are unlocked.</p>
+  <div id="worm-skin-grid" class="worm-skin-grid" role="group" aria-label="Cosmic worm skins"></div>
+  <h2 data-word="visuals">VISUALS</h2>
+  <label class="worm-setting-toggle"><span data-word="glow">Enhanced glow</span><input type="checkbox" id="worm-setting-glow" checked><i aria-hidden="true"></i></label>
+  <label class="worm-setting-toggle"><span data-word="names">Rival names</span><input type="checkbox" id="worm-setting-names" checked><i aria-hidden="true"></i></label>
+  <label class="worm-setting-range"><span data-word="zoom">Camera distance</span><strong id="worm-zoom-value">100%</strong><input id="worm-setting-zoom" type="range" min="75" max="140" step="5" value="100"></label>
+  <div class="worm-actions"><button class="worm-primary" id="worm-settings-back" data-word="backPause">BACK TO PAUSE</button></div>
  </div>
 </div>
 <div id="worm-guide" class="worm-shade" hidden role="dialog" aria-modal="true">
@@ -61,6 +75,6 @@
 <script src="platform.js"></script>
 <script src="https://bridge.playgama.com/v2/stable/playgama-bridge.js" defer></script>
 <script src="playgama-platform.js" defer></script>
-<script src="cosmic-worms.js?v=1" defer></script>
+<script src="cosmic-worms.js?v=2" defer></script>
 </body>
 </html>
