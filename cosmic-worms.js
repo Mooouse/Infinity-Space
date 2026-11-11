@@ -66,7 +66,11 @@ const SKINS=[
  {id:'horizon',en:'Event Horizon',ru:'Горизонт',es:'Horizonte',light:'#9922ff',dark:'#150034',accent:'#2860ff',pattern:'horizon'},
  {id:'supernova',en:'Supernova',ru:'Сверхновая',es:'Supernova',light:'#ff1744',dark:'#75041d',accent:'#ffe500',pattern:'supernova'},
  {id:'comet',en:'Comet Ice',ru:'Лёд кометы',es:'Hielo de cometa',light:'#2860ff',dark:'#081260',accent:'#27ff40',pattern:'comet'},
- {id:'stardust',en:'Stardust',ru:'Звёздная пыль',es:'Polvo estelar',light:'#ffe500',dark:'#695009',accent:'#ff1744',pattern:'stardust'}
+ {id:'stardust',en:'Stardust',ru:'Звёздная пыль',es:'Polvo estelar',light:'#ffe500',dark:'#695009',accent:'#ff1744',pattern:'stardust'},
+ {id:'eclipse',en:'Eclipse',ru:'Затмение',es:'Eclipse',light:'#a928ff',dark:'#05050e',accent:'#ff1744',pattern:'eclipse'},
+ {id:'meteor',en:'Meteor',ru:'Метеор',es:'Meteoro',light:'#ff1744',dark:'#601017',accent:'#ffe500',pattern:'meteor'},
+ {id:'galaxy',en:'Spiral Galaxy',ru:'Спиральная галактика',es:'Galaxia espiral',light:'#2860ff',dark:'#1c0a6b',accent:'#a928ff',pattern:'galaxy'},
+ {id:'crystal',en:'Crystal',ru:'Кристалл',es:'Cristal',light:'#27ff40',dark:'#10255c',accent:'#2860ff',pattern:'crystal'}
 ];
 const SETTINGS_KEY='infinity-space-worms-settings-v2';
 function loadSettings(){
@@ -657,7 +661,11 @@ const SKIN_NEBULAE={
  horizon:['#9922ff','#2860ff','#ff1744'],
  supernova:['#ff1744','#ffe500','#9922ff'],
  comet:['#2860ff','#27ff40','#9922ff'],
- stardust:['#ffe500','#9922ff','#ff1744']
+ stardust:['#ffe500','#9922ff','#ff1744'],
+ eclipse:['#a928ff','#ff1744','#ffe500'],
+ meteor:['#ff1744','#ffe500','#ff1744'],
+ galaxy:['#2860ff','#a928ff','#ffe500'],
+ crystal:['#27ff40','#2860ff','#ffe500']
 };
 function drawCosmicInterior(w,t,r){
  const nodes=[w,...w.segments],n=nodes.length;
@@ -904,7 +912,7 @@ function renderSkinSettings(){
   btn.className='worm-skin-card'+(skin.id===options.skin?' active':'');
   btn.style.setProperty('--skin-accent',skin.light);
   btn.dataset.skin=skin.id;btn.setAttribute('aria-pressed',String(skin.id===options.skin));
-  const preview=document.createElement('span');preview.className='worm-skin-preview';
+  const preview=document.createElement('span');preview.className='worm-skin-preview';preview.dataset.skin=skin.id;
   const previewStars=document.createElement('span');previewStars.className='worm-preview-stars';
   const previewComet=document.createElement('i');previewComet.className='worm-preview-comet';
   preview.append(previewStars,previewComet);
