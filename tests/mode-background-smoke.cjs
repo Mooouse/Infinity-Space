@@ -9,6 +9,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
  try{
   const context=await browser.newContext({viewport:{width:1280,height:800},deviceScaleFactor:1});
   const page=await context.newPage(),errors=[];
+  await page.addInitScript(()=>localStorage.setItem('infinity-space-player-v1',JSON.stringify({version:1,nickname:'QA Pilot'})));
   page.on('pageerror',e=>errors.push(String(e.stack||e)));
   await page.goto(base+'/?tester=1',{waitUntil:'domcontentloaded',timeout:60000});
   // The mode selector MUST be the first screen, with no entry button.
@@ -81,6 +82,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   // Separate mobile browser context validates actual screen layout and touch-swipe input.
   const mobileContext=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
   const mobile=await mobileContext.newPage();
+  await mobile.addInitScript(()=>localStorage.setItem('infinity-space-player-v1',JSON.stringify({version:1,nickname:'QA Pilot'})));
   mobile.on('pageerror',e=>errors.push(String(e.stack||e)));
   await mobile.goto(base+'/?tester=1',{waitUntil:'domcontentloaded',timeout:60000});
   await mobile.locator('#hub-mode-story').waitFor({state:'visible',timeout:45000});
