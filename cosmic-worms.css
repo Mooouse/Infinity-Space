@@ -179,3 +179,31 @@ html.worm-demo #worm-field{pointer-events:none}
  .worm-skin-card{min-height:76px;padding:5px;gap:3px}.worm-skin-preview{height:30px}
  .worm-setting-toggle{min-height:35px;margin:4px 0;padding:4px 10px}
 }
+
+
+/* v3: post-death replay. The battlefield stays unobstructed, then results
+   fade smoothly into the same purple interface. */
+body.worm-death-replay #worm-hud{
+ opacity:0;pointer-events:none;
+ transition:opacity .38s ease;
+}
+#worm-result.is-revealing{
+ animation:worm-result-backdrop-in .82s cubic-bezier(.18,.69,.21,1) both;
+}
+#worm-result.is-revealing .worm-panel{
+ animation:worm-result-panel-in .82s cubic-bezier(.18,.80,.19,1) both;
+}
+@keyframes worm-result-backdrop-in{
+ from{opacity:0;backdrop-filter:blur(0)}
+ to{opacity:1;backdrop-filter:blur(10px)}
+}
+@keyframes worm-result-panel-in{
+ 0%{opacity:0;transform:translateY(28px) scale(.96)}
+ 70%{opacity:1;transform:translateY(-3px) scale(1.005)}
+ 100%{opacity:1;transform:translateY(0) scale(1)}
+}
+@media(prefers-reduced-motion:reduce){
+ #worm-result.is-revealing,#worm-result.is-revealing .worm-panel{
+  animation-duration:.01ms!important;animation-iteration-count:1!important;
+ }
+}
