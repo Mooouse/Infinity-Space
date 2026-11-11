@@ -1,80 +1,91 @@
-// Real Chromium check for the four cosmic .io modes and shared Infinity Space artwork.
-// Prevents shipping blank canvases, missing controls or runtime errors.
+// Real Chromium smoke test for Infinity Space's unified menu and arcade matches.
+// Guards against revived legacy selection pages, broken onboarding and pause UI.
 'use strict';
 const assert=require('node:assert/strict');
 const {chromium}=require('playwright');
 const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
-const modeNames=['arena','royale','core','race'];
+const modes=['arena','royale','core','race'];
 (async()=>{
- const browser=await chromium.launch({headless:true,args:['--no-sandbox','--disable-dev-shm-usage','--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader-webgl']});
+ const browser=await chromium.launch({
+  headless:true,args:['--no-sandbox','--disable-dev-shm-usage',
+   '--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader-webgl']
+ });
  const context=await browser.newContext({viewport:{width:1280,height:720},deviceScaleFactor:1});
- const page=await context.newPage();
- const errors=[];
- page.on('pageerror',e=>errors.push(String(e.stack||e)));
+ const page=await context.newPage(),errors=[];
+ page.on('pageerror',err=>errors.push(String(err.stack||err)));
  try{
+  // Obsolete standalone mode gallery must never be displayed.
   await page.goto(base+'/cosmic-arena.html',{waitUntil:'domcontentloaded',timeout:45000});
-  await page.locator('#menu .mode[data-mode="arena"]').waitFor({state:'visible',timeout:15000});
-  assert.equal(await page.locator('#menu .mode[data-mode]').count(),4);
-  assert.equal(await page.locator('#menu .mode-gallery-endless').count(),1);
-  await page.waitForFunction(()=>{
-   const c=document.querySelector('.mode-preview-art');
-   if(!c)return false;
-   const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
-   let pixels=0;
-   for(let i=0;i<d.length;i+=1812)if(d[i]+d[i+1]+d[i+2]>70)pixels++;
-   return pixels>55;
-  },null,{timeout:12000});
-  await page.locator('#mode-next').click();
-  await page.waitForFunction(()=>document.getElementById('menu')?.dataset.selection==='royale',null,{timeout:7000});
-  assert.equal(await page.locator('#mode-page-indicator').innerText().then(x=>x.includes('02')),true);
-  await page.locator('#mode-carousel-viewport').focus();
-  await page.keyboard.press('ArrowRight');
-  await page.waitForFunction(()=>document.getElementById('menu')?.dataset.selection==='core',null,{timeout:7000});
-  await page.locator('#mode-prev').click();
-  await page.waitForFunction(()=>document.getElementById('menu')?.dataset.selection==='royale',null,{timeout:7000});
-  console.log('PASS: illustrated carousel changes mode backgrounds and supports arrow navigation');
-  console.log('PASS: selection screen includes all competitive modes and endless universe');
-  for(const mode of modeNames){
+  await page.waitForURL(/index\.html/,{timeout:15000});
+  await page.locator('#hub-mode-story').waitFor({state:'visible',timeout:20000});
+  assert.equal(await page.locator('#mode-carousel-viewport').count(),0);
+  assert.equal(await page.locator('.hub-mode-dots button').count(),5);
+  console.log('PASS: standalone legacy mode gallery removed; home is the only selector');
+  for(const mode of modes){
    await page.goto(base+'/cosmic-arena.html?mode='+mode,{waitUntil:'domcontentloaded',timeout:45000});
-   await page.waitForFunction(()=>document.querySelector('#hud:not([hidden])')&&Number(document.querySelector('#mass')?.textContent)>0,null,{timeout:18000});
-   await page.waitForTimeout(900);
-   const stage=await page.locator('#arena-stage-name').textContent();
-   assert.equal(stage==='Cosmic Dust'||stage==='Космическая пыль',true,mode+' must not skip its initial evolution stage');
-   assert.equal(await page.locator('.arena-stage-bar').count(),1);
-   const sample=await page.evaluate(()=>{
+   await page.locator('#hud:not([hidden])').waitFor({state:'visible',timeout:20000});
+   await page.waitForFunction(()=>Number(document.getElementById('mass')?.textContent)>0,null,{timeout:15000});
+   const tutorial=page.locator('#guide');
+   assert.equal(await tutorial.isVisible(),true,mode+' should show a guide on its first launch');
+   assert.equal(await page.locator('#guide-step-title').isVisible(),true);
+   assert.equal(await page.locator('#guide-counter').textContent(),'01 / 03');
+   await page.locator('#guide-next').click();
+   await page.locator('#guide-next').click();
+   await page.locator('#guide-next').click();
+   assert.equal(await tutorial.isVisible(),false,'Tutorial finishes after 3 concise steps');
+   assert.equal(await page.locator('#arena-stage-name').textContent()==='Cosmic Dust'||
+    await page.locator('#arena-stage-name').textContent()==='Космическая пыль',true,
+    mode+' first form should not advance without sufficient collected mass');
+   const snapshot=await page.evaluate(()=>{
     const cvs=document.getElementById('arena'),c=cvs.getContext('2d');
     const w=cvs.width,h=cvs.height,arr=c.getImageData(0,0,w,h).data;
     let bright=0,dark=0,nonblack=0;
     for(let y=0;y<h;y+=17)for(let x=0;x<w;x+=17){
-     const i=(y*w+x)*4,r=arr[i],g=arr[i+1],b=arr[i+2];
-     if(r+g+b>90)bright++;if(r+g+b<50)dark++;
-     if(r+g+b>15)nonblack++;
+     const i=(y*w+x)*4,total=arr[i]+arr[i+1]+arr[i+2];
+     if(total>90)bright++;if(total<50)dark++;if(total>15)nonblack++;
     }
-    return {bright,dark,nonblack,width:w,height:h};
+    return {bright,dark,nonblack};
    });
-   assert.ok(sample.bright>15&&sample.dark>80&&sample.nonblack>50,
-    mode+' must render a detailed space scene rather than a blank or white canvas: '+JSON.stringify(sample));
-   await page.keyboard.press('KeyE');await page.keyboard.press('Space');await page.keyboard.press('KeyQ');
+   assert.ok(snapshot.bright>15&&snapshot.dark>80&&snapshot.nonblack>50,
+    mode+' must render real space sprites: '+JSON.stringify(snapshot));
+   await page.keyboard.press('KeyE');
+   await page.keyboard.press('KeyQ');
+   await page.keyboard.press('Space');
    await page.locator('#pause').click();
-   assert.equal(await page.locator('#paused').isVisible(),true,mode+' pause opens');
+   await page.locator('#paused').waitFor({state:'visible'});
+   assert.equal(await page.locator('#paused .arena-dialog-actions button').count(),3);
+   await page.locator('#guide-open').click();
+   assert.equal(await tutorial.isVisible(),true,'Help must reopen from pause');
+   await page.locator('#guide-skip').click();
+   assert.equal(await page.locator('#paused').isVisible(),true,'Guide returns to pause, not gameplay');
    await page.locator('#resume').click();
-   assert.equal(await page.locator('#paused').isVisible(),false,mode+' pause closes');
-   assert.equal(errors.length,0,mode+' page errors: '+errors.join('\n'));
-   console.log('PASS: '+mode+' black-space artwork, visible matter, ability input, pause and resume');
+   assert.equal(await page.locator('#paused').isVisible(),false);
+   await page.locator('#pause').click();
+   await page.locator('#change2').click();
+   await page.waitForURL(new RegExp('index\\.html\\?select='+mode),{timeout:15000});
+   await page.locator('#hub-mode-story').waitFor({state:'visible',timeout:20000});
+   await page.waitForFunction(expected=>window.SpaceMenuSceneMode===expected,mode,{timeout:6000});
+   console.log('PASS: '+mode+' resources, tutorial, aligned pause and unified mode switch');
   }
-  const mobileContext=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:1});
+  assert.equal(errors.length,0,'Runtime errors: '+errors.join('\n'));
+  await context.close();
+  const mobileContext=await browser.newContext({
+   viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:1
+  });
   const mobile=await mobileContext.newPage();
-  mobile.on('pageerror',e=>errors.push(String(e.stack||e)));
-  await mobile.goto(base+'/cosmic-arena.html',{waitUntil:'domcontentloaded'});
-  await mobile.locator('.mode[data-mode="race"]').waitFor({state:'visible'});
-  assert.equal(await mobile.locator('.mode[data-mode="race"]').isVisible(),true);
-  const layout=await mobile.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth}));
-  assert.ok(layout.scroll<=layout.width+2,'No mobile horizontal overflow: '+JSON.stringify(layout));
-  await mobile.locator('.mode[data-mode="arena"]').click();
-  await mobile.locator('#hud:not([hidden])').waitFor({state:'visible'});
+  const mobileErrors=[];mobile.on('pageerror',err=>mobileErrors.push(String(err.stack||err)));
+  await mobile.goto(base+'/cosmic-arena.html?mode=arena',{waitUntil:'domcontentloaded',timeout:45000});
+  await mobile.locator('#guide').waitFor({state:'visible',timeout:18000});
+  await mobile.locator('#guide-skip').click();
+  await mobile.locator('#hud:not([hidden])').waitFor({state:'visible',timeout:15000});
   assert.equal(await mobile.locator('#touch-stick').isVisible(),true);
+  const layout=await mobile.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth}));
+  assert.ok(layout.scroll<=layout.width+2,'No horizontal overflow on phone: '+JSON.stringify(layout));
+  await mobile.locator('#pause').click();
+  assert.equal(await mobile.locator('#paused .arena-dialog-actions button').count(),3);
+  await mobile.locator('#resume').click();
+  assert.equal(mobileErrors.length,0,mobileErrors.join('\n'));
+  console.log('PASS: touch joystick and three-step guides work on mobile');
   await mobileContext.close();
-  assert.equal(errors.length,0,'No page errors: '+errors.join('\n'));
-  console.log('PASS: mobile mode selector and touch joystick');
  }finally{await browser.close()}
 })().catch(error=>{console.error(error.stack||error);process.exitCode=1});
