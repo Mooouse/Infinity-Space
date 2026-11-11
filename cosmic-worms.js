@@ -1092,6 +1092,8 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
     game.player.foodEaten++;updateUI();},
   setHeading:angle=>{input.mouseMoved=false;input.keys.clear();input.touchAngle=null;
     input.stickPower=0;game.player.target=Number(angle);},
+  // Stable UI smoke tests must not randomly die while inspecting controls.
+  testProtection:seconds=>{game.player.invulnerable=clamp(Number(seconds)||30,0,120);},
   forceDeath:()=>{game.player.invulnerable=0;kill(game.player,null,'body');},
   forceBotDeath:()=>{
    const b=game.worms.find(w=>!w.human&&w.alive);
