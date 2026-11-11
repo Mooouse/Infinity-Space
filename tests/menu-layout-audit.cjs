@@ -72,7 +72,7 @@ const inspect=()=>{
    },lang);
    await page.goto(base+'/index.html?tester=1',{waitUntil:'domcontentloaded',timeout:60000});
    await page.locator('#screen-menu .hub-mode-story-play').waitFor({state:'visible',timeout:40000});
-   for(let n=0;n<5;n++){
+   for(let n=0;n<6;n++){
     try{
      await page.locator('.hub-mode-dots button').nth(n).click({timeout:7000});
      await page.waitForTimeout(350);
@@ -92,6 +92,6 @@ const inspect=()=>{
   }
   console.log('MAIN_MENU_LAYOUT_FAILURES '+JSON.stringify(failures));
   assert.equal(failures.length,0,'Main menu visual regressions');
-  console.log('PASS: 12 viewport/language combinations × 5 modes; text, icon, centering, navigation and hit testing');
+  console.log('PASS: 12 viewport/language combinations × 6 modes; text, icon, centering, navigation and hit testing');
  }finally{await browser.close();}
 })().catch(e=>{console.error(e.stack||e);process.exitCode=1;});
