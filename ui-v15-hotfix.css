@@ -524,18 +524,18 @@
  body.ui-v15 .game-select-trigger:not(:disabled):hover,
  body.ui-v15 .game-select-item:not(:disabled):hover,
  body.ui-v15 #hud #direction-control:hover{
-  border-color:#c6a1ff!important;
-  filter:brightness(1.17) saturate(1.23)!important;
-  box-shadow:0 0 0 1px rgba(194,154,255,.56),
-             0 0 16px rgba(143,90,255,.58),
-             0 0 33px rgba(92,46,207,.27),
-             0 7px 19px rgba(3,0,15,.68),
-             inset 0 1px 0 rgba(247,232,255,.23)!important;
+  /* Use the hovered control's semantic accent instead of forcing violet. */
+  border-color:var(--interaction-accent,#425bdb)!important;
+  filter:brightness(1.08) saturate(1.08)!important;
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--interaction-accent,#425bdb) 49%,transparent),
+             0 0 14px color-mix(in srgb,var(--interaction-accent,#425bdb) 38%,transparent),
+             0 5px 17px rgba(2,4,17,.58),
+             inset 0 1px 0 rgba(255,255,255,.10)!important;
   transition:border-color .16s ease,filter .16s ease,box-shadow .16s ease,background .16s ease!important;
  }
  body.ui-v15 #modal button:not(:disabled):not([hidden]):hover svg,
  body.ui-v15 #hud .v15-hud button:not(:disabled):not([hidden]):hover svg{
-  filter:drop-shadow(0 0 5px rgba(196,163,255,.65));
+  filter:drop-shadow(0 0 5px color-mix(in srgb,var(--interaction-accent,#425bdb) 50%,transparent))!important;
  }
  body.ui-v15 #screen-map .v15-map-details summary:hover{
   color:#f6eaff!important;
@@ -547,9 +547,10 @@ body.ui-v15 #modal button:focus-visible,
 body.ui-v15 #hud .v15-hud button:focus-visible,
 body.ui-v15 .game-select-trigger:focus-visible,
 body.ui-v15 .game-select-item:focus-visible{
- outline:2px solid #d4b7ff!important;
+ outline:2px solid var(--interaction-accent,#425bdb)!important;
  outline-offset:3px!important;
- box-shadow:0 0 0 4px rgba(104,54,194,.37),0 0 19px rgba(173,118,255,.54)!important;
+ box-shadow:0 0 0 3px color-mix(in srgb,var(--interaction-accent,#425bdb) 27%,transparent),
+            0 0 13px color-mix(in srgb,var(--interaction-accent,#425bdb) 32%,transparent)!important;
 }
 /* Native select is retained for form logic; the visible control matches v15. */
 body.ui-v15 #screen-map .v15-map-details .game-select{
