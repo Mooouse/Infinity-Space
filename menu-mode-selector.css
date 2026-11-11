@@ -595,3 +595,86 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-counter{
 @media(prefers-reduced-motion:reduce){
  body.ui-v15 #screen-menu.hub-main-carousel .hub-demo-frame{transition:none}
 }
+
+
+/* v3.71 — unified mode layout: no orphaned Cyrillic letters, centered
+   carousel controls, and the same angular icon geometry across buttons. */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
+ width:min(720px,100%);max-width:100%;min-width:0;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
+ font-size:clamp(39px,4.5vw,76px);
+ line-height:1.01;letter-spacing:-.055em;
+ text-wrap:balance;overflow-wrap:normal;word-break:normal;hyphens:none;
+ max-width:100%;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-footer{
+ box-sizing:border-box;display:flex;flex-direction:column;
+ align-items:center;justify-content:center;gap:7px;
+ width:100%;min-width:0;min-height:75px;
+ padding:0;margin-inline:auto;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nav-controls{
+ display:flex;align-items:center;justify-content:center;
+ gap:clamp(9px,1.5vw,14px);width:max-content;max-width:100%;
+ margin-inline:auto;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nav-controls .hub-mode-dots{
+ display:flex;align-items:center;justify-content:center;
+ flex:0 1 auto;min-width:0;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-step{
+ display:grid;place-items:center;padding:0;line-height:1;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-step svg{
+ display:block;width:20px;height:20px;flex:none;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-gesture{
+ display:block;margin:0;max-width:100%;white-space:normal;
+ color:#ada0cb;font-size:9px;line-height:1.25;
+ letter-spacing:.075em;text-align:center;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play b{
+ display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;
+ color:#f2eaff;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play b svg{
+ display:block;width:25px;height:25px;
+}
+@media(max-width:700px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
+  width:100%;max-width:100%;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
+  font-size:clamp(33px,8.4vw,54px);line-height:1.02;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-footer{
+  min-height:44px!important;gap:0;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-gesture{display:none}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nav-controls{gap:8px}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nav-controls .hub-mode-dots{
+  flex:0 1 auto;gap:5px;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-step svg{width:18px;height:18px}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play b{
+  width:25px;height:25px;flex-basis:25px;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play b svg{width:21px;height:21px}
+}
+@media(max-width:380px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
+  font-size:clamp(27px,8vw,33px);letter-spacing:-.045em;
+ }
+}
+@media(max-height:760px) and (min-width:701px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
+  font-size:clamp(34px,4.1vw,58px);
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-footer{
+  min-height:62px;gap:4px;margin-top:7px;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
+  margin-top:auto;
+ }
+}
