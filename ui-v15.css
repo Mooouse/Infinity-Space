@@ -24,7 +24,7 @@
 @media(max-width:800px){.ach-content .display-heading{font-size:42px}.best-content .display-heading{font-size:42px}}
 
 /* INFINITY SPACE / FORGE UI — independently authored review-only skin. */
-:root{--cyan:#7a4afd;--purple:#bd9cff;--text:#f4f8ff;--sub:#92a6b8;--fine:rgba(141,206,229,.20);--line:rgba(128,94,223,.28)}
+:root{--cyan:#7a4afd;--purple:#bd9cff;--text:#f4f8ff;--sub:#92a6b8;--fine:rgba(40,96,255,.20);--line:rgba(128,94,223,.28)}
 html,body{font-family:'Inter',Arial,sans-serif;color:var(--text)}
 button{font-family:'Inter',sans-serif;-webkit-tap-highlight-color:transparent;user-select:none}
 button:focus-visible{outline:2px solid var(--cyan);outline-offset:4px}
