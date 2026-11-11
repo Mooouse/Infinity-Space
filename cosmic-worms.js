@@ -685,8 +685,46 @@ function paint(t){
  vignette.addColorStop(0,'#07041100');vignette.addColorStop(1,'#03020ab0');
  ctx.fillStyle=vignette;ctx.fillRect(0,0,vw,vh);
 }
+function renderSkinSettings(){
+ const grid=$('worm-skin-grid');grid.replaceChildren();
+ for(const skin of SKINS){
+  const btn=document.createElement('button');btn.type='button';
+  btn.className='worm-skin-card'+(skin.id===options.skin?' active':'');
+  btn.dataset.skin=skin.id;btn.setAttribute('aria-pressed',String(skin.id===options.skin));
+  const preview=document.createElement('span');preview.className='worm-skin-preview';
+  preview.style.setProperty('--swatch-light',skin.light);
+  preview.style.setProperty('--swatch-dark',skin.dark);
+  preview.style.setProperty('--swatch-accent',skin.accent);
+  const title=document.createElement('strong');title.textContent=skin[language];
+  btn.append(preview,title);
+  btn.onclick=()=>{
+   options.skin=skin.id;saveOptions();applySkin(game.player,options.skin);
+   renderSkinSettings();
+  };
+  grid.append(btn);
+ }
+}
+function showSettings(){
+ if(DEMO||game.state!=='paused')return;
+ game.state='settings';
+ $('worm-pause-overlay').hidden=true;
+ $('worm-settings').hidden=false;
+ $('worm-setting-glow').checked=options.glow;
+ $('worm-setting-names').checked=options.names;
+ $('worm-setting-zoom').value=String(options.zoom);
+ $('worm-zoom-value').textContent=options.zoom+'%';
+ renderSkinSettings();
+}
+function closeSettings(){
+ if(game.state!=='settings')return;
+ game.state='paused';
+ $('worm-settings').hidden=true;
+ $('worm-pause-overlay').hidden=false;
+}
+
 function pause(){
  if(DEMO)return;
+ if(game.state==='settings'){closeSettings();return;}
  if(game.state==='playing'){
   game.state='paused';$('worm-pause-overlay').hidden=false;
   window.SpacePlatform?.playing?.(false);
@@ -726,6 +764,14 @@ function exit(){
  location.assign('index.html?select=worms');
 }
 $('worm-pause').onclick=pause;$('worm-resume').onclick=pause;
+$('worm-settings-open').onclick=showSettings;
+$('worm-settings-back').onclick=closeSettings;
+$('worm-setting-glow').onchange=e=>{options.glow=e.target.checked;saveOptions();};
+$('worm-setting-names').onchange=e=>{options.names=e.target.checked;saveOptions();};
+$('worm-setting-zoom').oninput=e=>{
+ options.zoom=clamp(Number(e.target.value),75,140);
+ $('worm-zoom-value').textContent=options.zoom+'%';saveOptions();
+};
 $('worm-open-guide').onclick=()=>showGuide('paused');$('worm-exit').onclick=exit;
 $('worm-guide-skip').onclick=closeGuide;
 $('worm-guide-next').onclick=()=>{if(guideStep<2){guideStep++;paintGuide();}else closeGuide();};
@@ -760,7 +806,7 @@ window.addEventListener('contextmenu',e=>e.preventDefault());
 window.addEventListener('keydown',e=>{
  if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD','ShiftLeft','ShiftRight'].includes(e.code))e.preventDefault();
  if(e.code==='Escape'||e.code==='KeyP'){
-  if(game.state==='guide')closeGuide();else pause();return;
+  if(game.state==='guide')closeGuide();else if(game.state==='settings')closeSettings();else pause();return;
  }
  if(e.code==='Space'||e.code==='ShiftLeft'||e.code==='ShiftRight')input.boostKey=true;
  input.keys.add(e.code);
