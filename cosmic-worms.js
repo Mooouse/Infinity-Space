@@ -531,6 +531,10 @@ function collectFood(dt){
   });
  }
 }
+function headOnWinner(a,b){
+ return a.mass>b.mass?a:b.mass>a.mass?b:
+  a.speed>b.speed?a:b.speed>a.speed?b:(a.id<b.id?a:b);
+}
 function collisions(){
  // One shared spatial index contains every other worm's full trail. Head-on
  // and body contacts are checked without scanning thousands of distant nodes.
@@ -546,8 +550,7 @@ function collisions(){
    if(entry.head){
     // Head-on collisions kill ONE rival: larger mass wins;
     // speed and stable ID break true ties deterministically.
-    const winner=w.mass>other.mass?w:other.mass>w.mass?other:
-     w.speed>other.speed?w:other.speed>w.speed?other:(w.id<other.id?w:other);
+    const winner=headOnWinner(w,other);
     kill(winner===w?other:w,winner,'head');
    }else kill(w,other,'body');
   });
@@ -994,29 +997,6 @@ function paint(t){
  ctx.fillStyle=vignette;ctx.fillRect(0,0,vw,vh);
  paintDeathVignette();
 }
-function renderSkinSettings(){
- const grid=$('worm-skin-grid');grid.replaceChildren();
- for(const skin of SKINS){
-  const btn=document.createElement('button');btn.type='button';
-  btn.className='worm-skin-card'+(skin.id===options.skin?' active':'');
-  btn.style.setProperty('--skin-accent',skin.light);
-  btn.dataset.skin=skin.id;btn.setAttribute('aria-pressed',String(skin.id===options.skin));
-  const preview=document.createElement('span');preview.className='worm-skin-preview';preview.dataset.previewSkin=skin.id;
-  const previewStars=document.createElement('span');previewStars.className='worm-preview-stars';
-  const previewComet=document.createElement('i');previewComet.className='worm-preview-comet';
-  preview.append(previewStars,previewComet);
-  preview.style.setProperty('--swatch-light',skin.light);
-  preview.style.setProperty('--swatch-dark',skin.dark);
-  preview.style.setProperty('--swatch-accent',skin.accent);
-  const title=document.createElement('strong');title.textContent=skin[language];
-  btn.append(preview,title);
-  btn.onclick=()=>{
-   options.skin=skin.id;options.customEnabled=false;options.customSegments=[];saveOptions();applySkin(game.player,options.skin);
-   renderSkinSettings();
-  };
-  grid.append(btn);
- }
-}
 function showSkinWorkshop(){
  if(DEMO||game.state!=='paused'||!window.WormSkinStudio)return;
  game.state='skins';$('worm-pause-overlay').hidden=true;
@@ -1225,6 +1205,11 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
     }
    }
    return {safe:minimum>=250,minimum,segments:w.segments.length};
+  },
+  desiredLength:()=>segmentCount(game.player),
+  headOnWinner:({massA,massB,speedA=172,speedB=172})=>{
+   const a={id:1,mass:massA,speed:speedA},b={id:2,mass:massB,speed:speedB};
+   return headOnWinner(a,b)===a?'a':'b';
   },
   skins:()=>SKINS.map(x=>({id:x.id,ru:x.ru,en:x.en,pattern:x.pattern})),
   pause:()=>pause()
