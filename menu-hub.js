@@ -88,7 +88,7 @@
    iframe.setAttribute('referrerpolicy','same-origin');
    iframe.setAttribute('loading','eager');
    iframe.allow='autoplay';
-   iframe.src=window.SpaceModeDemoURL?.(mode)||(mode==='worms'?'cosmic-worms.html?demo=1&v=12':'cosmic-arena.html?demo='+encodeURIComponent(mode)+'&v=11');
+   iframe.src=window.SpaceModeDemoURL?.(mode)||(mode==='worms'?'cosmic-worms.html?demo=1&v=17':'cosmic-arena.html?demo='+encodeURIComponent(mode)+'&v=11');
    wrap.append(iframe);host.append(wrap);
    active=wrap;
    const reveal=()=>{
@@ -261,7 +261,7 @@
    window.SpaceMenuSceneMode=null;
    if(entry.id==='endless'){play.click();}
    else if(window.SpaceOpenMode?.(entry.id))return;
-   else if(entry.id==='worms')location.assign('cosmic-worms.html?mode=worms&v=12');
+   else if(entry.id==='worms')location.assign('cosmic-worms.html?mode=worms&v=17');
     else location.assign('cosmic-arena.html?mode='+encodeURIComponent(entry.id)+'&v=8');
   };
   q(overlay,'.hub-mode-story-skins').onclick=()=>window.WormSkinStudio?.open();
