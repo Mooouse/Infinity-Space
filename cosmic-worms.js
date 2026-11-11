@@ -81,11 +81,6 @@ function applySkin(w,id){
  w.skin=skin.id;w.pattern=skin.pattern;w.color=[skin.light,skin.dark];w.accent=skin.accent;
 }
 
-const PALETTE=[
- ['#bc9bff','#5b2acc'],['#8bebed','#15799f'],['#ffb7db','#b83d8a'],
- ['#ffe0a6','#ae6b26'],['#a5f9c2','#2d9c78'],['#afb8ff','#4b58ac'],
- ['#e8a6ff','#8040b1'],['#ff9baf','#b14259']
-];
 const FOOD_COLORS=['#ad96ff','#8bdefa','#f5bb87','#ffc0de','#a1edca'];
 const NAMES=['Astra','Orbit','Nova','Pulsar','Quasar','Mira','Voidling','Zenith','Vega',
  'Nebula','Kepler','Comet','Krypton','Lumen','Solaris','Aether','Cosmo','Rift','Ion','Rigel','Helix','Antares','Nix','Altair'];
@@ -234,7 +229,8 @@ function init(){
  const p=createWorm(DEMO?'Astra':(window.InfinityProfile?.getName()||'PILOT'),human,0);
  game.player=p;game.worms.push(p);
  for(let i=1;i<=BOT_COUNT;i++){
-  const b=createWorm(NAMES[(i-1)%NAMES.length],false,i,i<=32);
+  const label=NAMES[(i-1)%NAMES.length]+(i>NAMES.length?' '+(Math.floor((i-1)/NAMES.length)+1):'');
+  const b=createWorm(label,false,i,i<=32);
   if(b)game.worms.push(b);
  }
  fillFood(FOOD_TARGET);
