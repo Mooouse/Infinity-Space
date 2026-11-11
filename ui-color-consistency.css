@@ -11,7 +11,7 @@ body.ui-v15 #screen-menu[data-preview-mode="arena"]{--mode-accent:var(--space-re
 body.ui-v15 #screen-menu[data-preview-mode="royale"]{--mode-accent:var(--space-purple)}
 body.ui-v15 #screen-menu[data-preview-mode="core"]{--mode-accent:var(--space-green)}
 body.ui-v15 #screen-menu[data-preview-mode="race"]{--mode-accent:var(--space-yellow)}
-body.ui-v15 #screen-menu[data-preview-mode="worms"]{--mode-accent:var(--space-blue)}
+body.ui-v15 #screen-menu[data-preview-mode="worms"]{--mode-accent:var(--space-purple)}
 /* Navigation is consistently blue; primary CTAs are purple and warnings red. */
 body.ui-v15 #modal :is(.br-head-back,.br-foot-secondary,.br-small-action,
  .br-tab,.br-filter,.page-nav .back,.map-header .back,.pill-button,
