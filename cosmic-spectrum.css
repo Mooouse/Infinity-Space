@@ -45,6 +45,19 @@ body.ui-v15 #modal button[data-action="delete"],
 body.ui-v15 #hud button[data-action="reset"]{
  --interaction-accent:var(--space-red);
 }
+body.ui-v15 #modal .br-tab.active,
+body.ui-v15 #modal .br-switch.active,
+body.ui-v15 #modal .br-filter.active,
+body.ui-v15 #modal .music-track-preview[aria-pressed="true"]{
+ --interaction-accent:var(--space-purple);
+}
+body.ui-v15 #modal .br-small-action.warn{
+ --interaction-accent:var(--space-red);
+}
+body.ui-v15 #modal .br-filter:not(.active),
+body.ui-v15 #modal .br-tab:not(.active){
+ --interaction-accent:var(--space-blue);
+}
 /* Clean up static leftover halos so an unrelated tint never leaks into a
    navigation button or a camera control. */
 body.ui-v15 #hud .camera-buttons button:hover,
@@ -287,11 +300,7 @@ body.ui-v15 #screen-music .music-control-play{
  background:linear-gradient(145deg,#44207a,#7133bb)!important;
  border-color:var(--space-purple)!important;
 }
-body.ui-v15 #screen-achievements .br-ach-row{
- border-left:2px solid #4a446c;
-}
-/* Existing rarity-specific highlight colors in the achievements renderer win
-   where they are explicitly declared. */
+/* Keep the game's existing achievement rarity colors unchanged. */
 body.ui-v15 #screen-bestiary .br-best-row{
  border-color:#474a70!important;
 }
