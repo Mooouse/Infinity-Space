@@ -368,3 +368,59 @@ button:focus-visible{outline-color:var(--arena-accent,var(--arena-blue));outline
  .mode-grid .mode{min-height:67px}
  .mode-grid .mode strong{font-size:13px}
 }
+
+
+/* CANONICAL COSMIC UI — modal hierarchy matches main game's panels and
+   the Worms pause screen, without solid purple block buttons. */
+:root{
+ --bg:var(--is-bg);--panel:var(--is-panel);--stroke:var(--is-line);
+ --text:var(--is-text);--muted:#a8b6cf;
+}
+#paused .arena-pause-panel,#result .panel,#guide .arena-guide-panel,#menu .panel{
+ background:linear-gradient(145deg,#172234,#101725 86%)!important;
+ border:1px solid #40516d!important;border-bottom:2px solid #2a3852!important;
+ border-radius:13px!important;
+ box-shadow:0 23px 85px #000b,inset 0 1px #ffffff19!important;
+ color:#f1f5fe!important;
+}
+#paused .eyebrow,#result .eyebrow,#guide .eyebrow{color:#82a0ff!important;letter-spacing:.12em}
+#paused .hero,#result .hero,#guide .hero{
+ color:#f5f7ff!important;
+ font-size:clamp(32px,5.3vw,52px)!important;
+ letter-spacing:-.035em!important;line-height:1.04!important;
+}
+#paused .desc,#result .desc,#guide .desc{color:#acbad1!important;line-height:1.5!important}
+#paused .arena-dialog-actions button,
+#result .arena-dialog-actions button,
+#guide .arena-guide-actions button{
+ min-height:47px;border-radius:9px!important;
+ background:linear-gradient(145deg,#202c42,#151f32)!important;
+ border:1px solid #445775!important;border-left:3px solid #2860ff!important;
+ border-bottom:2px solid #2c3850!important;
+ box-shadow:inset 0 1px #ffffff16!important;
+ color:#edf3ff!important;letter-spacing:.02em!important;
+ font-weight:850!important;
+}
+#paused .arena-dialog-actions button.primary,
+#result .arena-dialog-actions button.primary,
+#guide .arena-guide-actions button.primary{
+ background:linear-gradient(145deg,#30284b,#201d35)!important;
+ border-left:3px solid #9922ff!important;
+ border-top-color:#664c8f!important;
+ border-right-color:#664c8f!important;
+ color:#faf5ff!important;
+}
+@media(hover:hover) and (pointer:fine){
+ #paused .arena-dialog-actions button:hover,#result .arena-dialog-actions button:hover,
+ #guide .arena-guide-actions button:hover{
+  background:linear-gradient(145deg,#2b3d58,#1a2840)!important;
+  border-left-color:#2860ff!important;
+  filter:none!important;box-shadow:0 0 15px #2860ff2d!important;
+ }
+ #paused .arena-dialog-actions button.primary:hover,#result .arena-dialog-actions button.primary:hover,
+ #guide .arena-guide-actions button.primary:hover{
+  background:linear-gradient(145deg,#46325f,#281f3f)!important;
+  border-left-color:#9922ff!important;
+  box-shadow:0 0 15px #9922ff2e!important;
+ }
+}
