@@ -33,7 +33,7 @@ jobs:
           node tests/joystick.cjs
           node tests/mobile-controls.cjs
           test -s index.html
-          test -s styles.css
+          test -s ui-app.css
           test -s favicon.svg
       - name: Real browser smoke test for rewards and death
         shell: bash
