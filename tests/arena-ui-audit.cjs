@@ -17,12 +17,15 @@ const seed=()=>{localStorage.setItem('infinity-space-player-v1',JSON.stringify({
     await page.goto(base+'/cosmic-arena.html?mode='+mode+'&tester=1',{waitUntil:'domcontentloaded',timeout:50000});
     await page.locator('#hud:not([hidden])').waitFor({state:'visible',timeout:14000});
     if(width<=760){
-     const stageFits=await page.evaluate(()=>{
-      const box=document.querySelector('.top .brand')?.getBoundingClientRect();
-      const label=document.querySelector('.hud .arena-stage-wait')?.getBoundingClientRect();
-      return !!(box&&label&&label.left>=box.left-3&&label.right<=box.right+3);
+     const stageFit=await page.evaluate(()=>{
+      const brand=document.querySelector('.top .brand'),stage=document.querySelector('.hud .arena-stage-hud'),wait=document.querySelector('.hud .arena-stage-wait');
+      const box=brand?.getBoundingClientRect(),holder=stage?.getBoundingClientRect(),label=wait?.getBoundingClientRect();
+      const rect=r=>r?{left:r.left,right:r.right,width:r.width}:null;
+      return {fits:!!(box&&label&&label.left>=box.left-3&&label.right<=box.right+3),
+       brand:rect(box),stage:rect(holder),label:rect(label),text:wait?.textContent?.slice(0,85),
+       waitCSS:wait?{display:getComputedStyle(wait).display,width:getComputedStyle(wait).width}:null};
      });
-     assert.ok(stageFits,'Stage progress caption must remain within its card on narrow devices');
+     assert.ok(stageFit.fits,'Stage progress caption must remain within its card on narrow devices: '+JSON.stringify({width,mode,stageFit}));
     }
     const check=async(screen)=>{
      const data=await page.evaluate(()=>{
