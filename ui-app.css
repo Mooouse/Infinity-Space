@@ -8624,3 +8624,83 @@ body.ui-v15 :is(#screen-settings,#screen-music,#screen-statistics,#screen-achiev
 @media(prefers-reduced-motion:reduce){
  body.ui-v15 :is(#screen-settings,#screen-music,#screen-statistics,#screen-achievements,#screen-bestiary,#screen-evolution) button{transition:none!important}
 }
+
+
+/* CANONICAL VISUAL LANGUAGE — same graphite/navy surfaces across every
+   management screen; achievements keep their rarity stripe colors. */
+:root{
+ --bg:var(--is-bg);--card:var(--is-panel);--text:var(--is-text);
+ --muted:var(--is-muted);--blue:var(--is-blue);--purple:var(--is-purple);
+ --gold:var(--is-yellow);--cyan:var(--is-blue);
+}
+body.ui-v15 #modal :is(#screen-settings,#screen-music,#screen-statistics,#screen-achievements,#screen-bestiary,#screen-evolution,#screen-upgrades,#screen-tutorial){
+ --card:var(--is-panel);--text:var(--is-text);--muted:var(--is-muted);
+ --blue:var(--is-blue);--gold:var(--is-yellow);
+}
+body.ui-v15 #modal #screen-settings .br-settings-main,
+body.ui-v15 #modal #screen-settings .br-settings-aside,
+body.ui-v15 #modal #screen-bestiary .br-best-details,
+body.ui-v15 #modal #screen-music .music-player{
+ background:linear-gradient(145deg,#162033,#101725 84%)!important;
+ border:1px solid #3c4b65!important;
+ border-radius:var(--is-radius)!important;
+ box-shadow:inset 0 1px #ffffff12,0 10px 26px #0003!important;
+}
+body.ui-v15 #modal #screen-settings :is(.br-option,.br-warning,.control-selection-preview,.br-readout-line),
+body.ui-v15 #modal #screen-achievements .br-ach-row,
+body.ui-v15 #modal #screen-bestiary .br-best-row,
+body.ui-v15 #modal #screen-music .music-track-card,
+body.ui-v15 #modal #screen-evolution :is(.recipe,.recipe-row,.evo-panel),
+body.ui-v15 #modal #screen-statistics :is(.br-stat-card,.stat-card){
+ background:linear-gradient(135deg,#1a2538,#141d2e)!important;
+ border-radius:8px!important;
+ box-shadow:inset 0 1px #ffffff0d!important;
+}
+body.ui-v15 #modal #screen-bestiary .br-best-row.selected{
+ background:linear-gradient(125deg,#253a5d,#182639)!important;
+}
+body.ui-v15 #modal #screen-settings .br-tab{
+ background:linear-gradient(135deg,#182337,#121c2d)!important;
+ border:1px solid #40516f!important;color:#e5edfc!important;
+ box-shadow:inset 0 1px #ffffff12!important;
+ border-radius:8px!important;
+}
+body.ui-v15 #modal #screen-settings .br-tab.active{
+ background:linear-gradient(145deg,#27416f,#1b2d4d)!important;
+ border-color:#426fcd!important;
+ box-shadow:inset 0 0 0 1px #2860ff40!important;
+}
+body.ui-v15 #modal #screen-settings .br-tab.active :is(svg,b,small){
+ color:#eaf1ff!important;
+}
+body.ui-v15 #modal #screen-settings :is(.br-select,.game-select-trigger){
+ background:#19273d!important;border:1px solid #445879!important;
+ border-radius:8px!important;color:#f1f5fe!important;
+}
+body.ui-v15 #modal #screen-settings .br-foot-primary{
+ background:linear-gradient(145deg,#362856,#221d39)!important;
+ border:1px solid #784ac9!important;border-left:3px solid #9922ff!important;
+ box-shadow:inset 0 1px #ffffff17!important;
+ color:#f6f0ff!important;border-radius:9px!important;
+}
+body.ui-v15 #modal #screen-settings .br-foot-primary:hover{
+ background:linear-gradient(145deg,#47316e,#2c2248)!important;
+ border-color:#a35df1!important;
+}
+body.ui-v15 #modal #screen-music :is(.music-track-card,.music-player){
+ border-color:#42516b!important;
+}
+body.ui-v15 #modal #screen-music .music-track-card:has(.playing),
+body.ui-v15 #modal #screen-music .music-track-card:has(.active){
+ border-color:#9922ff!important;
+}
+body.ui-v15 #modal #screen-achievements .br-ach-row:hover,
+body.ui-v15 #modal #screen-bestiary .br-best-row:not(.selected):hover,
+body.ui-v15 #modal #screen-music .music-track-card:hover{
+ background:linear-gradient(135deg,#23334e,#182337)!important;
+}
+@media(prefers-reduced-motion:reduce){
+ body.ui-v15 #modal :is(#screen-settings,#screen-achievements,#screen-bestiary,#screen-music) *{
+  animation-duration:0.01ms!important;transition-duration:0.01ms!important;
+ }
+}
