@@ -54,8 +54,8 @@ const rand=(a,b)=>a+Math.random()*(b-a);
 const dist=(x,y)=>Math.hypot(x,y);
 const normAngle=a=>Math.atan2(Math.sin(a),Math.cos(a));
 // Four times wider and taller than the original arena (16× playable area).
-const WORLD={w:22400,h:17200,cx:11200,cy:8600,rx:10520,ry:7880};
-const FOOD_TARGET=DEMO?7600:20000, BOT_COUNT=DEMO?28:58;
+const WORLD={w:22400,h:22400,cx:11200,cy:11200,rx:10520,ry:10520};
+const FOOD_TARGET=DEMO?9800:28000, BOT_COUNT=DEMO?28:58;
 const FOOD_CELL=230,BODY_CELL=180; // broadphase grid: no O(food × bots) scans.
 const gridKey=(x,y,size)=>Math.floor(x/size)+Math.floor(y/size)*256;
 const SKINS=[
@@ -100,7 +100,7 @@ const BOT_PERSONAS={
  pro:      {reaction:[.06,.105], sight:1350,samples:26, look:[80,160,280,440,600],awareness:1.6,error:.012,hunt:.83,boost:.82,speed:1.11},
  reckless: {reaction:[.23,.43],  sight:720, samples:7,  look:[90,200],       awareness:.28,error:.41, hunt:.90, boost:.87, speed:1.08}
 };
-const DEATH_REPLAY_SECONDS=2.8;
+const DEATH_REPLAY_SECONDS=3.25;
 let vw=0,vh=0,dpr=1,last=0,uiClock=0,starTime=0,foodTimer=0,toastTimer=0,guideStep=0,guideReturn='playing';
 let game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),worms:[],fx:[],player:null,reported:false,deathElapsed:0,deathPosition:null};
 const input={mx:0,my:0,mouseMoved:false,mouseDown:false,boostKey:false,boostTouch:false,keys:new Set(),stickAngle:0,stickPower:0,stickPointer:-1,touchAngle:null};
@@ -457,8 +457,10 @@ function updateWorm(w,dt){
  const scaled=targetSpeed*Math.max(.73,1-Math.log(Math.max(1,w.mass)/60)*.05)*
   (w.human?1:BOT_PERSONAS[w.persona].speed);
  w.speed+=(scaled-w.speed)*Math.min(1,dt*12);
- // Requested instant steering: no turn-rate clamp, lerp or circular radius.
- w.angle=w.target;
+ // Compact but tangible turn radius. A full U-turn takes roughly .23 s;
+ // even during boosting the head cannot teleport into a new heading.
+ const turnRate=boosting?10.5:13.7;
+ w.angle+=clamp(normAngle(w.target-w.angle),-turnRate*dt,turnRate*dt);
  w.boostFlash=(w.boostFlash||0)+dt*(boosting?12:4);
  const advance=w.speed*dt;
  w.x+=Math.cos(w.angle)*advance;
@@ -583,10 +585,12 @@ function drawRadar(){
  const w=mini.width,h=mini.height;
  mc.clearRect(0,0,w,h);mc.fillStyle='#08091b';mc.fillRect(0,0,w,h);
  mc.save();mc.translate(w/2,h/2);
- mc.strokeStyle='#5e438c';mc.lineWidth=1;mc.beginPath();mc.ellipse(0,0,w*.43,h*.44,0,0,TAU);mc.stroke();
+ const circle=Math.min(w,h)*.43;
+ mc.strokeStyle='#50dfea';mc.globalAlpha=.48;mc.lineWidth=1.3;
+ mc.beginPath();mc.arc(0,0,circle,0,TAU);mc.stroke();mc.globalAlpha=1;
  for(const a of game.worms){
   if(!a.alive)continue;
-  const x=(a.x-WORLD.cx)/WORLD.rx*w*.43,y=(a.y-WORLD.cy)/WORLD.ry*h*.44;
+  const x=(a.x-WORLD.cx)/WORLD.rx*circle,y=(a.y-WORLD.cy)/WORLD.ry*circle;
   mc.fillStyle=a===game.player?'#fff1ff':a.color[0];mc.beginPath();
   mc.arc(x,y,a===game.player?3:1.5,0,TAU);mc.fill();
  }
@@ -736,7 +740,7 @@ function paint(t){
  camera.x+=(focus.x-camera.x)*.09;camera.y+=(focus.y-camera.y)*.09;
  ctx.save();ctx.translate(vw*.5,vh*.5);ctx.scale(camera.zoom,camera.zoom);ctx.translate(-camera.x,-camera.y);
  ctx.strokeStyle='#8555d492';ctx.lineWidth=6;ctx.shadowColor='#8a4eea';ctx.shadowBlur=19;
- ctx.beginPath();ctx.ellipse(WORLD.cx,WORLD.cy,WORLD.rx,WORLD.ry,0,0,TAU);ctx.stroke();
+ ctx.beginPath();ctx.arc(WORLD.cx,WORLD.cy,WORLD.rx,0,TAU);ctx.stroke();
  ctx.shadowBlur=0;
  drawFood(t);
  const sorted=game.worms.filter(w=>w.alive).sort((a,b)=>a===p?1:b===p?-1:a.mass-b.mass);
