@@ -233,7 +233,7 @@
   const onKey=(e)=>{
    if(!root.isConnected||!root.classList.contains('active'))return;
    if(e.code==='ArrowLeft'||e.code==='ArrowRight'){
-    if(e.target?.closest?.('button,a,input,textarea'))return;
+    if(e.target?.closest?.('input,textarea,[contenteditable]'))return;
     e.preventDefault();e.stopImmediatePropagation();
     setMode(current+(e.code==='ArrowRight'?1:-1));
    }
