@@ -75,7 +75,7 @@ const inspect=()=>{
    for(let n=0;n<5;n++){
     try{
      await page.locator('.hub-mode-dots button').nth(n).click({timeout:7000});
-     await page.waitForTimeout(40);
+     await page.waitForTimeout(350);
      const m=await page.evaluate(inspect),issues=[];
      if(m.doc>w+2)issues.push('horizontal-document-overflow');
      if(!m.navVisible||Math.abs(m.navDelta)>3)issues.push('carousel-not-centered');
