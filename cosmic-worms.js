@@ -10,9 +10,9 @@ const storedLang=(()=>{try{return localStorage.getItem('infiniti-space-language'
 const language=/^(ru|en|es)$/.test(storedLang)?storedLang:(/^ru/i.test(navigator.language)?'ru':/^es/i.test(navigator.language)?'es':'en');
 document.documentElement.lang=language;
 const WORDS={
- en:{length:'LENGTH',rank:'RANK',time:'TIME',leaders:'LEADERBOARD',radar:'GALAXY RADAR',pause:'PAUSE',
+ en:{settings:'SETTINGS',skins:'COSMIC SKINS',skinDesc:'Choose a space-inspired appearance. All skins are free.',visuals:'VISUALS',glow:'Enhanced glow and boost trails',names:'Show rival names',zoom:'Camera distance',backPause:'BACK TO PAUSE',length:'LENGTH',rank:'RANK',time:'TIME',leaders:'LEADERBOARD',radar:'GALAXY RADAR',pause:'PAUSE',
  boost:'BOOST',paused:'PAUSED',pauseDesc:'Resume the flight, review the controls or return to mode selection.',
- resume:'CONTINUE',help:'HOW TO PLAY',menu:'CHANGE MODE',guideTitle:'COSMIC WORMS',skip:'SKIP',next:'NEXT',start:'START',
+ resume:'CONTINUE',help:'HOW TO PLAY',menu:'EXIT TO MENU',guideTitle:'COSMIC WORMS',skip:'SKIP',next:'NEXT',start:'START',
  runOver:'FLIGHT COMPLETE',destroyed:'WORM DESTROYED',kills:'ELIMINATIONS',again:'PLAY AGAIN',
  hint:'MOUSE / WASD — TURN  ·  SPACE / CLICK — BOOST',bot:'AI RIVALS · OFFLINE',danger:'THE EDGE OF SPACE!',
  eliminated:'A rival cut off your route.',wall:'You reached the outer boundary.',self:'A head-on collision.',
@@ -21,9 +21,9 @@ const WORDS={
  ['OUTMANEUVER RIVALS','Your head must not touch another worm’s body. Cut opponents off with your own tail; defeated worms drop valuable matter.','◌'],
  ['BOOST WHEN NEEDED','Hold Space or the mouse button to accelerate. Boosting slowly burns mass and drops energy behind you. On phones, steer with the joystick and hold BOOST.','➤']
  ]},
- ru:{length:'ДЛИНА',rank:'МЕСТО',time:'ВРЕМЯ',leaders:'ТАБЛИЦА ЛИДЕРОВ',radar:'РАДАР ГАЛАКТИКИ',pause:'ПАУЗА',
+ ru:{settings:'НАСТРОЙКИ',skins:'КОСМИЧЕСКИЕ СКИНЫ',skinDesc:'Выбери космический облик червя. Все скины бесплатны.',visuals:'ГРАФИКА',glow:'Усиленное свечение и след рывка',names:'Показывать имена соперников',zoom:'Дистанция камеры',backPause:'НАЗАД К ПАУЗЕ',length:'ДЛИНА',rank:'МЕСТО',time:'ВРЕМЯ',leaders:'ТАБЛИЦА ЛИДЕРОВ',radar:'РАДАР ГАЛАКТИКИ',pause:'ПАУЗА',
  boost:'РЫВОК',paused:'ПАУЗА',pauseDesc:'Продолжи полёт, посмотри обучение или вернись к выбору режима.',
- resume:'ПРОДОЛЖИТЬ',help:'КАК ИГРАТЬ',menu:'СМЕНИТЬ РЕЖИМ',guideTitle:'КОСМИЧЕСКИЕ ЧЕРВИ',skip:'ПРОПУСТИТЬ',next:'ДАЛЕЕ',start:'ИГРАТЬ',
+ resume:'ПРОДОЛЖИТЬ',help:'КАК ИГРАТЬ',menu:'ВЫХОД В МЕНЮ',guideTitle:'КОСМИЧЕСКИЕ ЧЕРВИ',skip:'ПРОПУСТИТЬ',next:'ДАЛЕЕ',start:'ИГРАТЬ',
  runOver:'ПОЛЁТ ЗАВЕРШЁН',destroyed:'ЧЕРВЬ ПОГИБ',kills:'ПОГЛОЩЕНО',again:'СЫГРАТЬ СНОВА',
  hint:'МЫШЬ / WASD — ПОВОРОТ  ·  ПРОБЕЛ / КЛИК — РЫВОК',bot:'СОПЕРНИКИ ИИ · ОФЛАЙН',danger:'КРАЙ КОСМОСА!',
  eliminated:'Соперник перекрыл тебе путь.',wall:'Ты достиг границы арены.',self:'Столкновение головами.',
@@ -32,9 +32,9 @@ const WORDS={
  ['ПЕРЕХИТРИ СОПЕРНИКОВ','Не касайся головой тела другого червя. Перекрывай противникам путь собственным хвостом. После их гибели остаётся ценная материя.','◌'],
  ['ИСПОЛЬЗУЙ РЫВОК','Удерживай Пробел или левую кнопку мыши для ускорения. Рывок расходует массу. На телефоне управляй стиком и удерживай кнопку «Рывок».','➤']
  ]},
- es:{length:'LONGITUD',rank:'PUESTO',time:'TIEMPO',leaders:'CLASIFICACIÓN',radar:'RADAR GALÁCTICO',pause:'PAUSA',
+ es:{settings:'AJUSTES',skins:'ASPECTOS CÓSMICOS',skinDesc:'Elige un aspecto cósmico. Todos son gratuitos.',visuals:'GRÁFICOS',glow:'Brillo y estelas mejorados',names:'Mostrar nombres de rivales',zoom:'Distancia de cámara',backPause:'VOLVER A PAUSA',length:'LONGITUD',rank:'PUESTO',time:'TIEMPO',leaders:'CLASIFICACIÓN',radar:'RADAR GALÁCTICO',pause:'PAUSA',
  boost:'IMPULSO',paused:'PAUSA',pauseDesc:'Continúa, revisa los controles o elige otro modo.',
- resume:'CONTINUAR',help:'CÓMO JUGAR',menu:'CAMBIAR MODO',guideTitle:'GUSANOS CÓSMICOS',skip:'SALTAR',next:'SIGUIENTE',start:'JUGAR',
+ resume:'CONTINUAR',help:'CÓMO JUGAR',menu:'SALIR AL MENÚ',guideTitle:'GUSANOS CÓSMICOS',skip:'SALTAR',next:'SIGUIENTE',start:'JUGAR',
  runOver:'VUELO TERMINADO',destroyed:'GUSANO DESTRUIDO',kills:'ELIMINACIONES',again:'JUGAR DE NUEVO',
  hint:'RATÓN / WASD — GIRAR · ESPACIO / CLIC — IMPULSO',bot:'RIVALES IA · SIN CONEXIÓN',danger:'¡LÍMITE ESPACIAL!',
  eliminated:'Un rival bloqueó tu camino.',wall:'Alcanzaste el borde de la arena.',self:'Choque frontal.',
@@ -53,7 +53,34 @@ const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const rand=(a,b)=>a+Math.random()*(b-a);
 const dist=(x,y)=>Math.hypot(x,y);
 const normAngle=a=>Math.atan2(Math.sin(a),Math.cos(a));
-const WORLD={w:5600,h:4300,cx:2800,cy:2150,rx:2630,ry:1970};
+// Four times wider and taller than the original arena (16× playable area).
+const WORLD={w:22400,h:17200,cx:11200,cy:8600,rx:10520,ry:7880};
+const FOOD_TARGET=DEMO?7600:20000, BOT_COUNT=DEMO?28:58;
+const FOOD_CELL=230,BODY_CELL=180; // broadphase grid: no O(food × bots) scans.
+const gridKey=(x,y,size)=>Math.floor(x/size)+Math.floor(y/size)*256;
+const SKINS=[
+ {id:'nebula',en:'Nebula',ru:'Туманность',es:'Nebulosa',light:'#bc9bff',dark:'#5629b5',accent:'#f3c7ff',pattern:'nebula'},
+ {id:'aurora',en:'Aurora',ru:'Сияние',es:'Aurora',light:'#76f6ce',dark:'#116e8b',accent:'#b7eaff',pattern:'aurora'},
+ {id:'pulsar',en:'Pulsar',ru:'Пульсар',es:'Púlsar',light:'#95d6ff',dark:'#2649a8',accent:'#f3fcff',pattern:'pulsar'},
+ {id:'flare',en:'Solar Flare',ru:'Вспышка',es:'Llamarada',light:'#ffbf82',dark:'#b13e37',accent:'#fff1ad',pattern:'flare'},
+ {id:'horizon',en:'Event Horizon',ru:'Горизонт',es:'Horizonte',light:'#9c80ff',dark:'#16112e',accent:'#e7c7ff',pattern:'horizon'},
+ {id:'supernova',en:'Supernova',ru:'Сверхновая',es:'Supernova',light:'#ff8fd7',dark:'#9d2e9b',accent:'#ffedae',pattern:'supernova'},
+ {id:'comet',en:'Comet Ice',ru:'Лёд кометы',es:'Hielo de cometa',light:'#8df8ff',dark:'#225e96',accent:'#f7ffff',pattern:'comet'},
+ {id:'stardust',en:'Stardust',ru:'Звёздная пыль',es:'Polvo estelar',light:'#f4e4b3',dark:'#8a64ad',accent:'#ffffff',pattern:'stardust'}
+];
+const SETTINGS_KEY='infinity-space-worms-settings-v2';
+function loadSettings(){
+ try{const s=JSON.parse(localStorage.getItem(SETTINGS_KEY));if(s&&typeof s==='object')
+  return {skin:SKINS.some(v=>v.id===s.skin)?s.skin:'nebula',glow:s.glow!==false,names:s.names!==false,zoom:clamp(Number(s.zoom)||100,75,140)};}catch(_){}
+ return {skin:'nebula',glow:true,names:true,zoom:100};
+}
+const options=loadSettings();
+function saveOptions(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(options));}catch(_){}}
+function applySkin(w,id){
+ const skin=SKINS.find(s=>s.id===id)||SKINS[0];
+ w.skin=skin.id;w.pattern=skin.pattern;w.color=[skin.light,skin.dark];w.accent=skin.accent;
+}
+
 const PALETTE=[
  ['#bc9bff','#5b2acc'],['#8bebed','#15799f'],['#ffb7db','#b83d8a'],
  ['#ffe0a6','#ae6b26'],['#a5f9c2','#2d9c78'],['#afb8ff','#4b58ac'],
@@ -63,7 +90,7 @@ const FOOD_COLORS=['#ad96ff','#8bdefa','#f5bb87','#ffc0de','#a1edca'];
 const NAMES=['Astra','Orbit','Nova','Pulsar','Quasar','Mira','Voidling','Zenith','Vega',
  'Nebula','Kepler','Comet','Krypton','Lumen','Solaris','Aether','Cosmo','Rift','Ion','Rigel','Helix','Antares','Nix','Altair'];
 let vw=0,vh=0,dpr=1,last=0,uiClock=0,starTime=0,foodTimer=0,toastTimer=0,guideStep=0,guideReturn='playing';
-let game={state:'playing',time:0,food:[],worms:[],fx:[],player:null,reported:false};
+let game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),worms:[],fx:[],player:null,reported:false};
 const input={mx:0,my:0,mouseMoved:false,mouseDown:false,boostKey:false,boostTouch:false,keys:new Set(),stickAngle:0,stickPower:0,stickPointer:-1,touchAngle:null};
 const camera={x:WORLD.cx,y:WORLD.cy,zoom:1};
 const stars=Array.from({length:470},(_,i)=>({x:Math.random(),y:Math.random(),r:i%7===0?1.5:rand(.4,1),a:rand(.3,.95),phase:rand(0,TAU),depth:rand(.04,.17),c:['#e1ecff','#c8a6ff','#a4dfff','#ffffff'][i%4]}));
