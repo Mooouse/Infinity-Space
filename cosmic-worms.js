@@ -231,7 +231,7 @@ function followWormTrail(w,advance,gap=11.8){
  // Amortized trimming keeps trail memory proportional to worm length.
  const keepAfter=w.traveled-gap*(w.segments.length+7);
  while(start+1<history.length-2&&history[start+1].s<keepAfter)start++;
- if(start>128&&start>history.length*.34){history.splice(0,start);start=0;}
+ if(start>48){history.splice(0,start);start=0;}
  w.trailStart=start;
 }
 
