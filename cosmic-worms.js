@@ -164,7 +164,7 @@ function createWorm(name,human,index,preferEncounter=false){
   mass,bestMass:mass,alive:true,invulnerable:human?2.3:2.0,
   segments:[],boost:false,dropClock:0,think:rand(.1,.2),targetFood:null,kills:0,
   foodEaten:0,bestRank:99,leadTime:0,deathDelay:0,
-  persona:human?'human':BOT_ROSTER[(index-1)%BOT_ROSTER.length],
+  persona:human?'human':BOT_ROSTER[(Math.max(1,index)-1)%BOT_ROSTER.length],
   wiggle:rand(0,TAU),speed:0,boostFlash:0,afkTimer:0,goalUntil:0};
  if(!human){
   const type=BOT_PERSONAS[w.persona];
