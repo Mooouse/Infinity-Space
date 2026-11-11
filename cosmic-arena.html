@@ -975,7 +975,14 @@ if(!DEMO_MODE)window.InfinityProfile?.recordMatch?.(mode,{
 try{const key='infinity-space-arena-v1',saved=JSON.parse(localStorage.getItem(key)||'{}');saved.matches=(saved.matches||0)+1;saved.wins=(saved.wins||0)+(won?1:0);saved.kills=(saved.kills||0)+p.kills;saved.bestMass=Math.max(saved.bestMass||0,p.mass);saved.lastMode=mode;localStorage.setItem(key,JSON.stringify(saved));}catch(e){}
 sound(won?680:180,.42,'sine',.048);
 }
-function updateUI(){if(!game)return;let g=game,p=g.people[0],ranked=g.people.slice().sort((a,b)=>b.mass-a.mass),rank=ranked.indexOf(p)+1;$('mass').textContent=Math.floor(p.mass);$('clock').textContent=Math.floor(g.left/60).toString().padStart(2,'0')+':'+Math.floor(g.left%60).toString().padStart(2,'0');$('place').textContent=rank+' / '+g.people.length;$('team-score').textContent=Math.floor(g.scores[0])+' : '+Math.floor(g.scores[1]);$('ranks').innerHTML=ranked.slice(0,6).map((q,i)=>'<div class="rank'+(q.player?' mine':'')+'"><span>'+String(i+1).padStart(2,'0')+' · '+q.name+'</span><b>'+Math.floor(q.mass)+'</b></div>').join('');
+function updateUI(){if(!game)return;let g=game,p=g.people[0],ranked=g.people.slice().sort((a,b)=>b.mass-a.mass),rank=ranked.indexOf(p)+1;$('mass').textContent=Math.floor(p.mass);$('clock').textContent=Math.floor(g.left/60).toString().padStart(2,'0')+':'+Math.floor(g.left%60).toString().padStart(2,'0');$('place').textContent=rank+' / '+g.people.length;$('team-score').textContent=Math.floor(g.scores[0])+' : '+Math.floor(g.scores[1]);const leaders=ranked.slice(0,6);
+if(!leaders.includes(p))leaders.push(p);
+$('ranks').innerHTML=leaders.map(q=>{
+ const place=ranked.indexOf(q)+1;
+ const safeName=String(q.name).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+ return '<div class="rank'+(q.player?' mine':'')+'"><span>'+
+   String(place).padStart(2,'0')+' · '+safeName+'</span><b>'+Math.floor(q.mass)+'</b></div>';
+}).join('');
 const stageLabels=lang==='ru'?FORM_RU:FORM_EN;
 $('arena-stage-name').textContent=stageLabels[p.stage];
 const next=p.stage+1;
