@@ -59,14 +59,18 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/space-pages/assets"
-          cp index.html cosmic-arena.html cosmic-worms.html playgama-bridge-config.json ./*.js ./*.css ./*.svg "$RUNNER_TEMP/space-pages/"
+          cp index.html ui-review.html cosmic-arena.html cosmic-worms.html playgama-bridge-config.json ./*.js ./*.css ./*.svg "$RUNNER_TEMP/space-pages/"
           cp -R assets/music "$RUNNER_TEMP/space-pages/assets/"
+          cp -R ui-snapshots "$RUNNER_TEMP/space-pages/"
           test -s "$RUNNER_TEMP/space-pages/index.html"
+          test -s "$RUNNER_TEMP/space-pages/ui-review.html"
+          test -s "$RUNNER_TEMP/space-pages/ui-snapshots/main-menu.jpg"
+          test -s "$RUNNER_TEMP/space-pages/ui-snapshots/main-menu-mobile.jpg"
           test -s "$RUNNER_TEMP/space-pages/cosmic-arena.html"
           test -s "$RUNNER_TEMP/space-pages/cosmic-worms.html"
           test -s "$RUNNER_TEMP/space-pages/playgama-bridge-config.json"
           test -s "$RUNNER_TEMP/space-pages/assets/music/track-01.mp3"
-          echo "Deploying only the website, game scripts, styles and original music:"
+          echo "Deploying game, UI Atlas and screen snapshots, scripts, styles and original music:"
           du -sh "$RUNNER_TEMP/space-pages"
       - name: Upload game for Pages
         uses: actions/upload-pages-artifact@v3
