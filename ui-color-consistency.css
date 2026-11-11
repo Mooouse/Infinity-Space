@@ -267,3 +267,82 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[da
  outline-offset:3px!important;
  box-shadow:0 0 0 3px color-mix(in srgb,var(--dock-accent) 32%,transparent)!important;
 }
+
+
+/* v10 — single coherent family of controls, with a subtle colored tint,
+   rather than seven unrelated solid-filled gradients. */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
+ --dock-accent:#2860ff;--interaction-accent:var(--dock-accent);
+ background:linear-gradient(140deg,
+  color-mix(in srgb,var(--dock-accent) 15%,#192235) 0%,
+  color-mix(in srgb,var(--dock-accent) 5%,#101827) 100%)!important;
+ border:1px solid #36425a!important;
+ border-top:2px solid var(--dock-accent)!important;
+ border-bottom:2px solid #212b40!important;
+ border-radius:9px!important;
+ box-shadow:inset 0 1px #ffffff1a,0 4px 12px #0004!important;
+ color:#e8eefd!important;
+ transform:none;
+ font-weight:790!important;
+ letter-spacing:0!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-label{
+ color:#e8eefd!important;font-size:clamp(10px,.82vw,13px)!important;
+ text-shadow:none!important;font-weight:780!important;line-height:1.2;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-icon{
+ color:var(--dock-accent)!important;
+ background:transparent!important;border:0!important;
+ box-shadow:none!important;border-radius:0!important;
+ width:24px;height:24px;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-icon svg{
+ color:var(--dock-accent)!important;
+ stroke:currentColor!important;filter:drop-shadow(0 0 5px color-mix(in srgb,var(--dock-accent) 26%,transparent))!important;
+}
+@media(hover:hover) and (pointer:fine){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]:not(:disabled):hover{
+  background:linear-gradient(140deg,
+   color-mix(in srgb,var(--dock-accent) 26%,#1b263a),
+   color-mix(in srgb,var(--dock-accent) 9%,#111b2a))!important;
+  border-color:color-mix(in srgb,var(--dock-accent) 48%,#354159)!important;
+  border-top-color:var(--dock-accent)!important;
+  border-bottom-color:#263348!important;
+  box-shadow:0 0 14px color-mix(in srgb,var(--dock-accent) 20%,transparent),
+             inset 0 1px #ffffff24,0 6px 14px #0006!important;
+  transform:translateY(-2px)!important;
+  filter:none!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]:not(:disabled):hover .hub-story-shortcut-icon{
+  background:transparent!important;border:0!important;box-shadow:none!important;
+ }
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins:not([hidden]){
+ display:inline-flex!important;align-items:center;justify-content:space-between;gap:13px;
+ min-height:45px;padding:9px 16px;margin-top:10px;
+ background:linear-gradient(140deg,#202a3e,#121c2d)!important;
+ border:1px solid #425776!important;border-left:3px solid #648bff!important;
+ border-bottom:2px solid #283752!important;border-radius:9px!important;
+ color:#eef3ff!important;box-shadow:inset 0 1px #ffffff1a!important;
+ font-size:11px!important;font-weight:850!important;letter-spacing:.04em;
+ width:min(335px,100%);cursor:pointer;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins:not([hidden]):hover{
+ border-color:#6285e8!important;
+ border-left-color:#648bff!important;
+ background:linear-gradient(140deg,#253550,#182336)!important;
+ box-shadow:0 0 13px #2860ff30!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins b{
+ font-size:19px;line-height:1;color:#648bff;
+}
+@media(max-width:800px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins:not([hidden]){
+  min-height:39px;padding:7px 11px;margin-top:7px;
+  font-size:10px!important;width:100%;max-width:280px;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-icon{width:20px;height:20px}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-label{
+  font-size:clamp(9px,2.3vw,11px)!important;
+ }
+}
