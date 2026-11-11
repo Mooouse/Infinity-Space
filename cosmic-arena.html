@@ -1061,6 +1061,23 @@ if(game.state==='playing'&&!p.alive){ctx.fillStyle='#050713a8';ctx.fillRect(0,sh
 }
 function tick(now){requestAnimationFrame(tick);let dt=clamp((now-last)/1000,0,.047);last=now;frameClock=now*.001;if(game&&game.state==='playing'){step(dt);uiTick-=dt;if(uiTick<=0){updateUI();uiTick=.16;}}draw(frameClock);if(toastUntil&&now>toastUntil){toastUntil=0;$('toast').classList.remove('show');}}
 requestAnimationFrame(tick);
+// QA only: verify mass thresholds and zoom independently from match timers.
+if(new URLSearchParams(location.search).has('tester')){
+ window.InfinityArenaQA={
+  formForMass:massForm,
+  setMass(value){
+   if(!game)return;
+   const p=game.people[0];p.mass=Math.max(1,value);
+   p.stage=massForm(p.mass);p.r=13+Math.sqrt(p.mass)*2.45;
+   updateUI();
+  },
+  snapshot(){
+   if(!game)return null;
+   const p=game.people[0];
+   return {mass:p.mass,stage:p.stage,zoom:camera.zoom,state:game.state,mode};
+  }
+ };
+}
 const initial=new URLSearchParams(location.search).get('mode');if(configs[initial])init(initial);else location.replace('index.html');
 document.addEventListener('DOMContentLoaded',()=>{Promise.resolve(window.SpacePlatform?.startup).catch(()=>{}).then(()=>{window.SpacePlatform?.loaded?.();window.SpacePlatform?.playing?.(!!game&&game.state==='playing');});});
 })();
