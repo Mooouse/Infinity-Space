@@ -235,6 +235,9 @@ function activate(){
 function show(id){
  if(!screens[id])return;
  selected=id;generation++;
+ title.textContent=screens[id][0];
+ label.textContent=screens[id][1].split('?')[0];
+ status.textContent='Загружаю экран…';
  document.querySelectorAll('[data-id]').forEach(b=>b.classList.toggle('active',b.dataset.id===id));
  const [,url]=screens[id];
  frame.onload=()=>setTimeout(activate,350);
