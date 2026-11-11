@@ -8687,3 +8687,84 @@ body.ui-v15 #modal #screen-settings :is(
   .br-small-action,.br-tab,.br-switch,.br-select,.game-select-trigger
  ){transition:none!important}
 }
+
+
+/* SETTINGS PILOT — control preview uses the same luminous violet design as
+   the Universe Map. The old global graphite/teal component skin must never
+   override this one (including responsive variants). */
+body.ui-v15 #modal #screen-settings .br-option .control-selection-preview{
+ grid-column:1 / -1!important;grid-row:auto!important;
+ display:flex!important;align-items:center!important;
+ gap:14px!important;width:100%!important;max-width:100%!important;
+ min-height:94px!important;padding:14px 16px!important;margin:5px 0 2px!important;
+ background:linear-gradient(145deg,#281846 0%,#1a1034 58%,#100c26 100%)!important;
+ border:2px solid #8056c6!important;border-bottom:4px solid #4d22c6!important;
+ border-radius:7px!important;
+ box-shadow:inset 0 1px 0 #d8beff1b,0 10px 22px #0007!important;
+ color:#f8f0ff!important;
+ overflow:hidden!important;
+}
+body.ui-v15 #modal #screen-settings .control-selection-preview .control-selection-desc{
+ display:flex!important;flex-direction:column!important;justify-content:center!important;
+ gap:6px!important;min-width:0!important;flex:1 1 auto!important;
+}
+body.ui-v15 #modal #screen-settings .control-selection-preview .control-selection-desc strong{
+ display:block!important;margin:0!important;
+ color:#f4e9ff!important;font-size:12px!important;font-weight:950!important;
+ line-height:1.25!important;letter-spacing:.075em!important;
+ text-wrap:balance!important;overflow-wrap:normal!important;
+}
+body.ui-v15 #modal #screen-settings .control-selection-preview .control-selection-desc small{
+ display:block!important;margin:0!important;
+ color:#c9b5e7!important;font-size:12px!important;line-height:1.48!important;
+ font-weight:550!important;letter-spacing:0!important;overflow-wrap:break-word!important;
+}
+body.ui-v15 #modal #screen-settings .control-selection-preview .control-mini,
+body.ui-v15 #modal #screen-settings .phone-mode-grid .control-mini{
+ flex:0 0 94px!important;width:94px!important;height:62px!important;
+ position:relative!important;
+ background:radial-gradient(ellipse at 54% 50%,#4d287f 0%,#261548 61%,#100a24 100%)!important;
+ border:1px solid #9665e5!important;border-radius:6px!important;
+ box-shadow:inset 0 0 18px #090417,0 0 16px #8041e651!important;
+ overflow:hidden!important;pointer-events:none!important;
+}
+body.ui-v15 #modal #screen-settings .control-mini-orbit{
+ border-color:#b891ff99!important;
+}
+body.ui-v15 #modal #screen-settings .control-mini-path{
+ background:linear-gradient(90deg,transparent,#e0bcff,transparent)!important;
+ box-shadow:0 0 8px #a66aff80!important;
+}
+body.ui-v15 #modal #screen-settings .control-mini-ship{
+ background:#a566ff!important;border-color:#fff1ff!important;
+ box-shadow:0 0 9px #c58cff,0 0 20px #9a42ffbb!important;
+}
+body.ui-v15 #modal #screen-settings .control-mini-arrow{
+ border-color:#eacfff!important;
+}
+body.ui-v15 #modal #screen-settings .control-mini-touch{
+ background:#af6bff88!important;border-color:#f1d9ff!important;
+ box-shadow:0 0 0 3px #ad7bff32,0 0 12px #a76affbb!important;
+}
+@media(max-width:800px){
+ body.ui-v15 #modal #screen-settings .br-option .control-selection-preview{
+  grid-column:1 / -1!important;grid-row:auto!important;
+  min-height:78px!important;padding:10px!important;
+  gap:10px!important;
+ }
+ body.ui-v15 #modal #screen-settings .control-selection-preview .control-mini{
+  flex:0 0 78px!important;width:78px!important;height:54px!important;
+ }
+ body.ui-v15 #modal #screen-settings .control-selection-preview .control-selection-desc strong{
+  font-size:10px!important;letter-spacing:.045em!important;
+ }
+ body.ui-v15 #modal #screen-settings .control-selection-preview .control-selection-desc small{
+  font-size:11px!important;
+ }
+}
+@media(max-width:390px){
+ body.ui-v15 #modal #screen-settings .control-selection-preview .control-mini{
+  flex-basis:65px!important;width:65px!important;height:50px!important;
+ }
+ body.ui-v15 #modal #screen-settings .br-option .control-selection-preview{gap:8px!important;padding:8px!important}
+}
