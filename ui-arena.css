@@ -422,3 +422,27 @@ button:focus-visible{outline-color:var(--arena-accent,var(--arena-blue));outline
   box-shadow:0 0 15px #9922ff2e!important;
  }
 }
+
+
+/* Mobile HUD audit: stage progress must stay INSIDE the brand card.
+   Prevent the long Russian "mass to go" caption from covering scoreboxes. */
+@media(max-width:760px),(pointer:coarse) and (max-width:1024px){
+ .hud .arena-stage-hud{
+  width:100%;min-width:0;max-width:100%;margin-top:6px;overflow:hidden;
+ }
+ .hud .arena-stage-top{
+  display:flex;flex-direction:column;align-items:flex-start;
+  gap:1px;max-width:100%;min-width:0;
+ }
+ .hud .arena-stage-name{
+  max-width:100%;font-size:clamp(7px,2.1vw,9px);
+  white-space:normal;overflow-wrap:anywhere;line-height:1.16;
+ }
+ .hud .arena-stage-wait{
+  display:block;max-width:100%;width:100%;
+  font-size:clamp(6px,1.8vw,8px);line-height:1.18;
+  white-space:normal;overflow-wrap:anywhere;
+ }
+ .hud .arena-stage-bar{width:100%;margin-top:5px}
+ .top .brand{overflow:hidden}
+}
