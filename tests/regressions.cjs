@@ -27,7 +27,7 @@ assert.ok(version,'Game script must have a versioned cache key');
 assert.ok(Number(version[1])>3||(Number(version[1])===3&&Number(version[2])>=11),
  'Published game cache key must not regress below 3.11');
 const gameVersion=version.slice(1).join('.');
-const themeVersion=page.match(/ui-v15-hotfix\.css\?v=(\d+\.\d+\.\d+)/);
+const themeVersion=page.match(/ui-app\.css\?v=(\d+\.\d+\.\d+)/);
 assert.ok(themeVersion&&themeVersion[1]===gameVersion,
  'Game and UI cache versions must match so GitHub Pages never serves stale assets');
 assert.ok(game.includes('list.replaceChildren();'),
