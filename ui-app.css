@@ -8291,7 +8291,7 @@ body.ui-v15 #modal #screen-settings{
  --map-ui-lavender:#b99cff;
  --map-ui-cta:#4d22c6;
  --map-ui-panel:linear-gradient(150deg,rgba(28,19,52,.96),rgba(15,11,33,.96));
- --map-ui-secondary:linear-gradient(155deg,#1b2848,#11182d);
+ --map-ui-secondary:linear-gradient(155deg,#2f1958,#190f34);
  color:var(--map-ui-ink);
  background:linear-gradient(150deg,#0b091d 0%,#0a0c1e 50%,#090718 100%);
 }
@@ -8311,10 +8311,10 @@ body.ui-v15 #modal #screen-settings .br-head-tag b{color:var(--map-ui-lavender)!
 body.ui-v15 #modal #screen-settings .br-head-back,
 body.ui-v15 #modal #screen-settings .br-foot-secondary,
 body.ui-v15 #modal #screen-settings .br-small-action:not(.warn){
- --interaction-accent:#2860ff;
+ --interaction-accent:#a77cff;
  background:var(--map-ui-secondary)!important;
- border:1px solid #465b8b!important;border-bottom:4px solid #26395e!important;
- border-radius:5px!important;color:#eef3ff!important;
+ border:1px solid #7953bc!important;border-bottom:4px solid #452477!important;
+ border-radius:5px!important;color:#f7efff!important;
  box-shadow:inset 0 1px #ffffff11,0 3px 10px #0006!important;
 }
 body.ui-v15 #modal #screen-settings .br-settings-layout{
@@ -8330,21 +8330,21 @@ body.ui-v15 #modal #screen-settings .br-settings-side-note{
  border-top:1px solid #493665;padding-top:16px;
 }
 body.ui-v15 #modal #screen-settings .br-tab{
- --interaction-accent:#2860ff;
+ --interaction-accent:#a77cff;
  min-width:0;min-height:65px;
  background:var(--map-ui-secondary)!important;
- border:1px solid #465b8b!important;border-bottom:4px solid #26395e!important;
+ border:1px solid #7953bc!important;border-bottom:4px solid #452477!important;
  border-radius:5px!important;color:#f0eaff!important;
  box-shadow:inset 0 1px #ffffff11,0 3px 10px #0005!important;
  transition:background .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease!important;
 }
 body.ui-v15 #modal #screen-settings .br-tab :is(svg,.ui-symbol){
- color:#b6c8ff!important;filter:none!important;
+ color:#cfb2ff!important;filter:none!important;
 }
 body.ui-v15 #modal #screen-settings .br-tab small,
 body.ui-v15 #modal #screen-settings .br-tab>b{color:#b8aacd!important}
 body.ui-v15 #modal #screen-settings .br-tab.active{
- --interaction-accent:#986eff;
+ --interaction-accent:#a77cff;
  background:linear-gradient(180deg,#6940e3,#4d22c6)!important;
  border:1px solid #b99cff!important;border-bottom:4px solid #381481!important;
  box-shadow:inset 0 1px #ffffff27,0 5px 18px #190b4573!important;
@@ -8456,7 +8456,7 @@ body.ui-v15 #modal #screen-settings .br-warning :is(strong,p){color:#d3c5ea!impo
 body.ui-v15 #modal #screen-settings .br-warning svg{color:#b99cff!important}
 body.ui-v15 #modal #screen-settings .br-inline-cta,
 body.ui-v15 #modal #screen-settings .br-foot-primary{
- --interaction-accent:#986eff;
+ --interaction-accent:#a77cff;
  background:linear-gradient(180deg,#6940e3,#4d22c6)!important;
  border:1px solid #b99cff!important;border-bottom:4px solid #381481!important;
  border-radius:6px!important;color:#fff!important;font-weight:950!important;
@@ -8480,14 +8480,14 @@ body.ui-v15 #modal #screen-settings .br-foot-primary{
 }
 @media(hover:hover) and (pointer:fine){
  body.ui-v15 #modal #screen-settings :is(.br-head-back,.br-foot-secondary,.br-small-action:not(.warn),.br-tab:not(.active)):hover{
-  --interaction-accent:#2860ff;
-  border-color:#2860ff!important;
-  background:linear-gradient(155deg,#202e60,#141b37)!important;
-  box-shadow:0 0 12px #2860ff35,0 4px 12px #0007!important;
+  --interaction-accent:#a77cff;
+  border-color:#b48aff!important;
+  background:linear-gradient(155deg,#442577,#271447)!important;
+  box-shadow:0 0 14px #9764ff55,0 4px 12px #0007!important;
   filter:brightness(1.08)!important;
  }
  body.ui-v15 #modal #screen-settings :is(.br-tab.active,.br-inline-cta,.br-foot-primary):hover{
-  --interaction-accent:#986eff;
+  --interaction-accent:#a77cff;
   border-color:#cbb3ff!important;
   background:linear-gradient(180deg,#7a54f2,#572bd4)!important;
   box-shadow:0 0 15px #986eff50,0 7px 18px #0007!important;
@@ -8547,4 +8547,79 @@ body.ui-v15 #modal #screen-settings button:focus-visible{
  body.ui-v15 #modal #screen-settings .br-head{height:72px!important}
  body.ui-v15 #modal #screen-settings .br-settings-layout{top:78px!important;bottom:66px!important}
  body.ui-v15 #modal #screen-settings .br-settings-foot{height:60px!important}
+}
+
+
+/* Settings-only color audit: the map's vibrant violet replaces the stale
+   blue/teal used by inactive controls and their hover/focus states. */
+body.ui-v15 #modal #screen-settings{
+ --interaction-accent:#a77cff;
+ --cyan:#a77cff;
+ --blue:#a77cff;
+}
+body.ui-v15 #modal #screen-settings :is(
+ .br-head-back,.br-foot-secondary,.br-small-action:not(.warn),
+ .br-tab:not(.active),.br-select,.game-select-trigger
+){
+ --interaction-accent:#a77cff!important;
+ color:#f5edff!important;
+ background:linear-gradient(160deg,#34205c,#1c1037)!important;
+ border-color:#7852bf!important;
+ border-bottom-color:#49287b!important;
+ box-shadow:inset 0 1px #ffffff15,0 3px 10px #0007!important;
+}
+body.ui-v15 #modal #screen-settings .br-tab:not(.active)
+ :is(svg,.ui-icon,.ui-symbol,small,b){
+ color:#c9aaff!important;filter:none!important;
+}
+body.ui-v15 #modal #screen-settings :is(.br-inline-cta,.br-foot-primary,.br-tab.active){
+ --interaction-accent:#a77cff!important;
+ background:linear-gradient(180deg,#774bea,#4d22c6)!important;
+ border-color:#c4a7ff!important;
+ border-bottom-color:#381481!important;
+ color:#fff!important;
+}
+body.ui-v15 #modal #screen-settings :is(.br-select,.game-select-trigger){
+ background:#21143e!important;border-color:#865bcc!important;
+ border-bottom-color:#4d2b87!important;
+}
+body.ui-v15 #modal #screen-settings :is(.br-head-back,.br-foot-secondary,.br-small-action,.br-tab,.br-inline-cta,.br-foot-primary)
+ :is(svg,.ui-icon,.ui-symbol){color:inherit!important;filter:none!important}
+@media(hover:hover) and (pointer:fine){
+ body.ui-v15 #modal #screen-settings :is(
+  .br-head-back,.br-foot-secondary,.br-small-action:not(.warn),
+  .br-tab:not(.active),.br-select,.game-select-trigger
+ ):not(:disabled):hover{
+  --interaction-accent:#b48aff!important;
+  color:#fff!important;
+  border-color:#b48aff!important;
+  background:linear-gradient(160deg,#56318a,#2f1959)!important;
+  box-shadow:0 0 15px #9865ff55,0 5px 13px #0008!important;
+  filter:brightness(1.09)!important;
+ }
+ body.ui-v15 #modal #screen-settings :is(.br-tab.active,.br-inline-cta,.br-foot-primary):not(:disabled):hover{
+  --interaction-accent:#b48aff!important;
+  background:linear-gradient(180deg,#9567ff,#5a2add)!important;
+  border-color:#e0ceff!important;
+  box-shadow:0 0 17px #996aff66,0 6px 15px #0007!important;
+ }
+ body.ui-v15 #modal #screen-settings :is(.br-head-back,.br-foot-secondary,.br-small-action,.br-tab,.br-inline-cta,.br-foot-primary):hover
+  :is(svg,.ui-icon,.ui-symbol){color:inherit!important;filter:none!important}
+}
+body.ui-v15 #modal #screen-settings :is(button,.game-select-trigger,.br-select):focus-visible{
+ outline:2px solid #c4a7ff!important;outline-offset:3px!important;
+ box-shadow:0 0 0 3px #9c6fff40!important;
+}
+/* Dropdown menus are portaled outside the settings panel by the custom-select
+   helper. Only recolor them while Settings is the visible modal screen. */
+body.ui-v15:has(#modal[data-screen="settings"]) .game-select-pop{
+ background:linear-gradient(160deg,#261641,#130c28)!important;
+ border-color:#865bcc!important;border-bottom-color:#462574!important;
+}
+body.ui-v15:has(#modal[data-screen="settings"]) .game-select-item{
+ --interaction-accent:#a77cff!important;color:#f2e7ff!important;
+}
+body.ui-v15:has(#modal[data-screen="settings"]) .game-select-item:is(:hover,:focus-visible,.is-selected){
+ color:#fff!important;background:#513080!important;
+ box-shadow:none!important;
 }
