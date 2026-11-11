@@ -1261,8 +1261,8 @@ assert.ok(!modal.innerHTML.includes('data:image/svg+xml'),
 // .off. Real CSS specificity left a ghost overlay on top of gameplay, stealing
 // all mouse clicks and sending a second Back to the menu.
 {
- const css=fs.readFileSync('daily-rewards.css','utf8');
- const finalCss=fs.readFileSync('galactic-rewards.css','utf8');
+ const css=fs.readFileSync('ui-app.css','utf8');
+ const finalCss=fs.readFileSync('ui-app.css','utf8');
  assert.ok(css.includes('body.ui-v15 #modal:not(.off):is([data-screen="daily"],[data-screen="roulette"])'),
   'Reward overlay must only be display:flex while NOT marked off');
  assert.ok(!css.includes('body.ui-v15 #modal:is([data-screen="daily"],[data-screen="roulette"]){\n  display:flex'),
@@ -1329,7 +1329,7 @@ assert.ok(game.includes("if(!running&&['daily','roulette','death'].includes($('m
 assert.ok(!game.includes('revive-coins'),'Stardust revival must be absent from all handlers');
 assert.ok(!game.includes('coinsCost:'),'Dead runs may not cost stardust');
  assert.ok(!game.includes('fit.style.transform='),'Never transform the interactive reward subtree');
- const rewardsCss=fs.readFileSync('galactic-rewards.css','utf8');
+ const rewardsCss=fs.readFileSync('ui-app.css','utf8');
  assert.ok(rewardsCss.includes('display:flex!important;'),'Rewards must use native flex flow');
  assert.ok(rewardsCss.includes('pointer-events:none!important;'),'Galaxy canvas never traps clicks');
  console.log('PASS: mouse capture released; no zoomed reward buttons; wheel+mousemove cannot shift input hit areas');
