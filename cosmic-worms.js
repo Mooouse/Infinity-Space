@@ -633,6 +633,93 @@ function drawFood(t){
  }
  ctx.globalAlpha=1;
 }
+const SKIN_NEBULAE={
+ nebula:['#e044ff','#7847ff','#35b9f2'],
+ aurora:['#00ffc8','#29abfa','#99ffee'],
+ pulsar:['#1d77ff','#5de8ff','#d6faff'],
+ flare:['#ff6740','#ffca35','#ffec9c'],
+ horizon:['#4129a8','#fc51c2','#43ceff'],
+ supernova:['#ff4774','#f971dd','#ffd35f'],
+ comet:['#04c6ef','#68f8ff','#c7f9ff'],
+ stardust:['#ffc95a','#f29eff','#ffffff']
+};
+function drawCosmicInterior(w,t,r){
+ const nodes=[w,...w.segments],n=nodes.length;
+ if(n<4)return;
+ const theme=SKIN_NEBULAE[w.skin]||SKIN_NEBULAE.nebula;
+ // Build a real filled silhouette, not a floating star layer: every nebula,
+ // bright star and comet is clipped INSIDE the curving worm's body.
+ const normals=new Array(n),shape=new Path2D(),half=r*.76;
+ for(let i=0;i<n;i++){
+  const a=nodes[Math.max(0,i-1)],b=nodes[Math.min(n-1,i+1)];
+  const dx=a.x-b.x,dy=a.y-b.y,l=Math.hypot(dx,dy)||1;
+  normals[i]={x:-dy/l,y:dx/l};
+ }
+ for(let i=0;i<n;i++){
+  const p=nodes[i],q=normals[i];
+  if(i===0)shape.moveTo(p.x+q.x*half,p.y+q.y*half);
+  else shape.lineTo(p.x+q.x*half,p.y+q.y*half);
+ }
+ for(let i=n-1;i>=0;i--){
+  const p=nodes[i],q=normals[i];shape.lineTo(p.x-q.x*half,p.y-q.y*half);
+ }
+ shape.closePath();
+ ctx.save();ctx.clip(shape);
+ ctx.globalAlpha=.84;
+ ctx.fillStyle=w.skin==='horizon'?'#070614':'#071026';
+ ctx.fill(shape);
+ ctx.globalAlpha=1;
+ // Colour clouds remain anchored to segments as the body curves.
+ for(let i=3;i<n;i+=17){
+  const p=nodes[i],q=normals[i],phase=t*.85+i*.17+w.id;
+  const off=Math.sin(phase)*half*.43;
+  const size=r*(1.2+.25*Math.sin(i*1.38));
+  const grad=ctx.createRadialGradient(p.x+off*q.x,p.y+off*q.y,0,
+   p.x+off*q.x,p.y+off*q.y,size);
+  const col=theme[Math.floor(i/17+w.id)%theme.length];
+  grad.addColorStop(0,col+'aa');grad.addColorStop(.42,col+'54');grad.addColorStop(1,col+'00');
+  ctx.fillStyle=grad;ctx.fillRect(p.x-size*1.4,p.y-size*1.4,size*2.8,size*2.8);
+ }
+ // Compact moving star clusters: seed is deterministic for stable animation.
+ for(let i=2;i<n-1;i+=3){
+  const p=nodes[i],q=normals[i],seed=i*13.73+w.id*27.19;
+  const side=(Math.sin(seed*1.71+t*(.28+(w.id%3)*.09))*.69)*half;
+  const x=p.x+side*q.x,y=p.y+side*q.y;
+  const twinkle=.5+.5*Math.sin(t*3.3+seed);
+  const size=(i%11===0?2.2:1.15)+twinkle*.85;
+  ctx.fillStyle=i%7===0?theme[2]:'#fff8ec';
+  ctx.globalAlpha=.34+twinkle*.64;
+  ctx.beginPath();ctx.arc(x,y,size,0,TAU);ctx.fill();
+  if(i%13===0){
+   ctx.strokeStyle=theme[2];ctx.lineWidth=.9;
+   ctx.beginPath();ctx.moveTo(x-size*2.5,y);ctx.lineTo(x+size*2.5,y);
+   ctx.moveTo(x,y-size*2.5);ctx.lineTo(x,y+size*2.5);ctx.stroke();
+  }
+ }
+ ctx.globalAlpha=1;
+ // Small icy comets flow from tail towards the head along curved body nodes.
+ const cometCount=w.human?4:2;
+ for(let j=0;j<cometCount;j++){
+  const progress=((t*(6.1+j*1.22)+(j*.31)*n+w.id*7.4)%(n-12));
+  const index=Math.max(2,Math.min(n-11,Math.floor(n-4-progress)));
+  const head=nodes[index],trail=nodes[index+Math.min(10,Math.floor(n*.17))];
+  const gradient=ctx.createLinearGradient(trail.x,trail.y,head.x,head.y);
+  gradient.addColorStop(0,'#ffffff00');gradient.addColorStop(.5,theme[j%3]+'90');
+  gradient.addColorStop(1,'#ffffff');
+  ctx.strokeStyle=gradient;ctx.lineWidth=r*.13+(j%2)*.55;
+  ctx.lineCap='round';
+  ctx.beginPath();
+  for(let k=Math.min(n-1,index+8);k>=index;k--){
+   const p=nodes[k];if(k===Math.min(n-1,index+8))ctx.moveTo(p.x,p.y);
+   else ctx.lineTo(p.x,p.y);
+  }
+  ctx.stroke();
+  ctx.fillStyle='#ffffff';ctx.shadowBlur=options.glow?9:0;ctx.shadowColor=theme[j%3];
+  ctx.beginPath();ctx.arc(head.x,head.y,Math.max(1.6,r*.12),0,TAU);ctx.fill();ctx.shadowBlur=0;
+ }
+ ctx.restore();
+}
+
 function drawWorm(w,t){
  if(!w.alive)return;
  const z=camera.zoom;
@@ -657,6 +744,7 @@ function drawWorm(w,t){
  ctx.strokeStyle=dark;ctx.lineWidth=r*2.2;ctx.globalAlpha=w.invulnerable>0?.64:1;ctx.stroke();
  ctx.strokeStyle=light;ctx.lineWidth=r*1.63;ctx.globalAlpha=w.invulnerable>0?.6:.88;ctx.stroke();
  ctx.globalAlpha=1;
+ drawCosmicInterior(w,t,r);
  if(boosting){
   ctx.save();
   ctx.strokeStyle='#f8f4ff';ctx.lineWidth=Math.max(2.2,r*.33);
