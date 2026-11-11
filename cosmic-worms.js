@@ -187,8 +187,54 @@ function createWorm(name,human,index,preferEncounter=false){
   w.segments.push({x:w.x-Math.cos(angle)*11.8*(i+1),
    y:w.y-Math.sin(angle)*11.8*(i+1)});
  }
+ seedWormTrail(w);
  return w;
 }
+
+function seedWormTrail(w){
+ const gap=11.8,points=w.segments.length+6;
+ w.traveled=0;w.trailStart=0;w.trail=[];
+ for(let i=points;i>0;i--)w.trail.push({
+  x:w.x-Math.cos(w.angle)*i*gap,
+  y:w.y-Math.sin(w.angle)*i*gap,s:-i*gap
+ });
+ w.trail.push({x:w.x,y:w.y,s:0});
+}
+function followWormTrail(w,advance,gap=11.8){
+ // The actual distance traveled controls each ring's position on the path.
+ w.traveled+=advance;
+ const history=w.trail;
+ history.push({x:w.x,y:w.y,s:w.traveled});
+ let start=w.trailStart;
+ const oldestNeeded=w.traveled-gap*(w.segments.length+2);
+ // Rapid pickups can extend the tail before there is enough path history.
+ if(history[start].s>oldestNeeded){
+  const first=history[start],next=history[start+1];
+  const dx=first.x-next.x,dy=first.y-next.y,mag=Math.hypot(dx,dy)||1;
+  const count=Math.ceil((first.s-oldestNeeded)/gap)+2;
+  const extension=[];
+  for(let n=count;n>=1;n--)extension.push({
+   x:first.x+dx/mag*n*gap,y:first.y+dy/mag*n*gap,s:first.s-n*gap
+  });
+  history.splice(start,0,...extension);
+ }
+ // Linear sweep interpolates every segment along the curved head trajectory.
+ let j=history.length-2;
+ for(let i=0;i<w.segments.length;i++){
+  const at=w.traveled-gap*(i+1);
+  while(j>start&&history[j].s>at)j--;
+  const a=history[j],b=history[j+1];
+  const t=clamp((at-a.s)/Math.max(1e-8,b.s-a.s),0,1);
+  w.segments[i].x=a.x+(b.x-a.x)*t;
+  w.segments[i].y=a.y+(b.y-a.y)*t;
+ }
+ // Amortized trimming keeps trail memory proportional to worm length.
+ const keepAfter=w.traveled-gap*(w.segments.length+7);
+ while(start+1<history.length-2&&history[start+1].s<keepAfter)start++;
+ if(start>128&&start>history.length*.34){history.splice(0,start);start=0;}
+ w.trailStart=start;
+}
+
 function foodBucket(k){
  let bucket=game.foodGrid.get(k);
  if(!bucket){bucket=new Set();game.foodGrid.set(k,bucket);}
@@ -480,12 +526,6 @@ function updateWorm(w,dt){
  w.x+=Math.cos(w.angle)*advance;
  w.y+=Math.sin(w.angle)*advance;
  const gap=11.8;
- let px=w.x,py=w.y;
- for(const node of w.segments){
-  const dx=px-node.x,dy=py-node.y,d=Math.hypot(dx,dy);
-  if(d>gap){const factor=1-gap/d;node.x+=dx*factor;node.y+=dy*factor;}
-  px=node.x;py=node.y;
- }
  if(boosting){
   w.mass=Math.max(38,w.mass-dt*7.2);
   w.dropClock+=dt;
@@ -507,6 +547,7 @@ function updateWorm(w,dt){
  }else if(w.segments.length>target){
   w.segments.length=Math.max(target,w.segments.length-Math.max(1,Math.floor(dt*120)));
  }
+ followWormTrail(w,advance,gap);
  w.bestLength=Math.max(w.bestLength||0,w.segments.length);
  w.bestMass=Math.max(w.bestMass,w.mass);
  const border=((w.x-WORLD.cx)/WORLD.rx)**2+((w.y-WORLD.cy)/WORLD.ry)**2;
@@ -1208,6 +1249,25 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
    return {safe:minimum>=250,minimum,segments:w.segments.length};
   },
   desiredLength:()=>segmentCount(game.player),
+  orbitTrailProbe:()=>{
+   const cx=1200,cy=1400,r=62,gap=11.8,count=28;
+   const test={x:cx+r,y:cy,angle:Math.PI/2,
+    segments:Array.from({length:count},(_,i)=>({x:cx+r,y:cy-(i+1)*gap}))};
+   seedWormTrail(test);
+   const origin={...test.segments[count-1]};
+   let previous={x:test.x,y:test.y};
+   for(let i=1;i<=520;i++){
+    const angle=i*.036;
+    test.x=cx+r*Math.cos(angle);test.y=cy+r*Math.sin(angle);
+    const moved=Math.hypot(test.x-previous.x,test.y-previous.y);
+    followWormTrail(test,moved,gap);
+    previous={x:test.x,y:test.y};
+   }
+   const tail=test.segments[count-1];
+   return {tailMoved:Math.hypot(tail.x-origin.x,tail.y-origin.y),
+    tailRadius:Math.hypot(tail.x-cx,tail.y-cy),radius:r,
+    segmentCount:test.segments.length,history:test.trail.length};
+  },
   headOnWinner:({massA,massB,speedA=172,speedB=172})=>{
    const a={id:1,mass:massA,speed:speedA},b={id:2,mass:massB,speed:speedB};
    return headOnWinner(a,b)===a?'a':'b';
