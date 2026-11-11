@@ -137,6 +137,10 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.waitForTimeout(160);
     const growth=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
     assert.ok(growth.mass>a.mass+50&&growth.length>a.length,'Mass pickup must grow tail');
+    await page.evaluate(()=>window.InfinityWormsQA.setMass(6000));
+    assert.ok(await page.evaluate(()=>window.InfinityWormsQA.desiredLength())>190,'No fixed 190-segment growth limit');
+    assert.equal(await page.evaluate(()=>window.InfinityWormsQA.headOnWinner({massA:500,massB:60})),'a');
+    assert.equal(await page.evaluate(()=>window.InfinityWormsQA.headOnWinner({massA:60,massB:500})),'b');
     await page.evaluate(()=>window.InfinityWormsQA.setMass(1000));
     await page.waitForTimeout(700);
     const large=await page.evaluate(()=>window.InfinityWormsQA.snapshot().zoom);
@@ -153,24 +157,26 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.locator('#worm-pause').click();
     assert.equal(await page.locator('#worm-pause-overlay').isVisible(),true);
     assert.equal(await page.locator('#worm-exit').textContent(),'ВЫХОД В МЕНЮ');
+    await page.locator('#worm-skins-open').click();
+    assert.equal(await page.locator('.ws-overlay').isVisible(),true,'Separate skin editor must open from pause');
+    assert.equal(await page.locator('.ws-preset').count(),12);
+    assert.equal(await page.locator('.ws-bead').count(),64,'All 64 segment colors can be customized');
+    await page.locator('.ws-preset').nth(1).click();
+    assert.equal(await page.evaluate(()=>window.InfinityWormsQA.snapshot().skin),'aurora');
+    await page.locator('.ws-color').first().click();
+    await page.locator('.ws-bead').nth(3).click();
+    const chosen=await page.evaluate(()=>JSON.parse(localStorage.getItem('infinity-space-worms-settings-v2')));
+    assert.equal(chosen.customEnabled,true);
+    assert.equal(chosen.customSegments[3],'#ff1744');
+    await page.locator('.ws-done').click();
+    assert.equal(await page.locator('#worm-pause-overlay').isVisible(),true,'Skin editor returns to pause');
     await page.locator('#worm-settings-open').click();
     assert.equal(await page.locator('#worm-settings').isVisible(),true);
-    assert.equal(await page.locator('#worm-skin-grid button').count(),12);
-    assert.equal(await page.locator('.worm-skin-preview .worm-preview-stars').count(),12);
-    assert.equal(await page.locator('.worm-skin-preview .worm-preview-comet').count(),12);
-    assert.equal(await page.locator('.worm-preview-comet').first().evaluate(el=>
-     getComputedStyle(el).animationName.includes('worm-preview-comet')),true,
-     'All cosmic skin previews must show moving comets');
-    await page.locator('#worm-skin-grid [data-skin="aurora"]').click();
-    assert.equal(await page.locator('#worm-skin-grid [data-skin="aurora"]').evaluate(
-     el=>getComputedStyle(el).borderTopColor),
-     'rgb(39, 255, 64)','Selected green skin must have matching green outline');
     if(width>=1280){
      await page.locator('#worm-settings-back').hover();
      assert.equal(await page.locator('#worm-settings-back').evaluate(el=>getComputedStyle(el).borderTopColor),
-      'rgb(40, 96, 255)','Settings Back button must glow blue');
+      'rgb(40, 96, 255)','Settings Back button stays blue');
     }
-    assert.equal(await page.evaluate(()=>window.InfinityWormsQA.snapshot().skin),'aurora');
     await page.locator('#worm-setting-glow').uncheck({force:true});
     await page.locator('#worm-setting-names').uncheck({force:true});
     await page.locator('#worm-setting-zoom').evaluate(el=>{el.value='120';el.dispatchEvent(new Event('input',{bubbles:true}));});
@@ -211,6 +217,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.ok(rec&&rec.matches===1&&rec.objects>=1,'Worms statistics must be persisted separately');
     await page.locator('#worm-restart').click();
     assert.equal(await page.evaluate(()=>window.InfinityWormsQA.snapshot().skin),'aurora','Selected skin should survive death/restart');
+    assert.equal(await page.evaluate(()=>window.InfinityWormsQA.snapshot().customEnabled),true,'Custom colors should survive death/restart');
     await page.waitForFunction(()=>window.InfinityWormsQA.snapshot().state==='playing');
     const res=await page.evaluate(()=>{
      const canv=document.getElementById('worm-field'),r=canv.getBoundingClientRect();
@@ -224,6 +231,10 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.locator('#hub-mode-story').waitFor({state:'visible',timeout:20000});
     assert.equal(await page.locator('.hub-mode-dots button').count(),6);
     assert.match(await page.locator('.hub-mode-story-title').textContent(),/Космические черви/);
+    assert.equal(await page.locator('.hub-mode-story-skins').isVisible(),true,'Main menu should expose worm skins');
+    await page.locator('.hub-mode-story-skins').click();
+    assert.equal(await page.locator('.ws-overlay').isVisible(),true);
+    await page.locator('.ws-done').click();
     await page.locator('.hub-story-shortcut[data-shortcut="statistics"]').click();
     await page.locator('.infinity-stats-panel').waitFor({state:'visible',timeout:5000});
     assert.equal(await page.locator('.infinity-stats-tabs button').count(),7);
