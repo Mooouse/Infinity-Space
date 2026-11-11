@@ -114,19 +114,20 @@ function spawnPosition(angle,count,nearPlayer=false){
   }else pos=randomPos(.87);
   let safe=true;
   const total=(count+1)*11.8;
-  for(let i=0;i<=Math.ceil((total+190)/65);i++){
-   const offset=Math.min(total,i*65);
-   const x=pos.x-Math.cos(angle)*(offset-190),y=pos.y-Math.sin(angle)*(offset-190);
+  for(let i=0;i<=Math.ceil((total+190)/48);i++){
+   // Trace the complete spawn body, from 190px ahead of its head to its tip.
+   const offset=i*48-190;
+   const x=pos.x-Math.cos(angle)*offset,y=pos.y-Math.sin(angle)*offset;
    const edge=((x-WORLD.cx)/WORLD.rx)**2+((y-WORLD.cy)/WORLD.ry)**2;
    if(edge>.88*.88){safe=false;break;}
    for(const other of game.worms){
     if(!other.alive)continue;
     const headD=Math.hypot(x-other.x,y-other.y);
-    if(headD<400){safe=false;break;}
+    if(headD<450){safe=false;break;}
     if(headD>other.segments.length*12+500)continue;
-    for(let j=0;j<other.segments.length;j+=3){
+    for(let j=0;j<other.segments.length;j+=2){
      const s=other.segments[j];
-     if((x-s.x)**2+(y-s.y)**2<280*280){safe=false;break;}
+     if((x-s.x)**2+(y-s.y)**2<350*350){safe=false;break;}
     }
     if(!safe)break;
    }
