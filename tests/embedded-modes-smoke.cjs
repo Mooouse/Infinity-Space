@@ -38,6 +38,7 @@ const {chromium}=require('playwright');
   await page.locator('.hub-mode-story-play').click();
   await page.waitForURL(/blob:.*#mode=arena/,{timeout:15000});
   await page.locator('#hud:not([hidden])').waitFor({state:'visible',timeout:16000});
+  if(await page.locator('#guide').isVisible())await page.locator('#guide-skip').click();
   await page.locator('#pause').click();
   await page.locator('#change2').click();
   await page.waitForURL(/playgama\/index\.html\?select=arena/,{timeout:15000});
