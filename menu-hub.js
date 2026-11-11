@@ -113,6 +113,8 @@
    const entry=modeStories[current];
    window.SpaceMenuSceneMode=entry.id==='endless'?null:entry.id;
    root.dataset.previewMode=entry.id;
+   // Universe map is meaningful only for the original persistent sandbox.
+   root.classList.toggle('hub-mode-endless',entry.id==='endless');
    q(overlay,'.hub-mode-story-kicker').textContent=t(entry.subtitle);
    q(overlay,'.hub-mode-story-title').textContent=t(entry.title);
    q(overlay,'.hub-mode-story-goal').textContent=t(entry.goal);
@@ -135,10 +137,10 @@
    if(changed&&copy&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     copy.getAnimations().forEach(a=>a.cancel());
     copy.animate([
-      {opacity:.13,transform:'translate3d('+direction*52+'px,0,0) scale(.985)',filter:'blur(5px)'},
-      {opacity:.89,transform:'translate3d('+direction*-3+'px,0,0) scale(1)',filter:'blur(0)'},
-      {opacity:1,transform:'translate3d(0,0,0) scale(1)',filter:'blur(0)'}
-    ],{duration:590,easing:'cubic-bezier(.16,1,.3,1)'});
+      {opacity:.3,transform:'translate3d('+direction*22+'px,5px,0)'},
+      {opacity:.92,transform:'translate3d('+direction*-2+'px,0,0)'},
+      {opacity:1,transform:'translate3d(0,0,0)'}
+    ],{duration:510,easing:'cubic-bezier(.22,.8,.2,1)'});
    }
   };
   // Visible bottom dock. Each shortcut delegates to the already wired
