@@ -59,7 +59,8 @@ const seed=()=>{localStorage.setItem('infinity-space-player-v1',JSON.stringify({
   console.log('ARENA_UI_REPORTS '+JSON.stringify(reports));
   console.log('ARENA_UI_FAILURES '+JSON.stringify(failed));
   console.log('ARENA_UI_ERRORS '+JSON.stringify(errors));
-  // Diagnostic mode while gathering first baseline; enforce after CSS repair.
-  console.log('PASS: four modes × five resolutions × gameplay, pause, guide and results inspected');
+  assert.equal(failed.length,0,'Arena overflowing text or controls: '+JSON.stringify(failed));
+  assert.equal(errors.length,0,'Arena runtime errors: '+JSON.stringify(errors));
+  console.log('PASS: all 4 modes × 5 resolutions × gameplay, pause, tutorial, results without overflow or errors');
  }finally{await browser.close()}
 })().catch(e=>{console.error(e.stack||e);process.exitCode=1});
