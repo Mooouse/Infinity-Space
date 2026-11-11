@@ -434,3 +434,144 @@ body.worm-death-replay #worm-hud{transition:opacity .85s ease}
 .worm-actions button:focus-visible,.worm-skin-card:focus-visible{
  outline:2px solid var(--worm-accent,#2860ff);outline-offset:3px;
 }
+
+
+/* v8 — physically coherent, semantic interface. A non-purple control never
+   inherits purple borders, gradients, halos or focus rings. */
+.worm-pause-button{
+ --worm-accent:#2860ff;border-color:#2860ff;border-bottom-color:#172f87;
+ background:linear-gradient(155deg,#193c88,#101a40);color:#f6f8ff;
+ box-shadow:0 5px 17px #0008,inset 0 1px #ffffff26;
+}
+.worm-boost-button,.worm-boost-button.is-boosting{
+ --worm-accent:#ff1744;border-color:#ff1744;border-bottom-color:#86112b;
+ background:linear-gradient(155deg,#a71836,#4e1329);color:#fff;
+ box-shadow:0 5px 17px #0008,inset 0 1px #ffffff24;
+}
+.worm-boost-button.is-boosting{background:linear-gradient(150deg,#ec1744,#ad122d);box-shadow:0 0 22px #ff17444e,0 6px 16px #0009}
+.worm-actions button:not(.worm-primary){
+ --worm-accent:#2860ff;border-color:#365ee2;border-bottom-color:#152963;
+ background:linear-gradient(155deg,#1b3074,#111c41);color:#fff;
+}
+.worm-actions button.worm-primary{
+ --worm-accent:#9922ff;border-color:#9922ff;border-bottom-color:#471081;
+ background:linear-gradient(155deg,#7525ca,#451679);color:#fff;
+}
+.worm-actions button#worm-exit,.worm-actions button#worm-result-menu{
+ --worm-accent:#ff1744;border-color:#bd2445;border-bottom-color:#64172c;
+ background:linear-gradient(155deg,#741f3a,#351425);
+}
+.worm-actions button#worm-settings-back{
+ --worm-accent:#2860ff;border-color:#365ee2;border-bottom-color:#152963;
+ background:linear-gradient(155deg,#1b3074,#111c41);
+}
+.worm-panel{border-color:#3f496f;border-bottom-color:#242a50;background:linear-gradient(155deg,#1b2039,#0d1023 84%)}
+.worm-eyebrow{color:#ffe500}
+.worm-panel h2,.worm-settings-panel h2{color:#f0f3ff}
+.worm-panel p{color:#cbd2e5}
+.worm-results>div{background:#111a30;border-color:#3b486c;border-bottom-color:#222d4f}
+.worm-guide-visual{background:radial-gradient(ellipse at 58% 54%,#1c3c8260,transparent 73%),#090e20;border-color:#384b80}
+.worm-guide-ring{border-color:#2860ff77}
+.worm-guide-head{background:#2860ff;border-color:#b4c9ff;box-shadow:0 0 24px #2860ff70}
+.worm-guide-tail{border-color:#2860ff}
+.worm-guide-dots i{border-color:#33486c;background:#1b2849}
+.worm-guide-dots i.current{border-color:#ffe500;background:#ffe500}
+.worm-setting-toggle,.worm-setting-range{background:#141b31;border-color:#3d4a6d;color:#f1f4ff}
+.worm-setting-toggle i{border-color:#51617f;background:#1b2840}
+.worm-setting-toggle i::after{background:#e5ebff}
+.worm-setting-toggle input:checked+i{border-color:#27ff40;background:#1b7831}
+.worm-setting-range strong{color:#ffe500}
+.worm-setting-range input{accent-color:#2860ff}
+.worm-skin-card{
+ border-color:#354462;border-bottom-color:#222d48;
+ color:#e4e9fa;background:linear-gradient(155deg,#161e35,#0e1428);
+}
+.worm-skin-card.active{
+ --worm-accent:var(--skin-accent,#2860ff);
+ background:linear-gradient(155deg,#202c49,#11192c);
+ border-color:var(--worm-accent);border-bottom-color:color-mix(in srgb,var(--worm-accent) 45%,#0b1120);
+ box-shadow:0 0 13px color-mix(in srgb,var(--worm-accent) 21%,transparent);
+}
+.worm-skin-card:hover{--worm-accent:var(--skin-accent,#2860ff)}
+.worm-stick{border-color:#2860ff8a;background:radial-gradient(circle,#2860ff23,#111b3940)}
+.worm-stick::after{border-color:#6285e877}
+.worm-thumb{border-color:#9ab6ff;background:linear-gradient(145deg,#3d6eff,#172b7f);box-shadow:0 3px 16px #2860ff57}
+.worm-toast{border-color:#ffe500;border-bottom-color:#906b08;background:#171d30;color:#fff}
+
+/* Mobile: keep the center of the arena free of HUD panels, and respect cutouts. */
+@media(max-width:760px), (pointer:coarse) and (max-width:1024px){
+ .worm-top{top:calc(env(safe-area-inset-top) + 9px);left:calc(env(safe-area-inset-left) + 9px);right:calc(env(safe-area-inset-right) + 9px);gap:5px;align-items:stretch}
+ .worm-brand{min-width:0;max-width:34%;flex:0 1 118px;padding:7px 8px;display:flex;flex-direction:column;justify-content:center}
+ .worm-brand b{font-size:clamp(9px,2.8vw,12px);letter-spacing:.025em;white-space:nowrap}
+ .worm-brand small{font-size:clamp(6.5px,1.8vw,8px);line-height:1.23;margin-top:4px;letter-spacing:.02em}
+ .worm-metrics{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+ .worm-metric{min-width:0;min-height:49px;padding:6px 4px;text-align:center}
+ .worm-metric small{font-size:clamp(6.5px,1.9vw,8px);letter-spacing:.035em}
+ .worm-metric strong{font-size:clamp(14px,4.1vw,19px);line-height:1.25}
+ .worm-leaders,.worm-radar{display:none}
+ .worm-pause-button{
+  top:calc(env(safe-area-inset-top) + 71px);right:calc(env(safe-area-inset-right) + 9px);left:auto;
+  transform:none;min-height:39px;padding:7px 12px;font-size:10px
+ }
+ .worm-pause-button:hover{transform:none}
+ .worm-stick{
+  display:block;left:calc(env(safe-area-inset-left) + 17px);
+  bottom:calc(env(safe-area-inset-bottom) + 20px);
+  width:clamp(102px,27vw,122px);height:clamp(102px,27vw,122px);
+  border-width:2px;
+ }
+ .worm-thumb{width:42px;height:42px;left:calc(50% - 21px);top:calc(50% - 21px)}
+ .worm-boost-button{
+  right:calc(env(safe-area-inset-right) + 17px);
+  bottom:calc(env(safe-area-inset-bottom) + 27px);
+  min-width:84px;min-height:84px;padding:8px;gap:4px
+ }
+ .worm-boost-button svg{width:29px;height:29px}
+ .worm-boost-button b{font-size:10px}
+ .worm-shade{padding:calc(env(safe-area-inset-top) + 10px) calc(env(safe-area-inset-right) + 10px) calc(env(safe-area-inset-bottom) + 10px) calc(env(safe-area-inset-left) + 10px);align-items:center}
+ .worm-panel{width:100%;max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 20px);padding:clamp(15px,4.3vw,24px);overscroll-behavior:contain;border-radius:10px}
+ .worm-panel h1{font-size:clamp(26px,8vw,38px);line-height:1.04;letter-spacing:-.03em;margin:8px 0 11px;overflow-wrap:anywhere}
+ .worm-panel p{font-size:12px;line-height:1.48;margin:8px 0 12px}
+ .worm-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
+ .worm-actions button{min-width:0;min-height:48px;padding:9px 6px;font-size:clamp(9px,2.5vw,12px);overflow-wrap:anywhere}
+ .worm-guide-visual{height:clamp(78px,16dvh,112px);margin:10px 0 6px}
+ .worm-skin-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:9px 0}
+ .worm-skin-card{min-height:90px;padding:8px 6px;gap:5px}
+ .worm-skin-preview{height:35px}
+ .worm-settings-panel h2{font-size:14px;margin:13px 0 5px}
+ .worm-setting-toggle{font-size:12px;min-height:40px;padding:7px 10px;margin:6px 0}
+ .worm-setting-range{font-size:12px;padding:9px}
+ .worm-results{gap:5px;margin:10px 0}
+ .worm-results>div{min-height:70px;padding:7px 3px}
+ .worm-results strong{font-size:clamp(19px,5.6vw,30px)}
+ .worm-results small{font-size:clamp(7px,2vw,9px);overflow-wrap:anywhere}
+ .worm-toast{top:calc(env(safe-area-inset-top) + 124px);font-size:11px;max-width:calc(100vw - 24px)}
+}
+@media(max-width:365px){
+ .worm-brand{flex-basis:94px;padding:5px}
+ .worm-brand b{font-size:9px}
+ .worm-brand small{font-size:6.2px}
+ .worm-metric{padding:5px 2px}
+ .worm-metric strong{font-size:14px}
+ .worm-stick{width:103px;height:103px;left:calc(env(safe-area-inset-left) + 11px)}
+ .worm-boost-button{right:calc(env(safe-area-inset-right) + 11px);min-width:75px;min-height:75px}
+}
+@media(max-height:510px) and (orientation:landscape){
+ .worm-top{top:calc(env(safe-area-inset-top) + 5px);max-width:min(68vw,470px)}
+ .worm-brand{flex:0 0 102px}
+ .worm-pause-button{top:calc(env(safe-area-inset-top) + 6px);right:calc(env(safe-area-inset-right) + 9px)}
+ .worm-stick{left:calc(env(safe-area-inset-left) + 15px);bottom:calc(env(safe-area-inset-bottom) + 9px);width:90px;height:90px}
+ .worm-boost-button{bottom:calc(env(safe-area-inset-bottom) + 10px);width:72px;height:72px;min-width:72px;min-height:72px}
+ .worm-panel{padding:12px 16px}
+ .worm-panel h1{font-size:25px;margin:5px 0}
+ .worm-panel p{margin:4px 0 8px;font-size:11px}
+ .worm-actions{margin-top:8px}
+ .worm-actions button{min-height:37px}
+ .worm-guide-visual{height:54px;margin:5px 0}
+ .worm-skin-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+ .worm-skin-card{min-height:66px;padding:4px}
+ .worm-skin-preview{height:25px}
+ .worm-settings-panel h2{margin:8px 0 4px}
+ .worm-setting-toggle{min-height:33px;margin:3px 0}
+ .worm-results>div{min-height:57px}
+}
