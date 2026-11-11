@@ -254,50 +254,104 @@ function init(){
 function sortedWorms(){return game.worms.filter(w=>w.alive).sort((a,b)=>b.mass-a.mass)}
 function ranking(w){return 1+game.worms.reduce((n,b)=>n+(b.alive&&b!==w&&b.mass>w.mass?1:0),0)}
 function steerBot(w,dt){
- w.think-=dt;w.wiggle+=dt*.54;
+ w.think-=dt;w.wiggle+=dt*.7;
  if(w.think>0)return;
- w.think=rand(.20,.42);
- let near=null,score=Infinity;
- const sample=game.food.length;
- // A rotating partial scan prevents all bots from converging on one orb.
- const offset=(w.id*17+Math.floor(game.time*17))%Math.max(1,sample);
- for(let j=0;j<Math.min(sample,150);j++){
-  const f=game.food[(offset+j*3)%sample],dx=f.x-w.x,dy=f.y-w.y,d=dx*dx+dy*dy;
-  if(d<score){score=d;near=f;}
- }
- if(near)w.target=Math.atan2(near.y-w.y,near.x-w.x)+Math.sin(w.wiggle)*.12;
- const wall=Math.hypot((w.x-WORLD.cx)/WORLD.rx,(w.y-WORLD.cy)/WORLD.ry);
- if(wall>.81)w.target=Math.atan2(WORLD.cy-w.y,WORLD.cx-w.x);
- // Threat avoidance: aim away from incoming heads and dangerous body segments.
- let avoidX=0,avoidY=0;
- for(const other of game.worms){
-  if(other===w||!other.alive)continue;
-  const dx=w.x-other.x,dy=w.y-other.y,d2=dx*dx+dy*dy;
-  if(d2<220*220&&d2>1){const fac=1/(d2+1800);avoidX+=dx*fac*24000;avoidY+=dy*fac*24000;}
-  if(d2>450*450)continue;
-  for(let i=6;i<other.segments.length;i+=5){
-   const s=other.segments[i],x=w.x-s.x,y=w.y-s.y,ds=x*x+y*y;
-   if(ds<155*155&&ds>1){const fac=1/(ds+420);avoidX+=x*fac*1600;avoidY+=y*fac*1600;}
+ w.think=rand(.10,.19);
+ let goal=null,goalScore=-Infinity;
+ // Forage with spatial locality: dead worms drop high-value trails and
+ // experienced bots deliberately prefer them over far-away ambient dust.
+ foodNearby(w.x,w.y,1150,f=>{
+  const dx=f.x-w.x,dy=f.y-w.y,d=Math.hypot(dx,dy);
+  if(d<15||d>1150)return;
+  const dot=(dx*Math.cos(w.angle)+dy*Math.sin(w.angle))/(d||1);
+  const score=(f.value*160+90)/(d+65)+(dot>0?.17:0);
+  if(score>goalScore){goal=f;goalScore=score;}
+ });
+ let desired=goal?Math.atan2(goal.y-w.y,goal.x-w.x):w.angle;
+ let chase=false;
+ // Aggressive and defensive personalities. Predators try to cut off the
+ // projected route of a smaller target instead of blindly ramming its head.
+ if(w.aiStyle===2||w.aiStyle===4){
+  let prey=null,preyDistance=Infinity;
+  for(const other of game.worms){
+   if(other===w||!other.alive||other.mass>w.mass*.8)continue;
+   const d=Math.hypot(other.x-w.x,other.y-w.y);
+   if(d<630&&d<preyDistance){prey=other;preyDistance=d;}
+  }
+  if(prey&&preyDistance>125){
+   const ahead=Math.min(210,preyDistance*.32);
+   desired=Math.atan2(prey.y+Math.sin(prey.angle)*ahead-w.y,
+    prey.x+Math.cos(prey.angle)*ahead-w.x);
+   chase=true;
   }
  }
- if(avoidX*avoidX+avoidY*avoidY>90)w.target=Math.atan2(avoidY,avoidX);
- w.boost=wall<.84&&w.mass>53&&w.aiStyle===1&&Math.random()<.15;
+ const edge=Math.hypot((w.x-WORLD.cx)/WORLD.rx,(w.y-WORLD.cy)/WORLD.ry);
+ if(edge>.88)desired=Math.atan2(WORLD.cy-w.y,WORLD.cx-w.x);
+ // Sample feasible trajectories in every direction. Each candidate is checked
+ // several times ahead of the head against the spatial grid of ALL rival tails.
+ // Unlike the old random bots, near-collision paths are heavily penalized.
+ let best=-Infinity,bestAngle=desired,bestSafety=0;
+ const candidates=20;
+ for(let k=0;k<candidates;k++){
+  const angle=k===0?desired:k===1?w.angle:(k-2)*TAU/(candidates-2);
+  const cx=Math.cos(angle),cy=Math.sin(angle);
+  let score=Math.cos(angle-desired)*12+Math.cos(angle-w.angle)*.6;
+  let clearance=Infinity;
+  for(const step of [80,160,280,440]){
+   const x=w.x+cx*step,y=w.y+cy*step;
+   const border=((x-WORLD.cx)/WORLD.rx)**2+((y-WORLD.cy)/WORLD.ry)**2;
+   if(border>.94*.94)score-=(border>.99?340:75);
+   bodiesNearby(x,y,130,entry=>{
+    if(entry.w===w||!entry.w.alive)return;
+    // Predict the other head moving towards the intended waypoint.
+    let ox=entry.x,oy=entry.y;
+    if(entry.head){
+     const future=Math.min(.65,step/Math.max(150,w.speed));
+     ox+=Math.cos(entry.w.angle)*entry.w.speed*future*.45;
+     oy+=Math.sin(entry.w.angle)*entry.w.speed*future*.45;
+    }
+    const d=Math.hypot(x-ox,y-oy);
+    const danger=wormRadius(w)+wormRadius(entry.w)+45;
+    clearance=Math.min(clearance,d-danger);
+    if(d<danger+52)score-=(danger+52-d)*(.65+(440-step)/440*1.15);
+    if(d<danger)score-=300+(danger-d)*3;
+   });
+  }
+  if(score>best){best=score;bestAngle=angle;bestSafety=clearance;}
+ }
+ w.target=bestAngle;
+ w.boost=w.mass>78&&edge<.84&&bestSafety>70&&
+   ((chase&&goalScore>.25)||(w.aiStyle===1&&goalScore>2.2&&Math.cos(bestAngle-desired)>.85))&&
+   Math.cos(bestAngle-w.angle)>.3;
 }
 function kill(w,killer,reason){
  if(!w.alive||w.invulnerable>0)return;
  const place=ranking(w);
- w.alive=false;w.boost=false;w.deathDelay=DEMO?2.2:rand(1.2,2.0);
+ w.alive=false;w.boost=false;w.deathDelay=DEMO?2.5:rand(4.5,6.5);
  if(killer&&killer!==w){killer.kills++;killer.mass+=Math.min(18,w.mass*.12);}
- // Remains become food immediately. Opponents can fight over the debris.
+ // Materialize the ENTIRE corpse before any bot respawns, from head to tip.
+ // Never impose a global food cap here: it previously discarded most of a
+ // long worm's remains as soon as the ambient field became dense.
  const body=[{x:w.x,y:w.y},...w.segments];
- for(let i=0;i<body.length;i+=2){
-  if(game.food.length>1550)break;
-  const n=body[i];
-  game.food.push(makeFood(n.x+rand(-13,13),n.y+rand(-13,13),
-   w.color[0],rand(2.5,6),rand(3.2,6.7)));
+ let dropped=0;
+ for(let i=0;i<body.length;i++){
+  const node=body[i],before=body[Math.max(i-1,0)],after=body[Math.min(i+1,body.length-1)];
+  let dx=after.x-before.x,dy=after.y-before.y,d=Math.hypot(dx,dy)||1;
+  const sideX=-dy/d,sideY=dx/d;
+  for(let side of [-1,1]){
+   const size=rand(3.4,6.3),offset=rand(3,9);
+   addFood(makeFood(node.x+sideX*offset+rand(-2,2),
+    node.y+sideY*offset+rand(-2,2),i%6===0?w.accent:w.color[0],
+    rand(2.8,6),size));
+   dropped++;
+  }
+  if(i%5===0&&game.fx.length<550){
+   game.fx.push({x:node.x,y:node.y,vx:rand(-110,110),vy:rand(-110,110),
+    t:rand(.4,.95),max:.95,c:w.color[0],r:rand(1.6,4.5)});
+  }
  }
- for(let i=0;i<24;i++)game.fx.push({x:w.x,y:w.y,vx:rand(-190,190),vy:rand(-190,190),
-  t:rand(.3,.85),max:.85,c:w.color[0],r:rand(1.7,4)});
+ game.lastDeath={name:w.name,segments:body.length,dropped,head:{x:body[0].x,y:body[0].y},
+  tip:{x:body[body.length-1].x,y:body[body.length-1].y}};
  if(w.human){
   game.state='finished';
   const won=w.leadTime>=20;
@@ -316,6 +370,7 @@ function kill(w,killer,reason){
   window.SpacePlatform?.playing?.(false);
  }
 }
+
 function updateWorm(w,dt){
  if(!w.alive)return;
  w.invulnerable=Math.max(0,w.invulnerable-dt);
