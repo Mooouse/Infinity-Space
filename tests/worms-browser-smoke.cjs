@@ -95,6 +95,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
      assert.equal(await page.locator('#worm-boost').evaluate(el=>getComputedStyle(el).borderTopColor),
       'rgb(255, 23, 68)','Red boost button must glow red, not purple');
     }
+    await page.evaluate(()=>window.InfinityWormsQA.testProtection(90));
     const styles=await page.evaluate(()=>window.InfinityWormsQA.botStyles());
     for(const role of ['afk','newcomer','casual','cautious','hunter','veteran','pro','reckless']){
      assert.ok(styles[role]>=2,'Missing realistic bot behavior: '+role);
