@@ -125,12 +125,12 @@
       '<p class="hub-mode-story-goal"></p>'+
       '<p class="hub-mode-story-description"></p>'+
       '<div class="hub-mode-story-tags"></div>'+
-      '<button class="hub-mode-story-play" type="button"><span></span><b>↗</b></button>'+
+      '<button class="hub-mode-story-play" type="button"><span></span><b aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="square" stroke-linejoin="miter"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></b></button>'+
     '</div>'+
     '<footer class="hub-mode-story-footer">'+
-      '<button class="hub-mode-step" data-dir="-1" type="button" aria-label="Previous mode">‹</button>'+
+      '<div class="hub-mode-nav-controls"><button class="hub-mode-step" data-dir="-1" type="button" aria-label="Previous mode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>'+
       '<div class="hub-mode-dots" aria-label="Choose mode"></div>'+
-      '<button class="hub-mode-step" data-dir="1" type="button" aria-label="Next mode">›</button>'+
+      '<button class="hub-mode-step" data-dir="1" type="button" aria-label="Next mode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button></div>'+
       '<span class="hub-mode-gesture"></span>'+
     '</footer><nav class="hub-story-nav" aria-label="Quick access to game sections"></nav>';
   root.append(overlay);
