@@ -9267,3 +9267,84 @@ body.ui-v15 #screen-menu.hub-main-carousel button:active:not(:disabled){
   transition:none!important;
  }
 }
+
+
+/* MAIN MENU / v3.81.1 — layout regression fixes from real Chromium audits.
+   Keep all interaction targets inside their own flex slots and let the
+   description scroll when a short desktop viewport cannot display it all. */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
+ min-height:0!important;
+ overflow-x:hidden!important;
+ overflow-y:auto!important;
+ overscroll-behavior:contain!important;
+ scrollbar-width:thin;
+ scrollbar-color:#7853a5 transparent;
+}
+/* The long Russian title "Последняя сингулярность" must not overflow
+   on 1920px/2560px screens. Prefer a balanced title to clipping. */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
+ font-size:clamp(44px,5.2vw,80px)!important;
+ max-width:100%!important;
+ overflow-wrap:normal!important;
+ word-break:normal!important;
+ hyphens:none!important;
+}
+/* On 701–1400px screens the worm customization action used to extend
+   beneath the fixed mode-switch footer and became unclickable. */
+@media(min-width:701px) and (max-height:820px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
+  flex:0 1 auto!important;
+  margin-top:clamp(6px,2vh,18px)!important;
+  max-height:calc(100dvh - 300px)!important;
+  min-height:0!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  padding-right:12px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
+  font-size:clamp(36px,4.8vw,64px)!important;
+  line-height:1!important;
+  margin-bottom:11px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-kicker{
+  margin-bottom:8px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-goal{
+  margin-bottom:7px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-description{
+  line-height:1.4!important;
+  margin-bottom:9px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags{
+  margin-bottom:11px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play{
+  min-height:46px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-footer{
+  flex:0 0 auto!important;
+  position:relative!important;
+  z-index:3!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
+  flex:0 0 auto!important;
+  position:relative!important;
+  z-index:3!important;
+ }
+}
+/* Phone carousel: conserve vertical space; keep the original responsive
+   title sizing and avoid clipping the compact touch navigation. */
+@media(max-width:700px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
+  overflow-y:auto!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
+  font-size:clamp(32px,9vw,52px)!important;
+ }
+}
+@media(max-width:390px) and (max-height:610px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
+  font-size:clamp(30px,8.5vw,39px)!important;
+ }
+}
