@@ -3,7 +3,8 @@
    No external game logic, assets, account or network requests. */
 (()=>{'use strict';
 const QUERY=new URLSearchParams(location.search);
-const DEMO=QUERY.has('demo');
+const HASH_QUERY=new URLSearchParams(location.hash.slice(1));
+const DEMO=QUERY.has('demo')||HASH_QUERY.has('demo');
 if(DEMO)document.documentElement.classList.add('worm-demo');
 const storedLang=(()=>{try{return localStorage.getItem('infiniti-space-language')||''}catch(_){return ''}})();
 const language=/^(ru|en|es)$/.test(storedLang)?storedLang:(/^ru/i.test(navigator.language)?'ru':/^es/i.test(navigator.language)?'es':'en');
@@ -565,7 +566,7 @@ function frame(now){
  paint(starTime);
 }
 init();requestAnimationFrame(frame);
-if(QUERY.has('tester')||DEMO){
+if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
  window.InfinityWormsQA={
   snapshot:()=>({state:game.state,mode:'worms',demo:DEMO,time:game.time,mass:game.player.mass,
     bestMass:game.player.bestMass,length:game.player.segments.length,
