@@ -106,8 +106,8 @@ async function clickBack(page){
     await page.locator('.hub-story-shortcut[data-shortcut="statistics"]').click();
     await page.locator('.infinity-stats-panel').waitFor({state:'visible',timeout:10000});
     const tabs=page.locator('.infinity-stats-tabs button');
-    if(await tabs.count()!==6)failures.push({width,reason:'stats-tabs-missing'});
-    for(const mode of ['overall','endless','arena','royale','core','race']){
+    if(await tabs.count()!==7)failures.push({width,reason:'stats-tabs-missing'});
+    for(const mode of ['overall','endless','arena','royale','core','race','worms']){
      await page.locator('.infinity-stats-tabs [data-mode="'+mode+'"]').click();
      if(!await page.locator('.infinity-stats-detail').isVisible())
       failures.push({width,reason:'statistics-detail-empty',mode});
