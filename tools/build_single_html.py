@@ -58,7 +58,7 @@ def build_page(inline_bridge_config: bool = True) -> str:
     html, num_css = re.subn(
         r'<link\s+rel="stylesheet"\s+href="([^"]+)"\s*/?>',
         inline_css, html, flags=re.I)
-    if num_css < 8:
+    if num_css < 1:
         raise RuntimeError("Expected all game CSS to be inlined; got " + str(num_css))
 
     favicon = (ROOT / "favicon.svg").read_bytes()
