@@ -8215,6 +8215,65 @@ body.ui-v15 #modal #screen-bestiary .br-best-row:not(.selected):hover,
 body.ui-v15 #modal #screen-music .music-track-card:hover{
  background:linear-gradient(135deg,#23334e,#182337)!important;
 }
+/* Shared action geometry: Music and Settings use the same neutral
+   surfaces, 9px corners, subtle highlight and semantic left-edge accents. */
+body.ui-v15 #modal #screen-music .music-track-actions button[data-music-action]{
+ background:linear-gradient(145deg,#28324a,#182238)!important;
+ border:1px solid #485675!important;border-left:3px solid #9922ff!important;
+ border-bottom:2px solid #2b3652!important;
+ border-radius:8px!important;
+ box-shadow:inset 0 1px #ffffff1a!important;
+ color:#eef3ff!important;
+ font-weight:840!important;
+ text-shadow:none!important;
+}
+body.ui-v15 #modal #screen-music .music-track-actions button[data-music-action].chosen{
+ background:linear-gradient(145deg,#34294d,#202137)!important;
+ border-left-color:#ffe500!important;
+}
+body.ui-v15 #modal #screen-music .music-track-preview,
+body.ui-v15 #modal #screen-music .music-control{
+ background:linear-gradient(145deg,#212d42,#182236)!important;
+ border:1px solid #465776!important;
+ border-radius:9px!important;
+ box-shadow:inset 0 1px #ffffff17!important;
+ color:#dbe6ff!important;
+}
+body.ui-v15 #modal #screen-music .music-control-play{
+ border:1px solid #695393!important;
+ border-left:3px solid #9922ff!important;
+ background:linear-gradient(145deg,#342b51,#222036)!important;
+ color:#fff!important;
+}
+body.ui-v15 #modal #screen-music .music-player-timeline input[type=range],
+body.ui-v15 #modal #screen-music .music-player-volume input[type=range]{
+ background:linear-gradient(90deg,#9922ff 0 var(--val,0%),#35425c var(--val,0%))!important;
+}
+body.ui-v15 #modal #screen-settings :is(.br-select,.game-select-trigger) svg,
+body.ui-v15 #modal #screen-settings :is(.br-select,.game-select-trigger) .ui-symbol{
+ color:#7d9eff!important;
+ stroke:currentColor!important;
+}
+@media(hover:hover) and (pointer:fine){
+ body.ui-v15 #modal #screen-music .music-track-actions button[data-music-action]:hover{
+  background:linear-gradient(145deg,#373351,#202941)!important;
+  border-color:#7461a5!important;border-left-color:#9922ff!important;
+  box-shadow:0 0 11px #9922ff31!important;
+  filter:none!important;
+ }
+ body.ui-v15 #modal #screen-music .music-control:hover,
+ body.ui-v15 #modal #screen-music .music-track-preview:hover{
+  background:linear-gradient(145deg,#2d3e5b,#1e2e46)!important;
+  border-color:#6689ca!important;box-shadow:0 0 11px #2860ff22!important;
+  filter:none!important;
+ }
+ body.ui-v15 #modal #screen-music .music-control-play:hover{
+  background:linear-gradient(145deg,#43335f,#292340)!important;
+  border-color:#895fc6!important;border-left-color:#9922ff!important;
+  box-shadow:0 0 11px #9922ff32!important;
+ }
+}
+
 @media(prefers-reduced-motion:reduce){
  body.ui-v15 #modal :is(#screen-settings,#screen-achievements,#screen-bestiary,#screen-music) *{
   animation-duration:0.01ms!important;transition-duration:0.01ms!important;
