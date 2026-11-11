@@ -1017,6 +1017,17 @@ function renderSkinSettings(){
   grid.append(btn);
  }
 }
+function showSkinWorkshop(){
+ if(DEMO||game.state!=='paused'||!window.WormSkinStudio)return;
+ game.state='skins';$('worm-pause-overlay').hidden=true;
+ window.WormSkinStudio.open({
+  onChange:()=>{Object.assign(options,loadSettings());applySkin(game.player,options.skin)},
+  onClose:()=>{
+   Object.assign(options,loadSettings());applySkin(game.player,options.skin);
+   if(game.state==='skins'){game.state='paused';$('worm-pause-overlay').hidden=false}
+  }
+ });
+}
 function showSettings(){
  if(DEMO||game.state!=='paused')return;
  game.state='settings';
@@ -1026,7 +1037,7 @@ function showSettings(){
  $('worm-setting-names').checked=options.names;
  $('worm-setting-zoom').value=String(options.zoom);
  $('worm-zoom-value').textContent=options.zoom+'%';
- renderSkinSettings();
+
 }
 function closeSettings(){
  if(game.state!=='settings')return;
@@ -1048,6 +1059,7 @@ function revealDeathResult(){
 function pause(){
  if(DEMO)return;
  if(game.state==='settings'){closeSettings();return;}
+ if(game.state==='skins'){window.WormSkinStudio?.close();return;}
  if(game.state==='playing'){
   game.state='paused';$('worm-pause-overlay').hidden=false;
   window.SpacePlatform?.playing?.(false);
@@ -1088,6 +1100,7 @@ function exit(){
 }
 $('worm-pause').onclick=pause;$('worm-resume').onclick=pause;
 $('worm-settings-open').onclick=showSettings;
+$('worm-skins-open').onclick=showSkinWorkshop;
 $('worm-settings-back').onclick=closeSettings;
 $('worm-setting-glow').onchange=e=>{options.glow=e.target.checked;saveOptions();};
 $('worm-setting-names').onchange=e=>{options.names=e.target.checked;saveOptions();};
@@ -1129,7 +1142,7 @@ window.addEventListener('contextmenu',e=>e.preventDefault());
 window.addEventListener('keydown',e=>{
  if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD','ShiftLeft','ShiftRight'].includes(e.code))e.preventDefault();
  if(e.code==='Escape'||e.code==='KeyP'){
-  if(game.state==='guide')closeGuide();else if(game.state==='settings')closeSettings();else pause();return;
+  if(game.state==='guide')closeGuide();else if(game.state==='skins')window.WormSkinStudio?.close();else if(game.state==='settings')closeSettings();else pause();return;
  }
  if(e.code==='Space'||e.code==='ShiftLeft'||e.code==='ShiftRight')input.boostKey=true;
  input.keys.add(e.code);
