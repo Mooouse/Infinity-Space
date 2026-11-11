@@ -649,7 +649,87 @@ $('result').classList.remove('active');$('paused').classList.remove('active');$(
 $('hint').textContent=(lang==='ru'?'МЫШЬ / WASD — ПОЛЁТ · ПРОБЕЛ — РЫВОК · E — ИМПУЛЬС · Q — ЩИТ':'MOUSE / WASD — MOVE · SPACE — DASH · E — PULSE · Q — SHIELD')+(mode==='race'?(lang==='ru'?' · ЦЕЛЬ: ЧЁРНАЯ ДЫРА':' · GOAL: BLACK HOLE'):'');
 last=performance.now();window.SpacePlatform?.playing?.(true);updateUI();
 try{const params=new URLSearchParams(location.search);params.set('mode',mode);history.replaceState(null,'','cosmic-arena.html?'+params.toString())}catch(e){}
+maybeShowGuide();
 }
+
+// Per-mode onboarding: first play pauses simulation for three concise,
+// illustrated interactive pages. Players can reopen it from the pause menu.
+const guideBook={
+ arena:{
+  ru:[['Побеждает масса','Собирай летящие минералы, планеты и реликвии. Чтобы поглотить соперника, стань заметно массивнее него.','✦'],
+      ['Управление и способности','Мышь или WASD — полёт. Пробел — рывок, E — гравитационный импульс, Q — щит. На телефоне используй стик и три кнопки.','⌁'],
+      ['Как победить','Следи за таблицей лидеров и набери больше массы, чем соперники, до окончания пятиминутного матча.','◉']],
+  en:[['Mass wins','Collect drifting minerals, planets and relics. Grow substantially larger to absorb rivals.','✦'],
+      ['Move and defend','Mouse or WASD to fly. Space to dash, E for gravity pulse, Q for shield. On phones use the joystick and three ability buttons.','⌁'],
+      ['Win condition','Finish the five-minute match with more mass than any rival on the leaderboard.','◉']]},
+ royale:{
+  ru:[['Последний выживший','Это битва на выживание. Твоя цель — остаться последним живым объектом, избегая крупных соперников.','◉'],
+      ['Сжимающаяся зона','Безопасная область постепенно уменьшается. Следи за радаром и возвращайся к центру, иначе потеряешь массу.','◎'],
+      ['Используй способности','Рывок (Пробел) помогает уйти от угрозы, Q включает щит, E отбрасывает противников. На телефоне нажимай экранные кнопки.','⬡']],
+  en:[['Last one standing','This is survival. Stay alive while avoiding enemies that are more massive than you.','◉'],
+      ['Shrinking arena','The safe zone closes over time. Follow the radar toward its center or lose mass outside the storm.','◎'],
+      ['Use your abilities','Dash (Space) to escape, Q for a shield, E to push rivals away. On mobile use the ability buttons.','⬡']]},
+ core:{
+  ru:[['Борьба за ядро','Две команды соревнуются за светящееся ядро в центре карты. Твоя команда обозначена синим цветом.','✧'],
+      ['Удерживай центр','Подлетай к ядру с союзниками. Команда, контролирующая область, зарабатывает очки. Победа — 100 очков.','◎'],
+      ['Защищай захват','Собирай массу для усиления, используй щит Q, импульс E и рывок Пробел, чтобы выбивать соперников из зоны.','⬡']],
+  en:[['Capture the core','Blue versus red: two teams compete for the luminous core at the center of the arena. You are on blue.','✧'],
+      ['Hold the center','Fly to the core with your team. The side controlling it gains points. Reach 100 points to win.','◎'],
+      ['Defend the capture','Collect mass, use shield (Q), pulse (E) and dash (Space) to push enemies away from the objective.','⬡']]},
+ race:{
+  ru:[['Гонка за чёрной дырой','Победит тот, кто первым накопит достаточно массы, чтобы эволюционировать до чёрной дыры.','✦'],
+      ['Эволюция только от массы','Пыль → астероид → планета → звезда → чёрная дыра. Никаких таймеров смены формы: только набранная масса.','◎'],
+      ['Обгоняй соперников','Лови редкие ресурсы и реликвии, поглощай меньших противников, используй рывок и гравитацию, чтобы ускорить рост.','➤']],
+  en:[['Race to a black hole','Become a black hole before the other competitors by collecting enough mass.','✦'],
+      ['Evolution follows mass','Dust → asteroid → planet → star → black hole. No timers: your form changes when your mass crosses each milestone.','◎'],
+      ['Outgrow opponents','Grab rare materials and relics, absorb smaller rivals, and use dash and gravity to grow faster.','➤']]}
+};
+let guideIndex=0,guideReturn='playing';
+function updateGuide(){
+ const steps=(guideBook[mode]||guideBook.arena)[lang]||(guideBook[mode]||guideBook.arena).en;
+ const step=steps[guideIndex];
+ $('guide-title').textContent=L('m'+({arena:'Arena',royale:'Royale',core:'Core',race:'Race'}[mode]));
+ $('guide-counter').textContent=String(guideIndex+1).padStart(2,'0')+' / 03';
+ $('guide-step-title').textContent=step[0];
+ $('guide-step-description').textContent=step[1];
+ $('guide-demo-icon').textContent=step[2];
+ [...$('guide-dots').children].forEach((dot,i)=>dot.classList.toggle('active',i===guideIndex));
+ $('guide-next').textContent=guideIndex===steps.length-1?
+  (lang==='ru'?'НАЧАТЬ МАТЧ':'START MATCH'):(lang==='ru'?'ДАЛЕЕ':'NEXT');
+ $('guide-skip').textContent=lang==='ru'?'ПРОПУСТИТЬ':'SKIP';
+}
+function showGuide(fromPause=false){
+ if(!game)return;
+ guideReturn=fromPause?'paused':'playing';
+ guideIndex=0;updateGuide();
+ game.state='guide';
+ $('paused').classList.remove('active');
+ $('guide').classList.add('active');
+ window.SpacePlatform?.playing?.(false);
+ keys={};touch.active=false;
+}
+function closeGuide(){
+ if(!game)return;
+ $('guide').classList.remove('active');
+ game.state=guideReturn;
+ $('paused').classList.toggle('active',guideReturn==='paused');
+ window.SpacePlatform?.playing?.(guideReturn==='playing');
+ last=performance.now();keys={};
+ try{localStorage.setItem('infinity-space-mode-guide-v2:'+mode,'1')}catch(e){}
+}
+function maybeShowGuide(){
+ let seen=false;
+ try{seen=localStorage.getItem('infinity-space-mode-guide-v2:'+mode)==='1'}catch(e){}
+ if(!seen)showGuide(false);
+}
+$('guide-next').onclick=()=>{
+ const count=(guideBook[mode]||guideBook.arena)[lang]?.length||3;
+ if(guideIndex>=count-1)closeGuide();
+ else{guideIndex++;updateGuide();}
+};
+$('guide-skip').onclick=closeGuide;
+$('guide-open').onclick=()=>showGuide(true);
+
 function showMenu(){window.SpacePlatform?.playing?.(false);location.assign('index.html?select='+encodeURIComponent(mode));}
 function togglePause(){if(!game||game.state==='finished')return;game.state=game.state==='playing'?'paused':'playing';window.SpacePlatform?.playing?.(game.state==='playing');$('paused').classList.toggle('active',game.state==='paused');last=performance.now();}
 function sound(freq=500,duration=.11,type='sine',vol=.035){if(window.SpacePlatform?.muted)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume();let o=audio.createOscillator(),g=audio.createGain(),now=audio.currentTime;o.type=type;o.frequency.setValueAtTime(freq,now);o.frequency.exponentialRampToValueAtTime(Math.max(70,freq*.55),now+duration);g.gain.setValueAtTime(vol,now);g.gain.exponentialRampToValueAtTime(.0001,now+duration);o.connect(g);g.connect(audio.destination);o.start(now);o.stop(now+duration);}catch(e){}}
@@ -664,7 +744,7 @@ if(name==='pulse'&&p.pulseCD<=0){p.pulseCD=8.5;p.ring=1;for(const q of game.peop
 }
 $('pause').onclick=togglePause;$('resume').onclick=togglePause;$('again').onclick=()=>init(mode);$('change').onclick=showMenu;$('change2').onclick=showMenu;
 ['shield','pulse','dash'].forEach(id=>$(id).addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();useAbility(id)}));
-addEventListener('keydown',e=>{const code=e.code;if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyQ','KeyE','KeyP'].includes(code))e.preventDefault();keys[code]=true;if(e.repeat)return;if(code==='Space'||code==='ShiftLeft'||code==='ShiftRight')useAbility('dash');if(code==='KeyE')useAbility('pulse');if(code==='KeyQ')useAbility('shield');if(code==='KeyP'&&game)togglePause();if(code==='Escape'&&game&&game.state==='playing')togglePause();});addEventListener('keyup',e=>keys[e.code]=false);addEventListener('blur',()=>{keys={};if(game&&game.state==='playing')togglePause()});
+addEventListener('keydown',e=>{const code=e.code;if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyQ','KeyE','KeyP'].includes(code))e.preventDefault();keys[code]=true;if(e.repeat)return;if(code==='Space'||code==='ShiftLeft'||code==='ShiftRight')useAbility('dash');if(code==='KeyE')useAbility('pulse');if(code==='KeyQ')useAbility('shield');if(code==='KeyP'&&game&&game.state!=='guide')togglePause();if(code==='Escape'&&game&&game.state==='playing')togglePause();});addEventListener('keyup',e=>keys[e.code]=false);addEventListener('blur',()=>{keys={};if(game&&game.state==='playing')togglePause()});
 canvas.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'){mouse.x=e.clientX;mouse.y=e.clientY;mouse.active=true;}});canvas.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'){mouse.x=e.clientX;mouse.y=e.clientY;mouse.active=true;}});
 const stick=$('touch-stick'),thumb=$('thumb');function setStick(e){let r=stick.getBoundingClientRect(),x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2),d=Math.hypot(x,y)||1,s=Math.min(44,d);touch.x=x/d*s/44;touch.y=y/d*s/44;thumb.style.transform='translate('+touch.x*44+'px,'+touch.y*44+'px)';}
 stick.addEventListener('pointerdown',e=>{e.preventDefault();touch.active=true;touch.id=e.pointerId;stick.setPointerCapture(e.pointerId);setStick(e)});stick.addEventListener('pointermove',e=>{if(touch.active&&touch.id===e.pointerId)setStick(e)});function releaseStick(){touch.active=false;touch.id=null;touch.x=touch.y=0;thumb.style.transform='';}stick.addEventListener('pointerup',releaseStick);stick.addEventListener('pointercancel',releaseStick);
