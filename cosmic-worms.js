@@ -1015,7 +1015,7 @@ function renderSkinSettings(){
   btn.className='worm-skin-card'+(skin.id===options.skin?' active':'');
   btn.style.setProperty('--skin-accent',skin.light);
   btn.dataset.skin=skin.id;btn.setAttribute('aria-pressed',String(skin.id===options.skin));
-  const preview=document.createElement('span');preview.className='worm-skin-preview';preview.dataset.skin=skin.id;
+  const preview=document.createElement('span');preview.className='worm-skin-preview';preview.dataset.previewSkin=skin.id;
   const previewStars=document.createElement('span');previewStars.className='worm-preview-stars';
   const previewComet=document.createElement('i');previewComet.className='worm-preview-comet';
   preview.append(previewStars,previewComet);
