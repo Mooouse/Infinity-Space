@@ -834,13 +834,46 @@ init();requestAnimationFrame(frame);
 if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
  window.InfinityWormsQA={
   snapshot:()=>({state:game.state,mode:'worms',demo:DEMO,time:game.time,mass:game.player.mass,
-    bestMass:game.player.bestMass,length:game.player.segments.length,
-    x:game.player.x,y:game.player.y,zoom:camera.zoom,rank:ranking(game.player),
-    worms:game.worms.length,alive:game.worms.filter(w=>w.alive).length,food:game.food.length,
-    guideOpen:!$('worm-guide').hidden,boosting:game.player.boost}),
-  setMass:v=>{game.player.mass=Math.max(35,Math.min(1900,Number(v)||60));game.player.bestMass=Math.max(game.player.bestMass,game.player.mass);updateUI();},
-  giveFood:v=>{game.player.mass+=Math.max(1,Number(v)||10);game.player.foodEaten++;updateUI();},
+    bestMass:game.player.bestMass,length:game.player.segments.length,angle:game.player.angle,
+    targetAngle:game.player.target,x:game.player.x,y:game.player.y,zoom:camera.zoom,
+    rank:ranking(game.player),worms:game.worms.length,
+    alive:game.worms.filter(w=>w.alive).length,food:game.food.length,
+    world:{w:WORLD.w,h:WORLD.h,rx:WORLD.rx,ry:WORLD.ry},
+    targetFood:FOOD_TARGET,botCount:BOT_COUNT,gridCells:game.foodGrid.size,
+    skin:options.skin,glow:options.glow,names:options.names,zoomSetting:options.zoom,
+    lastDeath:game.lastDeath||null,guideOpen:!$('worm-guide').hidden,
+    settingsOpen:!$('worm-settings').hidden,boosting:game.player.boost}),
+  setMass:value=>{game.player.mass=Math.max(35,Math.min(1900,Number(value)||60));
+    game.player.bestMass=Math.max(game.player.bestMass,game.player.mass);updateUI();},
+  giveFood:value=>{game.player.mass+=Math.max(1,Number(value)||10);
+    game.player.foodEaten++;updateUI();},
+  setHeading:angle=>{input.mouseMoved=false;input.keys.clear();input.touchAngle=null;
+    input.stickPower=0;game.player.target=Number(angle);},
   forceDeath:()=>{game.player.invulnerable=0;kill(game.player,null,'body');},
+  forceBotDeath:()=>{
+   const b=game.worms.find(w=>!w.human&&w.alive);
+   if(!b)return null;
+   b.invulnerable=0;const before=game.food.length;
+   kill(b,null,'body');
+   return {name:b.name,segments:b.segments.length,dropped:game.food.length-before,
+    lastDeath:game.lastDeath};
+  },
+  spawnProbe:()=>{
+   const w=createWorm('SPAWN_QA',false,777,true);
+   if(!w)return {safe:false,reason:'no safe candidate'};
+   let minimum=Infinity;
+   for(const other of game.worms){
+    if(!other.alive)continue;
+    const otherNodes=[other,...other.segments];
+    for(const n of [w,...w.segments]){
+     for(const m of otherNodes){
+      const d=Math.hypot(n.x-m.x,n.y-m.y);minimum=Math.min(minimum,d);
+     }
+    }
+   }
+   return {safe:minimum>=250,minimum,segments:w.segments.length};
+  },
+  skins:()=>SKINS.map(x=>({id:x.id,ru:x.ru,en:x.en,pattern:x.pattern})),
   pause:()=>pause()
  };
 }
