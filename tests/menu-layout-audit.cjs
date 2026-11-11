@@ -91,6 +91,7 @@ const inspect=()=>{
       const hue=['rgb(40, 96, 255)','rgb(255, 23, 68)','rgb(153, 34, 255)',
        'rgb(39, 255, 64)','rgb(255, 229, 0)','rgb(153, 34, 255)'][n];
       await page.locator('.hub-mode-story-play').hover();
+      await page.waitForTimeout(210);
       const actual=await page.locator('.hub-mode-story-play').evaluate(el=>getComputedStyle(el).borderTopColor);
       if(actual!==hue)issues.push('play-hover-mismatched-'+actual+'-expected-'+hue);
       for(const [id,expected] of [['new','rgb(255, 23, 68)'],
@@ -98,6 +99,7 @@ const inspect=()=>{
        const el=page.locator('.hub-story-shortcut[data-shortcut="'+id+'"]');
        if(await el.count() && await el.isVisible()){
         await el.hover();
+        await page.waitForTimeout(240);
         const border=await el.evaluate(node=>getComputedStyle(node).borderTopColor);
         if(border!==expected)issues.push('shortcut-'+id+'-hover-'+border);
        }
