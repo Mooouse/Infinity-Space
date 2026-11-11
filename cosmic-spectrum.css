@@ -1,113 +1,157 @@
-/* Infinity Space · spectral palette, not a purple-only interface.
-   Additive styling: preserves v15 layout, spacing, interaction and breakpoints. */
+/* Infinity Space v5 — pure saturated cosmic accents, no turquoise or pastels.
+   Keep the existing UI layouts; this final stylesheet changes only presentation.
+   The 5-color family: red, green, yellow, purple, electric blue. */
 :root{
- --space-cyan:#54e6f3;--space-teal:#42f3cd;--space-pink:#f970b6;
- --space-blue:#6caaff;--space-gold:#ffdc80;--space-purple:#a688ff;
- --cyan:#51d7e8;--blue:#74b7ee;--gold:#ffce6b;
+ --space-red:#ff1744;--space-green:#27ff40;--space-yellow:#ffe500;
+ --space-purple:#9922ff;--space-blue:#2860ff;
+ --cyan:#2860ff;--blue:#2860ff;--gold:#ffe500;--purple:#9922ff;
+ --ui-purple:#7f16ec;--ui-purple-bright:#ab45ff;
 }
-body.ui-v15 #screen-menu .hub-menu .eyeline{color:var(--space-cyan)!important}
+body.ui-v15 #screen-menu .hub-menu .eyeline{color:var(--space-yellow)!important}
 body.ui-v15 #screen-menu .hub-menu .hero-title{
- text-shadow:0 0 46px #237ad634,0 7px 32px #03050ec0!important;
+ text-shadow:0 0 36px #5521ff76,0 7px 27px #02020f!important;
 }
 body.ui-v15 #screen-menu .hub-actions .hub-continue{
- background:linear-gradient(125deg,#8653e9 0%,#6131d5 55%,#c344a5 100%)!important;
- border-color:#d49bfc!important;border-bottom-color:#5a2789!important;
- box-shadow:0 9px 34px #883fc05c,inset 0 1px #ffffff48!important;
+ background:linear-gradient(120deg,#4b0f92,#9324ff)!important;
+ border-color:var(--space-purple)!important;border-bottom-color:#3d096b!important;
+ box-shadow:0 9px 31px #9a13ff65,inset 0 1px #ffffff36!important;
+ color:#fff!important;
 }
 body.ui-v15 #screen-menu .hub-actions .hub-modes{
- background:linear-gradient(120deg,#164964,#233457,#383174)!important;
- border-color:#64cce6!important;border-bottom-color:#24738e!important;
+ background:linear-gradient(125deg,#0d1d77,#1748c8)!important;
+ border-color:var(--space-blue)!important;border-bottom-color:#090e5a!important;
+ color:#fff!important;
 }
 body.ui-v15 #screen-menu .hub-actions .hub-modes>span:first-child{
- border-color:#60e6ed!important;background:#167c975e!important;color:#a0fbff!important;
+ border-color:var(--space-blue)!important;background:#1939ad99!important;color:#fff!important;
 }
+body.ui-v15 #screen-menu .hub-actions .hub-modes small{color:#edf0ff!important}
 body.ui-v15 #screen-menu .hub-actions .hub-new-world{
- background:linear-gradient(120deg,#33223d,#4b3049)!important;
- border-color:#b87f9e!important;border-bottom-color:#784268!important;
+ background:linear-gradient(125deg,#6d082a,#ab113b)!important;
+ border-color:var(--space-red)!important;border-bottom-color:#530a23!important;
+ color:#fff!important;
 }
 body.ui-v15 #screen-menu .hub-mode-story::before{
  background:
- radial-gradient(ellipse at 76% 38%,#1681d91d,transparent 50%),
- radial-gradient(ellipse at 92% 70%,#ef458c15,transparent 42%),
- linear-gradient(90deg,#06101efa 0%,#071322f3 23%,#070d22ca 43%,#09071666 64%,transparent 92%),
- linear-gradient(0deg,#050a18a8,transparent 29%,transparent 75%,#060b18a0)!important;
+ radial-gradient(ellipse at 77% 31%,#2b36ff2b,transparent 52%),
+ radial-gradient(ellipse at 95% 76%,#ff174422,transparent 47%),
+ radial-gradient(ellipse at 68% 87%,#27ff4014,transparent 51%),
+ linear-gradient(90deg,#050717fc 0%,#07091af4 24%,#090a21d5 44%,#09071678 67%,transparent 94%),
+ linear-gradient(0deg,#050719ae,transparent 29%,transparent 75%,#0707149c)!important;
 }
 body.ui-v15 #screen-menu .hub-mode-story-kicker{
- color:var(--space-cyan)!important;text-shadow:0 0 18px #43dcff48;
+ color:var(--space-green)!important;text-shadow:0 0 12px #27ff4080;
 }
-body.ui-v15 #screen-menu .hub-mode-story-counter{color:var(--space-gold)!important}
-body.ui-v15 #screen-menu .hub-mode-story-goal{color:#ffd9eb!important}
-body.ui-v15 #screen-menu .hub-mode-story-description{color:#c1d4e3!important}
+body.ui-v15 #screen-menu .hub-mode-story-counter{color:var(--space-yellow)!important}
+body.ui-v15 #screen-menu .hub-mode-story-goal{color:#fff!important}
+body.ui-v15 #screen-menu .hub-mode-story-description{color:#e9e9f9!important}
 body.ui-v15 #screen-menu .hub-mode-story-tags>span{
- background:linear-gradient(155deg,#142c46f0,#101b36e7)!important;
- border-color:#3486b2!important;border-bottom-color:#256080!important;color:#a5eafa!important;
+ background:#170b38ed!important;
+ border-color:var(--space-purple)!important;border-bottom-color:#4c117c!important;
+ color:#fff!important;
 }
-body.ui-v15 #screen-menu .hub-mode-story-tags>span:nth-child(3n+2){
- background:linear-gradient(155deg,#392443f0,#1e1734e8)!important;
- border-color:#b45b9b!important;border-bottom-color:#7b3970!important;color:#ffc1e4!important;
+body.ui-v15 #screen-menu .hub-mode-story-tags>span:nth-child(5n+2){
+ background:#100e43ed!important;border-color:var(--space-blue)!important;
+ border-bottom-color:#14247b!important;color:#fff!important;
 }
-body.ui-v15 #screen-menu .hub-mode-story-tags>span:nth-child(3n){
- background:linear-gradient(155deg,#3f3029f0,#241e2be8)!important;
- border-color:#ad8a57!important;border-bottom-color:#735738!important;color:#ffe4a2!important;
+body.ui-v15 #screen-menu .hub-mode-story-tags>span:nth-child(5n+3){
+ background:#302509ed!important;border-color:var(--space-yellow)!important;
+ border-bottom-color:#816607!important;color:var(--space-yellow)!important;
+}
+body.ui-v15 #screen-menu .hub-mode-story-tags>span:nth-child(5n+4){
+ background:#33051bed!important;border-color:var(--space-red)!important;
+ border-bottom-color:#75132a!important;color:#fff!important;
+}
+body.ui-v15 #screen-menu .hub-mode-story-tags>span:nth-child(5n){
+ background:#08280ded!important;border-color:var(--space-green)!important;
+ border-bottom-color:#126321!important;color:var(--space-green)!important;
 }
 body.ui-v15 #screen-menu .hub-mode-story-play{
- background:linear-gradient(120deg,#4f38c9 0%,#7851e9 55%,#bd3eac 100%)!important;
- border-color:#e1a3ff!important;border-bottom-color:#5e2c97!important;
- box-shadow:0 11px 35px #b540b34e,inset 0 1px #ffffff42!important;
+ background:linear-gradient(115deg,#5c139b,#a01eff)!important;
+ border-color:var(--space-purple)!important;border-bottom-color:#380a6d!important;
+ box-shadow:0 9px 33px #921aff66,inset 0 1px #ffffff2e!important;color:#fff!important;
+}
+body.ui-v15 #screen-menu[data-preview-mode="arena"] .hub-mode-story-play{
+ background:linear-gradient(115deg,#850527,#ed123b)!important;border-color:var(--space-red)!important;
+ box-shadow:0 9px 33px #ff174455!important;
+}
+body.ui-v15 #screen-menu[data-preview-mode="royale"] .hub-mode-story-play{
+ background:linear-gradient(115deg,#101c86,#244dea)!important;border-color:var(--space-blue)!important;
+ box-shadow:0 9px 33px #2860ff55!important;
+}
+body.ui-v15 #screen-menu[data-preview-mode="core"] .hub-mode-story-play{
+ background:linear-gradient(115deg,#0c4e1a,#149c2a)!important;border-color:var(--space-green)!important;
+ box-shadow:0 9px 33px #27ff4055!important;
+}
+body.ui-v15 #screen-menu[data-preview-mode="race"] .hub-mode-story-play{
+ background:linear-gradient(115deg,#785008,#a57a03)!important;border-color:var(--space-yellow)!important;
+ box-shadow:0 9px 33px #ffe50055!important;
 }
 body.ui-v15 #screen-menu .hub-mode-story-back,
 body.ui-v15 #screen-menu .hub-mode-step{
- background:linear-gradient(145deg,#172d4b,#251b49)!important;
- border-color:#57a0c4!important;border-bottom-color:#275777!important;
+ background:linear-gradient(145deg,#12124a,#220d51)!important;
+ border-color:var(--space-blue)!important;border-bottom-color:#11136d!important;
+ color:#fff!important;
 }
-body.ui-v15 #screen-menu .hub-mode-dots button{background:#28526e;border-color:#4184ab}
+body.ui-v15 #screen-menu .hub-mode-dots button{
+ background:#21204d!important;border-color:#4b30bc!important;
+}
 body.ui-v15 #screen-menu .hub-mode-dots button.current{
- background:var(--space-cyan)!important;border-color:#b8fbff!important;
- box-shadow:0 0 10px #46e4ef66;
+ background:var(--space-yellow)!important;border-color:var(--space-yellow)!important;
+ box-shadow:0 0 13px #ffe50095!important;
 }
-body.ui-v15 #screen-menu .hub-mode-story-brand{color:#afd5e8}
-body.ui-v15 #screen-menu .hub-mode-gesture{color:#a2c5d8}
-body.ui-v15 #screen-menu .hub-story-shortcut:nth-child(4n+1){
- border-color:#478bb1;color:#b3eaff;
+body.ui-v15 #screen-menu .hub-mode-story-brand{color:#e6e5fa!important}
+body.ui-v15 #screen-menu .hub-mode-story-brand span{color:var(--space-purple)!important}
+body.ui-v15 #screen-menu .hub-mode-gesture{color:#c9c5e4!important}
+body.ui-v15 #screen-menu .hub-story-shortcut:nth-child(5n+1){
+ border-color:var(--space-red)!important;color:#fff!important;
 }
-body.ui-v15 #screen-menu .hub-story-shortcut:nth-child(4n+2){
- border-color:#a65197;color:#ffbbdd;
+body.ui-v15 #screen-menu .hub-story-shortcut:nth-child(5n+2){
+ border-color:var(--space-green)!important;color:#fff!important;
 }
-body.ui-v15 #screen-menu .hub-story-shortcut:nth-child(4n+3){
- border-color:#ad8951;color:#ffdfa0;
+body.ui-v15 #screen-menu .hub-story-shortcut:nth-child(5n+3){
+ border-color:var(--space-yellow)!important;color:#fff!important;
 }
-body.ui-v15 #screen-menu .hub-story-shortcut:nth-child(4n){
- border-color:#448f82;color:#9ef7d5;
+body.ui-v15 #screen-menu .hub-story-shortcut:nth-child(5n+4){
+ border-color:var(--space-purple)!important;color:#fff!important;
 }
-/* A handful of consistent spectral accents in gameplay and secondary pages. */
+body.ui-v15 #screen-menu .hub-story-shortcut:nth-child(5n){
+ border-color:var(--space-blue)!important;color:#fff!important;
+}
 body.ui-v15 #screen-play .hud-bottom .mass-block{
- border-color:#4b9ec5!important;border-bottom-color:#2587a9!important;
- background:linear-gradient(155deg,#172b45f5,#15142df5)!important;
+ border-color:var(--space-blue)!important;border-bottom-color:#1c2494!important;
+ background:linear-gradient(155deg,#15144afb,#0a0d20f9)!important;
 }
 body.ui-v15 #screen-play .hud-bottom .mass-block::before{
- background:linear-gradient(90deg,#42e4fa,#8d8eff,#f479b8)!important;
- box-shadow:0 0 16px #4ce4f580!important;
+ background:linear-gradient(90deg,var(--space-red),var(--space-yellow),var(--space-green),
+ var(--space-blue),var(--space-purple))!important;box-shadow:0 0 15px #9222ff88!important;
 }
-body.ui-v15 #screen-play .mass-heading{color:#9febf3!important}
-body.ui-v15 #screen-statistics .br-stat-grid>div:nth-child(3n+1){border-color:#368fbb!important}
-body.ui-v15 #screen-statistics .br-stat-grid>div:nth-child(3n+2){border-color:#9960b7!important}
-body.ui-v15 #screen-statistics .br-stat-grid>div:nth-child(3n){border-color:#a88a57!important}
-body.ui-v15 #screen-music .music-track-card:nth-child(3n+1){border-color:#338cae!important}
-body.ui-v15 #screen-music .music-track-card:nth-child(3n+2){border-color:#9765ba!important}
-body.ui-v15 #screen-music .music-track-card:nth-child(3n){border-color:#ac8355!important}
+body.ui-v15 #screen-play .mass-heading{color:var(--space-yellow)!important}
+body.ui-v15 #screen-statistics .br-stat-grid>div:nth-child(5n+1){border-color:var(--space-red)!important}
+body.ui-v15 #screen-statistics .br-stat-grid>div:nth-child(5n+2){border-color:var(--space-green)!important}
+body.ui-v15 #screen-statistics .br-stat-grid>div:nth-child(5n+3){border-color:var(--space-yellow)!important}
+body.ui-v15 #screen-statistics .br-stat-grid>div:nth-child(5n+4){border-color:var(--space-purple)!important}
+body.ui-v15 #screen-statistics .br-stat-grid>div:nth-child(5n){border-color:var(--space-blue)!important}
+body.ui-v15 #screen-music .music-track-card:nth-child(5n+1){border-color:var(--space-red)!important}
+body.ui-v15 #screen-music .music-track-card:nth-child(5n+2){border-color:var(--space-green)!important}
+body.ui-v15 #screen-music .music-track-card:nth-child(5n+3){border-color:var(--space-yellow)!important}
+body.ui-v15 #screen-music .music-track-card:nth-child(5n+4){border-color:var(--space-purple)!important}
+body.ui-v15 #screen-music .music-track-card:nth-child(5n){border-color:var(--space-blue)!important}
 body.ui-v15 #screen-music .music-control-play{
- background:linear-gradient(145deg,#256fbe,#6b3cc8,#b34a9a)!important;
- border-color:#8ad9ff!important;
+ background:linear-gradient(135deg,#141cb3,#8123ff,#d31346)!important;
+ border-color:var(--space-purple)!important;
 }
-body.ui-v15 #screen-achievements .br-ach-row:nth-child(3n+1){border-left:2px solid #4dbbdd}
-body.ui-v15 #screen-achievements .br-ach-row:nth-child(3n+2){border-left:2px solid #cf6bb8}
-body.ui-v15 #screen-achievements .br-ach-row:nth-child(3n){border-left:2px solid #dcb66f}
-body.ui-v15 #screen-bestiary .br-best-row:nth-child(3n+1){border-color:#397e9e}
-body.ui-v15 #screen-bestiary .br-best-row:nth-child(3n+2){border-color:#7456a0}
-body.ui-v15 #screen-bestiary .br-best-row:nth-child(3n){border-color:#8e754e}
-body.ui-v15 #screen-settings .br-slider input[type=range]{
- accent-color:var(--space-cyan);
-}
+body.ui-v15 #screen-achievements .br-ach-row:nth-child(5n+1){border-left:3px solid var(--space-red)}
+body.ui-v15 #screen-achievements .br-ach-row:nth-child(5n+2){border-left:3px solid var(--space-green)}
+body.ui-v15 #screen-achievements .br-ach-row:nth-child(5n+3){border-left:3px solid var(--space-yellow)}
+body.ui-v15 #screen-achievements .br-ach-row:nth-child(5n+4){border-left:3px solid var(--space-purple)}
+body.ui-v15 #screen-achievements .br-ach-row:nth-child(5n){border-left:3px solid var(--space-blue)}
+body.ui-v15 #screen-bestiary .br-best-row:nth-child(5n+1){border-color:var(--space-red)}
+body.ui-v15 #screen-bestiary .br-best-row:nth-child(5n+2){border-color:var(--space-green)}
+body.ui-v15 #screen-bestiary .br-best-row:nth-child(5n+3){border-color:var(--space-yellow)}
+body.ui-v15 #screen-bestiary .br-best-row:nth-child(5n+4){border-color:var(--space-purple)}
+body.ui-v15 #screen-bestiary .br-best-row:nth-child(5n){border-color:var(--space-blue)}
+body.ui-v15 #screen-settings .br-slider input[type=range]{accent-color:var(--space-blue)}
 @media(prefers-reduced-motion:reduce){
- body.ui-v15 #screen-menu .hub-mode-dots button.current{box-shadow:none}
+ body.ui-v15 #screen-menu .hub-mode-dots button.current{box-shadow:none!important}
 }
