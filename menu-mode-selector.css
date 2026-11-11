@@ -535,3 +535,63 @@ body.ui-v15 #screen-menu.hub-main-carousel:not(.hub-mode-endless) .hub-story-sho
 body.ui-v15 #screen-menu.hub-main-carousel:not(.hub-mode-endless) .hub-progress-tile[data-page="map"]{
  display:none!important;visibility:hidden!important;pointer-events:none!important;
 }
+
+/* v3.69 — real AI-only matches replace decorative space mode backgrounds. */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-live-demo{
+ position:absolute;inset:0;overflow:hidden;pointer-events:none;
+ z-index:-2;contain:layout paint;
+ background:transparent;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-demo-frame{
+ position:absolute;inset:-1px;
+ pointer-events:none;opacity:0;
+ transition:opacity .95s cubic-bezier(.22,.82,.17,1);
+ will-change:opacity;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-demo-frame.ready{opacity:1}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-demo-frame iframe{
+ position:absolute;inset:0;width:100%;height:100%;
+ display:block;border:0;overflow:hidden;
+ pointer-events:none;user-select:none;
+ object-fit:cover;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story::before{
+ background:linear-gradient(90deg,#04050bf9 0%,#060615ef 25%,
+  #08071cbd 43%,#05041159 62%,#05041113 86%),
+ linear-gradient(0deg,#080617ab 0%,transparent 31%,transparent 76%,#040510a1 100%);
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top{
+ gap:10px;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-profile-chip{
+ z-index:2;flex:0 1 auto;margin-left:auto;
+ min-width:0;max-width:165px;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick{
+ margin-left:0;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-counter{
+ margin-left:7px;flex:none;
+}
+@media(max-width:700px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story::before{
+  background:linear-gradient(0deg,#040410fc 0%,#050613f3 29%,
+   #060719b5 56%,#03040a26 85%,transparent 100%);
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-profile-chip{
+  max-width:89px;margin-left:auto;padding:0 5px;font-size:9px;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-counter{
+  margin-left:2px;font-size:10px;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-home{
+  white-space:nowrap;max-width:85px;overflow:hidden;text-overflow:clip;
+  font-size:9px;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top{
+  gap:5px;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-demo-frame{transition:none}
+}
