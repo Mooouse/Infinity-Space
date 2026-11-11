@@ -678,3 +678,18 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play b svg{
   margin-top:auto;
  }
 }
+
+/* v3.71.1 — dock labels must never clip or visually escape their buttons. */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut{
+ min-width:0;overflow:hidden;text-align:center;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut-label{
+ display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+ min-width:0;max-width:100%;white-space:normal;overflow:hidden;
+ text-overflow:clip;overflow-wrap:anywhere;line-height:1.15;
+}
+@media(max-width:700px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut-label{
+  font-size:clamp(8px,2.3vw,10px);
+ }
+}
