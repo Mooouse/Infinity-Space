@@ -20,8 +20,9 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.waitForFunction(()=>!!window.InfinityWormsQA,{timeout:12000});
     let a=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
     assert.equal(a.mode,'worms');
-    assert.equal(a.world.w,22400);assert.equal(a.world.h,17200);
-    assert.ok(a.worms>=50&&a.food>=19500,'Expanded universe needs plentiful food and smart rivals');
+    assert.equal(a.world.w,22400);assert.equal(a.world.h,22400);
+    assert.equal(a.world.rx,a.world.ry,'Arena boundary must be a circle');
+    assert.ok(a.worms>=50&&a.food>=27500,'Circular arena must keep rich food density and bots');
     assert.ok(a.food/(Math.PI*a.world.rx*a.world.ry)>720/(Math.PI*2630*1970),'Food density must increase, not fall with map growth');
     const clearance=await page.evaluate(()=>window.InfinityWormsQA.spawnProbe());
     assert.equal(clearance.safe,true,'No bot can appear inside an existing worm body: '+JSON.stringify(clearance));
@@ -54,10 +55,16 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.ok(new Set(botsAfter.filter(b=>b.alive).map(b=>Math.round(b.reaction*100))).size>=8,
      'Different rivals must have different reaction times');
     a=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
-    await page.evaluate(()=>window.InfinityWormsQA.setHeading(2.2));
+    const targetAngle=a.angle+Math.PI;
+    await page.evaluate(v=>window.InfinityWormsQA.setHeading(v),targetAngle);
     await page.waitForTimeout(75);
-    const instant=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
-    assert.ok(Math.abs(instant.angle-2.2)<.00001,'Worm heading should change instantly without a turn radius');
+    const turning=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
+    const distanceToTarget=v=>Math.abs(Math.atan2(Math.sin(targetAngle-v.angle),Math.cos(targetAngle-v.angle)));
+    assert.ok(distanceToTarget(turning)>.20,'Turn radius should prevent instantaneous 180-degree snapping');
+    assert.ok(distanceToTarget(turning)<Math.PI-.15,'Worm must begin turning promptly');
+    await page.waitForTimeout(330);
+    const completed=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
+    assert.ok(distanceToTarget(completed)<.14,'Small turn radius should finish the turn quickly');
     assert.ok(a.length>=18,'Worm begins with an actual segmented body');
     await page.evaluate(()=>window.InfinityWormsQA.giveFood(60));
     await page.waitForTimeout(160);
@@ -82,6 +89,11 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.locator('#worm-settings-open').click();
     assert.equal(await page.locator('#worm-settings').isVisible(),true);
     assert.equal(await page.locator('#worm-skin-grid button').count(),8);
+    assert.equal(await page.locator('.worm-skin-preview .worm-preview-stars').count(),8);
+    assert.equal(await page.locator('.worm-skin-preview .worm-preview-comet').count(),8);
+    assert.equal(await page.locator('.worm-preview-comet').first().evaluate(el=>
+     getComputedStyle(el).animationName.includes('worm-preview-comet')),true,
+     'All cosmic skin previews must show moving comets');
     await page.locator('#worm-skin-grid [data-skin="aurora"]').click();
     assert.equal(await page.evaluate(()=>window.InfinityWormsQA.snapshot().skin),'aurora');
     await page.locator('#worm-setting-glow').uncheck({force:true});
@@ -114,7 +126,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.locator('#worm-result').waitFor({state:'visible',timeout:6000});
     assert.equal(await page.evaluate(()=>window.InfinityWormsQA.snapshot().state),'finished');
     assert.equal(await page.locator('#worm-result').evaluate(
-     el=>getComputedStyle(el).animationName.includes('worm-result-backdrop-in')),true,
+     el=>getComputedStyle(el).animationName.includes('worm-cinematic-curtain')),true,
      'Results must fade in smoothly instead of opening abruptly');
     await page.waitForTimeout(950);
     const rec=await page.evaluate(()=>{
@@ -143,7 +155,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.equal(await page.locator('.infinity-stats-tabs [data-mode="worms"]').count(),1);
     await page.locator('.infinity-stats-tabs [data-mode="worms"]').click();
     assert.equal(await page.locator('.infinity-stats-tabs [data-mode="worms"]').getAttribute('aria-selected'),'true');
-    console.log('PASS: eight varied bot skill profiles with actual AFK, live death replay, smooth results, existing mechanics, settings and navigation at '+width+'x'+height);
+    console.log('PASS: circular arena, compact turn radius, animated comet/star skins, multi-hue UI, cinematic death and AI archetypes at '+width+'x'+height);
    }catch(err){failures.push({width,height,error:String(err.stack||err).slice(0,750)});}
    await context.close();
   }
