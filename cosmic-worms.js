@@ -548,65 +548,126 @@ function backdrop(t){
  ctx.globalAlpha=1;
 }
 function drawFood(t){
- const margin=90,z=camera.zoom;
+ const margin=100,z=camera.zoom;
  const left=camera.x-vw/z/2-margin,right=camera.x+vw/z/2+margin;
  const top=camera.y-vh/z/2-margin,bottom=camera.y+vh/z/2+margin;
- for(const f of game.food){
-  if(f.x<left||f.x>right||f.y<top||f.y>bottom)continue;
-  const r=f.r*(1+Math.sin(t*3+f.phase)*.08);
-  ctx.globalAlpha=.14;ctx.fillStyle=f.color;ctx.beginPath();ctx.arc(f.x,f.y,r*2.9,0,TAU);ctx.fill();
-  ctx.globalAlpha=.93;ctx.beginPath();ctx.arc(f.x,f.y,r,0,TAU);ctx.fill();
-  ctx.fillStyle='#ffffffd8';ctx.globalAlpha=.68;ctx.beginPath();ctx.arc(f.x-r*.2,f.y-r*.2,Math.max(.8,r*.3),0,TAU);ctx.fill();
+ const x1=Math.floor(left/FOOD_CELL),x2=Math.floor(right/FOOD_CELL);
+ const y1=Math.floor(top/FOOD_CELL),y2=Math.floor(bottom/FOOD_CELL);
+ // Draw ONLY visible grid cells instead of iterating 20,000 world particles.
+ for(let iy=y1;iy<=y2;iy++)for(let ix=x1;ix<=x2;ix++){
+  const bucket=game.foodGrid.get(ix+iy*256);
+  if(!bucket)continue;
+  for(const f of bucket){
+   if(f.x<left||f.x>right||f.y<top||f.y>bottom)continue;
+   const r=f.r*(1+Math.sin(t*3+f.phase)*.08);
+   ctx.globalAlpha=.16;ctx.fillStyle=f.color;ctx.beginPath();ctx.arc(f.x,f.y,r*2.9,0,TAU);ctx.fill();
+   ctx.globalAlpha=.94;ctx.beginPath();ctx.arc(f.x,f.y,r,0,TAU);ctx.fill();
+   ctx.fillStyle='#ffffffd8';ctx.globalAlpha=.7;ctx.beginPath();
+   ctx.arc(f.x-r*.2,f.y-r*.2,Math.max(.8,r*.32),0,TAU);ctx.fill();
+  }
  }
  ctx.globalAlpha=1;
 }
 function drawWorm(w,t){
  if(!w.alive)return;
  const z=camera.zoom;
- if(Math.abs(w.x-camera.x)>vw/z*.8+1500||Math.abs(w.y-camera.y)>vh/z*.8+1500)return;
+ if(Math.abs(w.x-camera.x)>vw/z*.8+1700||Math.abs(w.y-camera.y)>vh/z*.8+1700)return;
  const r=wormRadius(w),n=w.segments.length;
  if(!n)return;
- const tip=w.segments[n-1],dark=w.color[1],light=w.color[0];
+ const tip=w.segments[n-1],dark=w.color[1],light=w.color[0],accent=w.accent;
+ const boosting=w.boost&&w.mass>38;
  ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
  ctx.beginPath();ctx.moveTo(tip.x,tip.y);
  for(let i=n-2;i>=0;i--)ctx.lineTo(w.segments[i].x,w.segments[i].y);
  ctx.lineTo(w.x,w.y);
+ if(boosting){
+  // A full-body plasma sheath. Unlike the original tail-only stroke, both
+  // the silhouette and travelling energy bands illuminate every segment.
+  ctx.save();
+  ctx.strokeStyle=accent;ctx.lineWidth=r*2.8;
+  ctx.globalAlpha=.33+Math.sin(t*13+w.id)*.10;
+  if(options.glow){ctx.shadowColor=accent;ctx.shadowBlur=30;}
+  ctx.stroke();ctx.restore();
+ }
  ctx.strokeStyle=dark;ctx.lineWidth=r*2.2;ctx.globalAlpha=w.invulnerable>0?.64:1;ctx.stroke();
- ctx.strokeStyle=light;ctx.lineWidth=r*1.65;ctx.globalAlpha=w.invulnerable>0?.6:.89;ctx.stroke();
+ ctx.strokeStyle=light;ctx.lineWidth=r*1.63;ctx.globalAlpha=w.invulnerable>0?.6:.88;ctx.stroke();
  ctx.globalAlpha=1;
- // Iridescent segmented dorsal plates, spaced for a clean readable silhouette.
+ if(boosting){
+  ctx.save();
+  ctx.strokeStyle='#f8f4ff';ctx.lineWidth=Math.max(2.2,r*.33);
+  ctx.setLineDash([r*.72,r*1.75]);ctx.lineDashOffset=-t*155-w.id*4;
+  ctx.globalAlpha=.55+Math.sin(t*12)*.21;
+  if(options.glow){ctx.shadowBlur=15;ctx.shadowColor=accent;}
+  ctx.stroke();ctx.restore();
+ }
+ // Eight individual cosmic skins have distinct dorsal motifs; no external
+ // textures are needed, so all variants work in Playgama's compact HTML.
  for(let i=n-1;i>=1;i-=4){
-  const node=w.segments[i],fraction=(n-i)/n;
-  ctx.globalAlpha=.25+fraction*.36;ctx.fillStyle='#f6efff';
-  ctx.beginPath();ctx.arc(node.x,node.y,Math.max(1.8,r*.29),0,TAU);ctx.fill();
+  const node=w.segments[i],prev=w.segments[Math.max(0,i-1)];
+  const dx=prev.x-node.x,dy=prev.y-node.y,d=Math.hypot(dx,dy)||1;
+  const nx=-dy/d,ny=dx/d,phase=t*2.3+i*.43;
+  ctx.globalAlpha=.4+.2*Math.sin(phase);
+  ctx.fillStyle=accent;ctx.strokeStyle=accent;ctx.lineWidth=Math.max(1.2,r*.13);
+  if(w.pattern==='aurora'){
+   const side=Math.sin(phase)*r*.43;
+   ctx.beginPath();ctx.ellipse(node.x+nx*side,node.y+ny*side,r*.3,r*.13,
+    Math.atan2(dy,dx),0,TAU);ctx.fill();
+  }else if(w.pattern==='pulsar'){
+   ctx.beginPath();ctx.arc(node.x,node.y,r*(.18+.1*Math.sin(phase)),0,TAU);ctx.stroke();
+  }else if(w.pattern==='flare'){
+   ctx.globalAlpha=.54;ctx.beginPath();
+   ctx.moveTo(node.x+nx*r*.35,node.y+ny*r*.35);
+   ctx.lineTo(node.x+nx*r*.70-dx/d*r*.4,node.y+ny*r*.70-dy/d*r*.4);
+   ctx.lineTo(node.x-dx/d*r*.3,node.y-dy/d*r*.3);ctx.fill();
+  }else if(w.pattern==='horizon'){
+   ctx.globalAlpha=.78;ctx.beginPath();ctx.arc(node.x,node.y,r*.20,0,TAU);ctx.fill();
+   ctx.globalAlpha=.35;ctx.beginPath();ctx.arc(node.x,node.y,r*.46,0,TAU);ctx.stroke();
+  }else if(w.pattern==='supernova'){
+   ctx.beginPath();ctx.arc(node.x+nx*r*.28,node.y+ny*r*.28,r*.24,0,TAU);ctx.fill();
+   ctx.beginPath();ctx.arc(node.x-nx*r*.22,node.y-ny*r*.22,r*.12,0,TAU);ctx.fill();
+  }else if(w.pattern==='comet'){
+   ctx.beginPath();ctx.moveTo(node.x+nx*r*.34,node.y+ny*r*.34);
+   ctx.lineTo(node.x+dx/d*r*.3,node.y+dy/d*r*.3);
+   ctx.lineTo(node.x-nx*r*.34,node.y-ny*r*.34);
+   ctx.lineTo(node.x-dx/d*r*.3,node.y-dy/d*r*.3);ctx.closePath();ctx.fill();
+  }else if(w.pattern==='stardust'){
+   ctx.beginPath();ctx.moveTo(node.x-r*.22,node.y);ctx.lineTo(node.x+r*.22,node.y);
+   ctx.moveTo(node.x,node.y-r*.22);ctx.lineTo(node.x,node.y+r*.22);ctx.stroke();
+   ctx.beginPath();ctx.arc(node.x+nx*r*.4,node.y+ny*r*.4,r*.07,0,TAU);ctx.fill();
+  }else{
+   ctx.beginPath();ctx.arc(node.x+nx*r*.21,node.y+ny*r*.21,r*.22,0,TAU);ctx.fill();
+  }
+  if(boosting&&i%8===1){
+   ctx.globalAlpha=.85;ctx.fillStyle='#ffffff';
+   ctx.beginPath();ctx.arc(node.x,node.y,Math.max(2.1,r*(.10+.035*Math.sin(t*16+i))),0,TAU);ctx.fill();
+  }
  }
  ctx.globalAlpha=1;
  const fx=Math.cos(w.angle),fy=Math.sin(w.angle),nx=-fy,ny=fx;
- ctx.shadowColor=light;ctx.shadowBlur=14;ctx.fillStyle=light;
- ctx.beginPath();ctx.arc(w.x,w.y,r*1.13,0,TAU);ctx.fill();
- ctx.shadowBlur=0;ctx.strokeStyle='#eee4ff9e';ctx.lineWidth=1.5;
- ctx.stroke();
+ ctx.shadowColor=light;ctx.shadowBlur=options.glow?16:0;
+ ctx.fillStyle=light;ctx.beginPath();ctx.arc(w.x,w.y,r*1.13,0,TAU);ctx.fill();
+ ctx.shadowBlur=0;ctx.strokeStyle=accent;ctx.lineWidth=1.6;ctx.stroke();
  for(const sign of [-1,1]){
   const ex=w.x+fx*r*.52+nx*sign*r*.57;
   const ey=w.y+fy*r*.52+ny*sign*r*.57;
   ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(ex,ey,r*.28,0,TAU);ctx.fill();
-  ctx.fillStyle='#241034';ctx.beginPath();ctx.arc(ex+fx*r*.10,ey+fy*r*.10,r*.14,0,TAU);ctx.fill();
+  ctx.fillStyle='#241034';ctx.beginPath();
+  ctx.arc(ex+fx*r*.10,ey+fy*r*.10,r*.14,0,TAU);ctx.fill();
  }
- ctx.font='900 12px Inter,system-ui,sans-serif';ctx.textAlign='center';
- ctx.fillStyle=w.human?'#ffffff':'#d3c1f4';
- ctx.shadowColor='#03020b';ctx.shadowBlur=8;
- ctx.fillText(w.name,w.x,w.y-r*2.2);
- ctx.shadowBlur=0;
- if(w.boost){ctx.strokeStyle=light+'8a';ctx.lineWidth=1.3;
-  const tail=w.segments[n-1];ctx.beginPath();ctx.moveTo(tail.x,tail.y);
-  ctx.lineTo(tail.x-fx*22,tail.y-fy*22);ctx.stroke();}
+ if(options.names||w.human){
+  ctx.font='900 12px Inter,system-ui,sans-serif';ctx.textAlign='center';
+  ctx.fillStyle=w.human?'#fff':'#d3c1f4';
+  ctx.shadowColor='#03020b';ctx.shadowBlur=8;
+  ctx.fillText(w.name,w.x,w.y-r*2.2);ctx.shadowBlur=0;
+ }
  ctx.restore();
 }
+
 function paint(t){
  ctx.setTransform(dpr,0,0,dpr,0,0);
  backdrop(t);
  const p=game.player;if(!p)return;
- const targetZoom=clamp((vw<700?.87:1.04)-Math.log(Math.max(1,p.mass)/60)*.115,.48,1.08);
+ const targetZoom=clamp(((vw<700?.87:1.04)-Math.log(Math.max(1,p.mass)/60)*.115)/(options.zoom/100),.35,1.45);
  camera.zoom+=(targetZoom-camera.zoom)*.045;
  camera.x+=(p.x-camera.x)*.09;camera.y+=(p.y-camera.y)*.09;
  ctx.save();ctx.translate(vw*.5,vh*.5);ctx.scale(camera.zoom,camera.zoom);ctx.translate(-camera.x,-camera.y);
