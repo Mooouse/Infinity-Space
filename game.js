@@ -4473,28 +4473,60 @@ if(window.SpaceUIv15Templates && document.createElement('template').content){
  const text=(root,s,value)=>{const e=q(root,s);if(e)e.textContent=value;};
  const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const legacy={menu:showMainMenu,settings:showSettings,achievements:showAchievements,bestiary:showBestiary,statistics:showStatistics,music:showMusicShop,map:showMap,tutorial:showTutorial};
- // Keep a screen history rather than hard-coding "Back" to the main menu.
- // The history records where a page was opened, including in-game shortcuts.
+ // Back navigation is a strict state machine: never restore an obsolete,
+ // detached screen, and never leave a legacy empty .modal-card on screen.
  const navigationStack=[];
+ const ROUTABLE_SCREENS=new Set(['menu','play','map','settings','evolution','achievements',
+                                'bestiary','music','tutorial']);
  let restoringScreen=false;
- function currentScreen(){return $('modal').classList.contains('off')?'play':$('modal').dataset.screen||'menu';}
+ function currentScreen(){
+  const modal=$('modal');
+  if(modal.classList.contains('off'))return 'play';
+  const id=modal.dataset.screen;
+  return ROUTABLE_SCREENS.has(id)&&modal.querySelector('#screen-'+id+'.active')?id:'menu';
+ }
  function enterScreen(name){
   if(restoringScreen)return;
-  if(name==='menu'){navigationStack.length=0;return;}
+  if(name==='menu'||name==='play'){navigationStack.length=0;return;}
   const previous=currentScreen();
-  if(previous!==name)navigationStack.push(previous==='panel'?'menu':previous);
+  if(previous===name)return;
+  if(navigationStack[navigationStack.length-1]!==previous)navigationStack.push(previous);
+  if(navigationStack.length>18)navigationStack.splice(0,navigationStack.length-18);
  }
  function navigate(name){
   if(name==='upgrades'){resumeGame();const toggle=q(hud,'#upgrades-open');if(toggle&&!toggle.getAttribute('aria-expanded')?.includes('true'))toggle.click();return;}
-  ({menu:showMainMenu,play:resumeGame,map:showMap,settings:showSettings,evolution:showV15Evolution,achievements:showAchievements,bestiary:showBestiary,statistics:showStatistics,music:showMusicShop,tutorial:showTutorial}[name]||resumeGame)();
+  const destination=({menu:showMainMenu,play:resumeGame,map:showMap,settings:showSettings,
+    evolution:showV15Evolution,achievements:showAchievements,bestiary:showBestiary,
+    statistics:showStatistics,music:showMusicShop,tutorial:showTutorial})[name];
+  // Unknown pages must never fall through into gameplay or an empty overlay.
+  if(destination)destination();
+  else{console.warn('Infinity Space: unknown page',name);showMainMenu(g.time>0);}
+ }
+ function recoverNavigation(){
+  const modal=$('modal');
+  if(modal.classList.contains('off'))return;
+  const screen=modal.dataset.screen;
+  if(!ROUTABLE_SCREENS.has(screen)||!modal.querySelector('#screen-'+screen+'.active')){
+   console.warn('Infinity Space: recovering an invalid screen',screen);
+   navigationStack.length=0;
+   restoringScreen=false;
+   showMainMenu(g.time>0);
+  }
  }
  function navigateBack(){
-  // Rewards are not in the ordinary navigation stack. Use their explicit
-  // opening origin, otherwise Escape can jump to the menu during gameplay.
-  if(['daily','roulette'].includes($('modal').dataset.screen)){dailyReturn();return;}
-  const destination=navigationStack.pop()||'menu';
+  const modal=$('modal');
+  if(['daily','roulette'].includes(modal.dataset.screen)){dailyReturn();return;}
+  if(restoringScreen)return;
+  const from=currentScreen();
+  if(from==='menu'){navigationStack.length=0;showMainMenu(g.time>0);return;}
+  let destination=navigationStack.pop()||'menu';
+  while(destination===from&&navigationStack.length)destination=navigationStack.pop();
+  if(!ROUTABLE_SCREENS.has(destination)||destination===from)destination='menu';
   restoringScreen=true;
-  try{navigate(destination);}finally{restoringScreen=false;}
+  try{navigate(destination);}
+  catch(error){console.error('Infinity Space: Back navigation error',error);restoringScreen=false;navigationStack.length=0;showMainMenu(g.time>0);return;}
+  finally{restoringScreen=false;}
+  recoverNavigation();
  }
  navigateOverlayBack=navigateBack;
  function translate(root){
