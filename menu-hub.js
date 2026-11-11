@@ -88,7 +88,7 @@
    iframe.setAttribute('referrerpolicy','same-origin');
    iframe.setAttribute('loading','eager');
    iframe.allow='autoplay';
-   iframe.src=window.SpaceModeDemoURL?.(mode)||(mode==='worms'?'cosmic-worms.html?demo=1&v=8':'cosmic-arena.html?demo='+encodeURIComponent(mode)+'&v=10');
+   iframe.src=window.SpaceModeDemoURL?.(mode)||(mode==='worms'?'cosmic-worms.html?demo=1&v=8':'cosmic-arena.html?demo='+encodeURIComponent(mode)+'&v=11');
    wrap.append(iframe);host.append(wrap);
    active=wrap;
    const reveal=()=>{
