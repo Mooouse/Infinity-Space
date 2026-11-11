@@ -32,6 +32,27 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.locator('#worm-guide-next').click();
     await page.locator('#worm-guide-next').click();
     await page.waitForFunction(()=>window.InfinityWormsQA.snapshot().state==='playing');
+    const styles=await page.evaluate(()=>window.InfinityWormsQA.botStyles());
+    for(const role of ['afk','newcomer','casual','cautious','hunter','veteran','pro','reckless']){
+     assert.ok(styles[role]>=2,'Missing realistic bot behavior: '+role);
+    }
+    const botsBefore=await page.evaluate(()=>window.InfinityWormsQA.bots());
+    await page.waitForTimeout(550);
+    const botsAfter=await page.evaluate(()=>window.InfinityWormsQA.bots());
+    const beforeById=new Map(botsBefore.map(b=>[b.id,b]));
+    const afkBots=botsAfter.filter(b=>b.persona==='afk'&&b.alive&&beforeById.get(b.id)?.alive);
+    const activeBots=botsAfter.filter(b=>b.persona==='pro'&&b.alive&&beforeById.get(b.id)?.alive);
+    assert.ok(afkBots.length>=2&&activeBots.length>=2,'Need both AFK and active pro bots');
+    for(const b of afkBots){
+     const before=beforeById.get(b.id);
+     assert.ok(Math.hypot(b.x-before.x,b.y-before.y)<.0001,'AFK bot must stand still');
+    }
+    assert.ok(activeBots.some(b=>{
+     const before=beforeById.get(b.id);
+     return Math.hypot(b.x-before.x,b.y-before.y)>20;
+    }),'Professional bots should actively move while AFK players stand still');
+    assert.ok(new Set(botsAfter.filter(b=>b.alive).map(b=>Math.round(b.reaction*100))).size>=8,
+     'Different rivals must have different reaction times');
     a=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
     await page.evaluate(()=>window.InfinityWormsQA.setHeading(2.2));
     await page.waitForTimeout(75);
@@ -75,7 +96,27 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.equal(await page.locator('#worm-pause-overlay').isVisible(),true,'Guide returns to pause');
     await page.locator('#worm-resume').click();
     await page.evaluate(()=>window.InfinityWormsQA.forceDeath());
-    await page.locator('#worm-result').waitFor({state:'visible',timeout:5000});
+    let aftermath=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
+    assert.equal(aftermath.state,'death-replay','Death should enter live aftermath, not results');
+    assert.equal(aftermath.resultVisible,false,'Result modal must remain hidden at impact');
+    assert.ok(aftermath.deathDelay>=2.5);
+    const observing=await page.evaluate(()=>window.InfinityWormsQA.bots());
+    await page.waitForTimeout(800);
+    aftermath=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
+    assert.equal(aftermath.state,'death-replay','Arena should stay visible for a few seconds');
+    assert.equal(aftermath.resultVisible,false,'Death overlay cannot pop up instantly');
+    const later=await page.evaluate(()=>window.InfinityWormsQA.bots());
+    assert.ok(later.some(bot=>{
+     const old=observing.find(x=>x.id===bot.id);
+     return old&&old.alive&&bot.alive&&bot.persona!=='afk'&&
+      Math.hypot(bot.x-old.x,bot.y-old.y)>12;
+    }),'Rivals must continue moving and collecting food during death replay');
+    await page.locator('#worm-result').waitFor({state:'visible',timeout:6000});
+    assert.equal(await page.evaluate(()=>window.InfinityWormsQA.snapshot().state),'finished');
+    assert.equal(await page.locator('#worm-result').evaluate(
+     el=>getComputedStyle(el).animationName.includes('worm-result-backdrop-in')),true,
+     'Results must fade in smoothly instead of opening abruptly');
+    await page.waitForTimeout(950);
     const rec=await page.evaluate(()=>{
      const all=JSON.parse(localStorage.getItem('infinity-space-stats-v1')||'{}');
      return all.worms;
@@ -102,7 +143,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.equal(await page.locator('.infinity-stats-tabs [data-mode="worms"]').count(),1);
     await page.locator('.infinity-stats-tabs [data-mode="worms"]').click();
     assert.equal(await page.locator('.infinity-stats-tabs [data-mode="worms"]').getAttribute('aria-selected'),'true');
-    console.log('PASS: expanded Cosmic Worms world, food density, no-overlap respawn, instant turns, full corpse drops, eight skins, visual settings, game flow at '+width+'x'+height);
+    console.log('PASS: eight varied bot skill profiles with actual AFK, live death replay, smooth results, existing mechanics, settings and navigation at '+width+'x'+height);
    }catch(err){failures.push({width,height,error:String(err.stack||err).slice(0,750)});}
    await context.close();
   }
