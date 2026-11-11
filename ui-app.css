@@ -6623,6 +6623,7 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-back{
 /* The old dense hub becomes a compact optional drawer with all of its native
    working controls. It never obscures or replaces the main menu by default. */
 body.ui-v15 #screen-menu.hub-main-carousel>.menu-main.hub-menu{
+ display:none!important;
  visibility:hidden!important;pointer-events:none!important;
  opacity:0!important;
  position:absolute!important;z-index:190!important;
