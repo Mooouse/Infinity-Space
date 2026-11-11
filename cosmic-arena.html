@@ -513,7 +513,7 @@ function warpGravityAt(x,y,r){
  const left=Math.max(0,Math.floor(cx-outer)),top=Math.max(0,Math.floor(cy-outer));
  const width=Math.min(sw,Math.ceil(cx+outer))-left,height=Math.min(sh,Math.ceil(cy+outer))-top;
  if(width<4||height<4)return;
- const ratio=Math.min(1,190/Math.max(width,height));
+ const ratio=Math.min(1,(DEMO_MODE?105:190)/Math.max(width,height));
  const w=Math.max(3,Math.round(width*ratio)),h=Math.max(3,Math.round(height*ratio));
  lensFrom.width=lensTo.width=w;lensFrom.height=lensTo.height=h;
  lensFromCtx.drawImage(canvas,left*dpr,top*dpr,width*dpr,height*dpr,0,0,w,h);
@@ -786,7 +786,14 @@ last=performance.now();
 if(!DEMO_MODE){
  window.SpacePlatform?.playing?.(true);updateUI();
  try{const params=new URLSearchParams(location.search);params.set('mode',mode);history.replaceState(null,'','cosmic-arena.html?'+params.toString())}catch(e){}
- maybeShowGuide();
+ if(window.InfinityProfile&&!window.InfinityProfile.getName()){
+  game.state='guide';window.SpacePlatform?.playing?.(false);
+  window.InfinityProfile.promptName(true,name=>{
+   if(game)game.people[0].name=name;
+   if(game)game.state='playing';
+   maybeShowGuide();
+  });
+ }else maybeShowGuide();
 }
 }
 
