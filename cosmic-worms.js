@@ -101,35 +101,129 @@ function resize(){
  canvas.style.width=vw+'px';canvas.style.height=vh+'px';
 }
 window.addEventListener('resize',resize);resize();
-function randomPos(radius=.86){
+function randomPos(radius=.88){
  const a=rand(0,TAU),r=Math.sqrt(Math.random())*radius;
  return {x:WORLD.cx+Math.cos(a)*r*WORLD.rx,y:WORLD.cy+Math.sin(a)*r*WORLD.ry};
 }
 function wormRadius(w){return clamp(10+Math.sqrt(w.mass)*.76,14,24)}
 function segmentCount(w){return clamp(Math.round(12+w.mass*.31),18,190)}
-function createWorm(name,human,index){
- let pos=randomPos(human?.14:.80);
- if(human)pos={x:WORLD.cx,y:WORLD.cy};
- const w={name,human,id:index,x:pos.x,y:pos.y,angle:rand(0,TAU),target:0,
-  mass:human?61:rand(56,180),bestMass:0,alive:true,invulnerable:human?2.3:2,
-  segments:[],color:PALETTE[index%PALETTE.length],boost:false,dropClock:0,
-  think:0,targetFood:null,kills:0,foodEaten:0,bestRank:99,leadTime:0,deathDelay:0,
-  aiStyle:index%4,wiggle:rand(0,TAU),speed:0};
- w.bestMass=w.mass;w.target=w.angle;
- const gap=11.5;
- for(let i=0;i<segmentCount(w);i++){
-  w.segments.push({x:w.x-Math.cos(w.angle)*gap*(i+1),
-   y:w.y-Math.sin(w.angle)*gap*(i+1)});
+// Spawn clearance is checked along the entire proposed body — not just the head.
+// Also reserve space in front of the new head so it cannot appear on someone's path.
+function spawnPosition(angle,count,nearPlayer=false){
+ const cx=game.player?.x??WORLD.cx,cy=game.player?.y??WORLD.cy;
+ for(let attempt=0;attempt<180;attempt++){
+  let pos;
+  if(nearPlayer&&attempt<95){
+   const a=rand(0,TAU),r=rand(850,3100);
+   pos={x:cx+Math.cos(a)*r,y:cy+Math.sin(a)*r};
+  }else pos=randomPos(.87);
+  let safe=true;
+  const total=(count+1)*11.8;
+  for(let i=0;i<=Math.ceil((total+190)/65);i++){
+   const offset=Math.min(total,i*65);
+   const x=pos.x-Math.cos(angle)*(offset-190),y=pos.y-Math.sin(angle)*(offset-190);
+   const edge=((x-WORLD.cx)/WORLD.rx)**2+((y-WORLD.cy)/WORLD.ry)**2;
+   if(edge>.88*.88){safe=false;break;}
+   for(const other of game.worms){
+    if(!other.alive)continue;
+    const headD=Math.hypot(x-other.x,y-other.y);
+    if(headD<400){safe=false;break;}
+    if(headD>other.segments.length*12+500)continue;
+    for(let j=0;j<other.segments.length;j+=3){
+     const s=other.segments[j];
+     if((x-s.x)**2+(y-s.y)**2<280*280){safe=false;break;}
+    }
+    if(!safe)break;
+   }
+   if(!safe)break;
+  }
+  if(safe)return pos;
+ }
+ return null; // No unsafe fallback: retry after other worms have moved.
+}
+function createWorm(name,human,index,preferEncounter=false){
+ const angle=human?-.28:rand(0,TAU);
+ const mass=human?61:rand(54,171);
+ const count=segmentCount({mass});
+ const pos=human?{x:WORLD.cx,y:WORLD.cy}:spawnPosition(angle,count,preferEncounter);
+ if(!pos)return null;
+ const w={name,human,id:index,x:pos.x,y:pos.y,angle,target:angle,
+  mass,bestMass:mass,alive:true,invulnerable:human?2.3:2.0,
+  segments:[],boost:false,dropClock:0,think:rand(.1,.2),targetFood:null,kills:0,
+  foodEaten:0,bestRank:99,leadTime:0,deathDelay:0,aiStyle:index%6,
+  wiggle:rand(0,TAU),speed:0,boostFlash:0};
+ applySkin(w,human?options.skin:SKINS[index%SKINS.length].id);
+ for(let i=0;i<count;i++){
+  w.segments.push({x:w.x-Math.cos(angle)*11.8*(i+1),
+   y:w.y-Math.sin(angle)*11.8*(i+1)});
  }
  return w;
 }
+function foodBucket(k){
+ let bucket=game.foodGrid.get(k);
+ if(!bucket){bucket=new Set();game.foodGrid.set(k,bucket);}
+ return bucket;
+}
+function addFood(food){
+ const k=gridKey(food.x,food.y,FOOD_CELL);
+ food._cell=k;food._index=game.food.length;
+ game.food.push(food);foodBucket(k).add(food);
+ return food;
+}
+function removeFood(food){
+ const index=food._index;
+ if(index===undefined||index<0||game.food[index]!==food)return;
+ const bucket=game.foodGrid.get(food._cell);
+ if(bucket){bucket.delete(food);if(!bucket.size)game.foodGrid.delete(food._cell);}
+ const last=game.food.pop();
+ if(last!==food){game.food[index]=last;last._index=index;}
+ food._index=-1;
+}
+function moveFood(food,x,y){
+ const next=gridKey(x,y,FOOD_CELL);
+ if(next!==food._cell){
+  const old=game.foodGrid.get(food._cell);
+  if(old){old.delete(food);if(!old.size)game.foodGrid.delete(food._cell);}
+  foodBucket(next).add(food);food._cell=next;
+ }
+ food.x=x;food.y=y;
+}
+function foodNearby(x,y,r,callback){
+ const sx=Math.floor((x-r)/FOOD_CELL),ex=Math.floor((x+r)/FOOD_CELL);
+ const sy=Math.floor((y-r)/FOOD_CELL),ey=Math.floor((y+r)/FOOD_CELL);
+ for(let iy=sy;iy<=ey;iy++)for(let ix=sx;ix<=ex;ix++){
+  const bucket=game.foodGrid.get(ix+iy*256);
+  if(bucket)for(const f of bucket)callback(f);
+ }
+}
+function addBodyGrid(){
+ const grid=game.bodyGrid;grid.clear();
+ for(const w of game.worms){
+  if(!w.alive)continue;
+  const count=w.segments.length;
+  for(let i=-1;i<count;i+=2){
+   const p=i<0?w:w.segments[i],key=gridKey(p.x,p.y,BODY_CELL);
+   let bucket=grid.get(key);if(!bucket){bucket=[];grid.set(key,bucket);}
+   bucket.push({w,x:p.x,y:p.y,head:i<0});
+  }
+ }
+}
+function bodiesNearby(x,y,r,callback){
+ const sx=Math.floor((x-r)/BODY_CELL),ex=Math.floor((x+r)/BODY_CELL);
+ const sy=Math.floor((y-r)/BODY_CELL),ey=Math.floor((y+r)/BODY_CELL);
+ for(let iy=sy;iy<=ey;iy++)for(let ix=sx;ix<=ex;ix++){
+  const b=game.bodyGrid.get(ix+iy*256);
+  if(b)for(const obj of b)callback(obj);
+ }
+}
 function makeFood(x,y,color,value,r){
  return {x,y,color:color||FOOD_COLORS[Math.floor(Math.random()*FOOD_COLORS.length)],
- value:value||rand(1.5,3.2),r:r||rand(2.6,5.4),phase:rand(0,TAU)};
+ value:value??rand(1.5,3.2),r:r??rand(2.6,5.4),phase:rand(0,TAU)};
 }
 function fillFood(amount){
- for(let i=0;i<amount;i++){const p=randomPos(.96);game.food.push(makeFood(p.x,p.y));}
+ for(let i=0;i<amount;i++){const p=randomPos(.975);addFood(makeFood(p.x,p.y));}
 }
+
 function notify(text){
  if(DEMO)return;
  const el=$('worm-toast');el.textContent=text;el.classList.add('show');toastTimer=1.8;
