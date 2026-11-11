@@ -920,7 +920,18 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
     targetFood:FOOD_TARGET,botCount:BOT_COUNT,gridCells:game.foodGrid.size,
     skin:options.skin,glow:options.glow,names:options.names,zoomSetting:options.zoom,
     lastDeath:game.lastDeath||null,guideOpen:!$('worm-guide').hidden,
-    settingsOpen:!$('worm-settings').hidden,boosting:game.player.boost}),
+    settingsOpen:!$('worm-settings').hidden,boosting:game.player.boost,
+    deathElapsed:game.deathElapsed,deathDelay:DEATH_REPLAY_SECONDS,
+    deathFocus:game.deathPosition,
+    resultVisible:!$('worm-result').hidden,
+    resultAnimating:$('worm-result').classList.contains('is-revealing')}),
+  bots:()=>game.worms.filter(w=>!w.human).map(w=>({
+    id:w.id,persona:w.persona,x:w.x,y:w.y,alive:w.alive,
+    speed:w.speed,reaction:w.reaction,afk:w.afkTimer>0,mass:w.mass
+  })),
+  botStyles:()=>Object.fromEntries(
+    Object.keys(BOT_PERSONAS).map(id=>[id,
+      game.worms.filter(w=>!w.human&&w.persona===id).length])),
   setMass:value=>{game.player.mass=Math.max(35,Math.min(1900,Number(value)||60));
     game.player.bestMass=Math.max(game.player.bestMass,game.player.mass);updateUI();},
   giveFood:value=>{game.player.mass+=Math.max(1,Number(value)||10);
