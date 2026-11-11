@@ -11,6 +11,7 @@ on:
       - 'index.html'
       - 'tests/full-ui-audit.cjs'
       - 'tests/arena-ui-audit.cjs'
+      - 'tests/gameplay-navigation-audit.cjs'
       - '.github/workflows/ui-audit.yml'
   workflow_dispatch:
 permissions:
@@ -31,3 +32,4 @@ jobs:
           sleep 2
           timeout 500 node tests/full-ui-audit.cjs
           timeout 400 node tests/arena-ui-audit.cjs
+          timeout 180 node tests/gameplay-navigation-audit.cjs
