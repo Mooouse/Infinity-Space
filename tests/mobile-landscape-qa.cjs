@@ -53,7 +53,7 @@ async function check(browser,width,height){
     direction:get('#hud #direction-control').map(r),
     alert:get('#abyss-warning:not([hidden])').map(r),
     modalOff:document.getElementById('modal').classList.contains('off'),
-    version:[...document.styleSheets].some(s=>s.href&&s.href.includes('ui-app.css?v=3.78.0'))
+    version:[...document.styleSheets].some(s=>s.href&&s.href.includes('ui-app.css?v=3.78.1'))
    };
   });
   assert.ok(layout.landscape&&layout.pointer,'Incorrect landscape touch test '+show(layout));
