@@ -335,8 +335,7 @@ function scheduleMusic(){}
 
 function startMusic(){const t=MUSIC_TRACKS.find(t=>t.id===g.activeTrack&&g.ownedTracks.includes(t.id));if(!t){if(externalMusic)externalMusic.pause();externalMusic=null;g.activeTrack=null;}else if(!externalMusic){externalMusic=new Audio(t.src);externalMusic.loop=true;}initAudio();setMusicVolume();}
 addEventListener('space-platform-audio',()=>setMusicVolume());
-function save(){
- if(testerAbsoluteResetPending)return;
+function save(){if(testerAbsoluteResetPending)return;
  g.worldX=player.x;g.worldY=player.y;
  let json;
  try{json=JSON.stringify(g);localStorage.setItem(SAVE_KEY,json);}catch(_){toastStorageWarning();}
