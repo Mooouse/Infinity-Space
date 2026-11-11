@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/ui-atlas-snapshots.yml'
       - 'tools/ui-capture.cjs'
+      - 'ui-review.html'
   workflow_dispatch:
 permissions:
   contents: write
@@ -38,5 +39,7 @@ jobs:
             echo "All screenshots unchanged"
           else
             git commit -m "Refresh full UI Atlas screenshot gallery"
-            git push
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main
           fi
