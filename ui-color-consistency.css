@@ -191,3 +191,79 @@ body.ui-v15 #hud .v15-hud .abilities .ability-btn::after{
 @media(prefers-reduced-motion:reduce){
  body.ui-v15 #modal .screen button{transition:none!important}
 }
+
+
+/* v9 — saturated per-category surfaces for the eight main menu tiles.
+   No generic navy overlay, no purple inherited hover or icon box. */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
+ --dock-accent:#2860ff;--dock-top:#225ad4;--dock-bottom:#0e2865;
+ --interaction-accent:var(--dock-accent);
+ background:linear-gradient(145deg,var(--dock-top),var(--dock-bottom))!important;
+ border:1px solid var(--dock-accent)!important;
+ border-bottom:4px solid color-mix(in srgb,var(--dock-accent) 43%,#070718)!important;
+ color:#fff!important;
+ box-shadow:inset 0 1px #ffffff38,0 4px 12px #0008!important;
+ isolation:isolate;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut="map"]{
+ --dock-accent:#2860ff;--dock-top:#235ccf;--dock-bottom:#102b70;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut="evolution"]{
+ --dock-accent:#a828ff;--dock-top:#8428d5;--dock-bottom:#3d147d;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut="achievements"]{
+ --dock-accent:#ffe500;--dock-top:#d5ad05;--dock-bottom:#765108;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut="music"]{
+ --dock-accent:#9922ff;--dock-top:#6f17c3;--dock-bottom:#31106c;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut="bestiary"]{
+ --dock-accent:#ff1744;--dock-top:#b32248;--dock-bottom:#551329;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut="statistics"]{
+ --dock-accent:#27ff40;--dock-top:#1ba842;--dock-bottom:#105328;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut="settings"]{
+ --dock-accent:#2860ff;--dock-top:#325fc0;--dock-bottom:#172f75;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut="new"]{
+ --dock-accent:#ff1744;--dock-top:#b51c40;--dock-bottom:#5a112b;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-icon{
+ background:color-mix(in srgb,var(--dock-accent) 18%,#0b1124)!important;
+ color:var(--dock-accent)!important;
+ border:1px solid color-mix(in srgb,var(--dock-accent) 55%,#111b32)!important;
+ border-radius:6px;
+ box-shadow:inset 0 1px #ffffff22!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-icon :is(svg,.ui-symbol,.hub-fallback-icon){
+ color:var(--dock-accent)!important;
+ stroke:currentColor;
+ filter:none!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-label{
+ color:#fff!important;text-shadow:0 1px 3px #000b!important;
+}
+@media(hover:hover) and (pointer:fine){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]:not(:disabled):hover{
+  --interaction-accent:var(--dock-accent);
+  background:linear-gradient(145deg,
+   color-mix(in srgb,var(--dock-accent) 36%,var(--dock-top)),
+   color-mix(in srgb,var(--dock-accent) 18%,var(--dock-bottom)))!important;
+  border-color:var(--dock-accent)!important;
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--dock-accent) 50%,transparent),
+             0 0 22px color-mix(in srgb,var(--dock-accent) 46%,transparent),
+             0 4px 15px #0008!important;
+  filter:brightness(1.09)!important;transform:translateY(-2px)!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]:not(:disabled):hover .hub-story-shortcut-icon{
+  background:color-mix(in srgb,var(--dock-accent) 32%,#0b1124)!important;
+  border-color:var(--dock-accent)!important;
+  box-shadow:0 0 11px color-mix(in srgb,var(--dock-accent) 40%,transparent)!important;
+ }
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]:focus-visible{
+ outline:2px solid var(--dock-accent)!important;
+ outline-offset:3px!important;
+ box-shadow:0 0 0 3px color-mix(in srgb,var(--dock-accent) 32%,transparent)!important;
+}
