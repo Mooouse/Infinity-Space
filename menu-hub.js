@@ -62,10 +62,10 @@
   {id:'worms',title:['Cosmic Worms','Космические черви','Gusanos cósmicos'],
    subtitle:['SURVIVAL · COSMIC SERPENTS','ВЫЖИВАНИЕ · КОСМИЧЕСКИЕ ЧЕРВИ','SUPERVIVENCIA · SERPIENTES'],
    goal:['Grow the longest worm in the galaxy','Вырастай в самого длинного червя','Conviértete en el gusano más largo'],
-   desc:['Gather glowing stardust, grow a luminous tail, encircle AI rivals and avoid crashing your head into another worm. Boost by spending your mass. Survive as long as you can.',
+   desc:['Gather glowing stardust, grow a luminous tail, encircle rivals and avoid crashing your head into another worm. Boost by spending your mass. Survive as long as you can.',
          'Собирай светящуюся материю, отращивай длинный космический хвост, перекрывай путь соперникам и не врезайся головой в их тела. Ускоряйся за счёт массы.',
          'Recoge polvo estelar, alarga tu cola, bloquea a los rivales y evita chocar contra sus cuerpos. Usa tu masa para acelerar.'],
-   tags:[['ENDLESS SURVIVAL','БЕСКОНЕЧНОЕ ВЫЖИВАНИЕ','SUPERVIVENCIA INFINITA'],['58 AI RIVALS','58 СОПЕРНИКОВ ИИ','58 RIVALES IA'],['BOOST COSTS MASS','РЫВОК ТРАТИТ МАССУ','IMPULSO GASTA MASA']]}
+   tags:[['ENDLESS SURVIVAL','БЕСКОНЕЧНОЕ ВЫЖИВАНИЕ','SUPERVIVENCIA INFINITA'],['58 RIVALS','58 СОПЕРНИКОВ','58 RIVALES'],['BOOST COSTS MASS','РЫВОК ТРАТИТ МАССУ','IMPULSO GASTA MASA']]}
  ];
  // Each menu background is the actual arcade game running a small AI-only match
  // inside a visual-only iframe. It uses the same physics, sprites and hazards.
@@ -88,7 +88,7 @@
    iframe.setAttribute('referrerpolicy','same-origin');
    iframe.setAttribute('loading','eager');
    iframe.allow='autoplay';
-   iframe.src=window.SpaceModeDemoURL?.(mode)||(mode==='worms'?'cosmic-worms.html?demo=1&v=6':'cosmic-arena.html?demo='+encodeURIComponent(mode)+'&v=10');
+   iframe.src=window.SpaceModeDemoURL?.(mode)||(mode==='worms'?'cosmic-worms.html?demo=1&v=8':'cosmic-arena.html?demo='+encodeURIComponent(mode)+'&v=10');
    wrap.append(iframe);host.append(wrap);
    active=wrap;
    const reveal=()=>{
