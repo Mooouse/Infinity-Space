@@ -49,6 +49,7 @@ jobs:
           timeout 220 node tests/browser-smoke.cjs
           timeout 180 node tests/arcade-browser-smoke.cjs
           timeout 180 node tests/mode-background-smoke.cjs
+          timeout 180 node tests/profile-live-demo-smoke.cjs
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Prepare lean website payload
