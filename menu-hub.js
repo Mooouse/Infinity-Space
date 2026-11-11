@@ -65,7 +65,7 @@
    desc:['Gather glowing stardust, grow a luminous tail, encircle AI rivals and avoid crashing your head into another worm. Boost by spending your mass. Survive as long as you can.',
          'Собирай светящуюся материю, отращивай длинный космический хвост, перекрывай путь соперникам и не врезайся головой в их тела. Ускоряйся за счёт массы.',
          'Recoge polvo estelar, alarga tu cola, bloquea a los rivales y evita chocar contra sus cuerpos. Usa tu masa para acelerar.'],
-   tags:[['ENDLESS SURVIVAL','БЕСКОНЕЧНОЕ ВЫЖИВАНИЕ','SUPERVIVENCIA INFINITA'],['22 AI RIVALS','22 СОПЕРНИКА ИИ','22 RIVALES IA'],['BOOST COSTS MASS','РЫВОК ТРАТИТ МАССУ','IMPULSO GASTA MASA']]}
+   tags:[['ENDLESS SURVIVAL','БЕСКОНЕЧНОЕ ВЫЖИВАНИЕ','SUPERVIVENCIA INFINITA'],['58 AI RIVALS','58 СОПЕРНИКОВ ИИ','58 RIVALES IA'],['BOOST COSTS MASS','РЫВОК ТРАТИТ МАССУ','IMPULSO GASTA MASA']]}
  ];
  // Each menu background is the actual arcade game running a small AI-only match
  // inside a visual-only iframe. It uses the same physics, sprites and hazards.
