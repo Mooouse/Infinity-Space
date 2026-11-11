@@ -59,14 +59,14 @@ const FOOD_TARGET=DEMO?9800:28000, BOT_COUNT=DEMO?28:58;
 const FOOD_CELL=230,BODY_CELL=180; // broadphase grid: no O(food × bots) scans.
 const gridKey=(x,y,size)=>Math.floor(x/size)+Math.floor(y/size)*256;
 const SKINS=[
- {id:'nebula',en:'Nebula',ru:'Туманность',es:'Nebulosa',light:'#bc9bff',dark:'#5629b5',accent:'#f3c7ff',pattern:'nebula'},
- {id:'aurora',en:'Aurora',ru:'Сияние',es:'Aurora',light:'#76f6ce',dark:'#116e8b',accent:'#b7eaff',pattern:'aurora'},
- {id:'pulsar',en:'Pulsar',ru:'Пульсар',es:'Púlsar',light:'#95d6ff',dark:'#2649a8',accent:'#f3fcff',pattern:'pulsar'},
- {id:'flare',en:'Solar Flare',ru:'Вспышка',es:'Llamarada',light:'#ffbf82',dark:'#b13e37',accent:'#fff1ad',pattern:'flare'},
- {id:'horizon',en:'Event Horizon',ru:'Горизонт',es:'Horizonte',light:'#9c80ff',dark:'#16112e',accent:'#e7c7ff',pattern:'horizon'},
- {id:'supernova',en:'Supernova',ru:'Сверхновая',es:'Supernova',light:'#ff8fd7',dark:'#9d2e9b',accent:'#ffedae',pattern:'supernova'},
- {id:'comet',en:'Comet Ice',ru:'Лёд кометы',es:'Hielo de cometa',light:'#8df8ff',dark:'#225e96',accent:'#f7ffff',pattern:'comet'},
- {id:'stardust',en:'Stardust',ru:'Звёздная пыль',es:'Polvo estelar',light:'#f4e4b3',dark:'#8a64ad',accent:'#ffffff',pattern:'stardust'}
+ {id:'nebula',en:'Nebula',ru:'Туманность',es:'Nebulosa',light:'#9922ff',dark:'#39006b',accent:'#ff1744',pattern:'nebula'},
+ {id:'aurora',en:'Aurora',ru:'Сияние',es:'Aurora',light:'#27ff40',dark:'#0b5e1e',accent:'#ffe500',pattern:'aurora'},
+ {id:'pulsar',en:'Pulsar',ru:'Пульсар',es:'Púlsar',light:'#2860ff',dark:'#071d83',accent:'#ffe500',pattern:'pulsar'},
+ {id:'flare',en:'Solar Flare',ru:'Вспышка',es:'Llamarada',light:'#ffe500',dark:'#7d2300',accent:'#ff1744',pattern:'flare'},
+ {id:'horizon',en:'Event Horizon',ru:'Горизонт',es:'Horizonte',light:'#9922ff',dark:'#150034',accent:'#2860ff',pattern:'horizon'},
+ {id:'supernova',en:'Supernova',ru:'Сверхновая',es:'Supernova',light:'#ff1744',dark:'#75041d',accent:'#ffe500',pattern:'supernova'},
+ {id:'comet',en:'Comet Ice',ru:'Лёд кометы',es:'Hielo de cometa',light:'#2860ff',dark:'#081260',accent:'#27ff40',pattern:'comet'},
+ {id:'stardust',en:'Stardust',ru:'Звёздная пыль',es:'Polvo estelar',light:'#ffe500',dark:'#695009',accent:'#ff1744',pattern:'stardust'}
 ];
 const SETTINGS_KEY='infinity-space-worms-settings-v2';
 function loadSettings(){
@@ -81,7 +81,7 @@ function applySkin(w,id){
  w.skin=skin.id;w.pattern=skin.pattern;w.color=[skin.light,skin.dark];w.accent=skin.accent;
 }
 
-const FOOD_COLORS=['#ad96ff','#8bdefa','#f5bb87','#ffc0de','#a1edca'];
+const FOOD_COLORS=['#ff1744','#27ff40','#ffe500','#9922ff','#2860ff'];
 const NAMES=['Astra','Orbit','Nova','Pulsar','Quasar','Mira','Voidling','Zenith','Vega',
  'Nebula','Kepler','Comet','Krypton','Lumen','Solaris','Aether','Cosmo','Rift','Ion','Rigel','Helix','Antares','Nix','Altair'];
 // The lobby has a stable mixture of player archetypes rather than one global AI
@@ -105,9 +105,9 @@ let vw=0,vh=0,dpr=1,last=0,uiClock=0,starTime=0,foodTimer=0,toastTimer=0,guideSt
 let game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),worms:[],fx:[],player:null,reported:false,deathElapsed:0,deathPosition:null,deathGhost:null};
 const input={mx:0,my:0,mouseMoved:false,mouseDown:false,boostKey:false,boostTouch:false,keys:new Set(),stickAngle:0,stickPower:0,stickPointer:-1,touchAngle:null};
 const camera={x:WORLD.cx,y:WORLD.cy,zoom:1};
-const stars=Array.from({length:680},(_,i)=>({x:Math.random(),y:Math.random(),r:i%8===0?1.6:rand(.35,1.05),a:rand(.34,1),phase:rand(0,TAU),depth:rand(.04,.17),c:['#e1ecff','#ffb4d8','#86f9fa','#ffffff','#ffe3a2','#93b9ff'][i%6]}));
-const nebula=Array.from({length:8},(_,i)=>({x:rand(.1,.94),y:rand(.1,.88),r:rand(.18,.40),c:['#582a9a','#2875b9','#ce357e','#147f8c','#e4783e','#2968bc','#9f2bb0','#0b8f82'][i]}));
-const skyComets=Array.from({length:6},(_,i)=>({x:rand(0,1),y:rand(0,1),speed:rand(13,37),len:rand(21,51),phase:i*.97,color:['#7df0f9','#ffb2cf','#ffe0a0'][i%3]}));
+const stars=Array.from({length:680},(_,i)=>({x:Math.random(),y:Math.random(),r:i%8===0?1.6:rand(.35,1.05),a:rand(.42,1),phase:rand(0,TAU),depth:rand(.04,.17),c:['#ff1744','#27ff40','#ffe500','#ffffff','#9922ff','#2860ff'][i%6]}));
+const nebula=Array.from({length:8},(_,i)=>({x:rand(.1,.94),y:rand(.1,.88),r:rand(.18,.40),c:['#9922ff','#2860ff','#ff1744','#27ff40','#ffe500','#2860ff','#9922ff','#ff1744'][i]}));
+const skyComets=Array.from({length:10},(_,i)=>({x:rand(0,1),y:rand(0,1),speed:rand(13,37),len:rand(21,51),phase:i*.97,color:['#2860ff','#ff1744','#ffe500','#27ff40','#9922ff'][i%5]}));
 function resize(){
  vw=window.innerWidth;vh=window.innerHeight;dpr=Math.min(2,window.devicePixelRatio||1);
  canvas.width=Math.round(vw*dpr);canvas.height=Math.round(vh*dpr);
@@ -594,7 +594,7 @@ function drawRadar(){
  mc.clearRect(0,0,w,h);mc.fillStyle='#08091b';mc.fillRect(0,0,w,h);
  mc.save();mc.translate(w/2,h/2);
  const circle=Math.min(w,h)*.43;
- mc.strokeStyle='#50dfea';mc.globalAlpha=.48;mc.lineWidth=1.3;
+ mc.strokeStyle='#ffe500';mc.globalAlpha=.78;mc.lineWidth=1.3;
  mc.beginPath();mc.arc(0,0,circle,0,TAU);mc.stroke();mc.globalAlpha=1;
  for(const a of game.worms){
   if(!a.alive)continue;
@@ -652,14 +652,14 @@ function drawFood(t){
  ctx.globalAlpha=1;
 }
 const SKIN_NEBULAE={
- nebula:['#e044ff','#7847ff','#35b9f2'],
- aurora:['#00ffc8','#29abfa','#99ffee'],
- pulsar:['#1d77ff','#5de8ff','#d6faff'],
- flare:['#ff6740','#ffca35','#ffec9c'],
- horizon:['#4129a8','#fc51c2','#43ceff'],
- supernova:['#ff4774','#f971dd','#ffd35f'],
- comet:['#04c6ef','#68f8ff','#c7f9ff'],
- stardust:['#ffc95a','#f29eff','#ffffff']
+ nebula:['#9922ff','#ff1744','#2860ff'],
+ aurora:['#27ff40','#ffe500','#2860ff'],
+ pulsar:['#2860ff','#9922ff','#ffe500'],
+ flare:['#ffe500','#ff1744','#9922ff'],
+ horizon:['#9922ff','#2860ff','#ff1744'],
+ supernova:['#ff1744','#ffe500','#9922ff'],
+ comet:['#2860ff','#27ff40','#9922ff'],
+ stardust:['#ffe500','#9922ff','#ff1744']
 };
 function drawCosmicInterior(w,t,r){
  const nodes=[w,...w.segments],n=nodes.length;
@@ -827,7 +827,7 @@ function drawWorm(w,t){
  }
  if(options.names||w.human){
   ctx.font='900 12px Inter,system-ui,sans-serif';ctx.textAlign='center';
-  ctx.fillStyle=w.human?'#fff':'#d3c1f4';
+  ctx.fillStyle=w.human?'#fff':'#fff';
   ctx.shadowColor='#03020b';ctx.shadowBlur=8;
   ctx.fillText(w.name,w.x,w.y-r*2.2);ctx.shadowBlur=0;
  }
