@@ -61,16 +61,16 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   await page.waitForFunction(()=>window.SpaceMenuSceneMode==='core',null,{timeout:4000});
   await page.keyboard.press('ArrowRight');
   await page.waitForFunction(()=>window.SpaceMenuSceneMode==='race',null,{timeout:4000});
-  // Sections are an optional drawer, not a gateway to the mode chooser.
-  const sections=page.locator('#screen-menu .hub-mode-story-back');
-  await sections.click();
-  await page.locator('#screen-menu .hub-menu').waitFor({state:'visible',timeout:6000});
-  assert.equal(await page.locator('#hub-mode-story').isVisible(),true);
-  await page.keyboard.press('Escape');
-  await page.locator('#screen-menu .hub-menu').waitFor({state:'hidden',timeout:6000});
-  assert.equal(await page.locator('#hub-mode-story').isVisible(),true);
-  assert.equal(await page.evaluate(()=>window.SpaceMenuSceneMode),'race');
-  console.log('PASS: arrow navigation stays on the original main menu; Escape closes only the sections drawer');
+  // No Sections button; the bottom navigation is permanently available.
+  assert.equal(await page.locator('.hub-mode-story-back').count(),0);
+  assert.equal(await page.locator('.hub-story-shortcut').count(),8);
+  assert.equal(await page.locator('.hub-story-shortcut[data-shortcut="map"]').isVisible(),false,
+   'Universe map is hidden in competitive mode');
+  await page.locator('.hub-mode-dots button').first().click();
+  await page.waitForFunction(()=>window.SpaceMenuSceneMode===null,null,{timeout:5000});
+  assert.equal(await page.locator('.hub-story-shortcut[data-shortcut="map"]').isVisible(),true,
+   'Universe map is available on Endless Space');
+  console.log('PASS: visible navigation, campaign-only map, and smooth mode switching');
   await page.locator('.hub-mode-dots button').nth(4).click();
   await page.locator('.hub-mode-story-play').click();
   await page.waitForURL(/cosmic-arena\.html\?mode=race/,{timeout:15000});
