@@ -182,13 +182,15 @@
   // Keep swipe selection permanently visible as the first scene.
   root.classList.add('hub-main-carousel');
   overlay.hidden=false;
-  setMode(0);
+  const requested=new URLSearchParams(location.search).get('select');
+  const chosen=modeStories.findIndex(item=>item.id===requested);
+  setMode(chosen>=0?chosen:0);
   overlay.querySelectorAll('.hub-mode-step').forEach(b=>b.onclick=()=>setMode(current+Number(b.dataset.dir)));
   q(overlay,'.hub-mode-story-play').onclick=()=>{
    const entry=modeStories[current];
    window.SpaceMenuSceneMode=null;
    if(entry.id==='endless'){play.click();}
-   else location.assign('cosmic-arena.html?mode='+encodeURIComponent(entry.id)+'&v=5');
+   else location.assign('cosmic-arena.html?mode='+encodeURIComponent(entry.id)+'&v=6');
   };
   overlay.addEventListener('wheel',ev=>{
    // Scrolling a section, tooltip or button must not change the game mode.
