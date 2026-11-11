@@ -118,6 +118,20 @@ footer{color:#8b9cb7;font-size:11px;padding-top:12px;border-top:1px solid #2f3c5
  .overview-card .overview-bottom span{display:none}
 }
 @media(max-width:400px){.overview-grid{grid-template-columns:1fr 1fr}}
+
+.snap-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.snap-card{display:flex;min-width:0;flex-direction:column;overflow:hidden;text-align:left;
+ border:1px solid #34435e;border-radius:10px;background:#131d2d;color:#f0f4ff;
+ padding:0;transition:border-color .16s,transform .16s,box-shadow .16s}
+.snap-card:hover{border-color:#7295e1;box-shadow:0 10px 28px #0006;transform:translateY(-2px)}
+.snap-card img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;background:#050812}
+.snap-card.mobile img{aspect-ratio:9/16;object-fit:contain;max-height:330px}
+.snap-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px}
+.snap-meta b{font-size:12px;font-weight:840;line-height:1.25}
+.snap-meta small{font-size:10px;color:#91a5c6;white-space:nowrap}
+.snap-group-title{margin:18px 0 9px;color:#b5c6e5;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+@media(max-width:1050px){.snap-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:550px){.snap-grid{grid-template-columns:1fr}.snap-card.mobile img{max-height:500px}}
 </style>
 </head>
 <body>
@@ -146,7 +160,8 @@ footer{color:#8b9cb7;font-size:11px;padding-top:12px;border-top:1px solid #2f3c5
  <button data-id="worms-skins"><span class="index">18</span>Конструктор скинов</button>
  <h2>Инвентарь элементов</h2>
  <button data-jump="tokens"><span class="index">A</span>Цветовая система</button>
- <button data-jump="components"><span class="index">B</span>Все компоненты</button>
+ <button data-jump="gallery"><span class="index">B</span>Все экраны сразу</button>
+ <button data-jump="components"><span class="index">C</span>Все компоненты</button>
 </nav>
 <main>
 <section class="module" id="overview">
@@ -179,6 +194,14 @@ footer{color:#8b9cb7;font-size:11px;padding-top:12px;border-top:1px solid #2f3c5
   <div class="swatch"><div class="color-top" style="background:#a8b6cf"></div><small>Вторичный текст</small><code>#A8B6CF</code></div>
   <div class="swatch"><div class="color-top" style="background:#0b111d"></div><small>Фон</small><code>#0B111D</code></div>
  </div>
+</section>
+<section class="module" id="gallery">
+ <h2>Все экраны рядом — настоящие снимки игры</h2>
+ <p class="lead">Галерея автоматически снята с игровых страниц в браузере Chromium. Нажатие на снимок открывает соответствующий живой экран выше. Отдельно показаны мобильные версии.</p>
+ <h3 class="snap-group-title">ПК · 1280 × 720</h3>
+ <div class="snap-grid" id="snap-grid-desktop" aria-label="Снимки экранов на ПК"></div>
+ <h3 class="snap-group-title">Телефон · 390 × 844</h3>
+ <div class="snap-grid" id="snap-grid-mobile" aria-label="Мобильные снимки экранов"></div>
 </section>
 <section class="module" id="components">
  <h2>Все основные компоненты на одной странице</h2>
@@ -304,6 +327,37 @@ document.querySelectorAll('[data-device]').forEach(b=>b.onclick=()=>{
  shell.className='frame-shell '+b.dataset.device;
 });
 frame.onload=()=>setTimeout(activate,350);
+const captures=[
+ ['main-menu','menu','Главное меню'],['mode-worms','worms','Выбор червей'],['mode-arena','arena','Выбор арены'],['mode-race','race','Выбор гонки'],
+ ['map','map','Карта'],['evolution','evolution','Эволюция'],['achievements','achievements','Достижения'],
+ ['bestiary','bestiary','Бестиарий'],['statistics','statistics','Статистика'],['settings','settings','Настройки'],
+ ['music','music','Музыкальная коллекция'],['daily','daily','Ежедневные награды'],['roulette','roulette','Рулетка'],
+ ['worms-play','worms','Черви — игра'],['worms-pause','worms-pause','Черви — пауза'],['worms-skins','worms-skins','Черви — конструктор'],
+ ['arena-play','arena','Арена'],['arena-pause','arena','Арена — пауза'],['royale','royale','Королевская битва'],
+ ['core','core','Захват ядра'],['race','race','Гонка']
+];
+function fillCaptures(id,mobile=false){
+ const host=document.getElementById(id);
+ const allowed=mobile?new Set(['main-menu','settings','achievements','worms-play','worms-pause','worms-skins','arena-play']):null;
+ for(const [imageId,target,titleText] of captures){
+  if(allowed&&!allowed.has(imageId))continue;
+  const button=document.createElement('button');
+  button.type='button';button.className='snap-card'+(mobile?' mobile':'');
+  button.title='Открыть живой экран: '+titleText;
+  const photo=document.createElement('img');
+  photo.src='ui-snapshots/'+imageId+(mobile?'-mobile':'')+'.jpg';
+  photo.alt=titleText+', настоящий снимок интерфейса';
+  photo.loading='lazy';photo.decoding='async';
+  photo.onerror=()=>button.remove();
+  const label=document.createElement('span');label.className='snap-meta';
+  const b=document.createElement('b');b.textContent=titleText;
+  const small=document.createElement('small');small.textContent=mobile?'390 × 844':'1280 × 720';
+  label.append(b,small);button.append(photo,label);
+  button.onclick=()=>{show(target);if(mobile)document.querySelector('#devices [data-device="mobile"]')?.click()};
+  host.append(button);
+ }
+}
+fillCaptures('snap-grid-desktop');fillCaptures('snap-grid-mobile');
 const cs=['#9922ff','#ff1744','#2860ff','#27ff40','#ffe500','#9922ff','#2860ff','#ff1744','#27ff40','#ffe500','#9922ff','#2860ff'];
 const host=document.getElementById('sample-worm');
 cs.forEach(c=>{const bead=document.createElement('span');bead.className='bead';bead.style.background=c;host.append(bead)});
