@@ -75,14 +75,17 @@ const SKINS=[
 const SETTINGS_KEY='infinity-space-worms-settings-v2';
 function loadSettings(){
  try{const s=JSON.parse(localStorage.getItem(SETTINGS_KEY));if(s&&typeof s==='object')
-  return {skin:SKINS.some(v=>v.id===s.skin)?s.skin:'nebula',glow:s.glow!==false,names:s.names!==false,zoom:clamp(Number(s.zoom)||100,75,140)};}catch(_){}
- return {skin:'nebula',glow:true,names:true,zoom:100};
+  return {skin:SKINS.some(v=>v.id===s.skin)?s.skin:'nebula',glow:s.glow!==false,names:s.names!==false,zoom:clamp(Number(s.zoom)||100,75,140),customEnabled:s.customEnabled===true,customSegments:Array.isArray(s.customSegments)?s.customSegments.filter(c=>/^#[0-9a-f]{6}$/i.test(c)).slice(0,64):[]};}catch(_){}
+ return {skin:'nebula',glow:true,names:true,zoom:100,customEnabled:false,customSegments:[]};
 }
 const options=loadSettings();
 function saveOptions(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(options));}catch(_){}}
 function applySkin(w,id){
  const skin=SKINS.find(s=>s.id===id)||SKINS[0];
- w.skin=skin.id;w.pattern=skin.pattern;w.color=[skin.light,skin.dark];w.accent=skin.accent;
+ w.skin=skin.id;w.pattern=skin.pattern;
+ const custom=w.human&&options.customEnabled&&options.customSegments?.length;
+ w.color=[custom?options.customSegments[0]:skin.light,skin.dark];
+ w.accent=custom?(options.customSegments[1]||skin.accent):skin.accent;
 }
 
 const FOOD_COLORS=['#ff1744','#27ff40','#ffe500','#9922ff','#2860ff'];
@@ -122,8 +125,9 @@ function randomPos(radius=.88){
  const a=rand(0,TAU),r=Math.sqrt(Math.random())*radius;
  return {x:WORLD.cx+Math.cos(a)*r*WORLD.rx,y:WORLD.cy+Math.sin(a)*r*WORLD.ry};
 }
-function wormRadius(w){return clamp(10+Math.sqrt(w.mass)*.76,14,24)}
-function segmentCount(w){return clamp(Math.round(12+w.mass*.31),18,190)}
+// Radius changes mildly. Every food reward feeds an uncapped number of body segments.
+function wormRadius(w){return clamp(10.5+Math.log1p(Math.max(1,w.mass))*1.72,14,28)}
+function segmentCount(w){const mass=Math.max(1,w.mass);return Math.max(19,Math.floor(12+2.5*Math.sqrt(mass)+.02*mass))}
 // Spawn clearance is checked along the entire proposed body — not just the head.
 // Also reserve space in front of the new head so it cannot appear on someone's path.
 function spawnPosition(angle,count,nearPlayer=false){
@@ -492,10 +496,17 @@ function updateWorm(w,dt){
   }
  }else w.dropClock=0;
  const target=segmentCount(w);
+ // Large pickups feed the tail progressively rather than scaling the whole worm.
  if(w.segments.length<target){
-  const last=w.segments[w.segments.length-1]||w,prev=w.segments[w.segments.length-2]||w;
-  w.segments.push({x:last.x+(last.x-prev.x),y:last.y+(last.y-prev.y)});
- }else if(w.segments.length>target)w.segments.length=target;
+  const count=Math.min(target-w.segments.length,Math.max(1,Math.floor(dt*120)));
+  for(let n=0;n<count;n++){
+   const last=w.segments[w.segments.length-1]||w,prev=w.segments[w.segments.length-2]||w;
+   const dx=last.x-prev.x,dy=last.y-prev.y,d=Math.hypot(dx,dy)||1;
+   w.segments.push({x:last.x+dx/d*gap,y:last.y+dy/d*gap});
+  }
+ }else if(w.segments.length>target){
+  w.segments.length=Math.max(target,w.segments.length-Math.max(1,Math.floor(dt*120)));
+ }
  w.bestMass=Math.max(w.bestMass,w.mass);
  const border=((w.x-WORLD.cx)/WORLD.rx)**2+((w.y-WORLD.cy)/WORLD.ry)**2;
  if(border>1){w.invulnerable=0;kill(w,null,'wall');return;}
@@ -533,7 +544,11 @@ function collisions(){
    const hit=entry.head?wr+radius*.86:wr+radius*.69;
    if(dx*dx+dy*dy>=hit*hit)return;
    if(entry.head){
-    kill(w,other,'head');kill(other,w,'head');
+    // Head-on collisions kill ONE rival: larger mass wins;
+    // speed and stable ID break true ties deterministically.
+    const winner=w.mass>other.mass?w:other.mass>w.mass?other:
+     w.speed>other.speed?w:other.speed>w.speed?other:(w.id<other.id?w:other);
+    kill(winner===w?other:w,winner,'head');
    }else kill(w,other,'body');
   });
  }
@@ -1025,7 +1040,7 @@ function renderSkinSettings(){
   const title=document.createElement('strong');title.textContent=skin[language];
   btn.append(preview,title);
   btn.onclick=()=>{
-   options.skin=skin.id;saveOptions();applySkin(game.player,options.skin);
+   options.skin=skin.id;options.customEnabled=false;options.customSegments=[];saveOptions();applySkin(game.player,options.skin);
    renderSkinSettings();
   };
   grid.append(btn);
@@ -1181,7 +1196,7 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
     alive:game.worms.filter(w=>w.alive).length,food:game.food.length,
     world:{w:WORLD.w,h:WORLD.h,rx:WORLD.rx,ry:WORLD.ry},
     targetFood:FOOD_TARGET,botCount:BOT_COUNT,gridCells:game.foodGrid.size,
-    skin:options.skin,glow:options.glow,names:options.names,zoomSetting:options.zoom,
+    skin:options.skin,customEnabled:options.customEnabled,customColors:options.customSegments?.length||0,glow:options.glow,names:options.names,zoomSetting:options.zoom,
     lastDeath:game.lastDeath||null,guideOpen:!$('worm-guide').hidden,
     settingsOpen:!$('worm-settings').hidden,boosting:game.player.boost,
     deathElapsed:game.deathElapsed,deathDelay:DEATH_REPLAY_SECONDS,
@@ -1195,7 +1210,7 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
   botStyles:()=>Object.fromEntries(
     Object.keys(BOT_PERSONAS).map(id=>[id,
       game.worms.filter(w=>!w.human&&w.persona===id).length])),
-  setMass:value=>{game.player.mass=Math.max(35,Math.min(1900,Number(value)||60));
+  setMass:value=>{game.player.mass=Math.max(35,Number(value)||60);
     game.player.bestMass=Math.max(game.player.bestMass,game.player.mass);updateUI();},
   giveFood:value=>{game.player.mass+=Math.max(1,Number(value)||10);
     game.player.foodEaten++;updateUI();},
