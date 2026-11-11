@@ -102,7 +102,7 @@ const BOT_PERSONAS={
 };
 const DEATH_REPLAY_SECONDS=3.25;
 let vw=0,vh=0,dpr=1,last=0,uiClock=0,starTime=0,foodTimer=0,toastTimer=0,guideStep=0,guideReturn='playing';
-let game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),worms:[],fx:[],player:null,reported:false,deathElapsed:0,deathPosition:null};
+let game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),worms:[],fx:[],player:null,reported:false,deathElapsed:0,deathPosition:null,deathGhost:null};
 const input={mx:0,my:0,mouseMoved:false,mouseDown:false,boostKey:false,boostTouch:false,keys:new Set(),stickAngle:0,stickPower:0,stickPointer:-1,touchAngle:null};
 const camera={x:WORLD.cx,y:WORLD.cy,zoom:1};
 const stars=Array.from({length:470},(_,i)=>({x:Math.random(),y:Math.random(),r:i%7===0?1.5:rand(.4,1),a:rand(.3,.95),phase:rand(0,TAU),depth:rand(.04,.17),c:['#e1ecff','#c8a6ff','#a4dfff','#ffffff'][i%4]}));
@@ -251,7 +251,7 @@ function notify(text){
  const el=$('worm-toast');el.textContent=text;el.classList.add('show');toastTimer=1.8;
 }
 function init(){
- game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),worms:[],fx:[],player:null,reported:false,deathElapsed:0,deathPosition:null};
+ game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),worms:[],fx:[],player:null,reported:false,deathElapsed:0,deathPosition:null,deathGhost:null};
  const human=!DEMO;
  const p=createWorm(DEMO?'Astra':(window.InfinityProfile?.getName()||'PILOT'),human,0);
  game.player=p;game.worms.push(p);
@@ -402,6 +402,11 @@ function kill(w,killer,reason){
   game.state='death-replay';
   game.deathElapsed=0;
   game.deathPosition={x:w.x,y:w.y};
+  game.deathGhost={
+   x:w.x,y:w.y,r:wormRadius(w),color:w.color[0],accent:w.accent,
+   segments:w.segments.map(p=>({x:p.x,y:p.y})),
+   life:0,angle:w.angle
+  };
   document.body.classList.add('worm-death-replay');
   const won=w.leadTime>=20;
   if(!game.reported){
@@ -816,6 +821,44 @@ function drawWorm(w,t){
  ctx.restore();
 }
 
+function paintDeathGhost(){
+ const ghost=game.deathGhost;
+ if(!ghost||game.state!=='death-replay')return;
+ const p=clamp(game.deathElapsed/1.65,0,1),a=Math.pow(1-p,2);
+ if(a<.005)return;
+ const r=ghost.r;
+ ctx.save();ctx.lineCap='round';ctx.lineJoin='round';ctx.globalAlpha=a*.76;
+ ctx.beginPath();
+ const tail=ghost.segments[ghost.segments.length-1];
+ ctx.moveTo(tail.x,tail.y);
+ for(let i=ghost.segments.length-2;i>=0;i--){
+  const node=ghost.segments[i];ctx.lineTo(node.x,node.y);
+ }
+ ctx.lineTo(ghost.x,ghost.y);
+ ctx.strokeStyle=ghost.color;ctx.lineWidth=r*1.8;
+ ctx.shadowColor=ghost.accent;ctx.shadowBlur=26+p*23;ctx.stroke();
+ ctx.globalAlpha=a*.55;ctx.strokeStyle='#fff4ff';ctx.lineWidth=r*.72;ctx.stroke();
+ ctx.globalAlpha=a;ctx.strokeStyle=ghost.accent;ctx.shadowBlur=10;ctx.lineWidth=2.5;
+ for(let j=0;j<2;j++){
+  const expansion=(p*.75+j*.33)*r*8;
+  ctx.beginPath();ctx.arc(ghost.x,ghost.y,r+expansion,0,TAU);
+  ctx.globalAlpha=a*.47*(1-j*.55);ctx.stroke();
+ }
+ ctx.restore();
+}
+function paintDeathVignette(){
+ if(game.state!=='death-replay')return;
+ const elapsed=game.deathElapsed;
+ const progress=clamp((elapsed-.2)/(DEATH_REPLAY_SECONDS-.2),0,1);
+ const soft=progress*progress*(3-2*progress);
+ ctx.save();
+ const shade=ctx.createRadialGradient(vw*.5,vh*.5,Math.min(vw,vh)*.13,
+  vw*.5,vh*.5,Math.max(vw,vh)*.72);
+ shade.addColorStop(0,'rgba(4,9,21,0)');
+ shade.addColorStop(1,'rgba(4,8,22,'+(soft*.48).toFixed(3)+')');
+ ctx.fillStyle=shade;ctx.fillRect(0,0,vw,vh);
+ ctx.restore();
+}
 function paint(t){
  ctx.setTransform(dpr,0,0,dpr,0,0);
  backdrop(t);
@@ -831,6 +874,7 @@ function paint(t){
  ctx.beginPath();ctx.arc(WORLD.cx,WORLD.cy,WORLD.rx,0,TAU);ctx.stroke();
  ctx.shadowBlur=0;
  drawFood(t);
+ paintDeathGhost();
  const sorted=game.worms.filter(w=>w.alive).sort((a,b)=>a===p?1:b===p?-1:a.mass-b.mass);
  for(const w of sorted)drawWorm(w,t);
  for(const f of game.fx){ctx.globalAlpha=clamp(f.t/f.max,0,1);ctx.fillStyle=f.c;ctx.fillRect(f.x,f.y,f.r,f.r);}
@@ -840,6 +884,7 @@ function paint(t){
   vw/2,vh/2,Math.max(vw,vh)*.81);
  vignette.addColorStop(0,'#07041100');vignette.addColorStop(1,'#03020ab0');
  ctx.fillStyle=vignette;ctx.fillRect(0,0,vw,vh);
+ paintDeathVignette();
 }
 function renderSkinSettings(){
  const grid=$('worm-skin-grid');grid.replaceChildren();
