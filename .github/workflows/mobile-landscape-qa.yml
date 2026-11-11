@@ -5,7 +5,7 @@ on:
     paths:
       - game.js
       - index.html
-      - mobile-ui-polish.css
+      - ui-app.css
       - .github/workflows/mobile-landscape-qa.yml
       - tests/mobile-landscape-qa.cjs
   workflow_dispatch:
