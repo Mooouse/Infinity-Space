@@ -208,82 +208,115 @@ body.worm-death-replay #worm-hud{
  }
 }
 
-
-/* v4 | Deep-space spectrum: lively, balanced hues instead of one purple wash. */
+/* v5 — saturated cosmic palette: RED / GREEN / YELLOW / PURPLE / BLUE.
+   Bright accents are deliberate; no aqua, cyan, teal or pastel tones. */
 :root{
- --ink:#050c1a;--purple:#6638df;--line:#4b9ab5;
- --glow:#79f1f5;--text:#f1f8ff;--muted:#b6c4dc;
- --cosmic-cyan:#4cecf1;--cosmic-pink:#ff6ebe;
- --cosmic-gold:#ffd36d;--cosmic-blue:#5bafff;
+ --ink:#050510;--purple:#8e18ff;--line:#2860ff;--glow:#a026ff;
+ --text:#fff;--muted:#e7e4ff;--space-red:#ff1744;
+ --space-green:#27ff40;--space-yellow:#ffe500;
+ --space-purple:#9922ff;--space-blue:#2860ff;
 }
 .worm-brand{
- border-color:#42a6cb8a;border-bottom-color:#228bba;
- background:linear-gradient(120deg,#101d36ec,#170e36e9);
+ border-color:#2860ff;border-bottom-color:#151a93;
+ background:linear-gradient(125deg,#101543ee,#1b0c35f4);
 }
-.worm-brand em{color:var(--cosmic-cyan);text-shadow:0 0 13px #42ebff66}
-.worm-brand small{color:#79dfef}
-.worm-metric:first-child{border-color:#56abff91;border-bottom-color:#2672c6}
-.worm-metric:nth-child(2){border-color:#fd84c991;border-bottom-color:#d950ae}
-.worm-metric:nth-child(3){border-color:#efc77599;border-bottom-color:#b68132}
-.worm-metric:first-child strong{color:#8ad7ff}
-.worm-metric:nth-child(2) strong{color:#ff99d1}
-.worm-metric:nth-child(3) strong{color:#ffe2a0}
-.worm-leaders{border-color:#458dbba0;border-bottom-color:#247bae;
- background:linear-gradient(145deg,#0d2236ed,#190e32ed)}
-.worm-leaders h3{color:#76e5ff}
-.worm-rank:nth-child(3n+1) b{color:#7fe9f5}
-.worm-rank:nth-child(3n+2) b{color:#ff9dd5}
-.worm-rank:nth-child(3n) b{color:#fbd489}
-.worm-radar{border-color:#43aac78f;border-bottom-color:#247f9e}
-.worm-radar small{color:#84ddf2}
-.worm-pause-button{border-color:#6ddef0;border-bottom-color:#236888;
- background:linear-gradient(155deg,#145679,#122b4d)}
-.worm-boost-button{border-color:#f4b069;border-bottom-color:#ac5b49;
- background:linear-gradient(145deg,#9e423d,#55316a)}
-.worm-boost-button.is-boosting{border-color:#ffdf91;
- background:linear-gradient(135deg,#ff7e59,#bd41a0);
- box-shadow:0 0 31px #ff8f7777,0 0 16px #ff63be55}
-.worm-hint{border-color:#398eaf99;background:#0b1728e5;color:#aee6f4}
-.worm-stick{border-color:#64bcec9c;background:radial-gradient(circle,#3ea9dc35,#2b1b5733)}
-.worm-thumb{border-color:#d2f8ff;background:linear-gradient(145deg,#55d9ec,#5146cf)}
-.worm-eyebrow{color:#77eaf0}
+.worm-brand em{color:var(--space-yellow);text-shadow:0 0 13px #ffe50089}
+.worm-brand small{color:var(--space-green)}
+.worm-metric:first-child{border-color:var(--space-green);border-bottom-color:#0c6622}
+.worm-metric:nth-child(2){border-color:var(--space-red);border-bottom-color:#790c22}
+.worm-metric:nth-child(3){border-color:var(--space-yellow);border-bottom-color:#7a6208}
+.worm-metric:first-child strong{color:var(--space-green)}
+.worm-metric:nth-child(2) strong{color:var(--space-red)}
+.worm-metric:nth-child(3) strong{color:var(--space-yellow)}
+.worm-leaders{
+ border-color:var(--space-blue);border-bottom-color:#1e167d;
+ background:linear-gradient(145deg,#0b133bef,#1c0b2def);
+}
+.worm-leaders h3{color:var(--space-yellow)}
+.worm-rank:nth-child(5n+1) b{color:var(--space-red)}
+.worm-rank:nth-child(5n+2) b{color:var(--space-green)}
+.worm-rank:nth-child(5n+3) b{color:var(--space-yellow)}
+.worm-rank:nth-child(5n+4) b{color:var(--space-purple)}
+.worm-rank:nth-child(5n) b{color:var(--space-blue)}
+.worm-rank.mine{color:#fff}
+.worm-radar{border-color:var(--space-purple);border-bottom-color:#420a81}
+.worm-radar small{color:var(--space-yellow)}
+.worm-pause-button{
+ border-color:var(--space-blue);border-bottom-color:#11187e;
+ background:linear-gradient(155deg,#1d39ac,#241362);
+}
+.worm-boost-button{
+ border-color:var(--space-red);border-bottom-color:#640919;
+ background:linear-gradient(145deg,#97112b,#4a0e69);
+}
+.worm-boost-button.is-boosting{
+ border-color:var(--space-yellow);
+ background:linear-gradient(135deg,#ff1744,#9518ff);
+ box-shadow:0 0 30px #ff174491,0 0 15px #ffea0080;
+}
+.worm-hint{border-color:var(--space-blue);background:#0a0c25ea;color:#fff}
+.worm-stick{
+ border-color:var(--space-purple);
+ background:radial-gradient(circle,#9c1cff45,#18209826);
+}
+.worm-thumb{
+ border-color:var(--space-yellow);
+ background:linear-gradient(145deg,#9922ff,#1b38ed);
+}
+.worm-toast{border-color:var(--space-yellow);border-bottom-color:var(--space-red)}
+.worm-eyebrow{color:var(--space-green)}
 .worm-panel{
- border-color:#5b9bc4;border-bottom-color:#4b238a;
- background:radial-gradient(ellipse at 110% 0%,#42217f83,transparent 50%),
- radial-gradient(ellipse at -8% 100%,#086a8b3f,transparent 55%),
- linear-gradient(150deg,#101e36,#0b0f23 76%);
+ border-color:var(--space-purple);border-bottom-color:#46117b;
+ background:
+ radial-gradient(ellipse at 110% 0%,#941cff45,transparent 51%),
+ radial-gradient(ellipse at -8% 90%,#174aff35,transparent 56%),
+ linear-gradient(150deg,#111134,#08091c 76%);
 }
-.worm-panel h1{color:#f5f5ff;text-shadow:0 0 28px #459fe036}
-.worm-panel h2{color:#ccefff}
-.worm-actions button:not(.worm-primary){border-color:#46a0bb;border-bottom-color:#22607f;
- background:linear-gradient(155deg,#194c65,#1a234b)}
-.worm-actions button.worm-primary{border-color:#f5a5dc;border-bottom-color:#64349c;
- background:linear-gradient(150deg,#a44de0,#5439c8)}
-.worm-results>div:nth-child(1){border-color:#4c9cd0;border-bottom-color:#1e678c}
-.worm-results>div:nth-child(2){border-color:#dc6dbe;border-bottom-color:#873d7f}
-.worm-results>div:nth-child(3){border-color:#e4bd69;border-bottom-color:#886735}
-.worm-results>div:nth-child(1) strong{color:#87e3ff}
-.worm-results>div:nth-child(2) strong{color:#fcb0e4}
-.worm-results>div:nth-child(3) strong{color:#ffdf93}
-.worm-setting-toggle,.worm-setting-range{border-color:#4a83ae;background:#0f2136}
-.worm-setting-toggle input:checked+i{background:#1da7ad;border-color:#72edfa}
-.worm-setting-range input{accent-color:#43d8ef}
-.worm-settings-panel h2{color:#83edf1}
-.worm-skin-card{border-color:#48709b;background:linear-gradient(155deg,#122640,#11142b)}
-.worm-skin-card:hover{border-color:#75e5ec}
-.worm-skin-card.active{border-color:#78f0f2;border-bottom-color:#2e9eae;
- background:linear-gradient(145deg,#184a67,#392160);box-shadow:0 0 19px #4ad3e848}
+.worm-panel h1{color:#fff;text-shadow:0 0 28px #9922ff66}
+.worm-panel h2{color:var(--space-yellow)}
+.worm-panel p{color:#eeeaff}
+.worm-actions button:not(.worm-primary){
+ border-color:var(--space-blue);border-bottom-color:#12107c;
+ background:linear-gradient(155deg,#111b7e,#160b4a);
+}
+.worm-actions button.worm-primary{
+ border-color:var(--space-purple);border-bottom-color:#471076;
+ background:linear-gradient(150deg,#8015e0,#c118ef);
+}
+.worm-results>div:nth-child(1){border-color:var(--space-green);border-bottom-color:#125a21}
+.worm-results>div:nth-child(2){border-color:var(--space-red);border-bottom-color:#6d0e27}
+.worm-results>div:nth-child(3){border-color:var(--space-yellow);border-bottom-color:#645008}
+.worm-results>div:nth-child(1) strong{color:var(--space-green)}
+.worm-results>div:nth-child(2) strong{color:var(--space-red)}
+.worm-results>div:nth-child(3) strong{color:var(--space-yellow)}
+.worm-setting-toggle,.worm-setting-range{
+ border-color:var(--space-blue);background:#111431;
+}
+.worm-setting-toggle input:checked+i{
+ background:#128c2c;border-color:var(--space-green);
+}
+.worm-setting-range input{accent-color:var(--space-blue)}
+.worm-settings-panel h2{color:var(--space-yellow)}
+.worm-skin-card{
+ border-color:var(--space-blue);background:linear-gradient(155deg,#0f1238,#100924);
+}
+.worm-skin-card:hover{border-color:var(--space-yellow)}
+.worm-skin-card.active{
+ border-color:var(--space-green);border-bottom-color:#19662e;
+ background:linear-gradient(145deg,#142962,#2b1055);
+ box-shadow:0 0 22px #27ff403e;
+}
 .worm-skin-preview{
  background:radial-gradient(ellipse at 20% 20%,var(--swatch-light) 0%,transparent 49%),
- radial-gradient(ellipse at 80% 90%,var(--swatch-accent) 0%,transparent 52%),#040b1a;
+ radial-gradient(ellipse at 80% 90%,var(--swatch-accent) 0%,transparent 52%),#04051b;
 }
 .worm-skin-preview::before{
  background:
-  radial-gradient(circle at 8% 42%,#fff 0 1px,transparent 2px),
-  radial-gradient(circle at 48% 23%,#fff 0 1px,transparent 2px),
-  radial-gradient(circle at 83% 72%,var(--swatch-accent) 0 2px,transparent 3px),
-  repeating-linear-gradient(90deg,var(--swatch-dark) 0,var(--swatch-light) 8px,
-   var(--swatch-accent) 12px,var(--swatch-light) 17px,var(--swatch-dark) 28px);
+ radial-gradient(circle at 8% 42%,#fff 0 1px,transparent 2px),
+ radial-gradient(circle at 48% 23%,#fff 0 1px,transparent 2px),
+ radial-gradient(circle at 83% 72%,var(--swatch-accent) 0 2px,transparent 3px),
+ repeating-linear-gradient(90deg,var(--swatch-dark) 0,var(--swatch-light) 8px,
+  var(--swatch-accent) 12px,var(--swatch-light) 17px,var(--swatch-dark) 28px);
  background-size:80px 20px,47px 35px,60px 19px,100px 100%;
  animation:worm-skin-drift 5.2s linear infinite;
 }
@@ -316,10 +349,9 @@ body.worm-death-replay #worm-hud{
  75%{opacity:1}
  100%{transform:translateX(180px);opacity:0}
 }
-/* A longer, steadier dissolve with reduced hard cut and no abrupt scale pop. */
 body.worm-death-replay #worm-hud{transition:opacity .85s ease}
 #worm-result.is-revealing{
- background:#061020d8;
+ background:#060822dc;
  animation:worm-cinematic-curtain 1.32s ease-out both;
 }
 #worm-result.is-revealing .worm-panel{
