@@ -1,0 +1,31 @@
+name: UI responsiveness and navigation audit
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'game.js'
+      - 'ui-v15*.css'
+      - 'menu-*.js'
+      - 'menu-*.css'
+      - 'player-profile.*'
+      - 'index.html'
+      - 'tests/full-ui-audit.cjs'
+      - '.github/workflows/ui-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ui-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Chromium
+        run: |
+          npm install --silent --no-audit --no-fund playwright@1.56.1
+          npx playwright install --with-deps chromium --only-shell
+      - name: Audit screens, Back navigation and responsive text
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/infinity-ui-audit-http.log 2>&1 &
+          sleep 2
+          timeout 500 node tests/full-ui-audit.cjs
