@@ -48,6 +48,45 @@ async function clickBack(page){
       if(screen==='map')await page.locator('#screen-map').waitFor({state:'visible',timeout:10000});
       else await page.locator('#screen-'+screen).waitFor({state:'visible',timeout:10000});
      }
+     // Exercise the actual, non-destructive controls before checking layout.
+     if(screen==='settings'){
+      for(const tab of ['audio','graphics','general','control']){
+       await page.locator('#screen-settings [data-settings-tab="'+tab+'"]').click();
+       const pane=page.locator('#screen-settings [data-settings-pane="'+tab+'"]');
+       if(!await pane.isVisible())failures.push({width,screen,reason:'tab-did-not-open',tab});
+      }
+     }else if(screen==='achievements'){
+      await page.locator('#screen-achievements [data-ach-filter="rare"]').click();
+      if(!await page.locator('#screen-achievements [data-ach-filter="rare"]').evaluate(e=>e.classList.contains('active')))
+       failures.push({width,screen,reason:'filter-inert'});
+      await page.locator('#screen-achievements [data-ach-filter="all"]').click();
+     }else if(screen==='bestiary'){
+      const entries=page.locator('#screen-bestiary [data-bestiary]');
+      if(await entries.count()>3){
+       await entries.nth(3).click();
+       if(!await entries.nth(3).evaluate(e=>e.classList.contains('selected')))
+        failures.push({width,screen,reason:'bestiary-entry-inert'});
+      }
+     }else if(screen==='map'){
+      for(const id of ['atlas-zoom-in','atlas-zoom-out','atlas-center']){
+       const btn=page.locator('#screen-map #'+id);
+       if(!await btn.count())failures.push({width,screen,reason:'missing-map-button',id});
+       else await btn.click({timeout:6000});
+      }
+      const details=page.locator('#screen-map .v15-map-details');
+      if(await details.count()){
+       await details.locator('summary').click();
+       const open=await page.evaluate(measurements);
+       if(open.doc>width+2||open.outliers.length)
+        failures.push({width,screen,reason:'marker-details-overflow',layout:open});
+       await details.locator('summary').click();
+      }
+     }else if(screen==='music'){
+      if(await page.locator('#screen-music .music-track-card').count()<8)
+       failures.push({width,screen,reason:'tracks-missing'});
+      const free=page.locator('#screen-music [data-music-action="0"]');
+      if(await free.count()&&!await free.isDisabled())await free.click({timeout:6500});
+     }
      const v=await page.evaluate(measurements);layouts.push({width,height,page:screen,...v});
      if(!v.visibleRoot&&!['statistics'].includes(screen))failures.push({width,screen,reason:'empty-screen'});
      if(screen!=='menu'){
@@ -63,6 +102,18 @@ async function clickBack(page){
     }
    }
    if(width===390||width===1366){
+    // Separate persistent statistics modal must close to the same menu, not blank.
+    await page.locator('.hub-story-shortcut[data-shortcut="statistics"]').click();
+    await page.locator('.infinity-stats-panel').waitFor({state:'visible',timeout:10000});
+    const tabs=page.locator('.infinity-stats-tabs button');
+    if(await tabs.count()!==6)failures.push({width,reason:'stats-tabs-missing'});
+    for(const mode of ['overall','endless','arena','royale','core','race']){
+     await page.locator('.infinity-stats-tabs [data-mode="'+mode+'"]').click();
+     if(!await page.locator('.infinity-stats-detail').isVisible())
+      failures.push({width,reason:'statistics-detail-empty',mode});
+    }
+    await page.locator('.infinity-overlay-close').click();
+    await page.locator('#screen-menu .hub-mode-story-play').waitFor({state:'visible',timeout:10000});
     for(const chain of [
      ['settings','music'],['settings','tutorial'],['map','settings'],['evolution','bestiary']
     ]){
@@ -89,6 +140,20 @@ async function clickBack(page){
       await page.locator('#screen-menu .hub-mode-story-play').waitFor({state:'visible',timeout:25000});
      }
     }
+   }
+   if(width===390){
+    // A viewport change while a screen is open must not destroy navigation.
+    await page.locator('.hub-story-shortcut[data-shortcut="music"]').click({timeout:7000});
+    await page.locator('#screen-music').waitFor({state:'visible',timeout:11000});
+    for(const size of [{width:320,height:568},{width:2560,height:1440},{width:390,height:844}]){
+     await page.setViewportSize(size);
+     await page.waitForTimeout(110);
+     const v=await page.evaluate(measurements);
+     if(v.doc>size.width+2||v.outliers.length)
+      failures.push({width:390,screen:'music',reason:'resize-overflow',size,layout:v});
+    }
+    await clickBack(page);
+    await page.locator('#screen-menu .hub-mode-story-play').waitFor({state:'visible',timeout:11000});
    }
    await context.close();
   }
