@@ -528,3 +528,10 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-dots button{
  body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy,
  body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-step{transition:none!important}
 }
+
+/* The universe map is a campaign feature. Hide it for all competitive modes,
+   including the bottom dock and the optional secondary sections drawer. */
+body.ui-v15 #screen-menu.hub-main-carousel:not(.hub-mode-endless) .hub-story-shortcut[data-shortcut="map"],
+body.ui-v15 #screen-menu.hub-main-carousel:not(.hub-mode-endless) .hub-progress-tile[data-page="map"]{
+ display:none!important;visibility:hidden!important;pointer-events:none!important;
+}
