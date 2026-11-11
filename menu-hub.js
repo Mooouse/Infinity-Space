@@ -70,7 +70,7 @@
   overlay.hidden=false;
   overlay.setAttribute('aria-label',t(['Game mode selection','Выбор режима игры','Elegir modo de juego']));
   overlay.innerHTML='<header class="hub-mode-story-top">'+
-    '<button class="hub-mode-story-back" type="button">← <span></span></button>'+
+    '<span class="hub-mode-story-home">INFINITY SPACE</span>'+
     '<div class="hub-mode-story-brand">INFINITY SPACE <span>/</span> GAME MODES</div>'+
     '<div class="hub-story-quick" aria-label="Daily rewards"></div>'+
     '<span class="hub-mode-story-counter"></span></header>'+
@@ -179,22 +179,6 @@
   });
   // The left header button opens the utility/navigation drawer.
   q(overlay,'.hub-mode-gesture').textContent=t(['← SWIPE · WHEEL · ARROWS →','← СВАЙП · КОЛЕСО · СТРЕЛКИ →','← DESLIZA · RUEDA · FLECHAS →']);
-  // The carousel IS the main menu, not an extra overlay opened by a tile.
-  // Secondary navigation uses the original clickable controls in a drawer.
-  const sectionsButton=q(overlay,'.hub-mode-story-back');
-  sectionsButton.setAttribute('aria-controls','hub-sections-drawer');
-  const sectionsLabel=t(['SECTIONS','РАЗДЕЛЫ','SECCIONES']);
-  const closeLabel=t(['CLOSE','ЗАКРЫТЬ','CERRAR']);
-  const optionsOpened=()=>root.classList.contains('hub-options-open');
-  const showOptions=(show)=>{
-   root.classList.toggle('hub-options-open',show);
-   sectionsButton.setAttribute('aria-expanded',String(show));
-   q(sectionsButton,'span').textContent=show?closeLabel:sectionsLabel;
-   if(show){q(root,'.hub-menu')?.scrollTo({top:0,behavior:'instant'});}
-  };
-  sectionsButton.onclick=()=>showOptions(!optionsOpened());
-  sectionsButton.setAttribute('aria-expanded','false');
-  sectionsButton.setAttribute('aria-label',sectionsLabel);
   // Keep swipe selection permanently visible as the first scene.
   root.classList.add('hub-main-carousel');
   overlay.hidden=false;
@@ -203,7 +187,7 @@
   q(overlay,'.hub-mode-story-play').onclick=()=>{
    const entry=modeStories[current];
    window.SpaceMenuSceneMode=null;
-   if(entry.id==='endless'){showOptions(false);play.click();}
+   if(entry.id==='endless'){play.click();}
    else location.assign('cosmic-arena.html?mode='+encodeURIComponent(entry.id)+'&v=5');
   };
   overlay.addEventListener('wheel',ev=>{
@@ -246,15 +230,14 @@
   // from interpreting Close Modes as "launch the game".
   const onKey=(e)=>{
    if(!root.isConnected||!root.classList.contains('active'))return;
-   if(e.code==='Escape'&&optionsOpened()){
-    e.preventDefault();e.stopImmediatePropagation();showOptions(false);
-   }else if((e.code==='ArrowLeft'||e.code==='ArrowRight')&&!optionsOpened()){
+   if(e.code==='ArrowLeft'||e.code==='ArrowRight'){
+    if(e.target?.closest?.('button,a,input,textarea'))return;
     e.preventDefault();e.stopImmediatePropagation();
     setMode(current+(e.code==='ArrowRight'?1:-1));
    }
   };
   window.addEventListener('keydown',onKey,true);
-  return ()=>showOptions(false);
+  return ()=>{};
  }
 
  function reshape(root){
