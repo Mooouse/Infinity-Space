@@ -8779,9 +8779,9 @@ body.ui-v15 #modal #screen-settings .control-mini-touch{
    Scoped to the actual six-mode carousel.
    ================================================================ */
 body.ui-v15 #screen-menu.hub-main-carousel{
- --menu-ink:#f6f0ff;--menu-muted:#c8bcda;
+ --menu-ink:#f1f1f8;--menu-muted:#c2bfce;
  --menu-surface:linear-gradient(160deg,rgba(28,17,49,.95),rgba(13,9,28,.96));
- --menu-line:#755397;--menu-strong:#ad82ff;--menu-purple:#4d22c6;
+ --menu-line:#525061;--menu-strong:#aaa4c7;--menu-purple:#4d22c6;
  color:var(--menu-ink)!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story{
@@ -8817,12 +8817,7 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-home::before{
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-brand{display:none!important}
 body.ui-v15 #screen-menu.hub-main-carousel .hub-profile-chip{
- --interaction-accent:#aa7cff;
- min-height:37px!important;padding:6px 11px!important;max-width:152px!important;
- border:1px solid #654585!important;border-bottom:3px solid #3b245c!important;
- border-radius:6px!important;
- background:linear-gradient(160deg,#30204c,#19112d)!important;
- color:#f5edff!important;box-shadow:0 4px 10px #0005!important;
+ --interaction-accent:#ada2d7!important;min-height:37px!important;padding:6px 11px!important;max-width:152px!important;border:1px solid #535063!important;border-bottom:2px solid #282838!important;border-radius:8px 3px 8px 3px!important;background:linear-gradient(160deg,#272735,#131421)!important;color:#e6e8f2!important;box-shadow:inset 0 1px #ffffff0b,0 4px 10px #0007!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-profile-name{color:#f5edff!important}
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-counter{
@@ -8834,12 +8829,7 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick{
  display:flex!important;gap:7px!important;margin:0!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward{
- width:38px!important;height:38px!important;min-height:38px!important;min-width:38px!important;
- flex-basis:38px!important;padding:0!important;
- background:linear-gradient(155deg,#30213f,#19112d)!important;
- border:1px solid #705092!important;border-bottom:3px solid #412660!important;
- border-radius:6px!important;color:#ffe500!important;
- box-shadow:0 3px 9px #0006!important;
+ width:38px!important;height:38px!important;min-height:38px!important;min-width:38px!important;flex-basis:38px!important;padding:0!important;background:linear-gradient(160deg,#282733,#14141f)!important;border:1px solid #555067!important;border-bottom:2px solid #302c3c!important;border-radius:8px 3px 8px 3px!important;color:#ffe500!important;box-shadow:0 3px 9px #0006!important;
 }
 /* The top right controls float independently instead of sitting inside a
    second outlined bar. No blue/cyan remains on their surfaces. */
@@ -8879,77 +8869,42 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
  overflow:visible!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-kicker{
- font-size:12px!important;line-height:1.2!important;
- color:#bfa3ff!important;letter-spacing:.16em!important;
- font-weight:950!important;margin:0 0 15px!important;text-shadow:0 0 12px #a773ff36!important;
+ display:block!important;width:fit-content!important;padding:3px 0 3px 11px!important;border-left:3px solid #a9a1c8!important;font-size:11px!important;color:#c9c3d9!important;font-weight:850!important;letter-spacing:.13em!important;margin:0 0 15px!important;text-shadow:none!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
- font-size:clamp(46px,5.8vw,88px)!important;line-height:.98!important;
- letter-spacing:-.058em!important;max-width:100%!important;
- color:#f7efff!important;
- text-shadow:0 6px 23px #03020dbb!important;
- margin:0 0 17px!important;
- font-weight:950!important;
- text-wrap:balance!important;overflow-wrap:normal!important;
+ font-size:clamp(44px,5.5vw,80px)!important;line-height:1.02!important;letter-spacing:-.045em!important;max-width:100%!important;color:#f7f7fb!important;font-weight:900!important;text-shadow:0 5px 21px #000b!important;margin:0 0 17px!important;text-wrap:balance!important;overflow-wrap:normal!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-goal{
- font-size:clamp(15px,1.35vw,19px)!important;line-height:1.3!important;
- color:#f3eaff!important;font-weight:900!important;
- margin:0 0 11px!important;text-shadow:0 2px 14px #060210cc!important;
+ font-size:clamp(15px,1.35vw,19px)!important;line-height:1.28!important;color:#f0eef7!important;font-weight:800!important;margin:0 0 11px!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-description{
- font-size:clamp(12px,1vw,14px)!important;line-height:1.6!important;
- font-weight:600!important;color:var(--menu-muted)!important;
- max-width:535px!important;margin:0 0 19px!important;
- text-shadow:0 2px 12px #060210bb!important;
+ font-size:clamp(12px,1vw,15px)!important;line-height:1.6!important;font-weight:520!important;color:#c2c0d0!important;max-width:540px!important;margin:0 0 19px!important;text-shadow:0 2px 12px #02010acc!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags{
  display:flex!important;gap:8px!important;max-width:580px!important;
  margin-bottom:23px!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags>span:nth-child(n){
- background:rgba(31,18,56,.72)!important;color:#d9c8f3!important;
- border:1px solid #6a498c!important;border-bottom:2px solid #4b3170!important;
- border-radius:5px!important;box-shadow:0 2px 10px #0005!important;
- padding:7px 9px!important;font-size:10px!important;line-height:1.2!important;
- letter-spacing:.055em!important;
+ background:transparent!important;color:#c8c6d3!important;border:0!important;border-left:2px solid #646174!important;border-radius:0!important;box-shadow:none!important;padding:4px 7px 4px 10px!important;font-size:10px!important;line-height:1.3!important;letter-spacing:.055em!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags>span:first-child{
- border-color:#ad83ef!important;color:#f5e7ff!important;
+ border-left:2px solid #ada4ca!important;color:#eae6f3!important;
 }
 /* Primary mode CTA is the ONE strong block of color. Keep each mode's
    established saturated accent, which the browser tests also assert. */
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play{
- --interaction-accent:var(--mode-accent)!important;
- display:flex!important;align-items:center!important;
- width:min(345px,100%)!important;min-height:56px!important;
- padding:11px 18px!important;gap:14px!important;
- background:linear-gradient(160deg,
-  color-mix(in srgb,var(--mode-accent) 75%,#180b33),
-  color-mix(in srgb,var(--mode-accent) 47%,#150a32))!important;
- border:2px solid var(--mode-accent)!important;
- border-bottom:5px solid color-mix(in srgb,var(--mode-accent) 28%,#100a2b)!important;
- border-radius:6px!important;color:#fff!important;
- box-shadow:inset 0 1px #ffffff22,0 8px 24px #0007!important;
- font-size:14px!important;letter-spacing:.045em!important;
- font-weight:950!important;
- transition:transform .18s ease,filter .18s ease,box-shadow .18s ease!important;
+ --interaction-accent:var(--mode-accent)!important;position:relative!important;display:flex!important;align-items:center!important;width:min(345px,100%)!important;min-height:56px!important;padding:11px 18px!important;gap:14px!important;background:linear-gradient(145deg,#242433f2,#0e101dec)!important;border:1px solid #585567!important;border-top:2px solid var(--mode-accent)!important;border-left:3px solid var(--mode-accent)!important;border-bottom:3px solid #282738!important;border-radius:8px 3px 8px 3px!important;color:#f6f5fd!important;box-shadow:inset 0 1px #ffffff16,0 8px 21px #0009!important;font-size:14px!important;letter-spacing:.05em!important;font-weight:950!important;transition:transform .18s ease,filter .18s ease,box-shadow .18s ease!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play b,
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play svg{
  color:#fff!important;filter:none!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins:not([hidden]){
- --interaction-accent:#ad83ff!important;
- width:min(345px,100%)!important;min-height:44px!important;
- padding:9px 16px!important;margin-top:10px!important;
- background:linear-gradient(160deg,#30204f,#1b1034)!important;
- border:1px solid #7950b8!important;border-bottom:3px solid #492777!important;
- border-radius:6px!important;color:#eedeff!important;
- font-size:12px!important;font-weight:900!important;
- box-shadow:0 5px 12px #0005!important;
+ --interaction-accent:#aaa4c3!important;width:min(345px,100%)!important;min-height:44px!important;padding:9px 14px!important;margin-top:10px!important;background:linear-gradient(160deg,#292938,#161621)!important;border:1px solid #555368!important;border-bottom:2px solid #302f40!important;border-radius:8px 3px 8px 3px!important;color:#e6e4ee!important;font-size:12px!important;font-weight:850!important;box-shadow:0 5px 11px #0007!important;
 }
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins b{color:#d3b5ff!important}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins b{
+ color:#cec5e1!important;
+}
 /* Foot navigation stays centered in the reserved space below the hero. */
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-footer{
  position:relative!important;flex:0 0 auto!important;
@@ -8957,23 +8912,16 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-footer{
  min-height:54px!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-step{
- --interaction-accent:#ad83ff!important;
- width:42px!important;height:42px!important;flex-basis:42px!important;
- background:linear-gradient(160deg,#2a1b46,#170f2e)!important;
- border:1px solid #6e5096!important;border-bottom:3px solid #45266c!important;
- border-radius:6px!important;color:#f2e4ff!important;
- box-shadow:0 4px 10px #0005!important;
+ --interaction-accent:#b0a6c9!important;width:42px!important;height:42px!important;flex-basis:42px!important;background:linear-gradient(160deg,#272633,#131420)!important;border:1px solid #525167!important;border-bottom:2px solid #2f2d3d!important;border-radius:8px 3px 8px 3px!important;color:#e5e4f0!important;box-shadow:0 4px 10px #0006!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-step:disabled{
  opacity:.32!important;box-shadow:none!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-dots button{
- background:#3c2a55!important;border:1px solid #6b4d8b!important;
- border-radius:5px!important;box-shadow:none!important;
+ background:#3d3a4c!important;border:1px solid #5a546d!important;border-radius:4px!important;box-shadow:none!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-dots button.current{
- background:#9c6eff!important;border-color:#caa9ff!important;
- box-shadow:0 0 11px #9a60ff77!important;
+ background:#ad9fdb!important;border-color:#e2d6ff!important;box-shadow:0 0 9px #9c8acb70!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-gesture{
  color:#a899c2!important;text-shadow:0 2px 10px #000d!important;
@@ -8994,35 +8942,16 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
  min-height:49px!important;flex:0 0 auto!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
- flex:1 1 0!important;min-width:0!important;max-width:164px!important;
- min-height:49px!important;height:auto!important;
- padding:10px 7px!important;gap:8px!important;
- display:flex!important;align-items:center!important;justify-content:center!important;
- flex-direction:row!important;
- background:linear-gradient(160deg,rgba(38,22,63,.92),rgba(18,12,34,.92))!important;
- border:1px solid #664884!important;border-bottom:3px solid #3f285d!important;
- border-top:1px solid #664884!important;
- border-radius:6px!important;
- box-shadow:0 5px 14px #0007!important;
- color:#f2e8ff!important;transform:none;
- font-weight:850!important;
- transition:transform .18s,box-shadow .18s,border-color .18s,background .18s!important;
+ --interaction-accent:var(--dock-accent)!important;position:relative!important;flex:1 1 0!important;min-width:0!important;max-width:164px!important;min-height:49px!important;height:auto!important;padding:10px 7px!important;gap:8px!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:row!important;background:linear-gradient(160deg,#20202fef,#10111eef)!important;border:1px solid #474558!important;border-bottom:2px solid #242434!important;border-top:1px solid #464556!important;border-radius:8px 3px 8px 3px!important;box-shadow:inset 0 1px #ffffff09,0 4px 11px #0007!important;color:#e5e6ed!important;transform:none;transition:transform .18s,box-shadow .18s,border-color .18s,background .18s!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-label{
- font-size:clamp(10px,.85vw,13px)!important;line-height:1.25!important;
- font-weight:850!important;color:#f4ecff!important;
- min-width:0!important;white-space:normal!important;overflow-wrap:normal!important;
+ font-size:clamp(10px,.85vw,13px)!important;line-height:1.2!important;font-weight:780!important;color:#dedde9!important;min-width:0!important;white-space:normal!important;overflow-wrap:normal!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-icon{
- width:22px!important;height:22px!important;flex:0 0 22px!important;
- background:transparent!important;border:0!important;
- border-radius:0!important;box-shadow:none!important;
- color:var(--dock-accent)!important;
+ width:22px!important;height:22px!important;flex:0 0 22px!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;color:#b6b6c9!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-icon svg{
- width:21px!important;height:21px!important;
- color:var(--dock-accent)!important;
- filter:drop-shadow(0 0 6px color-mix(in srgb,var(--dock-accent) 34%,transparent))!important;
+ width:21px!important;height:21px!important;color:#b6b6c9!important;filter:none!important;
 }
 /* Restore correct semantic colors: blue map, violet music, red reset,
    yellow achievements, green statistics; none is teal. */
@@ -9048,8 +8977,10 @@ body.ui-v15 #screen-menu.hub-main-carousel>.menu-main.hub-menu{
  body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play:not(:disabled):hover{
   --interaction-accent:var(--mode-accent)!important;
   transform:translateY(-2px)!important;filter:brightness(1.12)!important;
-  border:2px solid var(--mode-accent)!important;
-  border-bottom:5px solid color-mix(in srgb,var(--mode-accent) 32%,#08071b)!important;
+  border:1px solid var(--mode-accent)!important;
+  border-top:2px solid var(--mode-accent)!important;
+  border-left:3px solid var(--mode-accent)!important;
+  border-bottom:3px solid #282737!important;
   box-shadow:0 0 0 1px color-mix(in srgb,var(--mode-accent) 38%,transparent),
    0 0 24px color-mix(in srgb,var(--mode-accent) 60%,transparent),
    0 8px 21px #0009!important;
@@ -9059,14 +8990,14 @@ body.ui-v15 #screen-menu.hub-main-carousel>.menu-main.hub-menu{
  ):not(:disabled):hover,
  body.ui-v15 #screen-menu.hub-main-carousel>.menu-top :is(.icon-btn,.language-trigger):not(:disabled):hover{
   transform:translateY(-2px)!important;
-  background:linear-gradient(160deg,#482a79,#251344)!important;
+  background:linear-gradient(160deg,#363444,#1b1a29)!important;
   border-color:#c5a3ff!important;
   box-shadow:0 0 0 1px #b58fff70,0 0 15px #9362ff8c,0 6px 13px #0008!important;
   filter:brightness(1.12)!important;
  }
  body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]:not(:disabled):hover{
   background:linear-gradient(160deg,
-   color-mix(in srgb,var(--dock-accent) 19%,#2b194a),#1a102c)!important;
+   color-mix(in srgb,var(--dock-accent) 12%,#363442),#181925)!important;
   border-color:var(--dock-accent)!important;
   border-top-color:var(--dock-accent)!important;
   box-shadow:0 0 0 1px color-mix(in srgb,var(--dock-accent) 40%,transparent),
@@ -9269,6 +9200,47 @@ body.ui-v15 #screen-menu.hub-main-carousel button:active:not(:disabled){
 }
 
 
+
+/* Arcade HUD affordances: muted resting state, action-aware glow on interaction. */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]::before{
+ content:"";position:absolute;top:0;left:13px;width:25px;height:2px;
+ background:var(--dock-accent);opacity:.16;transition:opacity .18s,box-shadow .18s;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]:is(:hover,:focus-visible)::before{
+ opacity:1;box-shadow:0 0 11px var(--dock-accent);
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]:is(:hover,:focus-visible) .hub-story-shortcut-icon svg{
+ color:var(--dock-accent)!important;
+ filter:drop-shadow(0 0 6px color-mix(in srgb,var(--dock-accent) 45%,transparent))!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play::before{
+ content:"";position:absolute;top:7px;left:0;width:2px;height:calc(100% - 14px);
+ background:var(--mode-accent);box-shadow:0 0 8px color-mix(in srgb,var(--mode-accent) 43%,transparent);
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-home{flex:0 0 auto!important;}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-home::before{background:#c5b7df!important;border-color:#e4ddf8!important;box-shadow:0 0 8px #a098ca4f!important;}
+body.ui-v15 #screen-menu.hub-main-carousel>.menu-top :is(.language-trigger,.icon-btn){
+ background:linear-gradient(160deg,#272634,#151622)!important;
+ border:1px solid #575467!important;border-bottom:2px solid #2c2b3a!important;
+ border-radius:8px 3px 8px 3px!important;color:#ebeaf4!important;
+ box-shadow:0 4px 10px #0007!important;
+}
+@media(max-width:700px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-home{display:none!important}
+}
+@media(min-width:701px) and (max-width:960px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
+  display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  grid-template-rows:repeat(2,minmax(45px,auto))!important;
+  width:100%!important;gap:6px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
+  max-width:none!important;min-height:45px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-label{
+  overflow-wrap:anywhere!important;white-space:normal!important;
+ }
+}
 /* MAIN MENU / v3.81.1 — layout regression fixes from real Chromium audits.
    Keep all interaction targets inside their own flex slots and let the
    description scroll when a short desktop viewport cannot display it all. */
