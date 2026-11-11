@@ -4,7 +4,7 @@ on:
     branches: [fix-notifications-overflow-20261106]
     paths:
       - game.js
-      - notification-system.css
+      - ui-app.css
       - index.html
       - tests/notification-overflow.cjs
       - .github/workflows/notification-overflow-qa.yml
