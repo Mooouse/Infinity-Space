@@ -465,7 +465,9 @@ function updateWorm(w,dt){
  w.speed+=(scaled-w.speed)*Math.min(1,dt*12);
  // Compact but tangible turn radius. A full U-turn takes roughly .23 s;
  // even during boosting the head cannot teleport into a new heading.
- const turnRate=boosting?10.5:13.7;
+ // Noticeable Slither-style turning arc: approximately 50px at cruising speed,
+ // widening naturally to approximately 140px while boosting.
+ const turnRate=boosting?2.65:3.35;
  w.angle+=clamp(normAngle(w.target-w.angle),-turnRate*dt,turnRate*dt);
  w.boostFlash=(w.boostFlash||0)+dt*(boosting?12:4);
  const advance=w.speed*dt;
