@@ -373,3 +373,61 @@ body.worm-death-replay #worm-hud{transition:opacity .85s ease}
   animation-duration:.01ms!important;animation-iteration-count:1!important;
  }
 }
+
+
+/* v6: cosmic skins remain vivid, interface stays calm and readable.
+   Highlight meaningful actions only; each hover halo matches the control. */
+.worm-brand{border-color:#45577b;border-bottom-color:#273759;background:linear-gradient(145deg,#141a35ed,#0c0c21ef)}
+.worm-brand em{color:#ffe500;text-shadow:none}
+.worm-brand small{color:#c7cbe9}
+.worm-metric,.worm-metric:first-child,.worm-metric:nth-child(2),
+.worm-metric:nth-child(3){border-color:#404b73;border-bottom-color:#2d355b;background:#11172bdc}
+.worm-metric:first-child strong{color:#f7f8ff}
+.worm-metric:nth-child(2) strong{color:#ffe500}
+.worm-metric:nth-child(3) strong{color:#e0e5f8}
+.worm-leaders{border-color:#455179;border-bottom-color:#29365d;background:linear-gradient(155deg,#15182ee8,#0d1021e8)}
+.worm-leaders h3{color:#e4e5fd}
+.worm-rank:nth-child(n) b{color:#d6ddf1}
+.worm-rank.mine,.worm-rank.mine b{color:#ffe500}
+.worm-radar{border-color:#425175;border-bottom-color:#293659}
+.worm-radar small{color:#ced5ed}
+.worm-panel{border-color:#555382;background:linear-gradient(145deg,#1a1a35,#0b0c20 76%);box-shadow:0 20px 78px #0009}
+.worm-panel h1{text-shadow:none}
+.worm-panel h2{color:#e5e7fc}
+.worm-eyebrow{color:#ffe500}
+.worm-results>div:nth-child(n){border-color:#4a4c72;border-bottom-color:#2b3157;background:#15172d}
+.worm-results>div:nth-child(1) strong{color:#fff}
+.worm-results>div:nth-child(2) strong{color:#ffe500}
+.worm-results>div:nth-child(3) strong{color:#f4f4ff}
+.worm-pause-button{--worm-accent:#2860ff;background:linear-gradient(155deg,#1b2e73,#141a3a)}
+.worm-boost-button{--worm-accent:#ff1744;background:linear-gradient(145deg,#83172d,#41142c)}
+.worm-boost-button.is-boosting{--worm-accent:#ffe500;background:linear-gradient(140deg,#a12b34,#6d1f6a);
+ box-shadow:0 0 15px #ff174455,0 0 8px #ffe50033}
+.worm-actions button{--worm-accent:#2860ff;background:linear-gradient(150deg,#1b2c6d,#141a37)}
+.worm-actions button.worm-primary{--worm-accent:#9922ff;background:linear-gradient(145deg,#51229d,#692bb9)}
+.worm-actions button#worm-exit,.worm-actions button#worm-result-menu{--worm-accent:#ff1744}
+.worm-setting-toggle,.worm-setting-range{border-color:#48557c;background:#14192f}
+.worm-setting-toggle input:checked+i{background:#1b7b35;border-color:#27ff40}
+.worm-setting-range input{accent-color:#2860ff}
+.worm-settings-panel h2{color:#eeeefa}
+.worm-skin-card{--worm-accent:#2860ff;border-color:#454d78;background:linear-gradient(155deg,#151932,#0e1025)}
+.worm-skin-card.active{--worm-accent:var(--skin-accent,#9922ff);border-color:var(--worm-accent);
+ border-bottom-color:color-mix(in srgb,var(--worm-accent) 39%,#0a0e1c);
+ background:linear-gradient(155deg,#252346,#15162d);
+ box-shadow:0 0 13px color-mix(in srgb,var(--worm-accent) 24%,transparent)}
+.worm-skin-card:hover{border-color:var(--skin-accent,#2860ff);filter:brightness(1.05)}
+@media(hover:hover) and (pointer:fine){
+ .worm-pause-button:hover,.worm-boost-button:hover,.worm-actions button:hover,
+ .worm-skin-card:hover{
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--worm-accent) 50%,transparent),
+   0 0 15px color-mix(in srgb,var(--worm-accent) 38%,transparent),
+   0 5px 16px #0007!important;
+  border-color:var(--worm-accent)!important;
+  filter:brightness(1.08)!important;
+ }
+ .worm-skin-card:hover{--worm-accent:var(--skin-accent,#2860ff)}
+}
+.worm-pause-button:focus-visible,.worm-boost-button:focus-visible,
+.worm-actions button:focus-visible,.worm-skin-card:focus-visible{
+ outline:2px solid var(--worm-accent,#2860ff);outline-offset:3px;
+}
