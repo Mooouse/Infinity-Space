@@ -155,9 +155,9 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.equal(await page.locator('#worm-exit').textContent(),'ВЫХОД В МЕНЮ');
     await page.locator('#worm-settings-open').click();
     assert.equal(await page.locator('#worm-settings').isVisible(),true);
-    assert.equal(await page.locator('#worm-skin-grid button').count(),8);
-    assert.equal(await page.locator('.worm-skin-preview .worm-preview-stars').count(),8);
-    assert.equal(await page.locator('.worm-skin-preview .worm-preview-comet').count(),8);
+    assert.equal(await page.locator('#worm-skin-grid button').count(),12);
+    assert.equal(await page.locator('.worm-skin-preview .worm-preview-stars').count(),12);
+    assert.equal(await page.locator('.worm-skin-preview .worm-preview-comet').count(),12);
     assert.equal(await page.locator('.worm-preview-comet').first().evaluate(el=>
      getComputedStyle(el).animationName.includes('worm-preview-comet')),true,
      'All cosmic skin previews must show moving comets');
