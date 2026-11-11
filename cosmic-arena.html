@@ -95,168 +95,6 @@ html,body{font-family:Inter,"Segoe UI",Arial,system-ui,sans-serif}
  .desc{margin-bottom:8px}
 }
 
-/* Infinity Space — cinematic swipe-select mode gallery. Uses v15 chunky geometry. */
-#menu{isolation:isolate;background:#060511e3;overflow:hidden}
-#menu .mode-mood{position:absolute;inset:-12%;z-index:0;opacity:0;pointer-events:none;transition:opacity .6s ease}
-#menu .mode-mood-arena{background:radial-gradient(ellipse at 77% 39%,#402b88a8,transparent 57%),radial-gradient(ellipse at 14% 82%,#1d4d6b80,transparent 59%),#08071a}
-#menu .mode-mood-royale{background:radial-gradient(ellipse at 72% 40%,#301035cb,transparent 47%),radial-gradient(ellipse at 27% 75%,#2339677c,transparent 62%),#04020c}
-#menu .mode-mood-core{background:radial-gradient(ellipse at 32% 26%,#11517db2,transparent 54%),radial-gradient(ellipse at 73% 74%,#6323447e,transparent 50%),#060b1d}
-#menu .mode-mood-race{background:radial-gradient(ellipse at 74% 40%,#70482c9c,transparent 44%),radial-gradient(ellipse at 28% 71%,#272d8aae,transparent 52%),#070818}
-#menu[data-selection="arena"] .mode-mood-arena,
-#menu[data-selection="royale"] .mode-mood-royale,
-#menu[data-selection="core"] .mode-mood-core,
-#menu[data-selection="race"] .mode-mood-race{opacity:1}
-#menu .mode-gallery-panel{
- position:relative;z-index:1;width:min(1090px,96vw);max-width:1090px;
- max-height:calc(100dvh - 25px);overflow:hidden;
- border:2px solid #795bb9;border-bottom:6px solid #3e2875;border-radius:13px;
- background:linear-gradient(155deg,#171024f2,#0c0b1bea)!important;
- padding:clamp(15px,2.4vw,29px);
- backdrop-filter:blur(12px);
-}
-#menu .mode-gallery-header{display:flex;align-items:end;justify-content:space-between;gap:15px;margin-bottom:16px}
-#menu .mode-gallery-header>.mode-gallery-header-text{min-width:0}
-#menu .mode-gallery-header .hero{font-size:clamp(40px,5vw,67px);margin:3px 0 9px}
-#menu .mode-gallery-header .desc{margin:0;max-width:680px;color:#bfb2d7;font-size:12px;line-height:1.5}
-#menu .mode-page-indicator{font-size:30px;font-weight:950;color:#c4a7ff;letter-spacing:-.04em;white-space:nowrap}
-#menu .mode-page-indicator span{font-size:14px;color:#796494}
-#menu .mode-carousel{display:grid;grid-template-columns:42px minmax(0,1fr) 42px;gap:8px;align-items:center}
-#menu .mode-carousel-viewport{
- width:100%;min-width:0;overflow-x:auto;overflow-y:hidden;scroll-behavior:smooth;
- scrollbar-width:none;scroll-snap-type:x mandatory;scroll-padding:0 8px;
- overscroll-behavior-x:contain;touch-action:pan-x;outline:none;
-}
-#menu .mode-carousel-viewport::-webkit-scrollbar{display:none}
-#menu .mode-carousel .mode-grid{
- width:100%;display:flex;grid-template-columns:none;gap:14px;
- padding:5px 10px 12px 7px;margin:0;align-items:stretch;
-}
-#menu .mode-grid .mode{
- position:relative;flex:0 0 calc(100% - 78px);display:block;
- min-width:0;min-height:clamp(310px,43vh,440px);max-height:440px;
- border:2px solid #785bb5!important;border-bottom:6px solid #4d3088!important;border-radius:12px!important;
- padding:23px!important;margin:0;
- scroll-snap-align:start;scroll-snap-stop:always;
- isolation:isolate;overflow:hidden;text-align:left;
- background:#0e1125!important;transform:none;box-shadow:0 10px 28px #0005;
- transition:border-color .2s,filter .2s;
-}
-#menu .mode-grid .mode:hover{transform:none!important;filter:brightness(1.10);border-color:#b895ff!important}
-#menu .mode-grid .mode:active{transform:scale(.997)!important}
-#menu .mode-grid .mode:focus-visible{outline:3px solid #ddc4ff;outline-offset:1px}
-#menu .mode-grid .mode .mode-preview-art{
- position:absolute;inset:0;width:100%;height:100%;display:block;
- object-fit:cover;z-index:-2;pointer-events:none;
-}
-#menu .mode-grid .mode .mode-gradient{
- position:absolute;inset:0;z-index:-1;pointer-events:none;
- background:linear-gradient(90deg,#100d22f2 0%,#110c20df 33%,#130d1b78 59%,#130d1b00 100%),
- linear-gradient(0deg,#0b0a1bc7 0%,transparent 30%);
-}
-#menu .mode-grid .mode .num{display:block;font-size:10px;letter-spacing:.14em;color:#bfa3ff;font-weight:950;max-width:60%}
-#menu .mode-grid .mode .symbol{
- position:absolute!important;top:18px!important;right:18px!important;
- width:45px;height:45px;border:1px solid #9676d2;border-radius:8px;
- background:#332456b8;color:#d7c4ff;font-size:25px;line-height:43px;
- display:grid;place-items:center;z-index:2;
-}
-#menu .mode-grid .mode strong{
- display:block;margin:48px 0 14px;font-size:clamp(28px,3.6vw,46px);
- line-height:1.05;max-width:55%;font-weight:1000;letter-spacing:-.055em;
- color:#f6f1ff;text-shadow:0 4px 16px #0008;
-}
-#menu .mode-grid .mode small{
- display:block;max-width:49%;font-size:clamp(11px,1.2vw,14px);
- line-height:1.52;letter-spacing:0;color:#c6badd;font-weight:600;
-}
-#menu .mode-grid .mode .mode-metrics{
- position:absolute!important;left:23px;bottom:85px;display:flex;flex-wrap:wrap;
- align-items:center;gap:7px;max-width:calc(100% - 45px);
- font-size:9px;font-weight:900;color:#ddd1fd;
-}
-#menu .mode-grid .mode .mode-metrics>span{
- display:inline-block;border:1px solid #7358a8;background:#201836bc;
- padding:6px 8px;border-radius:5px;white-space:nowrap;letter-spacing:.04em;
-}
-#menu .mode-grid .mode .mode-launch{
- position:absolute!important;bottom:21px;left:23px;right:auto;top:auto;
- display:flex;align-items:center;justify-content:space-between;gap:20px;
- width:190px;height:45px;padding:0 15px;
- color:#fff;background:linear-gradient(180deg,#6d44ec,#4d22c6);
- border:2px solid #ac89f8;border-bottom:4px solid #382081;border-radius:8px;
- font-size:12px;line-height:1;font-weight:950;letter-spacing:.07em;
-}
-#menu .mode-grid .mode:after{content:none!important}
-#menu .mode-carousel-arrow{
- all:unset;box-sizing:border-box;display:grid;place-items:center;cursor:pointer;
- width:42px;height:72px;font-size:42px;line-height:1;font-weight:400;color:#eee2ff;
- border:2px solid #7252b1;border-bottom:5px solid #3f2872;border-radius:9px;
- background:linear-gradient(180deg,#332051,#17112c);
- transition:filter .2s;user-select:none;
-}
-#menu .mode-carousel-arrow:disabled{opacity:.34;cursor:default}
-#menu .mode-carousel-arrow:not(:disabled):hover{filter:brightness(1.24)}
-#menu .mode-gallery-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:9px}
-#menu .mode-swipe-hint{font-size:10px;color:#a98ecf;letter-spacing:.09em;font-weight:900}
-#menu .mode-indicators{display:flex;gap:8px;align-items:center}
-#menu .mode-indicators button{
- width:26px;height:9px;border:0;border-radius:5px;background:#655180;cursor:pointer;
- transition:background .25s,width .25s;
-}
-#menu .mode-indicators button.active{width:42px;background:#ab88ff}
-#menu .mode-gallery-endless{
- border:1px solid #6d549e;border-bottom:3px solid #3b2b68;border-radius:6px;
- color:#e4d6ff;text-decoration:none;font-size:11px;font-weight:900;
- padding:10px 12px;white-space:nowrap;background:#211731;
-}
-#menu .mode-gallery-endless:hover{background:#372156;border-color:#a384eb}
-@media(max-width:700px){
- #menu{padding:6px}
- #menu .mode-gallery-panel{width:100%;max-height:calc(100dvh - 10px);padding:12px;border-radius:9px}
- #menu .mode-menu-top{margin-bottom:10px}
- #menu .mode-gallery-header{align-items:start;margin-bottom:10px;gap:8px}
- #menu .mode-gallery-header .hero{font-size:clamp(34px,8vw,48px);margin:3px 0 8px}
- #menu .mode-gallery-header .desc{font-size:10px;line-height:1.36;max-width:310px}
- #menu .mode-page-indicator{font-size:22px}
- #menu .mode-carousel{grid-template-columns:28px minmax(0,1fr) 28px;gap:3px}
- #menu .mode-carousel-arrow{width:28px;height:60px;font-size:31px;border-width:1px;border-bottom-width:3px}
- #menu .mode-carousel .mode-grid{gap:9px;padding:3px 8px 9px 3px}
- #menu .mode-grid .mode{
-  flex-basis:calc(100% - 27px);min-height:clamp(330px,47vh,475px);
-  padding:14px!important;border-radius:8px!important;
- }
- #menu .mode-grid .mode .mode-gradient{
-  background:linear-gradient(90deg,#100c22ed 0%,#100c22b5 42%,#0d0e244b 100%),linear-gradient(0deg,#0b091be8,transparent 40%);
- }
- #menu .mode-grid .mode strong{font-size:clamp(25px,6vw,35px);max-width:90%;margin-top:33px;margin-bottom:10px}
- #menu .mode-grid .mode small{font-size:11px;line-height:1.42;max-width:85%}
- #menu .mode-grid .mode .num{font-size:9px}
- #menu .mode-grid .mode .symbol{width:34px;height:34px;top:9px!important;right:9px!important;font-size:21px;line-height:32px}
- #menu .mode-grid .mode .mode-metrics{left:14px;bottom:73px;gap:5px;max-width:calc(100% - 28px);font-size:8px}
- #menu .mode-grid .mode .mode-metrics>span{padding:5px 6px}
- #menu .mode-grid .mode .mode-launch{left:14px;bottom:13px;width:166px;height:42px;font-size:11px}
- #menu .mode-gallery-footer{gap:4px;flex-wrap:wrap;justify-content:center}
- #menu .mode-swipe-hint{font-size:8px}
- #menu .mode-gallery-endless{font-size:9px;padding:7px}
- #menu .mode-indicators{gap:5px}
- #menu .mode-indicators button{width:17px;height:7px}
- #menu .mode-indicators button.active{width:26px}
-}
-@media(max-height:600px){
- #menu .mode-gallery-panel{overflow-y:auto}
- #menu .mode-menu-top{margin-bottom:5px}
- #menu .mode-gallery-header .hero{font-size:34px}
- #menu .mode-gallery-header .desc{display:none}
- #menu .mode-grid .mode{min-height:245px;max-height:280px}
- #menu .mode-grid .mode strong{margin-top:17px;font-size:25px}
- #menu .mode-grid .mode small{font-size:10px}
-}
-@media(prefers-reduced-motion:reduce){
- #menu .mode-mood,#menu .mode-indicators button{transition:none}
- #menu .mode-carousel-viewport{scroll-behavior:auto}
-}
-
-
 /* Show why an evolution is not instantaneous; mass and form-time are separate. */
 .hud .arena-stage-hud{margin-top:10px;min-width:190px}
 .hud .arena-stage-top{display:flex;align-items:center;justify-content:space-between;gap:9px}
@@ -283,60 +121,6 @@ html,body{font-family:Inter,"Segoe UI",Arial,system-ui,sans-serif}
 </div>
 <div id="touch-stick"><div id="thumb"></div></div>
 <div class="toast" id="toast"></div>
-<div class="shade active" id="menu" data-selection="arena">
- <div class="mode-mood mode-mood-arena"></div><div class="mode-mood mode-mood-royale"></div><div class="mode-mood mode-mood-core"></div><div class="mode-mood mode-mood-race"></div>
- <div class="panel mode-gallery-panel">
-  <div class="mode-menu-top"><span class="eyebrow">INFINITY SPACE / GAME MODES</span><a class="mode-back" href="index.html"><span aria-hidden="true">‹</span> <span data-l="back">BACK TO MENU</span></a></div>
-  <div class="mode-gallery-header"><div><h1 class="hero" data-l="modesHeader">GAME <em>MODES.</em></h1><p class="desc" data-l="intro">Four competitive space modes. Grow, hunt rivals, exploit gravity, and dominate the arena. All opponents are AI-controlled.</p></div><span class="mode-page-indicator" id="mode-page-indicator">01 <span>/ 04</span></span></div>
-  <div class="mode-carousel">
-   <button class="mode-carousel-arrow mode-carousel-prev" id="mode-prev" type="button" aria-label="Previous mode">‹</button>
-   <div class="mode-carousel-viewport" id="mode-carousel-viewport" aria-label="Swipe or scroll to select a game mode">
-    <div class="mode-grid"><button class="mode" data-mode="arena" type="button" aria-label="arena">
- <canvas class="mode-preview-art" width="840" height="460" aria-hidden="true"></canvas>
- <span class="mode-gradient" aria-hidden="true"></span>
- <span class="num">01 / FREE-FOR-ALL</span>
- <span class="symbol">✦</span>
- <strong data-l="mArena">Cosmic Arena</strong>
- <small data-l="dArena">Absorb matter and rivals. Top the leaderboard before the timer ends.</small>
- <span class="mode-metrics"><span>◷ 05:00</span><span>◉ 18 AI</span><span class="mode-goal" data-en="HIGHEST MASS" data-ru="Самая большая масса">HIGHEST MASS</span></span>
- <span class="mode-launch"><span data-l="playNow">PLAY MODE</span><span aria-hidden="true">➜</span></span>
-</button>
-<button class="mode" data-mode="royale" type="button" aria-label="royale">
- <canvas class="mode-preview-art" width="840" height="460" aria-hidden="true"></canvas>
- <span class="mode-gradient" aria-hidden="true"></span>
- <span class="num">02 / SURVIVAL</span>
- <span class="symbol">◉</span>
- <strong data-l="mRoyale">Last Singularity</strong>
- <small data-l="dRoyale">The storm collapses inward. One survivor takes the victory.</small>
- <span class="mode-metrics"><span>◷ 04:00</span><span>◉ 20 AI</span><span class="mode-goal" data-en="LAST SURVIVOR" data-ru="Последний выживший">LAST SURVIVOR</span></span>
- <span class="mode-launch"><span data-l="playNow">PLAY MODE</span><span aria-hidden="true">➜</span></span>
-</button>
-<button class="mode" data-mode="core" type="button" aria-label="core">
- <canvas class="mode-preview-art" width="840" height="460" aria-hidden="true"></canvas>
- <span class="mode-gradient" aria-hidden="true"></span>
- <span class="num">03 / TEAM BATTLE</span>
- <span class="symbol">✧</span>
- <strong data-l="mCore">Core Conquest</strong>
- <small data-l="dCore">Blue vs red. Hold the energy core to earn 100 control points.</small>
- <span class="mode-metrics"><span>◷ 04:20</span><span>◉ 18 AI</span><span class="mode-goal" data-en="CONTROL THE CORE" data-ru="Контроль ядра">CONTROL THE CORE</span></span>
- <span class="mode-launch"><span data-l="playNow">PLAY MODE</span><span aria-hidden="true">➜</span></span>
-</button>
-<button class="mode" data-mode="race" type="button" aria-label="race">
- <canvas class="mode-preview-art" width="840" height="460" aria-hidden="true"></canvas>
- <span class="mode-gradient" aria-hidden="true"></span>
- <span class="num">04 / EVOLUTION RACE</span>
- <span class="symbol">⟡</span>
- <strong data-l="mRace">Evolution Rush</strong>
- <small data-l="dRace">Evolve to a black hole before the rivals. Each form must be mastered.</small>
- <span class="mode-metrics"><span>◷ 04:45</span><span>◉ 16 AI</span><span class="mode-goal" data-en="BECOME A BLACK HOLE" data-ru="Стань чёрной дырой">BECOME A BLACK HOLE</span></span>
- <span class="mode-launch"><span data-l="playNow">PLAY MODE</span><span aria-hidden="true">➜</span></span>
-</button></div>
-   </div>
-   <button class="mode-carousel-arrow mode-carousel-next" id="mode-next" type="button" aria-label="Next mode">›</button>
-  </div>
-  <div class="mode-gallery-footer"><span class="mode-swipe-hint" data-l="swipeHint">← SWIPE, SCROLL OR USE ARROWS →</span><div class="mode-indicators" id="mode-indicators" aria-label="Game modes"></div><a href="index.html" class="mode-gallery-endless" data-l="endless">∞ Endless Space</a></div>
- </div>
-</div>
 <div class="shade" id="result"><div class="panel" style="max-width:560px"><span class="eyebrow" id="outcome-kicker">MATCH COMPLETE</span><h2 class="hero" id="outcome">VICTORY</h2><p class="desc" id="outcome-detail"></p><div id="result-stat"><div class="result-cell"><b id="r-place">1</b><small data-l="place">POSITION</small></div><div class="result-cell"><b id="r-kills">0</b><small data-l="kills">ELIMINATIONS</small></div><div class="result-cell"><b id="r-mass">0</b><small data-l="mass">MASS</small></div></div><div class="row"><button class="primary" id="again" data-l="again">PLAY AGAIN</button><button class="text-btn" id="change" data-l="change">CHANGE MODE</button><a class="text-btn" href="index.html" data-l="endless">∞ Endless Space</a></div></div></div>
 <div class="shade" id="paused"><div class="panel" style="max-width:490px"><span class="eyebrow">INFINITY SPACE</span><h2 class="hero" data-l="paused">PAUSED</h2><p class="desc" data-l="pausedDesc">Resume the fight, change mode, or return to the endless universe.</p><div class="row"><button class="primary" id="resume" data-l="resume">RESUME</button><button class="text-btn" id="change2" data-l="change">CHANGE MODE</button><a class="text-btn" href="index.html" data-l="endless">∞ Endless Space</a></div></div></div>
 <script src="platform.js"></script>
@@ -831,12 +615,12 @@ let hazards=[
 game={state:'playing',mode,elapsed:0,left:c.duration,people,food:Array.from({length:c.food},createFood),relics:[createRelic(),createRelic(),createRelic(),createRelic(),createRelic()],relicTimer:7,hazards,portals:[{x:world.w*.17,y:world.h*.75},{x:world.w*.83,y:world.h*.25}],scores:[0,0],coreHold:-1,stormR:Math.hypot(world.w/2,world.h/2)+200,stormCx:world.w/2,stormCy:world.h/2,finishReason:'',firstPlace:false,eventClock:0};
 mouse.active=false;touch.active=false;keys={};camera.zoom=1;camera.x=people[0].x-sw*.5;camera.y=people[0].y-sh*.5;fx=[];uiTick=0;
 $('hud').hidden=false;$('team-box').hidden=mode!=='core';$('mode-caption').textContent=L('m'+({arena:'Arena',royale:'Royale',core:'Core',race:'Race'}[mode]))+(mode==='race'?' · '+(lang==='ru'?'ДО ЧЁРНОЙ ДЫРЫ':'BECOME A BLACK HOLE'):mode==='core'?' · 100':'');
-$('menu').classList.remove('active');$('result').classList.remove('active');$('paused').classList.remove('active');$('touch-stick').style.display='';
+$('result').classList.remove('active');$('paused').classList.remove('active');$('touch-stick').style.display='';
 $('hint').textContent=(lang==='ru'?'МЫШЬ / WASD — ПОЛЁТ · ПРОБЕЛ — РЫВОК · E — ИМПУЛЬС · Q — ЩИТ':'MOUSE / WASD — MOVE · SPACE — DASH · E — PULSE · Q — SHIELD')+(mode==='race'?(lang==='ru'?' · ЦЕЛЬ: ЧЁРНАЯ ДЫРА':' · GOAL: BLACK HOLE'):'');
 last=performance.now();window.SpacePlatform?.playing?.(true);updateUI();
 try{const params=new URLSearchParams(location.search);params.set('mode',mode);history.replaceState(null,'','cosmic-arena.html?'+params.toString())}catch(e){}
 }
-function showMenu(){window.SpacePlatform?.playing?.(false);if(game)game.state='menu';$('hud').hidden=true;$('menu').classList.add('active');$('result').classList.remove('active');$('paused').classList.remove('active');}
+function showMenu(){window.SpacePlatform?.playing?.(false);location.assign('index.html?select='+encodeURIComponent(mode));}
 function togglePause(){if(!game||game.state==='finished')return;game.state=game.state==='playing'?'paused':'playing';window.SpacePlatform?.playing?.(game.state==='playing');$('paused').classList.toggle('active',game.state==='paused');last=performance.now();}
 function sound(freq=500,duration=.11,type='sine',vol=.035){if(window.SpacePlatform?.muted)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume();let o=audio.createOscillator(),g=audio.createGain(),now=audio.currentTime;o.type=type;o.frequency.setValueAtTime(freq,now);o.frequency.exponentialRampToValueAtTime(Math.max(70,freq*.55),now+duration);g.gain.setValueAtTime(vol,now);g.gain.exponentialRampToValueAtTime(.0001,now+duration);o.connect(g);g.connect(audio.destination);o.start(now);o.stop(now+duration);}catch(e){}}
 function notify(message){$('toast').textContent=message;$('toast').classList.add('show');toastUntil=performance.now()+1700;}
@@ -848,173 +632,6 @@ if(name==='dash'&&p.dashCD<=0){p.dash=.66;p.dashCD=5.2;addFx(p.x,p.y,p.color,13,
 if(name==='shield'&&p.shieldCD<=0){p.shield=3.5;p.shieldCD=12;addFx(p.x,p.y,'#9dddff',14,75);if(p.player){notify(L('shielded'));sound(760,.14);}}
 if(name==='pulse'&&p.pulseCD<=0){p.pulseCD=8.5;p.ring=1;for(const q of game.people){if(!q.alive||q===p||(mode==='core'&&p.team===q.team))continue;const dx=q.x-p.x,dy=q.y-p.y,d=Math.hypot(dx,dy)||1;if(d<p.r+235){let f=(1-d/(p.r+235));q.vx+=dx/d*(450+270*f);q.vy+=dy/d*(450+270*f);}}addFx(p.x,p.y,'#bdadff',30,160);if(p.player){notify(L('charge'));sound(180,.31,'sawtooth',.022);}}
 }
-// One mode at a time, with real native touch swipe, drag, wheel and arrow keys.
-const modeOrder=['arena','royale','core','race'],modeViewport=$('mode-carousel-viewport');
-const modeCards=[...$('menu').querySelectorAll('.mode-grid .mode[data-mode]')];
-const modeDots=$('mode-indicators'),modeArrowPrev=$('mode-prev'),modeArrowNext=$('mode-next');
-let selectedMode=0,lastCarouselWheel=-1000,carouselDownX=null,carouselDragged=false;
-modeOrder.forEach((id,i)=>{
- const dot=document.createElement('button');dot.type='button';dot.setAttribute('aria-label','Mode '+(i+1));
- dot.onclick=()=>selectCarouselMode(i,true);modeDots.append(dot);
-});
-function selectCarouselMode(index,scroll=false){
- const next=clamp(index,0,modeCards.length-1);
- selectedMode=next;
- $('menu').dataset.selection=modeOrder[next];
- $('mode-page-indicator').innerHTML=String(next+1).padStart(2,'0')+' <span>/ 04</span>';
- [...modeDots.children].forEach((d,i)=>{d.classList.toggle('active',i===next);d.setAttribute('aria-current',String(i===next));});
- modeArrowPrev.disabled=next===0;modeArrowNext.disabled=next===modeOrder.length-1;
- if(scroll){
-  const viewportRect=modeViewport.getBoundingClientRect(),itemRect=modeCards[next].getBoundingClientRect();
-  const left=modeViewport.scrollLeft+itemRect.left-viewportRect.left-4;
-  modeViewport.scrollTo({left,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
- }
-}
-modeArrowPrev.onclick=()=>selectCarouselMode(selectedMode-1,true);
-modeArrowNext.onclick=()=>selectCarouselMode(selectedMode+1,true);
-modeViewport.addEventListener('scroll',()=>{
- const view=modeViewport.getBoundingClientRect(),left=view.left+4;
- let nearest=0,best=Infinity;
- modeCards.forEach((card,i)=>{const dx=Math.abs(card.getBoundingClientRect().left-left);if(dx<best){best=dx;nearest=i;}});
- if(nearest!==selectedMode)selectCarouselMode(nearest,false);
-},{passive:true});
-modeViewport.addEventListener('wheel',e=>{
- if(Math.abs(e.deltaX)+Math.abs(e.deltaY)<15)return;
- e.preventDefault();
- const now=performance.now();
- if(now-lastCarouselWheel<300)return;
- lastCarouselWheel=now;
- const delta=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;
- selectCarouselMode(selectedMode+(delta>0?1:-1),true);
-},{passive:false});
-modeViewport.addEventListener('pointerdown',e=>{carouselDownX=e.clientX;carouselDragged=false;},{passive:true});
-modeViewport.addEventListener('pointermove',e=>{if(carouselDownX!==null&&Math.abs(e.clientX-carouselDownX)>13)carouselDragged=true;},{passive:true});
-modeViewport.addEventListener('pointerup',()=>{carouselDownX=null;},{passive:true});
-modeViewport.addEventListener('pointercancel',()=>{carouselDownX=null;carouselDragged=false;},{passive:true});
-document.addEventListener('keydown',e=>{
- if(!$('menu').classList.contains('active')||e.target?.closest?.('input,textarea,[contenteditable]'))return;
- if(e.code==='ArrowLeft'||e.code==='ArrowRight'){e.preventDefault();selectCarouselMode(selectedMode+(e.code==='ArrowRight'?1:-1),true);}
- if(e.code==='Enter'&&document.activeElement===modeViewport){e.preventDefault();init(modeOrder[selectedMode]);}
-});
-modeViewport.tabIndex=0;
-selectCarouselMode(0,false);
-// Animated illustrative scenes use the real planet and material sprites from
-// the original Infinity Space engine, rather than static generic thumbnails.
-const previewCanvases=modeCards.map(card=>card.querySelector('.mode-preview-art'));
-let lastModePreview=-1000,initialPreviews=false;
-function previewPlanet(c,x,y,r,color,variant=0,gas=false){
- const img=planetArtwork(color,gas,variant);
- c.drawImage(img,x-r*1.30,y-r*1.30,r*2.60,r*2.60);
-}
-function previewRock(c,x,y,r,color,variant=0){
- const img=rockArtwork(color,3,variant);
- c.save();c.translate(x,y);c.rotate(.12+variant*.27);
- c.drawImage(img,-r*1.3,-r*1.3,r*2.6,r*2.6);c.restore();
-}
-function previewGlow(c,x,y,r,color,alpha=1){
- const g=c.createRadialGradient(x,y,0,x,y,r);
- g.addColorStop(0,color);g.addColorStop(1,'#00000000');
- c.save();c.globalAlpha=alpha;c.fillStyle=g;c.fillRect(x-r,y-r,r*2,r*2);c.restore();
-}
-function previewBlackHole(c,x,y,r,t){
- // Concept artwork intentionally previews the same blue-white lens ring used
- // by the physically warped real 2D gameplay compositor.
- previewGlow(c,x,y,r*2.45,'#769cff',.28);
- c.save();c.translate(x,y);c.rotate(t*.05);
- c.strokeStyle='#adddffb8';c.lineWidth=2.2;
- c.beginPath();c.ellipse(0,0,r*1.42,r*.60,-.32,.15,5.91);c.stroke();
- c.strokeStyle='#6092ff67';c.lineWidth=5;
- c.beginPath();c.ellipse(0,0,r*1.54,r*.76,-.32,3.2,6.1);c.stroke();c.restore();
- const g=c.createRadialGradient(x,y,r*.56,x,y,r*1.4);
- g.addColorStop(0,'#020307');g.addColorStop(.54,'#03040a');g.addColorStop(.70,'#b9d5ffbd');
- g.addColorStop(.78,'#6da2ff42');g.addColorStop(1,'#7aaeff00');
- c.fillStyle=g;c.beginPath();c.arc(x,y,r*1.4,0,TAU);c.fill();
- c.fillStyle='#010205';c.beginPath();c.arc(x,y,r*.85,0,TAU);c.fill();
-}
-function renderModeArtwork(i,t){
- const canvasPreview=previewCanvases[i];if(!canvasPreview)return;
- const c=canvasPreview.getContext('2d');if(!c)return;
- const w=canvasPreview.width,h=canvasPreview.height;
- const palettes=[
- ['#0e1533','#291458','#7d61ff'],['#060910','#250b29','#bf6bff'],
- ['#0a1d31','#35112d','#91d8ff'],['#111b3d','#372348','#ffc879']
- ];
- const pal=palettes[i],gradient=c.createLinearGradient(0,0,w,h);
- gradient.addColorStop(0,pal[0]);gradient.addColorStop(.59,pal[1]);gradient.addColorStop(1,'#03050c');
- c.fillStyle=gradient;c.fillRect(0,0,w,h);
- const rng=chunkRandom(0x7231+i*3541);
- for(let k=0;k<540;k++){
-  const x=rng()*w,y=rng()*h,bright=rng();
-  c.fillStyle=bright>.96?'#fff':bright>.6?pal[2]:'#a8b9f5';
-  c.globalAlpha=.22+bright*.74;
-  c.fillRect(x,y,bright>.992?2:1,bright>.992?2:1);
- }
- c.globalAlpha=1;
- const breathe=Math.sin(t*.7);
- if(i===0){
-  previewGlow(c,633,241,240,'#6146da',.33);
-  for(let k=0;k<38;k++){
-   const a=k*2.399,dist=70+Math.sqrt(k/38)*230;
-   const x=610+Math.cos(a+t*.055)*dist,y=237+Math.sin(a+t*.055)*dist*.72;
-   c.drawImage(matterArtwork(['ore','crystal','ice','plasma'][k%4],k%6),x-9,y-9,18,18);
-  }
-  previewPlanet(c,628,218,95,'#3dbbdb',2);
-  previewPlanet(c,445+Math.sin(t*.6)*6,312,43,'#c78bc5',1);
-  previewRock(c,756,319,35,'#b19db4',2);
-  c.strokeStyle='#bcb0ff85';c.lineWidth=2;
-  c.beginPath();c.moveTo(450,312);c.quadraticCurveTo(560,371,620,263);c.stroke();
- }else if(i===1){
-  previewBlackHole(c,642,233,110,t);
-  c.strokeStyle='#dc5bde99';c.lineWidth=6;c.setLineDash([18,10]);
-  c.beginPath();c.arc(642,233,200-16*Math.sin(t*.22),.1,6.1);c.stroke();c.setLineDash([]);
-  for(let k=0;k<8;k++){
-   const a=k*TAU/8+t*.10,x=642+Math.cos(a)*214,y=233+Math.sin(a)*160;
-   previewRock(c,x,y,8+k%3*3,['#b7c4d1','#bf93cf','#7eaecc'][k%3],k);
-  }
-  c.fillStyle='#e9a9ff';c.font='800 14px system-ui';c.fillText('SAFE ZONE',478,65);
- }else if(i===2){
-  previewGlow(c,643,230,260,'#59aafa',.29);
-  c.save();c.translate(642,231);
-  c.lineWidth=7;c.strokeStyle='#68cbff81';c.setLineDash([20,12]);
-  c.beginPath();c.arc(0,0,154,0,TAU);c.stroke();c.setLineDash([]);
-  c.rotate(t*.16);
-  c.fillStyle='#fffbe7';c.shadowColor='#b3e7ff';c.shadowBlur=40;
-  c.beginPath();for(let k=0;k<8;k++){const a=TAU*k/8,r=k%2===0?52:21;c.lineTo(Math.cos(a)*r,Math.sin(a)*r);}c.closePath();c.fill();c.restore();
-  for(let k=0;k<4;k++){
-   const a=k*.35+t*.10,px=440+Math.sin(a)*25,py=145+k*57;
-   previewPlanet(c,px,py,20,'#7bd6ff',1+k);
-   const qx=789-Math.sin(a)*24,qy=135+k*60;
-   previewPlanet(c,qx,qy,20,'#fd91bb',k);
-   c.strokeStyle=k%2?'#ff96bc66':'#79cdff85';c.lineWidth=1.5;
-   c.beginPath();c.moveTo(px+20,py);c.lineTo(630,230);c.stroke();
-   c.beginPath();c.moveTo(qx-20,qy);c.lineTo(650,230);c.stroke();
-  }
- }else{
-  const stations=[[416,315,30],[548,270,47],[681,207,63],[800,155,73]];
-  stations.forEach(([x,y,r],k)=>{
-   if(k===0)previewRock(c,x,y,r,'#a3afc1',2);
-   if(k===1)previewPlanet(c,x,y,r,'#77cbd4',2);
-   if(k===2){previewGlow(c,x,y,r*2.15,'#ffc079',.6);previewPlanet(c,x,y,r,'#ffcb83',5,true);}
-   if(k===3)previewBlackHole(c,x,y,r,t);
-   if(k<3){
-    c.strokeStyle='#cfc2ff70';c.lineWidth=3;c.setLineDash([7,9]);
-    c.beginPath();c.moveTo(x+35,y-15);c.lineTo(stations[k+1][0]-45,stations[k+1][1]+10);c.stroke();c.setLineDash([]);
-   }
-  });
-  c.font='900 17px system-ui';c.fillStyle='#e8d9ff';
-  c.fillText('I',415,380);c.fillText('II',542,345);c.fillText('III',674,304);c.fillText('IV',785,265);
- }
-}
-function refreshModeIllustrations(t){
- if(!$('menu').classList.contains('active')||t-lastModePreview<.075)return;
- lastModePreview=t;
- if(!initialPreviews){
-  modeCards.forEach((_,i)=>renderModeArtwork(i,t));
-  initialPreviews=true;
- }else renderModeArtwork(selectedMode,t);
-}
-
-document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{if(carouselDragged){carouselDragged=false;return;}sound(420,.1);init(b.dataset.mode)});
 $('pause').onclick=togglePause;$('resume').onclick=togglePause;$('again').onclick=()=>init(mode);$('change').onclick=showMenu;$('change2').onclick=showMenu;
 ['shield','pulse','dash'].forEach(id=>$(id).addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();useAbility(id)}));
 addEventListener('keydown',e=>{const code=e.code;if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyQ','KeyE','KeyP'].includes(code))e.preventDefault();keys[code]=true;if(e.repeat)return;if(code==='Space'||code==='ShiftLeft'||code==='ShiftRight')useAbility('dash');if(code==='KeyE')useAbility('pulse');if(code==='KeyQ')useAbility('shield');if(code==='KeyP'&&game)togglePause();if(code==='Escape'&&game&&game.state==='playing')togglePause();});addEventListener('keyup',e=>keys[e.code]=false);addEventListener('blur',()=>{keys={};if(game&&game.state==='playing')togglePause()});
@@ -1238,9 +855,9 @@ for(const q of game.people){if(!q.alive)continue;sphere(q,time);}
 for(const f of fx){ctx.globalAlpha=clamp(f.t/f.max,0,1);ctx.fillStyle=f.color;ctx.fillRect(f.x,f.y,f.r,f.r);}ctx.globalAlpha=1;ctx.restore();
 if(game.state==='playing'&&!p.alive){ctx.fillStyle='#050713a8';ctx.fillRect(0,sh*.41,sw,90);ctx.fillStyle='#f4eaff';ctx.textAlign='center';ctx.font='900 23px system-ui';ctx.fillText(lang==='ru'?'ВОЗРОЖДЕНИЕ ЧЕРЕЗ '+Math.max(0,Math.ceil(p.respawn)):'RESPAWN IN '+Math.max(0,Math.ceil(p.respawn)),sw/2,sh*.41+52);}
 }
-function tick(now){requestAnimationFrame(tick);let dt=clamp((now-last)/1000,0,.047);last=now;frameClock=now*.001;if(game&&game.state==='playing'){step(dt);uiTick-=dt;if(uiTick<=0){updateUI();uiTick=.16;}}draw(frameClock);refreshModeIllustrations(frameClock);if(toastUntil&&now>toastUntil){toastUntil=0;$('toast').classList.remove('show');}}
+function tick(now){requestAnimationFrame(tick);let dt=clamp((now-last)/1000,0,.047);last=now;frameClock=now*.001;if(game&&game.state==='playing'){step(dt);uiTick-=dt;if(uiTick<=0){updateUI();uiTick=.16;}}draw(frameClock);if(toastUntil&&now>toastUntil){toastUntil=0;$('toast').classList.remove('show');}}
 requestAnimationFrame(tick);
-const initial=new URLSearchParams(location.search).get('mode');if(configs[initial])init(initial);
+const initial=new URLSearchParams(location.search).get('mode');if(configs[initial])init(initial);else location.replace('index.html');
 document.addEventListener('DOMContentLoaded',()=>{Promise.resolve(window.SpacePlatform?.startup).catch(()=>{}).then(()=>{window.SpacePlatform?.loaded?.();window.SpacePlatform?.playing?.(!!game&&game.state==='playing');});});
 })();
 </script>
