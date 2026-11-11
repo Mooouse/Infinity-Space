@@ -20,6 +20,24 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.waitForFunction(()=>!!window.InfinityWormsQA,{timeout:12000});
     let a=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
     assert.equal(a.mode,'worms');
+    const saturated=await page.evaluate(()=>{
+     const rgb=selector=>getComputedStyle(document.querySelector(selector)).color;
+     const root=getComputedStyle(document.documentElement);
+     return {
+      brand:rgb('.worm-brand em'),
+      length:rgb('.worm-metric:nth-child(1) strong'),
+      rank:rgb('.worm-metric:nth-child(2) strong'),
+      timer:rgb('.worm-metric:nth-child(3) strong'),
+      blue:root.getPropertyValue('--space-blue').trim(),
+      purple:root.getPropertyValue('--space-purple').trim()
+     };
+    });
+    assert.equal(saturated.brand,'rgb(255, 229, 0)','Bright yellow accent required');
+    assert.equal(saturated.length,'rgb(39, 255, 64)','Bright green accent required');
+    assert.equal(saturated.rank,'rgb(255, 23, 68)','Bright red accent required');
+    assert.equal(saturated.timer,'rgb(255, 229, 0)');
+    assert.equal(saturated.blue,'#2860ff');
+    assert.equal(saturated.purple,'#9922ff');
     assert.equal(a.world.w,22400);assert.equal(a.world.h,22400);
     assert.equal(a.world.rx,a.world.ry,'Arena boundary must be a circle');
     assert.ok(a.worms>=50&&a.food>=27500,'Circular arena must keep rich food density and bots');
