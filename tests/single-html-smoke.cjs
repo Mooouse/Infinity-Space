@@ -43,6 +43,7 @@ const { chromium } = require('playwright');
     ]) {
       const errors=[];
       const page=await browser.newPage({viewport:{width:1100,height:760}});
+       await page.addInitScript(()=>localStorage.setItem('infinity-space-player-v1',JSON.stringify({version:1,nickname:'QA Pilot'})));
       page.on('pageerror',err=>errors.push(err.stack||String(err)));
       await page.route('https://bridge.playgama.com/**',route=>route.fulfill({
         status:200,contentType:'application/javascript',body:sdkMock
