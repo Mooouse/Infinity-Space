@@ -203,9 +203,10 @@
    const copy=q(overlay,'.hub-mode-story-copy');
    if(changed&&copy&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     copy.getAnimations().forEach(a=>a.cancel());
+    const slide=window.innerWidth<=800?0:22;
     copy.animate([
-      {opacity:.3,transform:'translate3d('+direction*22+'px,5px,0)'},
-      {opacity:.92,transform:'translate3d('+direction*-2+'px,0,0)'},
+      {opacity:.3,transform:'translate3d('+direction*slide+'px,5px,0)'},
+      {opacity:.92,transform:'translate3d('+direction*(slide?-2:0)+'px,0,0)'},
       {opacity:1,transform:'translate3d(0,0,0)'}
     ],{duration:510,easing:'cubic-bezier(.22,.8,.2,1)'});
    }
