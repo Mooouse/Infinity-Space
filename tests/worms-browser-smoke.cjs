@@ -74,14 +74,6 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.equal(saturated.timer,'rgb(224, 229, 248)');
     assert.equal(saturated.blue,'#2860ff');
     assert.equal(saturated.purple,'#9922ff');
-    if(width>=1280){
-     await page.locator('#worm-pause').hover();
-     assert.equal(await page.locator('#worm-pause').evaluate(el=>getComputedStyle(el).borderTopColor),
-      'rgb(40, 96, 255)','Blue pause button must glow blue');
-     await page.locator('#worm-boost').hover();
-     assert.equal(await page.locator('#worm-boost').evaluate(el=>getComputedStyle(el).borderTopColor),
-      'rgb(255, 23, 68)','Red boost button must glow red, not purple');
-    }
     assert.equal(a.world.w,22400);assert.equal(a.world.h,22400);
     assert.equal(a.world.rx,a.world.ry,'Arena boundary must be a circle');
     assert.ok(a.worms>=50&&a.food>=27500,'Circular arena must keep rich food density and bots');
@@ -95,6 +87,14 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.locator('#worm-guide-next').click();
     await page.locator('#worm-guide-next').click();
     await page.waitForFunction(()=>window.InfinityWormsQA.snapshot().state==='playing');
+    if(width>=1280){
+     await page.locator('#worm-pause').hover();
+     assert.equal(await page.locator('#worm-pause').evaluate(el=>getComputedStyle(el).borderTopColor),
+      'rgb(40, 96, 255)','Blue pause button must glow blue');
+     await page.locator('#worm-boost').hover();
+     assert.equal(await page.locator('#worm-boost').evaluate(el=>getComputedStyle(el).borderTopColor),
+      'rgb(255, 23, 68)','Red boost button must glow red, not purple');
+    }
     const styles=await page.evaluate(()=>window.InfinityWormsQA.botStyles());
     for(const role of ['afk','newcomer','casual','cautious','hunter','veteran','pro','reckless']){
      assert.ok(styles[role]>=2,'Missing realistic bot behavior: '+role);
