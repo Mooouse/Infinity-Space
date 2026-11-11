@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Infinity Space — UI Atlas</title>
+<meta name="description" content="Internal UI atlas: all Infinity Space screens, design tokens, responsive live previews and component inventory.">
+<style>
+:root{color-scheme:dark;--surface:#111927;--surface-hi:#192439;--surface-lo:#0b111d;--stroke:#35425c;--text:#f1f5fe;--muted:#a8b6cf;--blue:#2860ff;--purple:#9922ff;--yellow:#ffe500;--green:#27ff40;--red:#ff1744;--radius:10px}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;background:#080d17}
+body{margin:0;color:var(--text);background:radial-gradient(ellipse at 60% 0,#14223b 0,transparent 46%),#080d17;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.5}
+button,input,select{font:inherit}
+button{cursor:pointer;color:inherit}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--yellow);outline-offset:3px}
+a{color:#92acff;text-decoration:none}
+a:hover{text-decoration:underline}
+header.page-head{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:15px;padding:12px 24px;border-bottom:1px solid #34425b;background:#0c1320f2;backdrop-filter:blur(16px)}
+.brand{font-size:16px;font-weight:900;letter-spacing:.03em}.brand em{font-style:normal;color:#8b9fff}
+.subtitle{display:block;color:var(--muted);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+.btn{border:1px solid var(--stroke);border-radius:8px;background:#1b2639;padding:9px 13px;color:#e9f0ff;font-size:12px;font-weight:750;transition:background .16s,transform .16s}
+.btn:hover{background:#263954;transform:translateY(-1px)}
+.btn.primary{border-color:#6a83ff;background:#264aba}
+.btn.danger{border-color:#8a3650;background:#3e1d2b}
+.layout{display:grid;grid-template-columns:248px minmax(0,1fr);align-items:start;min-height:calc(100vh - 60px)}
+nav.sidebar{position:sticky;top:62px;max-height:calc(100dvh - 65px);overflow:auto;padding:17px 12px 28px;border-right:1px solid #2a354a}
+nav.sidebar h2{margin:16px 11px 6px;color:#8fa6cb;font-size:10px;letter-spacing:.13em}
+nav.sidebar button{display:flex;width:100%;gap:10px;align-items:center;padding:9px 11px;background:transparent;border:1px solid transparent;border-radius:7px;text-align:left;font-size:12px;color:#acbcd6}
+nav.sidebar button:hover{background:#1b283e;color:#fff}
+nav.sidebar button.active{background:#1a2c50;border-color:#3457ab;color:#f4f7ff}
+nav.sidebar .index{width:22px;text-align:center;color:#6e97ff;font-size:10px;font-weight:900}
+main{width:100%;min-width:0;padding:25px clamp(14px,2.6vw,38px) 80px}
+section.module{margin-bottom:34px;scroll-margin-top:88px}
+h1{font-size:clamp(25px,3vw,37px);letter-spacing:-.04em;margin:0 0 5px;line-height:1.15}
+h2{font-size:21px;letter-spacing:-.03em;margin:0 0 8px}
+h3{font-size:13px;text-transform:uppercase;letter-spacing:.09em;margin:0 0 14px}
+.lead{margin:0 0 23px;color:#b6c1d3;max-width:760px}
+.note{color:var(--muted);font-size:12px;margin:5px 0 13px}
+.card{border:1px solid var(--stroke);border-radius:var(--radius);background:linear-gradient(150deg,#172134,#101725);box-shadow:0 5px 25px #0003}
+.live-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 17px;flex-wrap:wrap}
+.live-head strong{font-weight:860}
+.live-head small{display:block;color:var(--muted)}
+.device-switch{display:flex;gap:5px;flex-wrap:wrap}
+.device-switch button{border:1px solid #36445e;background:#161f30;padding:7px 10px;border-radius:6px;color:#bdc8dc;font-size:11px}
+.device-switch button.on{border-color:#4e74e1;color:#fff;background:#243d78}
+.frame-area{overflow:auto;display:grid;place-items:start center;min-height:400px;max-height:880px;padding:18px;background:repeating-linear-gradient(45deg,#0a101d,#0a101d 10px,#0e1625 10px,#0e1625 20px);border-top:1px solid #2d3b51;border-bottom-left-radius:var(--radius);border-bottom-right-radius:var(--radius)}
+.frame-shell{flex:none;max-width:none;position:relative;padding:3px;border-radius:12px;border:1px solid #455572;box-shadow:0 25px 55px #0008;background:#050914;transform-origin:top center}
+.frame-shell iframe{display:block;width:100%;height:100%;border:0;border-radius:8px;background:#080d18}
+.frame-shell.desktop{width:1280px;height:720px}
+.frame-shell.tablet{width:820px;height:620px}
+.frame-shell.mobile{width:390px;height:780px}
+.frame-shell.landscape{width:760px;height:390px}
+.frame-info{display:flex;gap:7px;align-items:center;flex-wrap:wrap;color:#9eb0cc;font-size:11px}
+.frame-info code{color:#dbe5ff;background:#202b41;border-radius:4px;padding:3px 5px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.palette{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.swatch{min-width:0;overflow:hidden;border-radius:9px;border:1px solid #334159;background:#111927}
+.color-top{height:68px}
+.swatch small{display:block;padding:9px 10px;color:#e9effc;font-size:11px;font-weight:790}
+.swatch code{display:block;color:#9daec8;font-size:10px;padding:0 10px 9px}
+.sample{min-width:0;padding:15px 16px;overflow:hidden}
+.sample h3{margin-bottom:11px}
+.sample .row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.sample .tile{flex:1 1 110px;min-height:54px;display:flex;align-items:center;gap:11px;border:1px solid #384861;border-top:2px solid var(--accent,#2860ff);border-radius:8px;background:linear-gradient(140deg,color-mix(in srgb,var(--accent,#2860ff) 12%,#1a263b),#141c2a);padding:9px 12px}
+.sample .tile span{color:var(--accent,#2860ff);font-size:18px}
+.sample .tile b{font-size:11px}
+.kpi{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:10px 12px;border:1px solid #36445d;border-radius:8px;background:#182237;flex:1 1 93px}
+.kpi small{display:block;color:var(--muted);font-size:10px;letter-spacing:.05em}.kpi strong{display:block;font-size:20px}
+.preview-panel{padding:17px;background:#111b2a;border:1px solid #3b4b64;border-radius:12px}
+.preview-panel .eyebrow{color:#86a2ff;font-size:10px;letter-spacing:.13em;font-weight:880}
+.preview-panel h4{font-size:25px;margin:7px 0 6px}
+.preview-panel p{font-size:12px;color:#afbed3;margin:0 0 13px}
+.preview-controls{display:flex;gap:8px;flex-wrap:wrap}
+.control-btn{border:1px solid #40506b;border-left:3px solid var(--accent,#2860ff);border-radius:8px;background:#1c283c;color:#ecf2ff;padding:10px 13px;font-size:12px;font-weight:830}
+.control-btn:hover{background:#273754;border-color:#6281ae;border-left-color:var(--accent,#2860ff)}
+.progress{height:8px;border-radius:99px;overflow:hidden;background:#303c53;border:1px solid #40506b}.progress span{display:block;height:100%;width:68%;background:#2860ff}
+.tag{display:inline-block;padding:4px 8px;border:1px solid #45526d;background:#192338;border-radius:5px;color:#bdcce4;font-size:10px;font-weight:800}
+.track{display:flex;align-items:center;gap:12px;border:1px solid #384861;padding:9px;background:#172236;border-radius:9px}
+.cover{width:46px;height:46px;flex:none;border-radius:8px;background:radial-gradient(circle at 33% 30%,#af43ff,#45127c 56%,#091742)}
+.track strong{font-size:12px}.track small{display:block;color:#9caeca;font-size:10px}
+.fake-toggle{display:flex;justify-content:space-between;align-items:center;border:1px solid #40526d;padding:12px;border-radius:8px;background:#192538;color:#e2eaf8;font-size:12px}
+.switch{width:38px;height:22px;border-radius:5px;background:#175a30;border:1px solid #27ff40;position:relative}
+.switch:after{content:"";position:absolute;right:2px;top:2px;width:16px;height:16px;border-radius:3px;background:#e8ffe9}
+.fake-slider{width:100%;accent-color:#2860ff}
+.fake-worm{display:flex;align-items:center;gap:0;padding:14px 4px;overflow:hidden}
+.bead{width:26px;height:26px;border-radius:50%;margin-left:-4px;border:2px solid #090f1c;box-shadow:inset -3px -4px 7px #0007,inset 3px 3px 5px #fff5}
+.beader{display:flex;flex-wrap:wrap;gap:7px}.beader span{width:22px;height:22px;border-radius:50%;border:1px solid #0d1422}
+.alert{border-left:3px solid #ffe500;background:#29281b;border-radius:7px;padding:10px 13px;color:#ffed91;font-size:12px}
+.evolution-steps{display:flex;gap:8px;align-items:center}
+.evolution-steps span{flex:1;text-align:center;padding:10px 5px;background:#1a2639;border-radius:7px;border:1px solid #3a4960;font-size:10px}
+.evolution-steps span.current{border-color:#2860ff;background:#20345c}
+footer{color:#8b9cb7;font-size:11px;padding-top:12px;border-top:1px solid #2f3c54}
+@media(max-width:1050px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.palette{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){header.page-head{padding:10px 12px}.layout{grid-template-columns:1fr}nav.sidebar{position:static;max-height:none;display:flex;overflow:auto;padding:8px;gap:3px;border-right:0;border-bottom:1px solid #2e3d53}nav.sidebar h2{display:none}nav.sidebar button{white-space:nowrap;width:auto;flex:none}main{padding:15px 12px 45px}.grid{grid-template-columns:1fr}.palette{grid-template-columns:repeat(2,minmax(0,1fr))}.frame-area{min-height:360px;padding:10px}.brand{font-size:13px}.subtitle{font-size:9px}.live-head{padding:12px}}
+</style>
+</head>
+<body>
+<header class="page-head"><div><div class="brand">INFINITY <em>SPACE</em> / UI ATLAS</div><span class="subtitle">Реальные экраны и единая система оформления</span></div><div class="actions"><button class="btn" id="refresh" type="button">Обновить предпросмотр</button><a class="btn primary" href="index.html" target="_blank" rel="noopener">Открыть игру</a></div></header>
+<div class="layout">
+<nav class="sidebar" id="screen-nav" aria-label="Экраны игры">
+ <h2>Главный интерфейс</h2>
+ <button data-id="menu" class="active"><span class="index">01</span>Главное меню</button>
+ <button data-id="endless"><span class="index">02</span>Бесконечный космос</button>
+ <button data-id="map"><span class="index">03</span>Карта</button>
+ <button data-id="evolution"><span class="index">04</span>Эволюция</button>
+ <button data-id="achievements"><span class="index">05</span>Достижения</button>
+ <button data-id="bestiary"><span class="index">06</span>Бестиарий</button>
+ <button data-id="statistics"><span class="index">07</span>Статистика</button>
+ <button data-id="settings"><span class="index">08</span>Настройки</button>
+ <button data-id="music"><span class="index">09</span>Музыка</button>
+ <button data-id="daily"><span class="index">10</span>Ежедневные награды</button>
+ <button data-id="roulette"><span class="index">11</span>Рулетка</button>
+ <h2>Режимы</h2>
+ <button data-id="arena"><span class="index">12</span>Космическая арена</button>
+ <button data-id="royale"><span class="index">13</span>Королевская битва</button>
+ <button data-id="core"><span class="index">14</span>Захват ядра</button>
+ <button data-id="race"><span class="index">15</span>Гонка</button>
+ <button data-id="worms"><span class="index">16</span>Космические черви</button>
+ <button data-id="worms-pause"><span class="index">17</span>Пауза червей</button>
+ <button data-id="worms-skins"><span class="index">18</span>Конструктор скинов</button>
+ <h2>Инвентарь элементов</h2>
+ <button data-jump="tokens"><span class="index">A</span>Цветовая система</button>
+ <button data-jump="components"><span class="index">B</span>Все компоненты</button>
+</nav>
+<main>
+<section class="module" id="live">
+ <h1>Единая карта интерфейса</h1>
+ <p class="lead">Выбирай любой реальный экран слева. Его живая версия загружается ниже в выбранном размере. Каталог внизу показывает все типы компонентов рядом — удобно замечать несовпадения.</p>
+ <div class="card">
+  <div class="live-head"><div><strong id="current-title">Главное меню</strong><small id="current-description">Реальный экран игры, не статичный макет</small></div>
+   <div class="device-switch" id="devices"><button class="on" data-device="desktop">ПК 1280×720</button><button data-device="tablet">Планшет 820×620</button><button data-device="mobile">Телефон 390×780</button><button data-device="landscape">Горизонтально 760×390</button></div>
+  </div>
+  <div class="frame-area" id="frame-area"><div class="frame-shell desktop" id="frame-shell"><iframe id="preview" title="Живой интерфейс Infinity Space" src="index.html?select=endless&ui-review=1" loading="eager"></iframe></div></div>
+  <div class="live-head"><div class="frame-info"><span>Источник:</span><code id="source-url">index.html</code><span id="status">Экран загружен</span></div><div class="actions"><a class="btn" id="open-screen" href="index.html" target="_blank" rel="noopener">Открыть отдельно</a></div></div>
+ </div>
+</section>
+<section class="module" id="tokens">
+ <h2>Одна палитра для всех экранов</h2><p class="note">Тёмные поверхности одинаковы для главного меню, игровых HUD, окон паузы и настроек. Яркие цвета — только семантические акценты, а не отдельные сплошные фоны.</p>
+ <div class="palette">
+  <div class="swatch"><div class="color-top" style="background:#111927"></div><small>Поверхность</small><code>#111927</code></div>
+  <div class="swatch"><div class="color-top" style="background:#2860ff"></div><small>Навигация</small><code>#2860FF</code></div>
+  <div class="swatch"><div class="color-top" style="background:#9922ff"></div><small>Основное действие</small><code>#9922FF</code></div>
+  <div class="swatch"><div class="color-top" style="background:#ffe500"></div><small>Награды</small><code>#FFE500</code></div>
+  <div class="swatch"><div class="color-top" style="background:#27ff40"></div><small>Успех</small><code>#27FF40</code></div>
+  <div class="swatch"><div class="color-top" style="background:#ff1744"></div><small>Опасность</small><code>#FF1744</code></div>
+  <div class="swatch"><div class="color-top" style="background:#35425c"></div><small>Границы</small><code>#35425C</code></div>
+  <div class="swatch"><div class="color-top" style="background:#f1f5fe"></div><small>Текст</small><code>#F1F5FE</code></div>
+  <div class="swatch"><div class="color-top" style="background:#a8b6cf"></div><small>Вторичный текст</small><code>#A8B6CF</code></div>
+  <div class="swatch"><div class="color-top" style="background:#0b111d"></div><small>Фон</small><code>#0B111D</code></div>
+ </div>
+</section>
+<section class="module" id="components">
+ <h2>Все основные компоненты на одной странице</h2>
+ <p class="note">Внешний вид элементов приведён к одному набору отступов, рамок, типографики, радиусов и состояний.</p>
+ <div class="grid">
+  <div class="sample card"><h3>Плитки навигации</h3><div class="row"><div class="tile" style="--accent:#9922ff"><span>✧</span><b>Эволюция</b></div><div class="tile" style="--accent:#ffe500"><span>★</span><b>Достижения</b></div></div><div class="row" style="margin-top:9px"><div class="tile" style="--accent:#2860ff"><span>▤</span><b>Настройки</b></div><div class="tile" style="--accent:#ff1744"><span>⟳</span><b>Новая игра</b></div></div></div>
+  <div class="sample card"><h3>Действия</h3><div class="preview-controls"><button class="control-btn" style="--accent:#9922ff">Продолжить</button><button class="control-btn" style="--accent:#2860ff">Настройки</button><button class="control-btn" style="--accent:#ffe500">Забрать награду</button><button class="control-btn" style="--accent:#ff1744">Выход</button></div></div>
+  <div class="sample card"><h3>Игровой HUD</h3><div class="row"><div class="kpi"><div><small>МАССА</small><strong>12 480</strong></div></div><div class="kpi"><div><small>МЕСТО</small><strong style="color:#ffe500">#2</strong></div></div><div class="kpi"><div><small>ВРЕМЯ</small><strong>03:45</strong></div></div></div></div>
+  <div class="sample card"><h3>Окно паузы</h3><div class="preview-panel"><span class="eyebrow">INFINITY SPACE / MENU</span><h4>Пауза</h4><p>Продолжи игру, измени параметры или перейди к выбору режима.</p><div class="preview-controls"><button class="control-btn" style="--accent:#9922ff">Играть</button><button class="control-btn" style="--accent:#2860ff">Параметры</button></div></div></div>
+  <div class="sample card"><h3>Настройки</h3><div class="fake-toggle"><span>Дополнительное свечение</span><span class="switch" aria-hidden="true"></span></div><div class="fake-toggle" style="margin-top:8px;display:block"><div style="display:flex;justify-content:space-between"><span>Масштаб камеры</span><strong>100%</strong></div><input class="fake-slider" type="range" value="66" aria-label="Пример масштаба камеры"></div></div>
+  <div class="sample card"><h3>Эволюция и прогресс</h3><div class="evolution-steps"><span>Астероид</span><span class="current">Планета</span><span>Звезда</span></div><p class="note" style="margin-top:13px">Прогресс эволюции · 68%</p><div class="progress"><span></span></div></div>
+  <div class="sample card"><h3>Достижения</h3><div class="row"><span class="tag" style="border-color:#ffe500;color:#ffe500">ЛЕГЕНДАРНОЕ</span><span class="tag">12 / 24</span></div><p style="font-size:13px;margin:12px 0 6px;font-weight:820">За гранью галактики</p><div class="progress"><span style="width:50%;background:#ffe500"></span></div></div>
+  <div class="sample card"><h3>Коллекция музыки</h3><div class="track"><div class="cover"></div><div style="flex:1;min-width:0"><strong>Cosmic Journey</strong><small>Сохранённый трек · 04:13</small></div><span style="color:#27ff40">▶</span></div><div class="progress" style="margin-top:14px"><span style="width:36%;background:#9922ff"></span></div></div>
+  <div class="sample card"><h3>Награды и уведомления</h3><div class="alert">Ежедневная награда готова к получению</div><div class="row" style="margin-top:12px"><span class="tag" style="color:#27ff40;border-color:#27ff40">ПОЛУЧЕНО</span><span class="tag" style="color:#ffe500;border-color:#ffe500">+500 ✦</span></div></div>
+  <div class="sample card"><h3>Цвета сегментов червя</h3><div class="fake-worm" id="sample-worm"></div><div class="beader" id="sample-worm-palette"></div><p class="note">Один цвет — один круг. Рисунок повторяется при росте.</p></div>
+  <div class="sample card"><h3>Карта и маркеры</h3><div style="height:108px;background:radial-gradient(circle at 53% 54%,#2860ff 0 2px,transparent 3px),radial-gradient(circle at 20% 20%,#ffe500 0 1px,transparent 2px),radial-gradient(circle at 80% 40%,#9922ff 0 2px,transparent 3px),#0b1428;border:1px solid #3a4e6b;border-radius:9px;position:relative"><div style="position:absolute;top:38%;left:46%;width:17px;height:17px;border:2px solid #2860ff;border-radius:50%;box-shadow:0 0 14px #2860ff"></div><div style="position:absolute;bottom:9px;right:10px;color:#ffe500;font-size:10px">◈ МАРКЕР</div></div></div>
+  <div class="sample card"><h3>Статистика режимов</h3><div class="row"><div class="kpi"><div><small>МАТЧЕЙ</small><strong>128</strong></div></div><div class="kpi"><div><small>ПОБЕД</small><strong style="color:#27ff40">42</strong></div></div></div><div class="row" style="margin-top:12px"><span class="tag" style="color:#2860ff;border-color:#2860ff">КОСМОС</span><span class="tag">ЧЕРВИ</span><span class="tag">АРЕНА</span></div></div>
+ </div>
+</section>
+<footer>UI Atlas — техническая страница Infinity Space. Все игровые экраны в верхнем окне — настоящие страницы текущей сборки. Для тестов: <a href="cosmic-worms.html?tester=1">Cosmic Worms QA</a>.</footer>
+</main></div>
+<script>
+(()=>{
+'use strict';
+const screens={
+ menu:['Главное меню','index.html?select=endless&ui-review=1',null],
+ endless:['Бесконечный космос','index.html?select=endless&ui-review=1',null],
+ map:['Карта','index.html?select=endless&ui-review=1','.hub-story-shortcut[data-shortcut="map"]'],
+ evolution:['Эволюция','index.html?select=endless&ui-review=1','.hub-story-shortcut[data-shortcut="evolution"]'],
+ achievements:['Достижения','index.html?select=endless&ui-review=1','.hub-story-shortcut[data-shortcut="achievements"]'],
+ bestiary:['Бестиарий','index.html?select=endless&ui-review=1','.hub-story-shortcut[data-shortcut="bestiary"]'],
+ statistics:['Статистика','index.html?select=endless&ui-review=1','.hub-story-shortcut[data-shortcut="statistics"]'],
+ settings:['Настройки','index.html?select=endless&ui-review=1','.hub-story-shortcut[data-shortcut="settings"]'],
+ music:['Музыка','index.html?select=endless&ui-review=1','.hub-story-shortcut[data-shortcut="music"]'],
+ daily:['Ежедневные награды','index.html?select=endless&ui-review=1','[data-reward-page="daily"]'],
+ roulette:['Рулетка','index.html?select=endless&ui-review=1','[data-reward-page="roulette"]'],
+ arena:['Космическая арена','cosmic-arena.html?mode=arena&ui-review=1',null],
+ royale:['Королевская битва','cosmic-arena.html?mode=royale&ui-review=1',null],
+ core:['Захват ядра','cosmic-arena.html?mode=core&ui-review=1',null],
+ race:['Гонка','cosmic-arena.html?mode=race&ui-review=1',null],
+ worms:['Космические черви','cosmic-worms.html?tester=1&ui-review=1',null],
+ 'worms-pause':['Пауза червей','cosmic-worms.html?tester=1&ui-review=1','pause-worms'],
+ 'worms-skins':['Конструктор червей','cosmic-worms.html?tester=1&ui-review=1','show-worms-skins']
+};
+const frame=document.getElementById('preview'),shell=document.getElementById('frame-shell'),status=document.getElementById('status');
+const title=document.getElementById('current-title'),label=document.getElementById('source-url'),open=document.getElementById('open-screen');
+let selected='menu',generation=0;
+function activate(){
+ const [name,url,action]=screens[selected],myGeneration=generation;
+ title.textContent=name;label.textContent=url.split('?')[0];open.href=url.replace('&ui-review=1','').replace('?ui-review=1','');
+ status.textContent=action?'Открываю экран…':'Экран загружен';
+ if(!action){status.textContent='Живой экран';return}
+ let attempts=0;
+ const tick=()=>{
+  if(myGeneration!==generation)return;
+  let doc;
+  try{doc=frame.contentDocument}catch(_){status.textContent='Недоступен для предпросмотра';return}
+  if(!doc||!doc.body){if(attempts++<50)setTimeout(tick,150);return}
+  try{
+   if(action==='pause-worms'||action==='show-worms-skins'){
+    const guide=doc.querySelector('#worm-guide');
+    if(guide&&!guide.hidden)doc.querySelector('#worm-guide-skip')?.click();
+    const button=doc.querySelector('#worm-pause');
+    if(!button||doc.querySelector('#worm-pause-overlay')?.hidden){
+     const api=frame.contentWindow.InfinityWormsQA;
+     api?.testProtection?.(100);
+     button?.click();
+    }
+    if(action==='show-worms-skins'&&!doc.querySelector('.ws-overlay')){
+     const skin=doc.querySelector('#worm-skins-open');
+     if(skin&&!doc.querySelector('#worm-pause-overlay')?.hidden)skin.click();
+    }
+    const visible=action==='pause-worms'?(!doc.querySelector('#worm-pause-overlay')?.hidden):!!doc.querySelector('.ws-overlay');
+    if(visible){status.textContent='Живой экран открыт';return}
+   }else{
+    const button=doc.querySelector(action);
+    if(button){button.click();status.textContent='Живой экран открыт';return}
+   }
+  }catch(err){status.textContent=String(err).slice(0,75);return}
+  if(attempts++<70)setTimeout(tick,150);else status.textContent='Экран требует ручного открытия';
+ };
+ tick();
+}
+function show(id){
+ if(!screens[id])return;
+ selected=id;generation++;
+ document.querySelectorAll('[data-id]').forEach(b=>b.classList.toggle('active',b.dataset.id===id));
+ const [,url]=screens[id];
+ frame.onload=()=>setTimeout(activate,350);
+ frame.src=url;
+ const dest=document.getElementById('live').getBoundingClientRect();
+ if(dest.top<0||dest.top>window.innerHeight*.6)document.getElementById('live').scrollIntoView({behavior:'smooth'});
+}
+document.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>show(b.dataset.id));
+document.querySelectorAll('[data-jump]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.jump).scrollIntoView({behavior:'smooth'}));
+document.getElementById('refresh').onclick=()=>show(selected);
+document.querySelectorAll('[data-device]').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('[data-device]').forEach(x=>x.classList.toggle('on',x===b));
+ shell.className='frame-shell '+b.dataset.device;
+});
+frame.onload=()=>setTimeout(activate,350);
+const cs=['#9922ff','#ff1744','#2860ff','#27ff40','#ffe500','#9922ff','#2860ff','#ff1744','#27ff40','#ffe500','#9922ff','#2860ff'];
+const host=document.getElementById('sample-worm');
+cs.forEach(c=>{const bead=document.createElement('span');bead.className='bead';bead.style.background=c;host.append(bead)});
+const palette=document.getElementById('sample-worm-palette');
+['#ff1744','#ffe500','#27ff40','#2860ff','#9922ff','#ffffff','#101a2f'].forEach(c=>{const x=document.createElement('span');x.style.background=c;palette.append(x)});
+if(location.hash&&screens[location.hash.slice(1)])show(location.hash.slice(1));
+})();
+</script>
+</body></html>
