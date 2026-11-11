@@ -136,3 +136,46 @@ html.worm-demo #worm-field{pointer-events:none}
 @media(prefers-reduced-motion:reduce){
  .worm-pause-button,.worm-boost-button,.worm-actions button,.worm-toast{transition:none}
 }
+
+
+/* v2 worm settings — same square violet controls and responsive layout. */
+.worm-settings-panel{width:min(720px,100%)}
+.worm-settings-panel h2{font-size:clamp(15px,2.5vw,19px);letter-spacing:.04em;color:#d7c3ff;margin:19px 0 8px}
+.worm-skin-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:12px 0 15px}
+.worm-skin-card{min-width:0;display:flex;flex-direction:column;align-items:center;gap:9px;min-height:118px;
+ padding:12px 6px 10px;text-align:center;border:2px solid #694d9a;border-bottom:4px solid #382459;
+ border-radius:8px;background:linear-gradient(160deg,#271b3c,#100d1f);color:#cbbbdf;overflow:hidden}
+.worm-skin-card.active{border-color:#d6b5ff;border-bottom-color:#6843c9;background:#38205e;color:#fff;box-shadow:0 0 23px #855bd943}
+.worm-skin-card:hover{filter:brightness(1.18)}
+.worm-skin-card strong{font-size:clamp(9px,1.2vw,11px);font-weight:950;letter-spacing:.035em;line-height:1.2;overflow-wrap:anywhere}
+.worm-skin-preview{width:100%;height:43px;border-radius:5px;position:relative;overflow:hidden;background:#080a1c;
+ --swatch-light:#bd9bff;--swatch-dark:#5430a9;--swatch-accent:#fff3ed}
+.worm-skin-preview::before{content:"";position:absolute;height:17px;width:94%;top:14px;left:1%;
+ border-radius:20px;transform:rotate(-8deg);
+ background:repeating-linear-gradient(90deg,var(--swatch-dark) 0px,var(--swatch-light) 8px,var(--swatch-accent) 11px,var(--swatch-light) 13px,var(--swatch-dark) 25px);
+ box-shadow:0 0 15px var(--swatch-light)}
+.worm-skin-preview::after{content:"";position:absolute;right:6%;top:8px;width:26px;height:26px;
+ border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--swatch-accent),var(--swatch-light) 45%,var(--swatch-dark));
+ box-shadow:0 0 13px var(--swatch-light)}
+.worm-setting-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:47px;
+ border:1px solid #674981;border-bottom:2px solid #3d285a;border-radius:7px;background:#1c1530;
+ padding:8px 12px;margin:8px 0;font-size:13px;font-weight:850}
+.worm-setting-toggle input{position:absolute;opacity:0;width:1px;height:1px}
+.worm-setting-toggle i{flex:none;width:38px;height:23px;position:relative;border:2px solid #8d75b9;border-radius:5px;background:#3c314f;transition:background .14s}
+.worm-setting-toggle i:after{content:"";position:absolute;top:3px;left:3px;width:13px;height:13px;background:#e1d3ff;transition:transform .14s}
+.worm-setting-toggle input:checked+i{background:#6232cc;border-color:#c5a5ff}
+.worm-setting-toggle input:checked+i:after{transform:translateX(15px)}
+.worm-setting-toggle input:focus-visible+i{outline:2px solid white;outline-offset:3px}
+.worm-setting-range{display:grid;grid-template-columns:1fr auto;gap:8px 12px;
+ margin:9px 0 3px;padding:12px;border:1px solid #674981;border-radius:7px;background:#1c1530;
+ font-weight:850;font-size:13px}
+.worm-setting-range strong{color:#d5bcff;font-variant-numeric:tabular-nums}
+.worm-setting-range input{grid-column:1/-1;width:100%;accent-color:#8356ed;cursor:pointer}
+@media(max-width:480px){.worm-skin-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .worm-skin-card{min-height:94px;padding:8px 6px;gap:5px}
+ .worm-skin-preview{height:37px}.worm-settings-panel h2{margin:13px 0 6px}
+}
+@media(max-height:600px){.worm-settings-panel{padding:13px}
+ .worm-skin-card{min-height:76px;padding:5px;gap:3px}.worm-skin-preview{height:30px}
+ .worm-setting-toggle{min-height:35px;margin:4px 0;padding:4px 10px}
+}
