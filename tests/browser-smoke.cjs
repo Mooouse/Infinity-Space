@@ -25,23 +25,11 @@ const log=(...a)=>process.stdout.write(a.join(' ')+'\n');
   assert.equal(await page.locator('#screen-menu .hub-modes').count(),0);
   assert.equal(await page.locator('#screen-menu .hub-mode-dots button').count(),5);
   assert.equal(await page.locator('#screen-menu .hub-menu').isVisible(),false);
-  // Existing sections, new simulation, and upgrades still use the original
-  // registered handlers; they live in the optional drawer.
-  const sections=page.locator('#screen-menu .hub-mode-story-back');
-  await sections.click();
-  await page.locator('#screen-menu .hub-menu').waitFor({state:'visible',timeout:12000});
-  assert.equal(await page.locator('#screen-menu .hub-progress-grid .hub-progress-tile').count(),4,
-    'The sections drawer retains four progression actions');
-  assert.equal(await page.locator('#screen-menu .hub-new-world').isVisible(),true);
-  const more=page.locator('#screen-menu .hub-more-button');
-  assert.equal(await page.locator('#screen-menu #hub-more-panel').isVisible(),false);
-  await more.click();
-  assert.equal(await page.locator('#screen-menu #hub-more-panel').isVisible(),true);
-  assert.equal(await page.locator('#screen-menu #hub-more-panel button').count(),3);
-  await more.click();
-  assert.equal(await page.locator('#screen-menu #hub-more-panel').isVisible(),false);
-  await sections.click();
-  await page.locator('#screen-menu .hub-menu').waitFor({state:'hidden',timeout:5000});
+  // No redundant Sections drawer: the existing shortcuts stay available.
+  assert.equal(await page.locator('#screen-menu .hub-mode-story-back').count(),0);
+  assert.equal(await page.locator('#screen-menu .hub-story-shortcut').count(),8);
+  assert.equal(await page.locator('#screen-menu .hub-story-shortcut[data-shortcut="settings"]').isVisible(),true);
+  assert.equal(await page.locator('#screen-menu .hub-story-shortcut[data-shortcut="map"]').isVisible(),true);
   const firstBonusHit=await page.evaluate(()=>{
    const b=document.querySelector('#screen-menu [data-reward-page="roulette"]');
    const r=b.getBoundingClientRect(),point=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
@@ -49,7 +37,7 @@ const log=(...a)=>process.stdout.write(a.join(' ')+'\n');
   });
   assert.ok(firstBonusHit.hit&&firstBonusHit.top>=0&&firstBonusHit.bottom<=firstBonusHit.height,
     'Daily bonus button must be visible and physically clickable, including after returning from rewards: '+JSON.stringify(firstBonusHit));
-  log('PASS: the main screen IS the carousel; sections and daily rewards remain accessible');
+  log('PASS: main carousel and direct section shortcuts work without redundant drawer');
 
   // A roulette launch from the main menu must immediately present real controls
   // even if the detailed SVG has not decoded yet.
