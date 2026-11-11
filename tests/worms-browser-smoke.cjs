@@ -33,7 +33,7 @@ function rejectTurquoise(){
    check(name,[Number(m[1]),Number(m[2]),Number(m[3])]);
  }
  assert.deepEqual(issues,[],'Turquoise is disallowed in the saturated cosmic palette');
- const palette=fs.readFileSync(path.join(dir,'cosmic-spectrum.css'),'utf8');
+ const palette=fs.readFileSync(path.join(dir,'ui-app.css'),'utf8');
  for(const color of ['#ff1744','#27ff40','#ffe500','#9922ff','#2860ff'])
   assert.ok(palette.includes(color),'Missing vivid palette color '+color);
 }
