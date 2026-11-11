@@ -207,3 +207,137 @@ body.worm-death-replay #worm-hud{
   animation-duration:.01ms!important;animation-iteration-count:1!important;
  }
 }
+
+
+/* v4 | Deep-space spectrum: lively, balanced hues instead of one purple wash. */
+:root{
+ --ink:#050c1a;--purple:#6638df;--line:#4b9ab5;
+ --glow:#79f1f5;--text:#f1f8ff;--muted:#b6c4dc;
+ --cosmic-cyan:#4cecf1;--cosmic-pink:#ff6ebe;
+ --cosmic-gold:#ffd36d;--cosmic-blue:#5bafff;
+}
+.worm-brand{
+ border-color:#42a6cb8a;border-bottom-color:#228bba;
+ background:linear-gradient(120deg,#101d36ec,#170e36e9);
+}
+.worm-brand em{color:var(--cosmic-cyan);text-shadow:0 0 13px #42ebff66}
+.worm-brand small{color:#79dfef}
+.worm-metric:first-child{border-color:#56abff91;border-bottom-color:#2672c6}
+.worm-metric:nth-child(2){border-color:#fd84c991;border-bottom-color:#d950ae}
+.worm-metric:nth-child(3){border-color:#efc77599;border-bottom-color:#b68132}
+.worm-metric:first-child strong{color:#8ad7ff}
+.worm-metric:nth-child(2) strong{color:#ff99d1}
+.worm-metric:nth-child(3) strong{color:#ffe2a0}
+.worm-leaders{border-color:#458dbba0;border-bottom-color:#247bae;
+ background:linear-gradient(145deg,#0d2236ed,#190e32ed)}
+.worm-leaders h3{color:#76e5ff}
+.worm-rank:nth-child(3n+1) b{color:#7fe9f5}
+.worm-rank:nth-child(3n+2) b{color:#ff9dd5}
+.worm-rank:nth-child(3n) b{color:#fbd489}
+.worm-radar{border-color:#43aac78f;border-bottom-color:#247f9e}
+.worm-radar small{color:#84ddf2}
+.worm-pause-button{border-color:#6ddef0;border-bottom-color:#236888;
+ background:linear-gradient(155deg,#145679,#122b4d)}
+.worm-boost-button{border-color:#f4b069;border-bottom-color:#ac5b49;
+ background:linear-gradient(145deg,#9e423d,#55316a)}
+.worm-boost-button.is-boosting{border-color:#ffdf91;
+ background:linear-gradient(135deg,#ff7e59,#bd41a0);
+ box-shadow:0 0 31px #ff8f7777,0 0 16px #ff63be55}
+.worm-hint{border-color:#398eaf99;background:#0b1728e5;color:#aee6f4}
+.worm-stick{border-color:#64bcec9c;background:radial-gradient(circle,#3ea9dc35,#2b1b5733)}
+.worm-thumb{border-color:#d2f8ff;background:linear-gradient(145deg,#55d9ec,#5146cf)}
+.worm-eyebrow{color:#77eaf0}
+.worm-panel{
+ border-color:#5b9bc4;border-bottom-color:#4b238a;
+ background:radial-gradient(ellipse at 110% 0%,#42217f83,transparent 50%),
+ radial-gradient(ellipse at -8% 100%,#086a8b3f,transparent 55%),
+ linear-gradient(150deg,#101e36,#0b0f23 76%);
+}
+.worm-panel h1{color:#f5f5ff;text-shadow:0 0 28px #459fe036}
+.worm-panel h2{color:#ccefff}
+.worm-actions button:not(.worm-primary){border-color:#46a0bb;border-bottom-color:#22607f;
+ background:linear-gradient(155deg,#194c65,#1a234b)}
+.worm-actions button.worm-primary{border-color:#f5a5dc;border-bottom-color:#64349c;
+ background:linear-gradient(150deg,#a44de0,#5439c8)}
+.worm-results>div:nth-child(1){border-color:#4c9cd0;border-bottom-color:#1e678c}
+.worm-results>div:nth-child(2){border-color:#dc6dbe;border-bottom-color:#873d7f}
+.worm-results>div:nth-child(3){border-color:#e4bd69;border-bottom-color:#886735}
+.worm-results>div:nth-child(1) strong{color:#87e3ff}
+.worm-results>div:nth-child(2) strong{color:#fcb0e4}
+.worm-results>div:nth-child(3) strong{color:#ffdf93}
+.worm-setting-toggle,.worm-setting-range{border-color:#4a83ae;background:#0f2136}
+.worm-setting-toggle input:checked+i{background:#1da7ad;border-color:#72edfa}
+.worm-setting-range input{accent-color:#43d8ef}
+.worm-settings-panel h2{color:#83edf1}
+.worm-skin-card{border-color:#48709b;background:linear-gradient(155deg,#122640,#11142b)}
+.worm-skin-card:hover{border-color:#75e5ec}
+.worm-skin-card.active{border-color:#78f0f2;border-bottom-color:#2e9eae;
+ background:linear-gradient(145deg,#184a67,#392160);box-shadow:0 0 19px #4ad3e848}
+.worm-skin-preview{
+ background:radial-gradient(ellipse at 20% 20%,var(--swatch-light) 0%,transparent 49%),
+ radial-gradient(ellipse at 80% 90%,var(--swatch-accent) 0%,transparent 52%),#040b1a;
+}
+.worm-skin-preview::before{
+ background:
+  radial-gradient(circle at 8% 42%,#fff 0 1px,transparent 2px),
+  radial-gradient(circle at 48% 23%,#fff 0 1px,transparent 2px),
+  radial-gradient(circle at 83% 72%,var(--swatch-accent) 0 2px,transparent 3px),
+  repeating-linear-gradient(90deg,var(--swatch-dark) 0,var(--swatch-light) 8px,
+   var(--swatch-accent) 12px,var(--swatch-light) 17px,var(--swatch-dark) 28px);
+ background-size:80px 20px,47px 35px,60px 19px,100px 100%;
+ animation:worm-skin-drift 5.2s linear infinite;
+}
+.worm-preview-stars{
+ position:absolute;left:10%;top:16px;width:70%;height:12px;z-index:2;
+ background:radial-gradient(circle at 20% 20%,#fff 0 1px,transparent 2px),
+ radial-gradient(circle at 50% 80%,var(--swatch-accent) 0 2px,transparent 3px),
+ radial-gradient(circle at 85% 45%,#fff 0 1px,transparent 2px);
+ filter:drop-shadow(0 0 4px var(--swatch-light));
+ animation:worm-preview-star-flow 3.4s linear infinite;
+}
+.worm-preview-comet{
+ position:absolute;z-index:3;left:12%;top:20px;width:36px;height:3px;
+ border-radius:9px;background:linear-gradient(90deg,transparent,var(--swatch-light),#fff);
+ filter:drop-shadow(0 0 5px var(--swatch-accent));
+ animation:worm-preview-comet 3.8s linear infinite;
+}
+@keyframes worm-skin-drift{
+ from{background-position:0 0,0 0,0 0,0 0}
+ to{background-position:80px 0,-47px 0,60px 0,0 0}
+}
+@keyframes worm-preview-star-flow{
+ from{transform:translateX(0);opacity:.6}
+ 50%{opacity:1}
+ to{transform:translateX(12px);opacity:.65}
+}
+@keyframes worm-preview-comet{
+ 0%{transform:translateX(-40px);opacity:0}
+ 22%{opacity:1}
+ 75%{opacity:1}
+ 100%{transform:translateX(180px);opacity:0}
+}
+/* A longer, steadier dissolve with reduced hard cut and no abrupt scale pop. */
+body.worm-death-replay #worm-hud{transition:opacity .85s ease}
+#worm-result.is-revealing{
+ background:#061020d8;
+ animation:worm-cinematic-curtain 1.32s ease-out both;
+}
+#worm-result.is-revealing .worm-panel{
+ animation:worm-cinematic-panel 1.32s cubic-bezier(.16,.7,.22,1) both;
+}
+@keyframes worm-cinematic-curtain{
+ 0%{opacity:0;backdrop-filter:blur(0px)}
+ 25%{opacity:.35;backdrop-filter:blur(2px)}
+ 100%{opacity:1;backdrop-filter:blur(13px)}
+}
+@keyframes worm-cinematic-panel{
+ 0%{opacity:0;transform:translateY(25px) scale(.973);filter:blur(3px)}
+ 38%{opacity:.08;filter:blur(2px)}
+ 100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+}
+@media(prefers-reduced-motion:reduce){
+ .worm-skin-preview::before,.worm-preview-stars,.worm-preview-comet{animation:none!important}
+ #worm-result.is-revealing,#worm-result.is-revealing .worm-panel{
+  animation-duration:.01ms!important;animation-iteration-count:1!important;
+ }
+}
