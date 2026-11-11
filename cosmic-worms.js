@@ -163,8 +163,17 @@ function createWorm(name,human,index,preferEncounter=false){
  const w={name,human,id:index,x:pos.x,y:pos.y,angle,target:angle,
   mass,bestMass:mass,alive:true,invulnerable:human?2.3:2.0,
   segments:[],boost:false,dropClock:0,think:rand(.1,.2),targetFood:null,kills:0,
-  foodEaten:0,bestRank:99,leadTime:0,deathDelay:0,aiStyle:index%6,
-  wiggle:rand(0,TAU),speed:0,boostFlash:0};
+  foodEaten:0,bestRank:99,leadTime:0,deathDelay:0,
+  persona:human?'human':BOT_ROSTER[(index-1)%BOT_ROSTER.length],
+  wiggle:rand(0,TAU),speed:0,boostFlash:0,afkTimer:0,goalUntil:0};
+ if(!human){
+  const type=BOT_PERSONAS[w.persona];
+  w.reaction=rand(type.reaction[0],type.reaction[1])*rand(.86,1.14);
+  w.think=rand(0,w.reaction);
+  // Some newcomers briefly step away mid-match. Fully AFK players simply
+  // stand where they joined until someone hits them.
+  w.afkTimer=w.persona==='afk'?Infinity:0;
+ }
  applySkin(w,human?options.skin:SKINS[index%SKINS.length].id);
  for(let i=0;i<count;i++){
   w.segments.push({x:w.x-Math.cos(angle)*11.8*(i+1),
@@ -242,7 +251,7 @@ function notify(text){
  const el=$('worm-toast');el.textContent=text;el.classList.add('show');toastTimer=1.8;
 }
 function init(){
- game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),worms:[],fx:[],player:null,reported:false};
+ game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),worms:[],fx:[],player:null,reported:false,deathElapsed:0,deathPosition:null};
  const human=!DEMO;
  const p=createWorm(DEMO?'Astra':(window.InfinityProfile?.getName()||'PILOT'),human,0);
  game.player=p;game.worms.push(p);
@@ -256,6 +265,8 @@ function init(){
  camera.x=p.x;camera.y=p.y;camera.zoom=1;
  input.mouseDown=input.boostKey=input.boostTouch=false;
  input.stickPower=0;input.touchAngle=null;input.mouseMoved=false;input.keys.clear();
+ document.body.classList.remove('worm-death-replay');
+ $('worm-result').classList.remove('is-revealing');
  $('worm-result').hidden=true;$('worm-pause-overlay').hidden=true;
  $('worm-guide').hidden=true;$('worm-settings').hidden=true;
  if(!DEMO){
