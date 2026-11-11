@@ -170,7 +170,7 @@ function createWorm(name,human,index,preferEncounter=false){
  const pos=human?{x:WORLD.cx,y:WORLD.cy}:spawnPosition(angle,count,preferEncounter);
  if(!pos)return null;
  const w={name,human,id:index,x:pos.x,y:pos.y,angle,target:angle,
-  mass,bestMass:mass,alive:true,invulnerable:human?2.3:2.0,
+  mass,bestMass:mass,bestLength:count,alive:true,invulnerable:human?2.3:2.0,
   segments:[],boost:false,dropClock:0,think:rand(.1,.2),targetFood:null,kills:0,
   foodEaten:0,bestRank:99,leadTime:0,deathDelay:0,
   persona:human?'human':BOT_ROSTER[(Math.max(1,index)-1)%BOT_ROSTER.length],
@@ -424,7 +424,7 @@ function kill(w,killer,reason){
     mass:w.bestMass,time:game.time
    });
   }
-  $('worm-result-length').textContent=Math.round(w.bestMass);
+  $('worm-result-length').textContent=Math.round(w.bestLength||w.segments.length);
   $('worm-result-place').textContent='#'+Math.min(place,w.bestRank);
   $('worm-result-kills').textContent=w.kills;
   $('worm-result-info').textContent=reason==='wall'?T.wall:reason==='head'?T.self:T.eliminated;
@@ -507,6 +507,7 @@ function updateWorm(w,dt){
  }else if(w.segments.length>target){
   w.segments.length=Math.max(target,w.segments.length-Math.max(1,Math.floor(dt*120)));
  }
+ w.bestLength=Math.max(w.bestLength||0,w.segments.length);
  w.bestMass=Math.max(w.bestMass,w.mass);
  const border=((w.x-WORLD.cx)/WORLD.rx)**2+((w.y-WORLD.cy)/WORLD.ry)**2;
  if(border>1){w.invulnerable=0;kill(w,null,'wall');return;}
@@ -594,7 +595,7 @@ function simulate(dt){
 
 function updateUI(){
  const p=game.player;if(!p)return;
- $('worm-length').textContent=Math.round(p.mass).toLocaleString(language);
+ $('worm-length').textContent=p.segments.length.toLocaleString(language);
  $('worm-place').textContent=p.alive?('#'+ranking(p)):'—';
  const sec=Math.floor(game.time);$('worm-time').textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');
  $('worm-boost').disabled=p.mass<=38||game.state!=='playing';
