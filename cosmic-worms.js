@@ -497,7 +497,14 @@ function closeGuide(){
  if(guideReturn==='paused')$('worm-pause-overlay').hidden=false;
  else window.SpacePlatform?.playing?.(true);
 }
-function exit(){location.assign('index.html?select=worms');}
+function exit(){
+ let previous=null;try{previous=sessionStorage.getItem('infinity-space-embedded-return')}catch(_){}
+ if(location.protocol==='blob:'){
+  if(previous){try{const url=new URL(previous);url.searchParams.set('select','worms');location.assign(url.href);return;}catch(_){}}
+  history.back();return;
+ }
+ location.assign('index.html?select=worms');
+}
 $('worm-pause').onclick=pause;$('worm-resume').onclick=pause;
 $('worm-open-guide').onclick=()=>showGuide('paused');$('worm-exit').onclick=exit;
 $('worm-guide-skip').onclick=closeGuide;
