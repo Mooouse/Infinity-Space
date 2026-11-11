@@ -84,8 +84,25 @@ function applySkin(w,id){
 const FOOD_COLORS=['#ad96ff','#8bdefa','#f5bb87','#ffc0de','#a1edca'];
 const NAMES=['Astra','Orbit','Nova','Pulsar','Quasar','Mira','Voidling','Zenith','Vega',
  'Nebula','Kepler','Comet','Krypton','Lumen','Solaris','Aether','Cosmo','Rift','Ion','Rigel','Helix','Antares','Nix','Altair'];
+// The lobby has a stable mixture of player archetypes rather than one global AI
+// difficulty. Timing, awareness, aim, aggression, speed and AFK habits vary.
+const BOT_ROSTER=[
+ 'newcomer','casual','cautious','hunter','afk','casual','newcomer','veteran',
+ 'casual','hunter','casual','pro','cautious','newcomer','casual','reckless'
+];
+const BOT_PERSONAS={
+ afk:      {reaction:[1.6,3],    sight:0,   samples:0,  look:[90],            awareness:0,   error:0,    hunt:0,   boost:0,    speed:0},
+ newcomer: {reaction:[.55,.95],  sight:360, samples:4,  look:[100],           awareness:.14, error:.65,  hunt:0,   boost:.07,  speed:.83},
+ casual:   {reaction:[.25,.44],  sight:680, samples:8,  look:[100,200],       awareness:.48, error:.26,  hunt:.13, boost:.24,  speed:.98},
+ cautious: {reaction:[.17,.28],  sight:960, samples:15, look:[90,190,320],    awareness:1.2, error:.09,  hunt:0,   boost:.06,  speed:.91},
+ hunter:   {reaction:[.13,.23],  sight:1040,samples:16, look:[85,180,300,440],awareness:.83,error:.10, hunt:.75, boost:.70,  speed:1.04},
+ veteran:  {reaction:[.095,.15], sight:1150,samples:22, look:[80,160,280,440],awareness:1.25,error:.035,hunt:.55,boost:.62, speed:1.07},
+ pro:      {reaction:[.06,.105], sight:1350,samples:26, look:[80,160,280,440,600],awareness:1.6,error:.012,hunt:.83,boost:.82,speed:1.11},
+ reckless: {reaction:[.23,.43],  sight:720, samples:7,  look:[90,200],       awareness:.28,error:.41, hunt:.90, boost:.87, speed:1.08}
+};
+const DEATH_REPLAY_SECONDS=2.8;
 let vw=0,vh=0,dpr=1,last=0,uiClock=0,starTime=0,foodTimer=0,toastTimer=0,guideStep=0,guideReturn='playing';
-let game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),worms:[],fx:[],player:null,reported:false};
+let game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),worms:[],fx:[],player:null,reported:false,deathElapsed:0,deathPosition:null};
 const input={mx:0,my:0,mouseMoved:false,mouseDown:false,boostKey:false,boostTouch:false,keys:new Set(),stickAngle:0,stickPower:0,stickPointer:-1,touchAngle:null};
 const camera={x:WORLD.cx,y:WORLD.cy,zoom:1};
 const stars=Array.from({length:470},(_,i)=>({x:Math.random(),y:Math.random(),r:i%7===0?1.5:rand(.4,1),a:rand(.3,.95),phase:rand(0,TAU),depth:rand(.04,.17),c:['#e1ecff','#c8a6ff','#a4dfff','#ffffff'][i%4]}));
