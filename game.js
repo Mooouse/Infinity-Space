@@ -4517,19 +4517,7 @@ if(window.SpaceUIv15Templates && document.createElement('template').content){
   if(dailyReady)dailyBtn.classList.add('reward-available');
   if(rouletteReady)rouletteBtn.classList.add('reward-available');
   menuGrid.prepend(dailyBtn,rouletteBtn);
-  // Arcade entries are standard v15 menu tiles, matching rewards, map and achievements.
-  function addModeEntry(iconName,title,href){
-   const b=document.createElement('button');
-   b.type='button';b.className='modes-menu-entry';
-   b.innerHTML='<span>'+icon(iconName)+'</span><span>'+title+'</span><span>'+icon('arrow-right')+'</span>';
-   b.onclick=()=>location.assign(href);
-   return b;
-  }
-  const arenaBtn=addModeEntry('orbit',L('Cosmic Arena','Космическая арена','Arena Cósmica'),'cosmic-arena.html?mode=arena');
-  const modesBtn=addModeEntry('star',L('Game modes','Режимы игры','Modos de juego'),'cosmic-arena.html');
-  menuGrid.insertBefore(arenaBtn,menuGrid.children[2]||null);
-  menuGrid.insertBefore(modesBtn,menuGrid.children[3]||null);
-  // Use the exact same playlist glyph as the in-game music collection button.
+    // Use the exact same playlist glyph as the in-game music collection button.
   const collectionIcon=q(menuGrid,'[data-page="music"] > span:first-child');
   if(collectionIcon){collectionIcon.removeAttribute('data-icon');collectionIcon.innerHTML=uiIcon('playlist');}
   if(window.SpaceMeta?.canClaim(g))dailyBtn.classList.add('daily-new');
