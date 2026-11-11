@@ -113,6 +113,7 @@
    const entry=modeStories[current];
    window.SpaceMenuSceneMode=entry.id==='endless'?null:entry.id;
    root.dataset.previewMode=entry.id;
+   window.SpaceMenuLastSelected=entry.id;
    // Universe map is meaningful only for the original persistent sandbox.
    root.classList.toggle('hub-mode-endless',entry.id==='endless');
    q(overlay,'.hub-mode-story-kicker').textContent=t(entry.subtitle);
@@ -182,7 +183,7 @@
   // Keep swipe selection permanently visible as the first scene.
   root.classList.add('hub-main-carousel');
   overlay.hidden=false;
-  const requested=new URLSearchParams(location.search).get('select');
+  const requested=new URLSearchParams(location.search).get('select')||window.SpaceMenuLastSelected;
   const chosen=modeStories.findIndex(item=>item.id===requested);
   setMode(chosen>=0?chosen:0);
   overlay.querySelectorAll('.hub-mode-step').forEach(b=>b.onclick=()=>setMode(current+Number(b.dataset.dir)));
