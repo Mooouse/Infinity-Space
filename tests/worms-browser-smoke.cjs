@@ -69,11 +69,19 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
      };
     });
     assert.equal(saturated.brand,'rgb(255, 229, 0)','Bright yellow accent required');
-    assert.equal(saturated.length,'rgb(39, 255, 64)','Bright green accent required');
-    assert.equal(saturated.rank,'rgb(255, 23, 68)','Bright red accent required');
-    assert.equal(saturated.timer,'rgb(255, 229, 0)');
+    assert.equal(saturated.length,'rgb(247, 248, 255)','Neutral HUD numbers should not create a rainbow');
+    assert.equal(saturated.rank,'rgb(255, 229, 0)','Leaderboard rank should be highlighted in gold');
+    assert.equal(saturated.timer,'rgb(224, 229, 248)');
     assert.equal(saturated.blue,'#2860ff');
     assert.equal(saturated.purple,'#9922ff');
+    if(width>=1280){
+     await page.locator('#worm-pause').hover();
+     assert.equal(await page.locator('#worm-pause').evaluate(el=>getComputedStyle(el).borderTopColor),
+      'rgb(40, 96, 255)','Blue pause button must glow blue');
+     await page.locator('#worm-boost').hover();
+     assert.equal(await page.locator('#worm-boost').evaluate(el=>getComputedStyle(el).borderTopColor),
+      'rgb(255, 23, 68)','Red boost button must glow red, not purple');
+    }
     assert.equal(a.world.w,22400);assert.equal(a.world.h,22400);
     assert.equal(a.world.rx,a.world.ry,'Arena boundary must be a circle');
     assert.ok(a.worms>=50&&a.food>=27500,'Circular arena must keep rich food density and bots');
@@ -153,6 +161,14 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
      getComputedStyle(el).animationName.includes('worm-preview-comet')),true,
      'All cosmic skin previews must show moving comets');
     await page.locator('#worm-skin-grid [data-skin="aurora"]').click();
+    assert.equal(await page.locator('#worm-skin-grid [data-skin="aurora"]').evaluate(
+     el=>getComputedStyle(el).borderTopColor),
+     'rgb(39, 255, 64)','Selected green skin must have matching green outline');
+    if(width>=1280){
+     await page.locator('#worm-settings-back').hover();
+     assert.equal(await page.locator('#worm-settings-back').evaluate(el=>getComputedStyle(el).borderTopColor),
+      'rgb(40, 96, 255)','Settings Back button must glow blue');
+    }
     assert.equal(await page.evaluate(()=>window.InfinityWormsQA.snapshot().skin),'aurora');
     await page.locator('#worm-setting-glow').uncheck({force:true});
     await page.locator('#worm-setting-names').uncheck({force:true});
