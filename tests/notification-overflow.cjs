@@ -50,7 +50,7 @@ async function test(browser,info){
     parentPointer:getComputedStyle(root).pointerEvents,
     cardPointer:cards.map(e=>getComputedStyle(e).pointerEvents),
     width:innerWidth,height:innerHeight,
-    styleLoaded:[...document.styleSheets].some(x=>x.href?.includes('ui-app.css?v=3.78.0'))
+    styleLoaded:[...document.styleSheets].some(x=>x.href?.includes('ui-app.css?v=3.78.1'))
    };
   });
   assert.ok(sample.styleLoaded,'Dedicated stylesheet not loaded');
