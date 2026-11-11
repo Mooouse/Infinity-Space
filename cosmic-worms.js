@@ -744,6 +744,118 @@ function drawCosmicInterior(w,t,r){
  ctx.restore();
 }
 
+
+/* Every skin has its own outline and materials, not just a new body colour. */
+function drawSkinGeometry(w,t,r){
+ const ns=w.segments,p=w.pattern;
+ ctx.save();ctx.lineJoin='round';ctx.lineCap='round';
+ for(let i=4;i<ns.length-2;i+=p==='flare'||p==='meteor'?5:7){
+  const a=ns[i-2],b=ns[i+2],node=ns[i];
+  const angle=Math.atan2(a.y-b.y,a.x-b.x),pulse=Math.sin(t*2+i*.23+w.id*.4);
+  ctx.save();ctx.translate(node.x,node.y);ctx.rotate(angle);
+  ctx.lineWidth=Math.max(1.1,r*.1);
+  if(p==='aurora'||p==='flare'){
+   // Wings for Aurora, pointed flames for Solar Flare.
+   for(const side of [-1,1]){
+    ctx.fillStyle=p==='aurora'?(i%2?'#27ff40':'#ffe500'):(i%2?'#ff1744':'#ffe500');
+    ctx.beginPath();ctx.moveTo(-r*.6,side*r*.43);
+    if(p==='aurora')ctx.quadraticCurveTo(-r*.5,side*r*1.6,r*.62,side*r*(1.2+.17*pulse));
+    else ctx.lineTo(r*.3,side*r*(1.67+.14*pulse));
+    ctx.lineTo(r*.58,side*r*.41);ctx.closePath();ctx.fill();
+   }
+  }else if(p==='pulsar'||p==='horizon'||p==='eclipse'){
+   // Pulsar rings / glowing accretion halos.
+   ctx.strokeStyle=p==='pulsar'?(i%2?'#ffe500':'#fff'):p==='eclipse'?'#ff1744':'#9922ff';
+   ctx.lineWidth=r*(p==='pulsar'?.18:.14);
+   ctx.beginPath();ctx.ellipse(0,0,r*.4,r*1.2,0,0,TAU);ctx.stroke();
+   if(p==='eclipse'){
+    ctx.fillStyle='#05050d';ctx.beginPath();ctx.arc(0,0,r*.45,0,TAU);ctx.fill();
+    ctx.strokeStyle='#ffe500';ctx.lineWidth=r*.1;ctx.stroke();
+   }
+  }else if(p==='supernova'||p==='stardust'){
+   // Starbursts versus luminous golden pentagrams.
+   if(p==='stardust'){ctx.fillStyle='#1c103a';ctx.beginPath();ctx.arc(0,0,r*.7,0,TAU);ctx.fill()}
+   ctx.fillStyle=p==='stardust'?'#ffe500':i%2?'#ff1744':'#ffe500';
+   ctx.beginPath();
+   const count=p==='stardust'?10:16;
+   for(let j=0;j<count;j++){
+    const theta=j*TAU/count-PI/2,rad=j%2?r*.25:r*(p==='stardust'?.58:.98);
+    if(!j)ctx.moveTo(Math.cos(theta)*rad,Math.sin(theta)*rad);
+    else ctx.lineTo(Math.cos(theta)*rad,Math.sin(theta)*rad);
+   }
+   ctx.closePath();ctx.fill();
+  }else if(p==='comet'||p==='crystal'||p==='meteor'){
+   // Ice fins, diamond plates, jagged meteor armour.
+   ctx.fillStyle=p==='comet'?'#2860ff':p==='crystal'?(i%2?'#27ff40':'#2860ff'):'#ff1744';
+   ctx.strokeStyle=p==='meteor'?'#ffe500':'#f4f7ff';
+   ctx.beginPath();
+   if(p==='comet'){
+    const side=i%2?1:-1;
+    ctx.moveTo(-r*.52,side*r*.4);ctx.lineTo(-r*.14,side*r*1.65);
+    ctx.lineTo(r*.51,side*r*1.06);ctx.lineTo(r*.6,side*r*.39);
+   }else{
+    ctx.moveTo(-r*.85,0);ctx.lineTo(-r*.2,-r*1.06);
+    ctx.lineTo(r*.62,-r*.72);ctx.lineTo(r*.86,0);
+    ctx.lineTo(r*.25,r*1.03);ctx.lineTo(-r*.63,r*.68);
+   }
+   ctx.closePath();ctx.fill();ctx.stroke();
+   if(p==='meteor'){ctx.beginPath();ctx.moveTo(-r*.5,-r*.4);ctx.lineTo(r*.18,r*.16);ctx.lineTo(r*.54,-r*.29);ctx.stroke()}
+  }else if(p==='galaxy'){
+   // Noticeable rotating galactic spirals.
+   ctx.strokeStyle=i%2?'#a928ff':'#ffe500';ctx.lineWidth=r*.14;
+   ctx.beginPath();
+   for(let j=0;j<=20;j++){
+    const theta=j*.51+t*.55+i*.21,rad=r*(.07+j*.039);
+    if(!j)ctx.moveTo(Math.cos(theta)*rad,Math.sin(theta)*rad);
+    else ctx.lineTo(Math.cos(theta)*rad,Math.sin(theta)*rad);
+   }
+   ctx.stroke();
+  }else{
+   // Nebula: four bright gas clusters.
+   for(let j=0;j<4;j++){
+    const theta=j*PI/2+t*.1;
+    ctx.fillStyle=['#9922ff','#ff1744','#2860ff','#fff'][j];
+    ctx.beginPath();ctx.arc(Math.cos(theta)*r*.48,Math.sin(theta)*r*.48,r*.23,0,TAU);ctx.fill();
+   }
+  }
+  ctx.restore();
+ }
+ ctx.restore();
+}
+function drawSkinHead(w,r){
+ const p=w.pattern;ctx.save();ctx.translate(w.x,w.y);ctx.rotate(w.angle);
+ ctx.fillStyle=p==='eclipse'||p==='horizon'?'#05050d':w.color[0];
+ ctx.strokeStyle=w.accent;ctx.lineWidth=r*.14;
+ ctx.shadowColor=w.color[0];ctx.shadowBlur=options.glow?16:0;
+ ctx.beginPath();
+ if(p==='meteor'||p==='crystal'){
+  ctx.moveTo(r*1.35,0);ctx.lineTo(r*.33,-r*1.1);ctx.lineTo(-r*1.02,-r*.7);
+  ctx.lineTo(-r*1.12,r*.61);ctx.lineTo(r*.4,r*1.08);ctx.closePath();
+ }else ctx.arc(0,0,r*1.12,0,TAU);
+ ctx.fill();ctx.stroke();ctx.shadowBlur=0;
+ if(['horizon','eclipse','pulsar','galaxy'].includes(p)){
+  ctx.strokeStyle=p==='eclipse'?'#ffe500':p==='horizon'?'#2860ff':p==='pulsar'?'#ffe500':'#a928ff';
+  ctx.lineWidth=r*.13;ctx.beginPath();ctx.ellipse(-r*.18,0,r*1.3,r*.65,p==='galaxy'?-.42:.35,0,TAU);ctx.stroke();
+ }
+ if(['aurora','flare','supernova','comet','stardust'].includes(p)){
+  for(const side of [-1,1]){
+   ctx.fillStyle=p==='comet'?'#2860ff':p==='aurora'?'#27ff40':'#ffe500';
+   ctx.beginPath();ctx.moveTo(-r*.2,side*r*.72);
+   ctx.lineTo(p==='aurora'?-r*.5:r*.27,side*r*(p==='flare'?1.8:1.5));
+   ctx.lineTo(r*.5,side*r*.65);ctx.closePath();ctx.fill();
+  }
+ }
+ for(const side of [-1,1]){
+  ctx.fillStyle=p==='eclipse'||p==='horizon'?'#ffe500':'#fff';
+  ctx.beginPath();
+  if(p==='meteor'||p==='crystal')ctx.ellipse(r*.48,side*r*.53,r*.23,r*.13,side*.2,0,TAU);
+  else ctx.arc(r*.48,side*r*.53,r*.27,0,TAU);
+  ctx.fill();
+  ctx.fillStyle='#11162d';ctx.beginPath();ctx.arc(r*.59,side*r*.53,r*.115,0,TAU);ctx.fill();
+ }
+ ctx.restore();
+}
+
 function drawWorm(w,t){
  if(!w.alive)return;
  const z=camera.zoom;
@@ -769,6 +881,7 @@ function drawWorm(w,t){
  ctx.strokeStyle=light;ctx.lineWidth=r*1.63;ctx.globalAlpha=w.invulnerable>0?.6:.88;ctx.stroke();
  ctx.globalAlpha=1;
  drawCosmicInterior(w,t,r);
+ drawSkinGeometry(w,t,r);
  if(boosting){
   ctx.save();
   ctx.strokeStyle='#f8f4ff';ctx.lineWidth=Math.max(2.2,r*.33);
@@ -820,17 +933,7 @@ function drawWorm(w,t){
   }
  }
  ctx.globalAlpha=1;
- const fx=Math.cos(w.angle),fy=Math.sin(w.angle),nx=-fy,ny=fx;
- ctx.shadowColor=light;ctx.shadowBlur=options.glow?16:0;
- ctx.fillStyle=light;ctx.beginPath();ctx.arc(w.x,w.y,r*1.13,0,TAU);ctx.fill();
- ctx.shadowBlur=0;ctx.strokeStyle=accent;ctx.lineWidth=1.6;ctx.stroke();
- for(const sign of [-1,1]){
-  const ex=w.x+fx*r*.52+nx*sign*r*.57;
-  const ey=w.y+fy*r*.52+ny*sign*r*.57;
-  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(ex,ey,r*.28,0,TAU);ctx.fill();
-  ctx.fillStyle='#241034';ctx.beginPath();
-  ctx.arc(ex+fx*r*.10,ey+fy*r*.10,r*.14,0,TAU);ctx.fill();
- }
+ drawSkinHead(w,r);
  if(options.names||w.human){
   ctx.font='900 12px Inter,system-ui,sans-serif';ctx.textAlign='center';
   ctx.fillStyle=w.human?'#fff':'#fff';
