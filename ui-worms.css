@@ -534,7 +534,7 @@ body.worm-death-replay #worm-hud{transition:opacity .85s ease}
 /* v15 — the same compact, neutral controls as the shared skin workshop.
    Accent is a thin stripe instead of a fully colored rectangle. */
 .worm-panel{
- width:min(620px,100%);background:#111724!important;
+ width:min(560px,100%);background:#111724!important;
  border:1px solid #3e4a62!important;border-bottom:2px solid #27344c!important;
  border-radius:16px!important;
  box-shadow:0 25px 95px #000b,inset 0 1px #ffffff1a!important;
