@@ -1,0 +1,39 @@
+name: Refresh UI atlas screenshots
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ui-review.html'
+      - 'tools/capture-ui-screens.cjs'
+      - '.github/workflows/ui-snapshots.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: ui-snapshots
+  cancel-in-progress: true
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Install browser
+        run: |
+          npm install --silent --no-audit --no-fund playwright@1.56.1
+          npx playwright install chromium --only-shell
+      - name: Capture real desktop and phone UI screens
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/infinity-ui-snapshots.log 2>&1 &
+          sleep 2
+          timeout 650 node tools/capture-ui-screens.cjs
+      - name: Publish screenshot gallery assets
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add ui-snapshots/
+          if git diff --cached --quiet; then echo 'UI atlas screenshots unchanged'; exit 0; fi
+          git commit -m 'Refresh real UI atlas screenshots [skip ci]'
+          git push origin HEAD:main
