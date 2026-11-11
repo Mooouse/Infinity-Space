@@ -877,87 +877,58 @@ function drawWorm(w,t){
  if(Math.abs(w.x-camera.x)>vw/z*.8+1700||Math.abs(w.y-camera.y)>vh/z*.8+1700)return;
  const r=wormRadius(w),n=w.segments.length;
  if(!n)return;
- const tip=w.segments[n-1],dark=w.color[1],light=w.color[0],accent=w.accent;
- const boosting=w.boost&&w.mass>38;
+ const nodes=w.segments,custom=!!(w.human&&options.customEnabled&&options.customSegments?.length);
+ const palette=custom?options.customSegments:null;
+ const theme=SKIN_NEBULAE[w.skin]||SKIN_NEBULAE.nebula;
+ const detail=z>.59;
+ const left=camera.x-vw/z*.6-r*3,right=camera.x+vw/z*.6+r*3;
+ const top=camera.y-vh/z*.6-r*3,bottom=camera.y+vh/z*.6+r*3;
  ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
- ctx.beginPath();ctx.moveTo(tip.x,tip.y);
- for(let i=n-2;i>=0;i--)ctx.lineTo(w.segments[i].x,w.segments[i].y);
- ctx.lineTo(w.x,w.y);
- if(boosting){
-  // A full-body plasma sheath. Unlike the original tail-only stroke, both
-  // the silhouette and travelling energy bands illuminate every segment.
-  ctx.save();
-  ctx.strokeStyle=accent;ctx.lineWidth=r*2.8;
-  ctx.globalAlpha=.33+Math.sin(t*13+w.id)*.10;
-  if(options.glow){ctx.shadowColor=accent;ctx.shadowBlur=30;}
-  ctx.stroke();ctx.restore();
- }
- ctx.strokeStyle=dark;ctx.lineWidth=r*2.2;ctx.globalAlpha=w.invulnerable>0?.64:1;ctx.stroke();
- ctx.strokeStyle=light;ctx.lineWidth=r*1.63;ctx.globalAlpha=w.invulnerable>0?.6:.88;ctx.stroke();
- ctx.globalAlpha=1;
- drawCosmicInterior(w,t,r);
- drawSkinGeometry(w,t,r);
- if(boosting){
-  ctx.save();
-  ctx.strokeStyle='#f8f4ff';ctx.lineWidth=Math.max(2.2,r*.33);
-  ctx.setLineDash([r*.72,r*1.75]);ctx.lineDashOffset=-t*155-w.id*4;
-  ctx.globalAlpha=.55+Math.sin(t*12)*.21;
-  if(options.glow){ctx.shadowBlur=15;ctx.shadowColor=accent;}
-  ctx.stroke();ctx.restore();
- }
- // Eight individual cosmic skins have distinct dorsal motifs; no external
- // textures are needed, so all variants work in Playgama's compact HTML.
- for(let i=n-1;i>=1;i-=4){
-  const node=w.segments[i],prev=w.segments[Math.max(0,i-1)];
-  const dx=prev.x-node.x,dy=prev.y-node.y,d=Math.hypot(dx,dy)||1;
-  const nx=-dy/d,ny=dx/d,phase=t*2.3+i*.43;
-  ctx.globalAlpha=.4+.2*Math.sin(phase);
-  ctx.fillStyle=accent;ctx.strokeStyle=accent;ctx.lineWidth=Math.max(1.2,r*.13);
-  if(w.pattern==='aurora'){
-   const side=Math.sin(phase)*r*.43;
-   ctx.beginPath();ctx.ellipse(node.x+nx*side,node.y+ny*side,r*.3,r*.13,
-    Math.atan2(dy,dx),0,TAU);ctx.fill();
-  }else if(w.pattern==='pulsar'){
-   ctx.beginPath();ctx.arc(node.x,node.y,r*(.18+.1*Math.sin(phase)),0,TAU);ctx.stroke();
-  }else if(w.pattern==='flare'){
-   ctx.globalAlpha=.54;ctx.beginPath();
-   ctx.moveTo(node.x+nx*r*.35,node.y+ny*r*.35);
-   ctx.lineTo(node.x+nx*r*.70-dx/d*r*.4,node.y+ny*r*.70-dy/d*r*.4);
-   ctx.lineTo(node.x-dx/d*r*.3,node.y-dy/d*r*.3);ctx.fill();
-  }else if(w.pattern==='horizon'){
-   ctx.globalAlpha=.78;ctx.beginPath();ctx.arc(node.x,node.y,r*.20,0,TAU);ctx.fill();
-   ctx.globalAlpha=.35;ctx.beginPath();ctx.arc(node.x,node.y,r*.46,0,TAU);ctx.stroke();
-  }else if(w.pattern==='supernova'){
-   ctx.beginPath();ctx.arc(node.x+nx*r*.28,node.y+ny*r*.28,r*.24,0,TAU);ctx.fill();
-   ctx.beginPath();ctx.arc(node.x-nx*r*.22,node.y-ny*r*.22,r*.12,0,TAU);ctx.fill();
-  }else if(w.pattern==='comet'){
-   ctx.beginPath();ctx.moveTo(node.x+nx*r*.34,node.y+ny*r*.34);
-   ctx.lineTo(node.x+dx/d*r*.3,node.y+dy/d*r*.3);
-   ctx.lineTo(node.x-nx*r*.34,node.y-ny*r*.34);
-   ctx.lineTo(node.x-dx/d*r*.3,node.y-dy/d*r*.3);ctx.closePath();ctx.fill();
-  }else if(w.pattern==='stardust'){
-   ctx.beginPath();ctx.moveTo(node.x-r*.22,node.y);ctx.lineTo(node.x+r*.22,node.y);
-   ctx.moveTo(node.x,node.y-r*.22);ctx.lineTo(node.x,node.y+r*.22);ctx.stroke();
-   ctx.beginPath();ctx.arc(node.x+nx*r*.4,node.y+ny*r*.4,r*.07,0,TAU);ctx.fill();
-  }else{
-   ctx.beginPath();ctx.arc(node.x+nx*r*.21,node.y+ny*r*.21,r*.22,0,TAU);ctx.fill();
-  }
-  if(boosting&&i%8===1){
-   ctx.globalAlpha=.85;ctx.fillStyle='#ffffff';
-   ctx.beginPath();ctx.arc(node.x,node.y,Math.max(2.1,r*(.10+.035*Math.sin(t*16+i))),0,TAU);ctx.fill();
+ // Actual Slither-style discrete, overlapping round segments. The whole
+ // body does not get resized when mass changes: new food extends the tail.
+ const step=z<.47&&n>520?2:1;
+ for(let i=n-1;i>=0;i-=step){
+  const p=nodes[i];
+  if(p.x<left||p.x>right||p.y<top||p.y>bottom)continue;
+  const taper=clamp((n-i)/Math.min(20,n),0,1);
+  const size=r*(.68+.32*taper);
+  const color=palette?palette[i%palette.length]:
+   (w.pattern==='nebula'||w.pattern==='galaxy'||w.pattern==='aurora')
+    ?theme[Math.floor(i/5+w.id)%theme.length]
+    :i%5===0?w.accent:w.color[0];
+  ctx.globalAlpha=w.invulnerable>0?.73:1;
+  ctx.fillStyle=w.color[1];ctx.beginPath();ctx.arc(p.x,p.y,size*1.03,0,TAU);ctx.fill();
+  ctx.fillStyle=color;ctx.beginPath();ctx.arc(p.x,p.y,size*.87,0,TAU);ctx.fill();
+  if(detail){
+   ctx.globalAlpha=.31;ctx.fillStyle='#ffffff';ctx.beginPath();
+   ctx.arc(p.x-size*.27,p.y-size*.32,size*.26,0,TAU);ctx.fill();
+   if(!custom&&i%4===0){
+    const phase=t*1.6+i*.67+w.id,dist=size*.3;
+    ctx.globalAlpha=.76;
+    ctx.fillStyle=w.pattern==='stardust'?'#ffe500':'#fff';
+    ctx.beginPath();ctx.arc(p.x+Math.cos(phase)*dist,p.y+Math.sin(phase)*dist,size*.12,0,TAU);ctx.fill();
+   }
   }
  }
  ctx.globalAlpha=1;
+ if(w.boost&&w.mass>38&&options.glow){
+  ctx.shadowColor=w.accent;ctx.shadowBlur=13;
+  ctx.lineWidth=Math.max(2,r*.20);ctx.strokeStyle=w.accent;ctx.globalAlpha=.35;
+  const tail=nodes[n-1];ctx.beginPath();ctx.moveTo(tail.x,tail.y);
+  const stride=Math.max(1,Math.floor(n/850));
+  for(let i=n-2;i>=0;i-=stride)ctx.lineTo(nodes[i].x,nodes[i].y);
+  ctx.lineTo(w.x,w.y);ctx.stroke();ctx.shadowBlur=0;ctx.globalAlpha=1;
+ }
+ // Existing decorative motifs, but only at close zoom and shorter lengths.
+ if(!custom&&detail&&n<480)drawSkinGeometry(w,t,r*.63);
  drawSkinHead(w,r);
  if(options.names||w.human){
-  ctx.font='900 12px Inter,system-ui,sans-serif';ctx.textAlign='center';
-  ctx.fillStyle=w.human?'#fff':'#fff';
-  ctx.shadowColor='#03020b';ctx.shadowBlur=8;
-  ctx.fillText(w.name,w.x,w.y-r*2.2);ctx.shadowBlur=0;
+  ctx.font='800 12px Inter,system-ui,sans-serif';ctx.textAlign='center';
+  ctx.fillStyle='#fff';ctx.shadowColor='#03020b';ctx.shadowBlur=8;
+  ctx.fillText(w.name,w.x,w.y-r*2.5);ctx.shadowBlur=0;
  }
  ctx.restore();
 }
-
 function paintDeathGhost(){
  const ghost=game.deathGhost;
  if(!ghost||game.state!=='death-replay')return;
