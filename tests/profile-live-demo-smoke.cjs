@@ -66,14 +66,14 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   await page.locator('.hub-story-shortcut[data-shortcut="statistics"]').waitFor({state:'visible',timeout:30000});
   await page.locator('.hub-story-shortcut[data-shortcut="statistics"]').click();
   await page.locator('.infinity-stats-panel').waitFor({state:'visible',timeout:15000});
-  assert.equal(await page.locator('.infinity-stats-tabs button').count(),6);
+  assert.equal(await page.locator('.infinity-stats-tabs button').count(),7);
   await page.locator('.infinity-stats-tabs button[data-mode="arena"]').click();
   const arenaResults=await page.locator('.infinity-stats-detail').textContent();
   assert.ok(arenaResults.includes('1'),'Arena results are persisted: '+arenaResults.slice(0,350));
   await page.locator('.infinity-stats-tabs button[data-mode="overall"]').click();
   const totalResults=await page.locator('.infinity-stats-detail').textContent();
   assert.ok(totalResults.includes('1'),'Overall totals aggregate arcade records');
-  console.log('PASS: nickname, 6 mode tabs, match record and total stats survive reload');
+  console.log('PASS: nickname, 7 mode tabs, match record and total stats survive reload');
   assert.equal(errors.length,0,errors.join('\n'));
  }finally{await browser.close();}
 })().catch(e=>{console.error(e.stack||e);process.exitCode=1});
