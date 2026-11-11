@@ -1,5 +1,6 @@
 // Visual QA capture for the Infinity Space UI Atlas.
 // Takes screenshots of actual screen DOM rather than redrawn mockups.
+// Refresh after shared HUD and mobile text containment corrections.
 'use strict';
 const {chromium}=require('playwright');
 const fs=require('node:fs');
