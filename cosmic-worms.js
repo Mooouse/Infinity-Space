@@ -383,18 +383,22 @@ function updateWorm(w,dt){
   else if(input.stickPower>.18)w.target=input.stickAngle;
   else if(input.touchAngle!==null)w.target=input.touchAngle;
   else if(input.mouseMoved){
-   dx=input.mx-vw/2;dy=input.my-vh/2;
-   if(dx*dx+dy*dy>20*20)w.target=Math.atan2(dy,dx);
+   // Pointer steering is relative to the ACTUAL projected head, not the
+   // screen center: smoothing/zoom no longer makes steering feel offset.
+   const sx=vw*.5+(w.x-camera.x)*camera.zoom;
+   const sy=vh*.5+(w.y-camera.y)*camera.zoom;
+   dx=input.mx-sx;dy=input.my-sy;
+   if(dx*dx+dy*dy>15*15)w.target=Math.atan2(dy,dx);
   }
   w.boost=(input.mouseDown||input.boostKey||input.boostTouch)&&w.mass>38;
  }
  const boosting=w.boost&&w.mass>38;
- const targetSpeed=boosting?295:171;
- const scaled=targetSpeed*Math.max(.76,1-Math.log(Math.max(1,w.mass)/60)*.05);
- w.speed+=(scaled-w.speed)*Math.min(1,dt*9);
- const turnRate=boosting?2.65:3.35;
- const delta=normAngle(w.target-w.angle);
- w.angle+=clamp(delta,-turnRate*dt,turnRate*dt);
+ const targetSpeed=boosting?375:172;
+ const scaled=targetSpeed*Math.max(.73,1-Math.log(Math.max(1,w.mass)/60)*.05);
+ w.speed+=(scaled-w.speed)*Math.min(1,dt*12);
+ // Requested instant steering: no turn-rate clamp, lerp or circular radius.
+ w.angle=w.target;
+ w.boostFlash=(w.boostFlash||0)+dt*(boosting?12:4);
  const advance=w.speed*dt;
  w.x+=Math.cos(w.angle)*advance;
  w.y+=Math.sin(w.angle)*advance;
@@ -406,14 +410,15 @@ function updateWorm(w,dt){
   px=node.x;py=node.y;
  }
  if(boosting){
-  w.mass=Math.max(38,w.mass-dt*6.3);
+  w.mass=Math.max(38,w.mass-dt*7.2);
   w.dropClock+=dt;
-  if(w.dropClock>.12){w.dropClock=0;
+  if(w.dropClock>.085){w.dropClock=0;
    const tail=w.segments[w.segments.length-1]||w;
-   if(game.food.length<1400)game.food.push(makeFood(tail.x,tail.y,w.color[0],1.3,2.7));
+   if(game.food.length<FOOD_TARGET+8500)
+    addFood(makeFood(tail.x+rand(-2,2),tail.y+rand(-2,2),w.color[0],1.2,2.9));
   }
  }else w.dropClock=0;
- let target=segmentCount(w);
+ const target=segmentCount(w);
  if(w.segments.length<target){
   const last=w.segments[w.segments.length-1]||w,prev=w.segments[w.segments.length-2]||w;
   w.segments.push({x:last.x+(last.x-prev.x),y:last.y+(last.y-prev.y)});
@@ -424,92 +429,69 @@ function updateWorm(w,dt){
  if(w.human&&border>.91&&Math.random()<dt*.6)notify(T.danger);
 }
 function collectFood(dt){
- const p=game.player;
- for(let k=game.food.length-1;k>=0;k--){
-  const f=game.food[k];
-  let ate=false;
-  for(const w of game.worms){
-   if(!w.alive)continue;
-   const dx=w.x-f.x,dy=w.y-f.y,ds=dx*dx+dy*dy,r=wormRadius(w);
-   if(ds<(r+f.r+5)**2){
+ for(const w of game.worms){
+  if(!w.alive)continue;
+  const radius=wormRadius(w);
+  foodNearby(w.x,w.y,66,f=>{
+   if(f._index<0)return;
+   const dx=w.x-f.x,dy=w.y-f.y,ds=dx*dx+dy*dy;
+   if(ds<(radius+f.r+5)**2){
     w.mass+=f.value;w.foodEaten++;
-    if(w.human)game.fx.push({x:f.x,y:f.y,vx:rand(-35,35),vy:rand(-60,-5),t:.32,max:.32,c:f.color,r:3});
-    game.food.splice(k,1);ate=true;break;
+    if(w.human&&game.fx.length<320)
+     game.fx.push({x:f.x,y:f.y,vx:rand(-35,35),vy:rand(-60,-5),t:.32,max:.32,c:f.color,r:3});
+    removeFood(f);
+   }else if(w.human&&ds<53*53&&ds>5){
+    const d=Math.sqrt(ds),speed=(53-d)*dt*5;
+    moveFood(f,f.x+dx/d*speed,f.y+dy/d*speed);
    }
-   // Only the player's closer food is magnetized; keeps gathering satisfying.
-   if(w===p&&ds<45*45&&ds>5){
-    const d=Math.sqrt(ds),speed=(45-d)*dt*5;
-    f.x+=dx/d*speed;f.y+=dy/d*speed;
-   }
-  }
-  if(ate)continue;
+  });
  }
 }
 function collisions(){
- const worms=game.worms;
- for(let a=0;a<worms.length;a++){
-  const w=worms[a];if(!w.alive||w.invulnerable>0)continue;
+ // One shared spatial index contains every other worm's full trail. Head-on
+ // and body contacts are checked without scanning thousands of distant nodes.
+ for(const w of game.worms){
+  if(!w.alive||w.invulnerable>0)continue;
   const wr=wormRadius(w);
-  for(let b=0;b<worms.length;b++){
-   const other=worms[b];if(other===w||!other.alive)continue;
-   const or=wormRadius(other);
-   const dx=w.x-other.x,dy=w.y-other.y,headDist2=dx*dx+dy*dy;
-   if(headDist2<(wr+or*.86)**2){
-    w.invulnerable=0;other.invulnerable=0;
-    kill(w,other,'head');kill(other,w,'head');break;
-   }
-   // A worm's own body is safe, but rivals' trails are deadly. Spatial
-   // coarse rejection first; then skip every other closely spaced segment.
-   if(headDist2>750*750){
-    let nearby=false;
-    for(let i=12;i<other.segments.length;i+=16){
-     const s=other.segments[i];
-     if((w.x-s.x)**2+(w.y-s.y)**2<650*650){nearby=true;break;}
-    }
-    if(!nearby)continue;
-   }
-   const hitR=wr+or*.68,hitR2=hitR*hitR;
-   for(let i=5;i<other.segments.length;i+=2){
-    const seg=other.segments[i],sx=w.x-seg.x,sy=w.y-seg.y;
-    if(sx*sx+sy*sy<hitR2){w.invulnerable=0;kill(w,other,'body');break;}
-   }
-   if(!w.alive)break;
-  }
+  bodiesNearby(w.x,w.y,95,entry=>{
+   const other=entry.w;
+   if(!w.alive||other===w||!other.alive||other.invulnerable>0)return;
+   const radius=wormRadius(other),dx=w.x-entry.x,dy=w.y-entry.y;
+   const hit=entry.head?wr+radius*.86:wr+radius*.69;
+   if(dx*dx+dy*dy>=hit*hit)return;
+   if(entry.head){
+    kill(w,other,'head');kill(other,w,'head');
+   }else kill(w,other,'body');
+  });
  }
 }
-function respawnBots(){
+function recycleBots(dt){
  for(const w of game.worms){
   if(w.human||w.alive)continue;
-  w.deathDelay-=.016;
+  w.deathDelay-=dt;
   if(w.deathDelay>0)continue;
-  const fresh=createWorm(w.name,false,w.id);
-  // Keep the bot field populated without teleporting the same corpse.
-  Object.assign(w,fresh);
-  if(dist(w.x-game.player.x,w.y-game.player.y)<300){
-   const pos=randomPos(.79);w.x=pos.x;w.y=pos.y;
-   w.segments.forEach((n,i)=>{n.x=w.x-Math.cos(w.angle)*(i+1)*11.5;n.y=w.y-Math.sin(w.angle)*(i+1)*11.5;});
-  }
+  const fresh=createWorm(w.name,false,w.id,w.id%3===0);
+  if(fresh)Object.assign(w,fresh);
+  else w.deathDelay=1.3; // Never force a bot into the player if no safe zone exists.
  }
 }
 function simulate(dt){
  game.time+=dt;
  for(const w of game.worms)updateWorm(w,dt);
- collectFood(dt);collisions();
+ addBodyGrid();
+ collectFood(dt);
+ collisions();
  for(let i=game.fx.length-1;i>=0;i--){
   const p=game.fx[i];p.t-=dt;if(p.t<=0){game.fx.splice(i,1);continue;}
   p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=.97;p.vy*=.97;
  }
- for(const w of game.worms)if(!w.alive&&!w.human)w.deathDelay-=dt;
- for(const w of game.worms){
-  if(w.human||w.alive||w.deathDelay>0)continue;
-  const fresh=createWorm(w.name,false,w.id);Object.assign(w,fresh);
-  if(dist(w.x-game.player.x,w.y-game.player.y)<400){
-   const pos=randomPos(.85);w.x=pos.x;w.y=pos.y;
-   w.segments.forEach((n,i)=>{n.x=w.x-Math.cos(w.angle)*(i+1)*11.5;n.y=w.y-Math.sin(w.angle)*(i+1)*11.5;});
-  }
- }
+ recycleBots(dt);
  foodTimer+=dt;
- if(foodTimer>.2){foodTimer=0;if(game.food.length<(DEMO?370:720))fillFood(Math.min(8,(DEMO?370:720)-game.food.length));}
+ if(foodTimer>.18){
+  foodTimer=0;
+  if(game.food.length<FOOD_TARGET)
+   fillFood(Math.min(180,FOOD_TARGET-game.food.length));
+ }
  const p=game.player;
  if(p.alive){
   const place=ranking(p);
@@ -518,6 +500,7 @@ function simulate(dt){
   if(place===1&&p.leadTime>2&&p.leadTime-dt<=2)notify(T.lead);
  }
 }
+
 function updateUI(){
  const p=game.player;if(!p)return;
  $('worm-length').textContent=Math.round(p.mass).toLocaleString(language);
