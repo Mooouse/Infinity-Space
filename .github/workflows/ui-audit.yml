@@ -4,7 +4,11 @@ on:
     branches: [main]
     paths:
       - 'game.js'
+      - 'cosmic-arena.html'
       - 'ui-v15*.css'
+      - 'ui-v15*.js'
+      - 'ui-responsive-repair.css'
+      - 'mobile-ui-polish.css'
       - 'menu-*.js'
       - 'menu-*.css'
       - 'player-profile.*'
