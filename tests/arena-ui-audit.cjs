@@ -18,7 +18,7 @@ const seed=()=>{localStorage.setItem('infinity-space-player-v1',JSON.stringify({
     await page.locator('#hud:not([hidden])').waitFor({state:'visible',timeout:14000});
     const check=async(screen)=>{
      const data=await page.evaluate(()=>{
-      const ids=['hud','paused','guide','result'];
+      const ids=['result','guide','paused','hud'];
       const el=ids.map(id=>document.getElementById(id)).find(e=>{
        if(!e)return false;return getComputedStyle(e).display!=='none'&&e.getBoundingClientRect().width>0&&e.getBoundingClientRect().height>0;
       });
