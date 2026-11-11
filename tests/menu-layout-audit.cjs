@@ -85,6 +85,24 @@ const inspect=()=>{
      if(m.lineLengths.length&&m.lineLengths.at(-1)===1)issues.push('title-orphan-letter');
      if(!m.playSvg)issues.push('legacy-cta-arrow');
      if(!m.prevHit||!m.nextHit||!m.playHit)issues.push('button-not-hittable');
+     // A saturated button must never inherit a violet halo from another theme.
+     // Verify real computed hover borders across every mode and semantic dock key.
+     if(w===1920&&h===1080){
+      const hue=['rgb(40, 96, 255)','rgb(255, 23, 68)','rgb(153, 34, 255)',
+       'rgb(39, 255, 64)','rgb(255, 229, 0)','rgb(153, 34, 255)'][n];
+      await page.locator('.hub-mode-story-play').hover();
+      const actual=await page.locator('.hub-mode-story-play').evaluate(el=>getComputedStyle(el).borderTopColor);
+      if(actual!==hue)issues.push('play-hover-mismatched-'+actual+'-expected-'+hue);
+      for(const [id,expected] of [['new','rgb(255, 23, 68)'],
+       ['music','rgb(153, 34, 255)'],['map','rgb(40, 96, 255)']]){
+       const el=page.locator('.hub-story-shortcut[data-shortcut="'+id+'"]');
+       if(await el.count() && await el.isVisible()){
+        await el.hover();
+        const border=await el.evaluate(node=>getComputedStyle(node).borderTopColor);
+        if(border!==expected)issues.push('shortcut-'+id+'-hover-'+border);
+       }
+      }
+     }
      if(issues.length)failures.push({w,h,lang,n,issues,layout:m});
     }catch(e){failures.push({w,h,lang,n,error:String(e).slice(0,350)});}
    }
