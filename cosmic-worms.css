@@ -406,6 +406,9 @@ body.worm-death-replay #worm-hud{transition:opacity .85s ease}
 .worm-actions button{--worm-accent:#2860ff;background:linear-gradient(150deg,#1b2c6d,#141a37)}
 .worm-actions button.worm-primary{--worm-accent:#9922ff;background:linear-gradient(145deg,#51229d,#692bb9)}
 .worm-actions button#worm-exit,.worm-actions button#worm-result-menu{--worm-accent:#ff1744}
+.worm-actions button#worm-settings-back{--worm-accent:#2860ff;
+ background:linear-gradient(150deg,#1b2c6d,#141a37);border-color:#2860ff;
+ border-bottom-color:#13285c;}
 .worm-setting-toggle,.worm-setting-range{border-color:#48557c;background:#14192f}
 .worm-setting-toggle input:checked+i{background:#1b7b35;border-color:#27ff40}
 .worm-setting-range input{accent-color:#2860ff}
