@@ -105,8 +105,9 @@ let vw=0,vh=0,dpr=1,last=0,uiClock=0,starTime=0,foodTimer=0,toastTimer=0,guideSt
 let game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),worms:[],fx:[],player:null,reported:false,deathElapsed:0,deathPosition:null,deathGhost:null};
 const input={mx:0,my:0,mouseMoved:false,mouseDown:false,boostKey:false,boostTouch:false,keys:new Set(),stickAngle:0,stickPower:0,stickPointer:-1,touchAngle:null};
 const camera={x:WORLD.cx,y:WORLD.cy,zoom:1};
-const stars=Array.from({length:470},(_,i)=>({x:Math.random(),y:Math.random(),r:i%7===0?1.5:rand(.4,1),a:rand(.3,.95),phase:rand(0,TAU),depth:rand(.04,.17),c:['#e1ecff','#c8a6ff','#a4dfff','#ffffff'][i%4]}));
-const nebula=Array.from({length:4},(_,i)=>({x:rand(.1,.94),y:rand(.1,.88),r:rand(.2,.42),c:['#582a9a','#214b88','#5e247b','#185e69'][i]}));
+const stars=Array.from({length:680},(_,i)=>({x:Math.random(),y:Math.random(),r:i%8===0?1.6:rand(.35,1.05),a:rand(.34,1),phase:rand(0,TAU),depth:rand(.04,.17),c:['#e1ecff','#ffb4d8','#86f9fa','#ffffff','#ffe3a2','#93b9ff'][i%6]}));
+const nebula=Array.from({length:8},(_,i)=>({x:rand(.1,.94),y:rand(.1,.88),r:rand(.18,.40),c:['#582a9a','#2875b9','#ce357e','#147f8c','#e4783e','#2968bc','#9f2bb0','#0b8f82'][i]}));
+const skyComets=Array.from({length:6},(_,i)=>({x:rand(0,1),y:rand(0,1),speed:rand(13,37),len:rand(21,51),phase:i*.97,color:['#7df0f9','#ffb2cf','#ffe0a0'][i%3]}));
 function resize(){
  vw=window.innerWidth;vh=window.innerHeight;dpr=Math.min(2,window.devicePixelRatio||1);
  canvas.width=Math.round(vw*dpr);canvas.height=Math.round(vh*dpr);
@@ -606,7 +607,7 @@ function backdrop(t){
  for(const n of nebula){
   const x=((n.x*vw-camera.x*.013)%vw+vw)%vw,y=((n.y*vh-camera.y*.009)%vh+vh)%vh;
   const r=Math.max(vw,vh)*n.r;
-  const gr=ctx.createRadialGradient(x,y,1,x,y,r);gr.addColorStop(0,n.c+'26');gr.addColorStop(1,n.c+'00');
+  const gr=ctx.createRadialGradient(x,y,1,x,y,r);gr.addColorStop(0,n.c+'42');gr.addColorStop(1,n.c+'00');
   ctx.fillStyle=gr;ctx.fillRect(x-r,y-r,r*2,r*2);
  }
  for(const s of stars){
@@ -616,6 +617,16 @@ function backdrop(t){
   ctx.fillStyle=s.c;ctx.fillRect(x,y,s.r,s.r);
  }
  ctx.globalAlpha=1;
+ // Sparse, hairline comet streaks reinforce the colourful deep-space field.
+ for(const comet of skyComets){
+  const x=((comet.x*vw+(t*comet.speed*3)-camera.x*.013)%(vw+160)+vw+160)%(vw+160)-80;
+  const y=((comet.y*vh+t*comet.speed*.37-camera.y*.012)%(vh+100)+vh+100)%(vh+100)-50;
+  const trail=ctx.createLinearGradient(x-comet.len,y+comet.len*.32,x,y);
+  trail.addColorStop(0,comet.color+'00');trail.addColorStop(1,comet.color+'cc');
+  ctx.strokeStyle=trail;ctx.lineWidth=.8;
+  ctx.beginPath();ctx.moveTo(x-comet.len,y+comet.len*.32);ctx.lineTo(x,y);ctx.stroke();
+  ctx.fillStyle=comet.color;ctx.fillRect(x-.7,y-.7,1.5,1.5);
+ }
 }
 function drawFood(t){
  const margin=100,z=camera.zoom;
@@ -893,6 +904,9 @@ function renderSkinSettings(){
   btn.className='worm-skin-card'+(skin.id===options.skin?' active':'');
   btn.dataset.skin=skin.id;btn.setAttribute('aria-pressed',String(skin.id===options.skin));
   const preview=document.createElement('span');preview.className='worm-skin-preview';
+  const previewStars=document.createElement('span');previewStars.className='worm-preview-stars';
+  const previewComet=document.createElement('i');previewComet.className='worm-preview-comet';
+  preview.append(previewStars,previewComet);
   preview.style.setProperty('--swatch-light',skin.light);
   preview.style.setProperty('--swatch-dark',skin.dark);
   preview.style.setProperty('--swatch-accent',skin.accent);
