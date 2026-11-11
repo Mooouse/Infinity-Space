@@ -107,6 +107,100 @@ html,body{font-family:Inter,"Segoe UI",Arial,system-ui,sans-serif}
  .hud .arena-stage-name{font-size:9px}
  .hud .arena-stage-wait{font-size:7px}
 }
+
+/* Arcade v3.68: consistent pause, result and onboarding surfaces. */
+#paused,#result,#guide{
+ background:rgba(4,3,13,.84);
+ backdrop-filter:blur(14px);
+ z-index:50;
+}
+#paused .arena-pause-panel,#result .panel,#guide .arena-guide-panel{
+ width:min(480px,100%);
+ max-width:480px;
+ border:2px solid #886bc4;
+ border-bottom:5px solid #4a307d;
+ border-radius:12px;
+ background:linear-gradient(150deg,#27183eef,#130f25fb 65%,#0c0b1afc);
+ padding:clamp(20px,3vw,31px);
+ box-shadow:0 30px 85px #000c,inset 0 1px #c6aafa30;
+}
+#paused .arena-pause-panel .hero,#result .panel .hero{
+ font-size:clamp(40px,6vw,60px);
+ margin:12px 0 13px;
+ letter-spacing:-.05em;
+ line-height:1;
+}
+#paused .arena-pause-panel .desc,#result .panel .desc{
+ font-size:13px;line-height:1.5;color:#bcb0d4;
+ margin:0 0 22px;
+}
+.arena-dialog-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;width:100%}
+.arena-dialog-actions>button{
+ min-height:49px;box-sizing:border-box;
+ border-radius:8px;font-size:12px;font-weight:950;
+ letter-spacing:.03em;display:flex;
+ justify-content:center;align-items:center;
+ padding:12px 9px;white-space:normal;
+ text-align:center;transition:transform .16s,filter .16s;
+}
+.arena-dialog-actions>button:hover{filter:brightness(1.16);transform:translateY(-1px)}
+#paused #resume{grid-column:1/-1;min-height:60px;font-size:15px}
+#paused #guide-open,#paused #change2{width:100%}
+#result .arena-dialog-actions>button{grid-column:1/-1}
+#result #again{min-height:58px}
+#guide .arena-guide-panel{width:min(530px,100%);max-width:530px}
+#guide .arena-guide-meta{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:12px;margin-bottom:15px;
+}
+#guide .arena-guide-meta #guide-counter{color:#c8afff;font:950 12px system-ui;letter-spacing:.07em}
+#guide #guide-title{font:950 clamp(26px,4vw,34px)/1.08 system-ui;letter-spacing:-.04em;color:#f5efff;margin:0 0 16px}
+#guide .arena-guide-demo{
+ position:relative;display:grid;place-items:center;
+ margin:0 0 19px;height:160px;overflow:hidden;
+ border:1px solid #69509a;border-radius:10px;
+ background:radial-gradient(circle at 56% 45%,#3b286d88,#19132e 50%,#0a0e23 100%);
+ isolation:isolate;
+}
+#guide .arena-guide-demo:before{
+ content:"";position:absolute;inset:0;
+ background-image:radial-gradient(#b5a7fe9c 1px,transparent 1px);
+ background-size:31px 32px;opacity:.35;
+}
+#guide .arena-demo-ring{position:absolute;width:114px;height:114px;border:1px solid #bc99ff87;border-radius:50%;
+ box-shadow:0 0 24px #754bb355,inset 0 0 28px #754bb33a;
+ animation:arena-guide-spin 10s linear infinite}
+#guide .arena-demo-ring-two{width:175px;height:67px;transform:rotate(-25deg);border-color:#82d5ff85;animation-duration:15s}
+#guide #guide-demo-icon{
+ position:relative;display:grid;place-items:center;
+ width:76px;height:76px;border-radius:50%;
+ color:#f4eaff;font-size:48px;text-shadow:0 0 23px #b18aff;
+ background:radial-gradient(circle,#a88af08f,#57369291 35%,#23163a18 67%,transparent 70%);
+}
+#guide .arena-guide-demo-target{position:absolute;top:35px;right:26%;font-size:20px;color:#a8dfff;filter:drop-shadow(0 0 9px #8fe0ff)}
+#guide #guide-step-title{margin:0 0 10px;font-size:17px;font-weight:950;color:#e8ddff}
+#guide #guide-step-description{margin:0;min-height:64px;font-size:13px;line-height:1.6;color:#bfb6d5}
+#guide .arena-guide-dots{display:flex;justify-content:center;gap:8px;margin:19px 0}
+#guide .arena-guide-dots span{display:block;width:23px;height:7px;border-radius:8px;background:#554275;transition:background .2s,width .2s}
+#guide .arena-guide-dots span.active{width:43px;background:#a27aef}
+#guide .arena-guide-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:10px}
+#guide .arena-guide-actions button{min-height:49px;border-radius:8px;font-size:12px;font-weight:950;display:grid;place-items:center}
+@keyframes arena-guide-spin{from{rotate:0deg}to{rotate:360deg}}
+@media(max-width:560px){
+ #paused .arena-pause-panel,#result .panel,#guide .arena-guide-panel{padding:19px;max-height:calc(100dvh - 22px);overflow:auto}
+ #paused .arena-pause-panel .hero{font-size:41px}
+ #paused .arena-dialog-actions{grid-template-columns:1fr;gap:8px}
+ #paused #resume{grid-column:auto;min-height:51px}
+ #guide .arena-guide-demo{height:112px;margin-bottom:13px}
+ #guide #guide-demo-icon{width:58px;height:58px;font-size:34px}
+ #guide .arena-guide-dots{margin:12px 0}
+ #guide #guide-step-description{font-size:12px;min-height:50px}
+}
+@media(prefers-reduced-motion:reduce){
+ #guide .arena-demo-ring{animation:none}
+ .arena-dialog-actions>button{transition:none}
+}
+
 </style>
 </head>
 <body>
