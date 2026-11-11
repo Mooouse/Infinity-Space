@@ -655,3 +655,76 @@ body.worm-death-replay #worm-hud{transition:opacity .85s ease}
 .worm-setting-toggle input:focus-visible+i{
  outline:2px solid #2860ff;outline-offset:3px;
 }
+
+
+/* v15 — the same compact, neutral controls as the shared skin workshop.
+   Accent is a thin stripe instead of a fully colored rectangle. */
+.worm-panel{
+ width:min(620px,100%);background:#111724!important;
+ border:1px solid #3e4a62!important;border-bottom:2px solid #27344c!important;
+ border-radius:16px!important;
+ box-shadow:0 25px 95px #000b,inset 0 1px #ffffff1a!important;
+ color:#e8eefb!important;
+}
+.worm-panel h1{color:#f2f6ff!important;letter-spacing:-.025em}
+.worm-panel p{color:#b6c1d6!important;line-height:1.55}
+.worm-eyebrow{color:#628aff!important;font-weight:850!important}
+.worm-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px}
+.worm-actions button{
+ min-width:0;width:100%;min-height:49px;padding:10px 12px;
+ border:1px solid #43536c!important;
+ border-left:3px solid var(--worm-accent,#2860ff)!important;
+ border-bottom:2px solid #27354e!important;
+ border-radius:9px!important;
+ background:linear-gradient(145deg,#202b3e,#131b2a)!important;
+ box-shadow:inset 0 1px #ffffff18!important;
+ color:#edf2ff!important;
+ text-shadow:none!important;
+ letter-spacing:.02em!important;font-size:12px!important;font-weight:825!important;
+}
+.worm-actions button.worm-primary{
+ --worm-accent:#9922ff!important;
+ background:linear-gradient(140deg,#322951,#201f3a)!important;
+}
+.worm-actions button#worm-skins-open{
+ --worm-accent:#ffe500!important;
+ background:linear-gradient(140deg,#302c22,#222624)!important;
+}
+.worm-actions button#worm-exit,.worm-actions button#worm-result-menu{
+ --worm-accent:#ff1744!important;
+ background:linear-gradient(140deg,#30212d,#201b28)!important;
+}
+.worm-actions button#worm-settings-open,.worm-actions button#worm-open-guide,
+.worm-actions button#worm-settings-back{--worm-accent:#2860ff!important}
+.worm-actions button#worm-exit,.worm-actions button#worm-settings-back{grid-column:1/-1}
+@media(hover:hover) and (pointer:fine){
+ .worm-actions button:hover{
+  background:linear-gradient(145deg,#2c3b52,#19243a)!important;
+  border-color:#587093!important;
+  border-left-color:var(--worm-accent,#2860ff)!important;
+  box-shadow:0 0 12px color-mix(in srgb,var(--worm-accent,#2860ff) 19%,transparent)!important;
+  filter:none!important;transform:translateY(-1px);
+ }
+ .worm-actions button.worm-primary:hover{background:linear-gradient(145deg,#413463,#25243e)!important}
+ .worm-actions button#worm-skins-open:hover{background:linear-gradient(145deg,#3c3928,#262d26)!important}
+ .worm-actions button#worm-exit:hover{background:linear-gradient(145deg,#442836,#29212e)!important}
+}
+.worm-setting-toggle,.worm-setting-range{
+ border:1px solid #3d4961!important;
+ background:#182236!important;border-radius:9px!important;
+ color:#e5edfb!important;
+}
+.worm-setting-toggle input:checked+i{background:#1a5e37!important;border-color:#27ff40!important}
+.worm-setting-range strong{color:#ffe500!important}
+.worm-setting-range input{accent-color:#2860ff!important}
+@media(max-width:560px){
+ .worm-panel{border-radius:12px!important;padding:15px!important}
+ .worm-actions{gap:7px}
+ .worm-actions button{min-height:44px;padding:8px;font-size:10px!important}
+ .worm-panel h1{font-size:clamp(25px,7.8vw,38px)}
+}
+@media(max-height:510px) and (orientation:landscape){
+ .worm-panel{padding:12px!important}
+ .worm-actions{gap:6px;margin-top:9px}
+ .worm-actions button{min-height:37px}
+}
