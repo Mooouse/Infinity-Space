@@ -24,7 +24,7 @@ const log=(...a)=>process.stdout.write(a.join(' ')+'\n');
   // The first screen IS the five-mode selector. No launcher tile or second page.
   await page.locator('#hub-mode-story').waitFor({state:'visible',timeout:12000});
   assert.equal(await page.locator('#screen-menu .hub-modes').count(),0);
-  assert.equal(await page.locator('#screen-menu .hub-mode-dots button').count(),5);
+  assert.equal(await page.locator('#screen-menu .hub-mode-dots button').count(),6);
   assert.equal(await page.locator('#screen-menu .hub-menu').isVisible(),false);
   // No redundant Sections drawer: the existing shortcuts stay available.
   assert.equal(await page.locator('#screen-menu .hub-mode-story-back').count(),0);
