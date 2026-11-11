@@ -8771,405 +8771,499 @@ body.ui-v15 #modal #screen-settings .control-mini-touch{
 
 
 
+
 /* ================================================================
-   MAIN MENU / UNIVERSE MAP UI PARITY — v3.80
-   Single scoped visual definition for all visible Home/Mode controls.
-   Cosmic backgrounds are untouched; no obsolete cyan/navy UI survives.
-   Panels, borders, actions and glows inherit the approved map language.
+   MAIN MENU — cinematic map-language redesign v3.81
+   Minimal chrome; one readable title and live gameplay remain primary.
+   Avoid framed mega-containers, duplicated brands and teal/navy plates.
+   Scoped to the actual six-mode carousel.
    ================================================================ */
 body.ui-v15 #screen-menu.hub-main-carousel{
- --map-menu-panel:linear-gradient(150deg,rgba(28,19,52,.96),rgba(15,11,33,.96));
- --map-menu-header:linear-gradient(180deg,rgba(18,12,37,.98),rgba(12,10,26,.94));
- --map-menu-dark:linear-gradient(160deg,#2e1c4c,#160f2a);
- --map-menu-active:linear-gradient(180deg,#764aeb,#4d22c6);
- --map-menu-border:#654897;
- --map-menu-edge:#40236c;
- --map-menu-bright:#b99cff;
- --map-menu-ink:#f7f0ff;
- --map-menu-muted:#b4a7cf;
- --map-menu-glow:#ad7bff;
- color:var(--map-menu-ink)!important;
+ --menu-ink:#f6f0ff;--menu-muted:#c8bcda;
+ --menu-surface:linear-gradient(160deg,rgba(28,17,49,.95),rgba(13,9,28,.96));
+ --menu-line:#755397;--menu-strong:#ad82ff;--menu-purple:#4d22c6;
+ color:var(--menu-ink)!important;
 }
-/* Header retains the working language/mute/settings buttons, but loses
-   their former flat blue plates. */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story{
+ justify-content:flex-start!important;
+ padding-top:clamp(67px,8vh,92px)!important;
+ padding-bottom:max(18px,env(safe-area-inset-bottom))!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story::before{
+ background:linear-gradient(90deg,rgba(4,3,16,.9) 0%,rgba(6,4,20,.72) 23%,
+ rgba(6,4,20,.12) 59%,transparent 84%),
+ linear-gradient(0deg,rgba(5,3,17,.7) 0%,transparent 28%)!important;
+}
+/* Compact masthead: the old full-width outlined header was the main visual
+   defect. The working rewards, profile and language controls remain. */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top{
+ display:flex!important;align-items:center!important;gap:13px!important;
+ width:fit-content!important;max-width:calc(100% - 255px)!important;
+ min-height:44px!important;padding:0!important;margin:0!important;
+ align-self:flex-start!important;
+ background:transparent!important;border:0!important;border-radius:0!important;
+ box-shadow:none!important;
+ color:var(--menu-ink)!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-home{
+ display:inline-flex;align-items:center;gap:9px;
+ font-size:14px!important;font-weight:950!important;letter-spacing:.1em!important;
+ color:#f5eaff!important;white-space:nowrap;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-home::before{
+ content:"";display:inline-block;width:9px;height:9px;flex:none;
+ background:#9a62ff;border:2px solid #d2b7ff;transform:rotate(45deg);
+ box-shadow:0 0 12px #9a62ff9a;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-brand{display:none!important}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-profile-chip{
+ --interaction-accent:#aa7cff;
+ min-height:37px!important;padding:6px 11px!important;max-width:152px!important;
+ border:1px solid #654585!important;border-bottom:3px solid #3b245c!important;
+ border-radius:6px!important;
+ background:linear-gradient(160deg,#30204c,#19112d)!important;
+ color:#f5edff!important;box-shadow:0 4px 10px #0005!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-profile-name{color:#f5edff!important}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-counter{
+ font-size:11px!important;color:#a999c8!important;
+ font-weight:950!important;letter-spacing:.14em!important;
+ margin:0!important;white-space:nowrap;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick{
+ display:flex!important;gap:7px!important;margin:0!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward{
+ width:38px!important;height:38px!important;min-height:38px!important;min-width:38px!important;
+ flex-basis:38px!important;padding:0!important;
+ background:linear-gradient(155deg,#30213f,#19112d)!important;
+ border:1px solid #705092!important;border-bottom:3px solid #412660!important;
+ border-radius:6px!important;color:#ffe500!important;
+ box-shadow:0 3px 9px #0006!important;
+}
+/* The top right controls float independently instead of sitting inside a
+   second outlined bar. No blue/cyan remains on their surfaces. */
 body.ui-v15 #screen-menu.hub-main-carousel>.menu-top{
  z-index:205!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel>.menu-top .language-trigger,
 body.ui-v15 #screen-menu.hub-main-carousel>.menu-top .menu-actions .icon-btn{
- --interaction-accent:#ad7bff!important;
- color:var(--map-menu-ink)!important;
- background:var(--map-menu-dark)!important;
- border:1px solid #7954b7!important;
- border-bottom:4px solid var(--map-menu-edge)!important;
- border-radius:6px!important;
- box-shadow:inset 0 1px #ffffff18,0 4px 11px #0007!important;
+ --interaction-accent:#a77cff!important;
+ background:linear-gradient(155deg,#30204c,#170e2c)!important;
+ border:1px solid #75539e!important;border-bottom:3px solid #402468!important;
+ border-radius:6px!important;color:#f6edff!important;
+ box-shadow:0 5px 11px #0006!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel>.menu-top .language-popup{
- background:linear-gradient(145deg,#241637,#100b24)!important;
- border:2px solid #8259ba!important;border-bottom:5px solid #40236c!important;
- border-radius:8px!important;color:var(--map-menu-ink)!important;
- box-shadow:0 18px 48px #000b!important;
+ background:linear-gradient(160deg,#291943,#120c25)!important;
+ border:1px solid #7854af!important;border-bottom:4px solid #422367!important;
+ border-radius:8px!important;box-shadow:0 16px 36px #000b!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel>.menu-top .language-popup button{
- color:#eee1ff!important;
+ color:#eadaff!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel>.menu-top .language-popup button:is(:hover,[aria-selected="true"]){
- background:#503083!important;color:white!important;
+ background:#58338d!important;color:white!important;
 }
-/* Map-like translucent navigation header. Its top-right area is reserved
-   for the existing language and sound toolbar. */
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top{
- min-width:0;
- min-height:63px!important;
- background:var(--map-menu-header)!important;
- border:1px solid #604684!important;
- border-bottom:4px solid var(--map-menu-edge)!important;
- border-radius:9px!important;
- padding:9px clamp(215px,23vw,295px) 9px 15px!important;
- box-shadow:inset 0 1px #ffffff10,0 12px 30px #0006!important;
- color:#eee2ff!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-home{
- color:#e7d8ff!important;letter-spacing:.095em;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-brand,
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-brand span,
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-counter{
- color:#c5b0e6!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-profile-chip{
- --interaction-accent:#ad7bff!important;
- background:var(--map-menu-dark)!important;
- border:1px solid #835ebf!important;
- border-bottom:3px solid #472875!important;
- border-radius:6px!important;color:#f4ebff!important;
- box-shadow:inset 0 1px #ffffff16,0 3px 10px #0006!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-profile-chip .hub-profile-name{
- color:#f4ebff!important;
-}
-/* The mode description now uses the same double-edge floating panel as the
-   map's atlas information block. The scene remains visible behind it. */
+/* Title + copy: NO rectangular panel. Soft contrast gradient is painted
+   by the screen behind the text, leaving the live game fully visible. */
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
- width:min(600px,55vw)!important;max-width:100%!important;
- min-width:0!important;min-height:0!important;
- padding:clamp(15px,2vw,27px)!important;
- margin:clamp(12px,4vh,44px) 0 auto!important;
- background:var(--map-menu-panel)!important;
- border:2px solid var(--map-menu-border)!important;
- border-bottom:5px solid var(--map-menu-edge)!important;
- border-radius:10px!important;
- box-shadow:inset 0 1px #d7baff17,0 20px 45px #0009!important;
- backdrop-filter:blur(9px);
- overflow-x:hidden!important;overflow-y:auto!important;
- overscroll-behavior:contain;
- scrollbar-width:thin;scrollbar-color:#7654ad #160e2a;
+ position:relative!important;align-self:flex-start!important;
+ flex:0 1 auto!important;width:min(680px,53vw)!important;
+ max-width:100%!important;max-height:none!important;min-height:0!important;
+ margin:clamp(28px,6.2vh,72px) 0 0!important;
+ padding:0 10px 8px 4px!important;
+ border:0!important;border-radius:0!important;
+ background:transparent!important;box-shadow:none!important;
+ backdrop-filter:none!important;
+ overflow:visible!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-kicker{
- color:#bda0ff!important;
- text-shadow:none!important;
- letter-spacing:.14em!important;
- font-size:clamp(9px,.85vw,11px)!important;
- margin-bottom:12px!important;
+ font-size:12px!important;line-height:1.2!important;
+ color:#bfa3ff!important;letter-spacing:.16em!important;
+ font-weight:950!important;margin:0 0 15px!important;text-shadow:0 0 12px #a773ff36!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
- color:#f7f0ff!important;
- font-size:clamp(35px,4.05vw,68px)!important;
+ font-size:clamp(46px,5.8vw,88px)!important;line-height:.98!important;
+ letter-spacing:-.058em!important;max-width:100%!important;
+ color:#f7efff!important;
+ text-shadow:0 6px 23px #03020dbb!important;
+ margin:0 0 17px!important;
  font-weight:950!important;
- line-height:1.02!important;margin-bottom:14px!important;
- text-shadow:0 4px 18px #03000b55!important;
+ text-wrap:balance!important;overflow-wrap:normal!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-goal{
- color:#e9dcff!important;
- font-size:clamp(14px,1.3vw,18px)!important;margin-bottom:11px!important;
+ font-size:clamp(15px,1.35vw,19px)!important;line-height:1.3!important;
+ color:#f3eaff!important;font-weight:900!important;
+ margin:0 0 11px!important;text-shadow:0 2px 14px #060210cc!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-description{
- color:var(--map-menu-muted)!important;
- font-size:clamp(11px,.98vw,14px)!important;line-height:1.55!important;
- max-width:100%!important;margin-bottom:15px!important;
+ font-size:clamp(12px,1vw,14px)!important;line-height:1.6!important;
+ font-weight:600!important;color:var(--menu-muted)!important;
+ max-width:535px!important;margin:0 0 19px!important;
+ text-shadow:0 2px 12px #060210bb!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags{
- gap:7px!important;margin-bottom:17px!important;
+ display:flex!important;gap:8px!important;max-width:580px!important;
+ margin-bottom:23px!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags>span:nth-child(n){
- background:linear-gradient(155deg,#2b1a45,#160e2b)!important;
- border:1px solid #7854aa!important;
- border-bottom:3px solid #45256f!important;
- border-radius:5px!important;
- color:#dac8f7!important;font-size:9px!important;
- padding:7px 10px!important;
+ background:rgba(31,18,56,.72)!important;color:#d9c8f3!important;
+ border:1px solid #6a498c!important;border-bottom:2px solid #4b3170!important;
+ border-radius:5px!important;box-shadow:0 2px 10px #0005!important;
+ padding:7px 9px!important;font-size:10px!important;line-height:1.2!important;
+ letter-spacing:.055em!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags>span:first-child{
- border-color:#b89aff!important;color:white!important;
+ border-color:#ad83ef!important;color:#f5e7ff!important;
 }
-/* Exact map action: saturated violet fill, light top bevel and deep bottom
-   edge. The new worm skin shortcut belongs to this same family. */
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play,
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins:not([hidden]){
- --interaction-accent:#a77cff!important;
- background:var(--map-menu-active)!important;
- border:1px solid #b99cff!important;border-bottom:4px solid #381481!important;
- border-left:1px solid #b99cff!important;
- border-radius:6px!important;color:#fff!important;
- box-shadow:inset 0 1px #ffffff25,0 8px 22px #190b4573!important;
- font-weight:950!important;
-}
+/* Primary mode CTA is the ONE strong block of color. Keep each mode's
+   established saturated accent, which the browser tests also assert. */
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play{
- width:min(340px,100%)!important;min-height:54px!important;
- padding:10px 15px!important;gap:12px!important;letter-spacing:.035em!important;
+ --interaction-accent:var(--mode-accent)!important;
+ display:flex!important;align-items:center!important;
+ width:min(345px,100%)!important;min-height:56px!important;
+ padding:11px 18px!important;gap:14px!important;
+ background:linear-gradient(160deg,
+  color-mix(in srgb,var(--mode-accent) 75%,#180b33),
+  color-mix(in srgb,var(--mode-accent) 47%,#150a32))!important;
+ border:2px solid var(--mode-accent)!important;
+ border-bottom:5px solid color-mix(in srgb,var(--mode-accent) 28%,#100a2b)!important;
+ border-radius:6px!important;color:#fff!important;
+ box-shadow:inset 0 1px #ffffff22,0 8px 24px #0007!important;
+ font-size:14px!important;letter-spacing:.045em!important;
+ font-weight:950!important;
+ transition:transform .18s ease,filter .18s ease,box-shadow .18s ease!important;
 }
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play :is(b,svg){
- color:#fff!important;
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play b,
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play svg{
+ color:#fff!important;filter:none!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins:not([hidden]){
- min-height:42px!important;padding:9px 14px!important;
- margin-top:9px!important;font-size:11px!important;
+ --interaction-accent:#ad83ff!important;
+ width:min(345px,100%)!important;min-height:44px!important;
+ padding:9px 16px!important;margin-top:10px!important;
+ background:linear-gradient(160deg,#30204f,#1b1034)!important;
+ border:1px solid #7950b8!important;border-bottom:3px solid #492777!important;
+ border-radius:6px!important;color:#eedeff!important;
+ font-size:12px!important;font-weight:900!important;
+ box-shadow:0 5px 12px #0005!important;
 }
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins b{color:#fff!important}
-/* Map zoom-button geometry for mode navigation; active mode indicator glows. */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins b{color:#d3b5ff!important}
+/* Foot navigation stays centered in the reserved space below the hero. */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-footer{
+ position:relative!important;flex:0 0 auto!important;
+ margin-top:auto!important;padding-top:12px!important;
+ min-height:54px!important;
+}
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-step{
- --interaction-accent:#a77cff!important;
- background:var(--map-menu-dark)!important;
- border:1px solid #7a55b6!important;border-bottom:4px solid #41236e!important;
- border-radius:6px!important;color:#f5edff!important;
- width:45px!important;height:44px!important;flex-basis:45px!important;
- box-shadow:inset 0 1px #ffffff14,0 4px 12px #0006!important;
+ --interaction-accent:#ad83ff!important;
+ width:42px!important;height:42px!important;flex-basis:42px!important;
+ background:linear-gradient(160deg,#2a1b46,#170f2e)!important;
+ border:1px solid #6e5096!important;border-bottom:3px solid #45266c!important;
+ border-radius:6px!important;color:#f2e4ff!important;
+ box-shadow:0 4px 10px #0005!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-step:disabled{
- opacity:.38!important;box-shadow:none!important;cursor:default!important;
+ opacity:.32!important;box-shadow:none!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-dots button{
- --interaction-accent:#b99cff!important;
- background:#3c2b59!important;border:1px solid #71519b!important;
+ background:#3c2a55!important;border:1px solid #6b4d8b!important;
  border-radius:5px!important;box-shadow:none!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-dots button.current{
- background:#986aff!important;border-color:#d5beff!important;
- box-shadow:0 0 11px #996aff88!important;
+ background:#9c6eff!important;border-color:#caa9ff!important;
+ box-shadow:0 0 11px #9a60ff77!important;
 }
-/* Always-visible sections share the atlas panel's muted dark plum surface.
-   Color is reserved for the icon and matching hover halo, never random
-   teal or blue fills underneath. */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-gesture{
+ color:#a899c2!important;text-shadow:0 2px 10px #000d!important;
+ font-size:10px!important;
+}
+/* Bottom dock: NO enclosing 1700px-wide slab or double outlines.
+   Individual compact map-family buttons sit over the scene. */
 body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
- background:var(--map-menu-panel)!important;
- border:2px solid var(--map-menu-border)!important;
- border-bottom:5px solid var(--map-menu-edge)!important;
- border-radius:10px!important;
- padding:10px!important;margin-top:10px!important;
- box-shadow:inset 0 1px #ffffff11,0 14px 33px #0009!important;
+ align-self:center!important;
+ width:min(1240px,100%)!important;max-width:100%!important;
+ display:flex!important;flex-wrap:nowrap!important;
+ align-items:stretch!important;justify-content:center!important;
  gap:8px!important;
+ margin:9px auto 0!important;padding:0!important;
+ background:transparent!important;
+ border:0!important;border-radius:0!important;
+ box-shadow:none!important;
+ min-height:49px!important;flex:0 0 auto!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
- --interaction-accent:var(--dock-accent,#a77cff)!important;
- background:linear-gradient(150deg,#2c1948,#190f30)!important;
- border:1px solid #6c4b99!important;
- border-bottom:3px solid #3d245d!important;
- border-top:1px solid #6c4b99!important;
+ flex:1 1 0!important;min-width:0!important;max-width:164px!important;
+ min-height:49px!important;height:auto!important;
+ padding:10px 7px!important;gap:8px!important;
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ flex-direction:row!important;
+ background:linear-gradient(160deg,rgba(38,22,63,.92),rgba(18,12,34,.92))!important;
+ border:1px solid #664884!important;border-bottom:3px solid #3f285d!important;
+ border-top:1px solid #664884!important;
  border-radius:6px!important;
- box-shadow:inset 0 1px #ffffff0c,0 3px 8px #0005!important;
- color:#f3eaff!important;
- min-height:54px!important;
- transition:background .18s ease,border-color .18s ease,transform .18s ease,
-            box-shadow .18s ease,filter .18s ease!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut="map"],
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut="settings"]{
- --dock-accent:#b28aff!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut="evolution"],
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut="music"]{
- --dock-accent:#bb62ff!important;
+ box-shadow:0 5px 14px #0007!important;
+ color:#f2e8ff!important;transform:none;
+ font-weight:850!important;
+ transition:transform .18s,box-shadow .18s,border-color .18s,background .18s!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-label{
- color:#f0e7ff!important;font-weight:850!important;
- font-size:clamp(10px,.84vw,13px)!important;line-height:1.18!important;
+ font-size:clamp(10px,.85vw,13px)!important;line-height:1.25!important;
+ font-weight:850!important;color:#f4ecff!important;
+ min-width:0!important;white-space:normal!important;overflow-wrap:normal!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-icon{
- width:28px!important;height:28px!important;flex:0 0 28px!important;
- border:1px solid color-mix(in srgb,var(--dock-accent) 50%,#4d3375)!important;
- border-radius:5px!important;
- background:color-mix(in srgb,var(--dock-accent) 10%,#25153d)!important;
- box-shadow:inset 0 1px #ffffff12!important;
+ width:22px!important;height:22px!important;flex:0 0 22px!important;
+ background:transparent!important;border:0!important;
+ border-radius:0!important;box-shadow:none!important;
  color:var(--dock-accent)!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-icon svg{
+ width:21px!important;height:21px!important;
  color:var(--dock-accent)!important;
- filter:drop-shadow(0 0 5px color-mix(in srgb,var(--dock-accent) 32%,transparent))!important;
+ filter:drop-shadow(0 0 6px color-mix(in srgb,var(--dock-accent) 34%,transparent))!important;
 }
-/* Daily rewards retain their meaningful yellow/gold indicator. */
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward{
- --interaction-accent:#ffe500!important;
- background:linear-gradient(155deg,#31233d,#1b122b)!important;
- border:1px solid #8067a1!important;
- border-bottom:4px solid #443066!important;
- border-radius:6px!important;
- color:#ffe500!important;
- box-shadow:inset 0 1px #ffffff16,0 3px 10px #0007!important;
+/* Restore correct semantic colors: blue map, violet music, red reset,
+   yellow achievements, green statistics; none is teal. */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut[data-shortcut="map"],
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut[data-shortcut="settings"]{
+ --dock-accent:#2860ff!important;
 }
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward>span:first-child{
- color:#ffe500!important;
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut[data-shortcut="music"]{
+ --dock-accent:#9922ff!important;
 }
-/* Hidden legacy drawer is only used as a source of existing click handlers.
-   Make its styling consistent if a layout temporarily exposes it. */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut[data-shortcut="new"]{
+ border-color:#765064!important;
+}
+/* The inactive native drawer stays hidden, but preserve its working
+   source buttons and the map-like panel styling when shown. */
 body.ui-v15 #screen-menu.hub-main-carousel>.menu-main.hub-menu{
- background:var(--map-menu-panel)!important;
- border-color:var(--map-menu-border)!important;
- border-bottom-color:var(--map-menu-edge)!important;
+ background:linear-gradient(160deg,#1c1233fa,#0b0a1dfa)!important;
+ border:1px solid #8663af!important;border-bottom:4px solid #49307b!important;
+ border-radius:8px!important;
 }
-body.ui-v15 #screen-menu.hub-main-carousel .hub-menu :is(.hub-current,.hub-more-panel){
- background:linear-gradient(145deg,#26183e,#120e28)!important;
- border-color:#64468e!important;border-radius:7px!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-menu :is(
- .hub-progress-tile,.hub-extra-tile,.hub-reward,.hub-more-button
-){
- --interaction-accent:#a77cff!important;
- color:#f4eaff!important;
- background:linear-gradient(155deg,#2c1b47,#160f29)!important;
- border-color:#70519f!important;
- border-bottom-color:#3b275f!important;
- border-radius:6px!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-menu .hub-new-world{
- --interaction-accent:#ff1744!important;
- background:linear-gradient(150deg,#482034,#24121d)!important;
- border-color:#a94e69!important;border-bottom-color:#63253b!important;
- color:#ffd8df!important;
-}
-/* Hover effects are action-aware: violet for navigation, yellow for rewards,
-   red for destructive actions, and the exact shortcut color for dock icons. */
+/* Strong but restrained glow; colors belong only to the actual button. */
 @media(hover:hover) and (pointer:fine){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play:not(:disabled):hover{
+  --interaction-accent:var(--mode-accent)!important;
+  transform:translateY(-2px)!important;filter:brightness(1.12)!important;
+  border:2px solid var(--mode-accent)!important;
+  border-bottom:5px solid color-mix(in srgb,var(--mode-accent) 32%,#08071b)!important;
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--mode-accent) 38%,transparent),
+   0 0 24px color-mix(in srgb,var(--mode-accent) 60%,transparent),
+   0 8px 21px #0009!important;
+ }
  body.ui-v15 #screen-menu.hub-main-carousel :is(
-  .hub-mode-story-play,.hub-mode-story-skins:not([hidden]),.hub-mode-step,
-  .hub-profile-chip
+  .hub-mode-step,.hub-profile-chip,.hub-mode-story-skins:not([hidden])
  ):not(:disabled):hover,
- body.ui-v15 #screen-menu.hub-main-carousel>.menu-top :is(.language-trigger,.icon-btn):not(:disabled):hover{
-  --interaction-accent:#b48aff!important;
+ body.ui-v15 #screen-menu.hub-main-carousel>.menu-top :is(.icon-btn,.language-trigger):not(:disabled):hover{
   transform:translateY(-2px)!important;
-  border-color:#d1b4ff!important;
-  background:linear-gradient(165deg,#6840ad,#371c69)!important;
-  box-shadow:0 0 0 1px #b687ff88,0 0 13px #a06affaa,
-             0 0 25px #8950ff66,0 7px 18px #0009!important;
+  background:linear-gradient(160deg,#482a79,#251344)!important;
+  border-color:#c5a3ff!important;
+  box-shadow:0 0 0 1px #b58fff70,0 0 15px #9362ff8c,0 6px 13px #0008!important;
   filter:brightness(1.12)!important;
  }
  body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]:not(:disabled):hover{
-  --interaction-accent:var(--dock-accent)!important;
-  background:linear-gradient(145deg,
-   color-mix(in srgb,var(--dock-accent) 24%,#321c4c),#201133)!important;
+  background:linear-gradient(160deg,
+   color-mix(in srgb,var(--dock-accent) 19%,#2b194a),#1a102c)!important;
   border-color:var(--dock-accent)!important;
   border-top-color:var(--dock-accent)!important;
-  border-bottom-color:#4c2874!important;
-  box-shadow:0 0 0 1px color-mix(in srgb,var(--dock-accent) 60%,transparent),
-             0 0 18px color-mix(in srgb,var(--dock-accent) 48%,transparent),
-             0 6px 15px #0009!important;
-  transform:translateY(-2px)!important;
-  filter:brightness(1.09)!important;
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--dock-accent) 40%,transparent),
+    0 0 15px color-mix(in srgb,var(--dock-accent) 47%,transparent),
+    0 6px 14px #0009!important;
+  transform:translateY(-2px)!important;filter:brightness(1.1)!important;
  }
  body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward:not(:disabled):hover{
-  --interaction-accent:#ffe500!important;
   border-color:#ffe500!important;
-  background:linear-gradient(155deg,#443519,#271c27)!important;
-  box-shadow:0 0 15px #ffe50077,0 5px 14px #0008!important;
+  background:linear-gradient(160deg,#46341e,#271a31)!important;
+  box-shadow:0 0 14px #ffe50077,0 5px 12px #0008!important;
   transform:translateY(-2px)!important;
  }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-menu .hub-new-world:not(:disabled):hover{
-  border-color:#ff1744!important;box-shadow:0 0 15px #ff174477!important;
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-profile-chip:not(:disabled):hover{
+  border-color:#c5a3ff!important;
  }
 }
-/* Reset and accessibility feedback are scoped to the visible menu only. */
 body.ui-v15 #screen-menu.hub-main-carousel button:focus-visible{
- outline:2px solid var(--interaction-accent,#b99cff)!important;
- outline-offset:3px!important;
+ outline:2px solid var(--interaction-accent,#ad83ff)!important;outline-offset:3px!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel button:active:not(:disabled){
  transform:translateY(1px)!important;
 }
-/* Desktop/phone safe areas: no clipping of text, action buttons or sections. */
+/* Mid widths and short viewports: the hero stays above the carousel.
+   Do not let a padded wrapper cover button hit targets. */
 @media(max-width:1100px){
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
-  width:min(560px,64vw)!important;
- }
  body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top{
-  padding-right:clamp(185px,23vw,260px)!important;
- }
-}
-@media(max-width:700px){
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top{
-  min-height:41px!important;
-  padding:5px 9px!important;
-  border-bottom-width:3px!important;
-  gap:6px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-profile-chip{
-  min-height:33px!important;max-width:94px!important;
+  gap:8px!important;
  }
  body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
-  width:100%!important;
-  padding:13px!important;
-  border-width:1px!important;border-bottom-width:4px!important;
-  border-radius:7px!important;
-  margin:8px 0 auto!important;
+  width:min(610px,65vw)!important;margin-top:clamp(16px,3.5vh,32px)!important;
  }
  body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
-  font-size:clamp(28px,7.8vw,48px)!important;
-  margin-bottom:9px!important;
+  font-size:clamp(36px,5vw,62px)!important;
  }
  body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-description{
-  font-size:11px!important;line-height:1.4!important;
-  margin-bottom:10px!important;
+  max-width:470px!important;font-size:12px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
+  gap:5px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
+  gap:5px!important;padding:7px 4px!important;
+ }
+}
+@media(min-width:701px) and (max-width:850px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top{
+  max-width:calc(100% - 180px)!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
+  width:min(480px,70vw)!important;margin-top:14px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
+  font-size:clamp(35px,4.2vw,45px)!important;
+  margin-bottom:9px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-kicker{
+  margin-bottom:7px!important;font-size:10px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-description{
+  margin-bottom:10px!important;line-height:1.37!important;
+  display:-webkit-box!important;-webkit-box-orient:vertical!important;
+  -webkit-line-clamp:3!important;overflow:hidden!important;
  }
  body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags{
   margin-bottom:10px!important;gap:5px!important;
  }
  body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags>span:nth-child(n){
-  padding:5px 6px!important;font-size:8px!important;
+  font-size:8px!important;padding:5px 6px!important;
  }
  body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play{
-  width:100%!important;min-height:45px!important;
+  min-height:45px!important;padding:8px 12px!important;font-size:11px!important;
  }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
-  padding:6px!important;gap:5px!important;
-  border-width:1px!important;border-bottom-width:4px!important;
-  margin-top:7px!important;
-  grid-template-columns:repeat(4,minmax(0,1fr))!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
-  min-height:45px!important;padding:5px 3px!important;
-  gap:4px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-icon{
-  width:20px!important;height:20px!important;flex:0 0 20px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-label{
-  font-size:clamp(8px,2.25vw,10px)!important;
-  white-space:normal!important;overflow-wrap:anywhere!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-footer{
-  min-height:43px!important;
-  margin-top:6px!important;
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins:not([hidden]){
+  min-height:38px!important;padding:7px 12px!important;
  }
 }
-@media(max-height:650px){
+@media(max-width:700px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story{
+  padding-top:max(68px,calc(env(safe-area-inset-top) + 65px))!important;
+  padding-inline:13px!important;
+  padding-bottom:max(8px,env(safe-area-inset-bottom))!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top{
+  width:100%!important;max-width:100%!important;min-height:38px!important;
+  justify-content:space-between!important;gap:6px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-home{
+  font-size:10px!important;letter-spacing:.04em!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-home::before{
+  width:6px;height:6px;border-width:1px;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-profile-chip{
+  max-width:100px!important;padding:4px 6px!important;
+  min-height:30px!important;font-size:9px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward{
+  width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important;
+  flex-basis:32px!important;border-bottom-width:2px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-counter{
+  font-size:9px!important;
+ }
  body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
-  overflow-y:auto!important;
-  scrollbar-width:thin;
+  width:100%!important;margin:clamp(10px,2.5vh,19px) 0 0!important;
+  padding:0 2px 0 0!important;max-height:none!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
+  font-size:clamp(32px,9vw,52px)!important;margin-bottom:8px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-kicker{
+  font-size:9px!important;margin-bottom:8px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-goal{
+  font-size:12px!important;margin-bottom:6px!important;
  }
  body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-description{
-  -webkit-line-clamp:3;
+  font-size:10px!important;line-height:1.35!important;
+  margin-bottom:8px!important;
+  display:-webkit-box!important;-webkit-line-clamp:2!important;
+  -webkit-box-orient:vertical!important;overflow:hidden!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags{
+  margin-bottom:9px!important;gap:4px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags>span:nth-child(n){
+  font-size:8px!important;padding:4px 5px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play{
+  min-height:44px!important;font-size:11px!important;padding:9px 12px!important;
+  width:min(320px,100%)!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins:not([hidden]){
+  min-height:38px!important;padding:7px 12px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-footer{
+  margin-top:auto!important;padding-top:6px!important;
+  min-height:40px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-gesture{display:none!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
+  display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  grid-template-rows:repeat(2,auto)!important;
+  width:100%!important;gap:5px!important;margin-top:7px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
+  max-width:none!important;min-height:44px!important;
+  flex-direction:column!important;gap:3px!important;
+  padding:5px 3px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-label{
+  font-size:clamp(8px,2.5vw,10px)!important;
+  display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;
+  text-align:center!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-icon{
+  width:19px!important;height:19px!important;flex-basis:19px!important;
  }
 }
-@media(max-width:390px){
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{padding:10px!important}
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-kicker{margin-bottom:7px!important}
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{font-size:clamp(26px,7.5vw,35px)!important}
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags>span:nth-child(n){padding:4px 5px!important}
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
-  min-height:42px!important;
+@media(max-width:390px) and (max-height:610px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story{
+  padding-top:64px!important;
  }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
+  margin-top:6px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-kicker,
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-description,
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags{
+  display:none!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
+  font-size:clamp(30px,8.5vw,39px)!important;margin-bottom:9px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-footer{
+  min-height:36px!important;padding-top:3px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
+  min-height:40px!important;padding:3px!important;
+ }
+}
+@media(max-height:600px) and (min-width:701px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story{
+  padding-top:56px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
+  margin-top:7px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-description{
+  -webkit-line-clamp:2!important;
+  display:-webkit-box!important;-webkit-box-orient:vertical!important;overflow:hidden!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags{margin-bottom:8px!important}
 }
 @media(prefers-reduced-motion:reduce){
- body.ui-v15 #screen-menu.hub-main-carousel :is(button,.hub-mode-story-copy){
+ body.ui-v15 #screen-menu.hub-main-carousel :is(.hub-story-shortcut,.hub-mode-step,.hub-mode-story-play){
   transition:none!important;
  }
 }
