@@ -1,0 +1,113 @@
+/* Infinity Space · spectral palette, not a purple-only interface.
+   Additive styling: preserves v15 layout, spacing, interaction and breakpoints. */
+:root{
+ --space-cyan:#54e6f3;--space-teal:#42f3cd;--space-pink:#f970b6;
+ --space-blue:#6caaff;--space-gold:#ffdc80;--space-purple:#a688ff;
+ --cyan:#51d7e8;--blue:#74b7ee;--gold:#ffce6b;
+}
+body.ui-v15 #screen-menu .hub-menu .eyeline{color:var(--space-cyan)!important}
+body.ui-v15 #screen-menu .hub-menu .hero-title{
+ text-shadow:0 0 46px #237ad634,0 7px 32px #03050ec0!important;
+}
+body.ui-v15 #screen-menu .hub-actions .hub-continue{
+ background:linear-gradient(125deg,#8653e9 0%,#6131d5 55%,#c344a5 100%)!important;
+ border-color:#d49bfc!important;border-bottom-color:#5a2789!important;
+ box-shadow:0 9px 34px #883fc05c,inset 0 1px #ffffff48!important;
+}
+body.ui-v15 #screen-menu .hub-actions .hub-modes{
+ background:linear-gradient(120deg,#164964,#233457,#383174)!important;
+ border-color:#64cce6!important;border-bottom-color:#24738e!important;
+}
+body.ui-v15 #screen-menu .hub-actions .hub-modes>span:first-child{
+ border-color:#60e6ed!important;background:#167c975e!important;color:#a0fbff!important;
+}
+body.ui-v15 #screen-menu .hub-actions .hub-new-world{
+ background:linear-gradient(120deg,#33223d,#4b3049)!important;
+ border-color:#b87f9e!important;border-bottom-color:#784268!important;
+}
+body.ui-v15 #screen-menu .hub-mode-story::before{
+ background:
+ radial-gradient(ellipse at 76% 38%,#1681d91d,transparent 50%),
+ radial-gradient(ellipse at 92% 70%,#ef458c15,transparent 42%),
+ linear-gradient(90deg,#06101efa 0%,#071322f3 23%,#070d22ca 43%,#09071666 64%,transparent 92%),
+ linear-gradient(0deg,#050a18a8,transparent 29%,transparent 75%,#060b18a0)!important;
+}
+body.ui-v15 #screen-menu .hub-mode-story-kicker{
+ color:var(--space-cyan)!important;text-shadow:0 0 18px #43dcff48;
+}
+body.ui-v15 #screen-menu .hub-mode-story-counter{color:var(--space-gold)!important}
+body.ui-v15 #screen-menu .hub-mode-story-goal{color:#ffd9eb!important}
+body.ui-v15 #screen-menu .hub-mode-story-description{color:#c1d4e3!important}
+body.ui-v15 #screen-menu .hub-mode-story-tags>span{
+ background:linear-gradient(155deg,#142c46f0,#101b36e7)!important;
+ border-color:#3486b2!important;border-bottom-color:#256080!important;color:#a5eafa!important;
+}
+body.ui-v15 #screen-menu .hub-mode-story-tags>span:nth-child(3n+2){
+ background:linear-gradient(155deg,#392443f0,#1e1734e8)!important;
+ border-color:#b45b9b!important;border-bottom-color:#7b3970!important;color:#ffc1e4!important;
+}
+body.ui-v15 #screen-menu .hub-mode-story-tags>span:nth-child(3n){
+ background:linear-gradient(155deg,#3f3029f0,#241e2be8)!important;
+ border-color:#ad8a57!important;border-bottom-color:#735738!important;color:#ffe4a2!important;
+}
+body.ui-v15 #screen-menu .hub-mode-story-play{
+ background:linear-gradient(120deg,#4f38c9 0%,#7851e9 55%,#bd3eac 100%)!important;
+ border-color:#e1a3ff!important;border-bottom-color:#5e2c97!important;
+ box-shadow:0 11px 35px #b540b34e,inset 0 1px #ffffff42!important;
+}
+body.ui-v15 #screen-menu .hub-mode-story-back,
+body.ui-v15 #screen-menu .hub-mode-step{
+ background:linear-gradient(145deg,#172d4b,#251b49)!important;
+ border-color:#57a0c4!important;border-bottom-color:#275777!important;
+}
+body.ui-v15 #screen-menu .hub-mode-dots button{background:#28526e;border-color:#4184ab}
+body.ui-v15 #screen-menu .hub-mode-dots button.current{
+ background:var(--space-cyan)!important;border-color:#b8fbff!important;
+ box-shadow:0 0 10px #46e4ef66;
+}
+body.ui-v15 #screen-menu .hub-mode-story-brand{color:#afd5e8}
+body.ui-v15 #screen-menu .hub-mode-gesture{color:#a2c5d8}
+body.ui-v15 #screen-menu .hub-story-shortcut:nth-child(4n+1){
+ border-color:#478bb1;color:#b3eaff;
+}
+body.ui-v15 #screen-menu .hub-story-shortcut:nth-child(4n+2){
+ border-color:#a65197;color:#ffbbdd;
+}
+body.ui-v15 #screen-menu .hub-story-shortcut:nth-child(4n+3){
+ border-color:#ad8951;color:#ffdfa0;
+}
+body.ui-v15 #screen-menu .hub-story-shortcut:nth-child(4n){
+ border-color:#448f82;color:#9ef7d5;
+}
+/* A handful of consistent spectral accents in gameplay and secondary pages. */
+body.ui-v15 #screen-play .hud-bottom .mass-block{
+ border-color:#4b9ec5!important;border-bottom-color:#2587a9!important;
+ background:linear-gradient(155deg,#172b45f5,#15142df5)!important;
+}
+body.ui-v15 #screen-play .hud-bottom .mass-block::before{
+ background:linear-gradient(90deg,#42e4fa,#8d8eff,#f479b8)!important;
+ box-shadow:0 0 16px #4ce4f580!important;
+}
+body.ui-v15 #screen-play .mass-heading{color:#9febf3!important}
+body.ui-v15 #screen-statistics .br-stat-grid>div:nth-child(3n+1){border-color:#368fbb!important}
+body.ui-v15 #screen-statistics .br-stat-grid>div:nth-child(3n+2){border-color:#9960b7!important}
+body.ui-v15 #screen-statistics .br-stat-grid>div:nth-child(3n){border-color:#a88a57!important}
+body.ui-v15 #screen-music .music-track-card:nth-child(3n+1){border-color:#338cae!important}
+body.ui-v15 #screen-music .music-track-card:nth-child(3n+2){border-color:#9765ba!important}
+body.ui-v15 #screen-music .music-track-card:nth-child(3n){border-color:#ac8355!important}
+body.ui-v15 #screen-music .music-control-play{
+ background:linear-gradient(145deg,#256fbe,#6b3cc8,#b34a9a)!important;
+ border-color:#8ad9ff!important;
+}
+body.ui-v15 #screen-achievements .br-ach-row:nth-child(3n+1){border-left:2px solid #4dbbdd}
+body.ui-v15 #screen-achievements .br-ach-row:nth-child(3n+2){border-left:2px solid #cf6bb8}
+body.ui-v15 #screen-achievements .br-ach-row:nth-child(3n){border-left:2px solid #dcb66f}
+body.ui-v15 #screen-bestiary .br-best-row:nth-child(3n+1){border-color:#397e9e}
+body.ui-v15 #screen-bestiary .br-best-row:nth-child(3n+2){border-color:#7456a0}
+body.ui-v15 #screen-bestiary .br-best-row:nth-child(3n){border-color:#8e754e}
+body.ui-v15 #screen-settings .br-slider input[type=range]{
+ accent-color:var(--space-cyan);
+}
+@media(prefers-reduced-motion:reduce){
+ body.ui-v15 #screen-menu .hub-mode-dots button.current{box-shadow:none}
+}
