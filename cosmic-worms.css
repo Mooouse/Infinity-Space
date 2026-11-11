@@ -701,6 +701,7 @@ body.worm-death-replay #worm-hud{transition:opacity .85s ease}
  .worm-actions button:hover{
   background:linear-gradient(145deg,#2c3b52,#19243a)!important;
   border-color:#587093!important;
+  border-top-color:var(--worm-accent,#2860ff)!important;
   border-left-color:var(--worm-accent,#2860ff)!important;
   box-shadow:0 0 12px color-mix(in srgb,var(--worm-accent,#2860ff) 19%,transparent)!important;
   filter:none!important;transform:translateY(-1px);
