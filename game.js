@@ -4706,7 +4706,26 @@ if(window.SpaceUIv15Templates && document.createElement('template').content){
   const initial=7+g.tier;select(initial<FIELD_GUIDE.length?initial:0);
   list.scrollTop=Math.max(0,buttons[initial]?.offsetTop-list.offsetTop-110||0);
  };
- showStatistics=function(){enterScreen('statistics');legacy.statistics();const {root,old}=mount('statistics');const grid=q(root,'.br-stat-grid');grid.replaceChildren(...qa(old,'.stat-list>div'));text(root,'.br-simple-intro>span',`${g.tier+1} / 28 · ${TA[g.tier].name}`);text(root,'.br-simple-intro p',L('Your current journey','Твоё текущее прохождение','Tu viaje actual'));};
+ showStatistics=function(){
+  // Statistics now live in a standalone six-tab profile dialog. Crucially, do
+  // NOT mount the old v15 statistics screen beneath it: closing the dialog
+  // otherwise reveals a blank/stale page with no valid Back destination.
+  if(window.InfinityProfile?.showStats){
+   if(!TEST_MODE)window.InfinityProfile.syncEndless({
+    time:g.time,objects:g.collects,matter:g.total,rare:g.rare,
+    blackholes:Object.values(g.abyssConsumed||{}).filter(Boolean).length,
+    deaths:g.losses,stage:g.tier
+   });
+   window.InfinityProfile.showStats();return;
+  }
+  enterScreen('statistics');
+  legacy.statistics();
+  const {root,old}=mount('statistics');
+  const grid=q(root,'.br-stat-grid');
+  grid.replaceChildren(...qa(old,'.stat-list>div'));
+  text(root,'.br-simple-intro>span',`${g.tier+1} / 28 · ${TA[g.tier].name}`);
+  text(root,'.br-simple-intro p',L('Your current journey','Твоё текущее прохождение','Tu viaje actual'));
+ };
  function showV15Evolution(){
   enterScreen('evolution');renderUI(true);show('');
   const {root}=mount('evolution'),tier=g.tier,stage=TA[tier],next=TA[tier+1];
