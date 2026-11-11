@@ -267,7 +267,7 @@
   q(overlay,'.hub-mode-story-skins').onclick=()=>window.WormSkinStudio?.open();
   overlay.addEventListener('wheel',ev=>{
    // Scrolling a section, tooltip or button must not change the game mode.
-   if(ev.target.closest('button,a,nav,.hub-menu'))return;
+   if(ev.target.closest('button,a,nav,.hub-menu,.hub-mode-story-copy'))return;
    const now=performance.now();
    if(Math.abs(ev.deltaX)+Math.abs(ev.deltaY)<13)return;
    ev.preventDefault();

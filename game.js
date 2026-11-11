@@ -4670,7 +4670,15 @@ if(window.SpaceUIv15Templates && document.createElement('template').content){
   text(root,'.br-controls>div:nth-child(5) kbd','ESC');
   qa(root,'[data-settings-pane="general"] .br-warning,.br-settings-side-note').forEach(n=>n.remove());
   text(root,'.br-readout-foot','INFINITY SPACE · '+GAME_BUILD_VERSION);text(root,'.br-settings-foot>span',L('SETTINGS SAVED AUTOMATICALLY','НАСТРОЙКИ СОХРАНЯЮТСЯ АВТОМАТИЧЕСКИ','AJUSTES GUARDADOS AUTOMÁTICAMENTE'));
-  q(root,'#set-sound-volume').setAttribute('aria-label',L('Effects volume','Громкость эффектов','Volumen de efectos'));decorate(root);visual?.enhanceSelects(root);decoratePhoneSettings(root);
+  q(root,'#set-sound-volume').setAttribute('aria-label',L('Effects volume','Громкость эффектов','Volumen de efectos'));
+  // Save does not start the simulation. The Back button remains separate.
+  const saveButton=q(root,'[data-save-settings]');
+  if(saveButton)saveButton.onclick=()=>{
+   save();
+   const status=q(root,'.br-settings-foot>span');
+   if(status)status.textContent=L('SETTINGS SAVED','НАСТРОЙКИ СОХРАНЕНЫ','AJUSTES GUARDADOS');
+  };
+  decorate(root);visual?.enhanceSelects(root);decoratePhoneSettings(root);
  };
  function showV15Upgrades(){enterScreen('upgrades');show('');const {root}=mount('upgrades');const render=()=>{
   text(root,'#up-balance',fmt(g.credits));text(root,'.currency small',L('STARDUST','ЗВЁЗДНАЯ ПЫЛЬ','POLVO ESTELAR'));
