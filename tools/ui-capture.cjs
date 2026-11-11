@@ -16,7 +16,7 @@ const screens=[
  {id:'evolution',url:'index.html?select=endless',action:'.hub-story-shortcut[data-shortcut="evolution"]',wait:'#screen-evolution'},
  {id:'achievements',url:'index.html?select=endless',action:'.hub-story-shortcut[data-shortcut="achievements"]',wait:'#screen-achievements'},
  {id:'bestiary',url:'index.html?select=endless',action:'.hub-story-shortcut[data-shortcut="bestiary"]',wait:'#screen-bestiary'},
- {id:'statistics',url:'index.html?select=endless',action:'.hub-story-shortcut[data-shortcut="statistics"]',wait:'#screen-statistics'},
+ {id:'statistics',url:'index.html?select=endless',action:'.hub-story-shortcut[data-shortcut="statistics"]',wait:'.infinity-stats-panel'},
  {id:'settings',url:'index.html?select=endless',action:'.hub-story-shortcut[data-shortcut="settings"]',wait:'#screen-settings'},
  {id:'music',url:'index.html?select=endless',action:'.hub-story-shortcut[data-shortcut="music"]',wait:'#screen-music'},
  {id:'daily',url:'index.html?select=endless',action:'[data-reward-page="daily"]',wait:'[data-screen="daily"]'},
