@@ -31,6 +31,13 @@
          'Поглощай материю, летай по огромной постоянной Вселенной и вырасти до сверхмассивной чёрной дыры. Исследованные области сохраняются.',
          'Absorbe materia, explora un universo persistente y evoluciona hasta un agujero negro supermasivo. Tu progreso se guarda.'],
    tags:[['∞ UNLIMITED','∞ БЕЗ КОНЦА','∞ SIN LÍMITE'],['SAVED WORLD','СОХРАНЕНИЕ','MUNDO GUARDADO'],['SOLO','ОДИНОЧНЫЙ','SOLO']]},
+  {id:'worms',title:['Cosmic Worms','Космические черви','Gusanos cósmicos'],
+   subtitle:['SURVIVAL · COSMIC SERPENTS','ВЫЖИВАНИЕ · КОСМИЧЕСКИЕ ЧЕРВИ','SUPERVIVENCIA · SERPIENTES'],
+   goal:['Grow the longest worm in the galaxy','Вырастай в самого длинного червя','Conviértete en el gusano más largo'],
+   desc:['Gather glowing stardust, grow a luminous tail, encircle rivals and avoid crashing your head into another worm. Boost by spending your mass. Survive as long as you can.',
+         'Собирай светящуюся материю, отращивай длинный космический хвост, перекрывай путь соперникам и не врезайся головой в их тела. Ускоряйся за счёт массы.',
+         'Recoge polvo estelar, alarga tu cola, bloquea a los rivales y evita chocar contra sus cuerpos. Usa tu masa para acelerar.'],
+   tags:[['ENDLESS SURVIVAL','БЕСКОНЕЧНОЕ ВЫЖИВАНИЕ','SUPERVIVENCIA INFINITA'],['58 RIVALS','58 СОПЕРНИКОВ','58 RIVALES'],['BOOST COSTS MASS','РЫВОК ТРАТИТ МАССУ','IMPULSO GASTA MASA']]},
   {id:'arena',title:['Cosmic Arena','Космическая арена','Arena Cósmica'],
    subtitle:['MASS DUEL · FREE FOR ALL','ПОЕДИНОК ЗА МАССУ','DUELO POR MASA'],
    goal:['Grow bigger than everyone else','Стань массивнее всех','Consigue la mayor masa'],
@@ -59,13 +66,7 @@
          'Развивайся от пыли через астероид, планету и звезду. Каждая стадия требует времени. Первым превратись в чёрную дыру.',
          'Evoluciona de polvo a asteroide, planeta y estrella. Cada etapa requiere tiempo. Llega primero a agujero negro.'],
    tags:[['04:45 MATCH','МАТЧ 04:45','04:45 PARTIDA'],['15 RIVALS','15 СОПЕРНИКОВ','15 RIVALES'],['5 FORMS','5 ФОРМ','5 FORMAS']]},
-  {id:'worms',title:['Cosmic Worms','Космические черви','Gusanos cósmicos'],
-   subtitle:['SURVIVAL · COSMIC SERPENTS','ВЫЖИВАНИЕ · КОСМИЧЕСКИЕ ЧЕРВИ','SUPERVIVENCIA · SERPIENTES'],
-   goal:['Grow the longest worm in the galaxy','Вырастай в самого длинного червя','Conviértete en el gusano más largo'],
-   desc:['Gather glowing stardust, grow a luminous tail, encircle rivals and avoid crashing your head into another worm. Boost by spending your mass. Survive as long as you can.',
-         'Собирай светящуюся материю, отращивай длинный космический хвост, перекрывай путь соперникам и не врезайся головой в их тела. Ускоряйся за счёт массы.',
-         'Recoge polvo estelar, alarga tu cola, bloquea a los rivales y evita chocar contra sus cuerpos. Usa tu masa para acelerar.'],
-   tags:[['ENDLESS SURVIVAL','БЕСКОНЕЧНОЕ ВЫЖИВАНИЕ','SUPERVIVENCIA INFINITA'],['58 RIVALS','58 СОПЕРНИКОВ','58 RIVALES'],['BOOST COSTS MASS','РЫВОК ТРАТИТ МАССУ','IMPULSO GASTA MASA']]}
+
  ];
  // Each menu background is the actual arcade game running a small AI-only match
  // inside a visual-only iframe. It uses the same physics, sprites and hazards.
@@ -286,6 +287,10 @@
    item.setAttribute('aria-label',t(labels));
    item.onclick=()=>{
     const selected=modeStories[current].id;
+    if(name==='statistics'){
+     profile?.showStats?.(selected);
+     return;
+    }
     if(name==='achievements'&&selected!=='endless'){
      profile?.showModeAchievements?.(selected);
      return;
