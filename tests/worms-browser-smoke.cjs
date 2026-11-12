@@ -180,7 +180,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     if(width>=1280){
      await page.locator('#worm-settings-back').hover();
      assert.equal(await page.locator('#worm-settings-back').evaluate(el=>getComputedStyle(el).borderTopColor),
-      'rgb(40, 96, 255)','Settings Back button stays blue');
+      'rgb(212, 191, 255)','Settings Back button uses classic violet hover');
     }
     await page.locator('#worm-setting-glow').uncheck({force:true});
     await page.locator('#worm-setting-names').uncheck({force:true});

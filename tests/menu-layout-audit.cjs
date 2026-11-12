@@ -55,7 +55,17 @@ const inspect=()=>{
   prevHit:clickable($('.hub-mode-step[data-dir="-1"]')),
   nextHit:clickable($('.hub-mode-step[data-dir="1"]')),
   playHit:clickable(button),
-  titleScroll:title.scrollWidth-title.clientWidth
+  titleScroll:title.scrollWidth-title.clientWidth,
+  heroCenter:rect($('.hub-mode-story-copy')).cx,
+  shortcuts:[...dock.querySelectorAll('.hub-story-shortcut')]
+    .filter(el=>!el.hidden&&getComputedStyle(el).display!=='none')
+    .map(el=>el.dataset.shortcut),
+  rewardsVisible:!!$('.hub-story-quick')&&!$('.hub-story-quick').hidden,
+  heroBrandSize:parseFloat(getComputedStyle($('.hub-reference-brand')).fontSize),
+  titleFontSize:parseFloat(getComputedStyle(title).fontSize),
+  actionHeight:rect(button).height,
+  shortcutFontSize:parseFloat(getComputedStyle(dock.querySelector('.hub-story-shortcut-label')).fontSize)
+ 
  };
 };
 (async()=>{
@@ -86,6 +96,20 @@ const inspect=()=>{
      if(m.lineLengths.length&&m.lineLengths.at(-1)===1)issues.push('title-orphan-letter');
      if(!m.playSvg)issues.push('legacy-cta-arrow');
      if(!m.prevHit||!m.nextHit||!m.playHit)issues.push('button-not-hittable');
+     if(Math.abs(m.heroCenter-w/2)>5)issues.push('main-hero-not-centered');
+     if(Math.abs(m.dock.cx-w/2)>5)issues.push('context-dock-not-centered');
+     const allowed=n===0
+      ? ['map','evolution','achievements','music','settings']
+      : ['statistics','settings'];
+     if(m.shortcuts.join(',')!==allowed.join(','))
+      issues.push('unrelated-shortcuts-'+m.shortcuts.join(','));
+     if(m.rewardsVisible!==(n===0))issues.push('rewards-on-wrong-mode');
+     if(w===2560&&h===1440&&(m.heroBrandSize<108||m.titleFontSize<39||
+         m.actionHeight<70||m.shortcutFontSize<15))
+      issues.push('2k-menu-too-small-'+JSON.stringify({
+       brand:m.heroBrandSize,title:m.titleFontSize,
+       button:m.actionHeight,shortcut:m.shortcutFontSize
+      }));
      // The supplied original design uses one violet control language;
      // test a visible hover glow and consistent palette, not a rainbow hue.
      if(w===1920&&h===1080){
