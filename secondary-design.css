@@ -1,0 +1,243 @@
+/* Infinity Space — secondary screens only.
+   Preserve #screen-menu completely. Faithful V15.3 purple controls, but NO
+   giant background cards behind settings columns or achievements summaries. */
+:root{--v15-edge:#7c5caf;--v15-light:#d3baff;--v15-bottom:#412666;--v15-accent:#a783ff;--v15-muted:#b8a7ce}
+body.ui-v15 #modal .screen:not(#screen-menu){
+ --v15-light:#d3baff;
+ color:#f5efff;
+}
+body.ui-v15 #modal .screen:not(#screen-menu) :is(.br-head h2,.br-pane-title h3,.display-heading,.br-best-name,.music-heading h3){
+ text-shadow:0 3px 13px #020008bd;
+}
+body.ui-v15 #modal .screen:not(#screen-menu) :is(.br-head,.page-nav,.map-header){
+ border-bottom-color:#67458f!important;
+}
+/* Achievements: compact centered timeline, without the vacant column. */
+body.ui-v15 #modal #screen-achievements .br-ach-layout{
+ position:absolute!important;left:50%!important;right:auto!important;
+ top:clamp(98px,12.6vh,142px)!important;bottom:clamp(16px,3vh,45px)!important;
+ width:min(1380px,calc(100vw - 64px))!important;max-width:1380px;
+ transform:translateX(-50%)!important;display:flex!important;flex-direction:column!important;
+ gap:12px!important;min-height:0!important;box-sizing:border-box;
+}
+body.ui-v15 #modal #screen-achievements .br-ach-summary{
+ display:flex!important;align-items:center!important;flex-wrap:wrap!important;
+ column-gap:18px!important;row-gap:4px!important;flex:0 0 auto!important;
+ width:100%!important;min-width:0!important;padding:0 0 12px!important;
+ border:0!important;border-bottom:1px solid #51376f!important;
+ border-radius:0!important;background:transparent!important;box-shadow:none!important;
+}
+body.ui-v15 #modal #screen-achievements .br-ach-summary>.br-serial{
+ margin:0!important;flex:0 0 auto;color:#ae89f4!important;
+}
+body.ui-v15 #modal #screen-achievements .br-ach-big{
+ margin:0!important;font:950 clamp(24px,2vw,39px)/1 'Inter Display',Inter,system-ui!important;
+ color:#ad87ff!important;white-space:nowrap;
+}
+body.ui-v15 #modal #screen-achievements .br-ach-big span{
+ font-size:.48em!important;color:#8d74bd!important;
+}
+body.ui-v15 #modal #screen-achievements .br-ach-summary>strong{
+ font-size:clamp(12px,.9vw,15px)!important;letter-spacing:.02em;
+}
+body.ui-v15 #modal #screen-achievements .br-ach-summary>p{
+ margin:0!important;font-size:12px!important;color:#baa9ce!important;max-width:280px;
+}
+body.ui-v15 #modal #screen-achievements .br-ach-note{display:none!important;}
+body.ui-v15 #modal #screen-achievements .br-ach-content{
+ flex:1 1 auto!important;min-height:0!important;max-width:none!important;
+ padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;
+}
+body.ui-v15 #modal #screen-achievements .br-ach-filters{
+ display:flex!important;flex-wrap:wrap!important;gap:6px!important;flex:0 0 auto!important;
+ padding:0 0 4px!important;
+}
+body.ui-v15 #modal #screen-achievements .br-ach-list{
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ grid-auto-rows:max-content!important;align-content:start!important;
+ gap:9px!important;overflow:auto!important;min-height:0!important;
+ padding:1px 8px 8px 1px!important;scrollbar-color:#6a4a94 transparent;
+}
+body.ui-v15 #modal #screen-achievements .br-ach-row{
+ display:grid!important;grid-template-columns:37px minmax(0,1fr) 55px!important;
+ align-items:center!important;gap:11px!important;margin:0!important;min-width:0!important;
+ min-height:91px!important;padding:11px 13px!important;
+ border:1px solid #6c4e93!important;border-left:3px solid var(--achievement-color,#7d5bae)!important;
+ border-bottom:3px solid #382455!important;border-radius:5px!important;
+ background:linear-gradient(110deg,#1b122dba,#120c20ba)!important;
+ box-shadow:inset 0 1px #ffffff0b!important;
+}
+body.ui-v15 #modal #screen-achievements .br-ach-symbol{
+ width:36px!important;height:36px!important;border-radius:5px!important;
+}
+body.ui-v15 #modal #screen-achievements .br-ach-copy strong{
+ margin-top:5px!important;font-size:clamp(12px,.85vw,16px)!important;line-height:1.2;
+}
+body.ui-v15 #modal #screen-achievements .br-ach-copy small{
+ margin-top:3px!important;font-size:clamp(10px,.72vw,13px)!important;
+}
+body.ui-v15 #modal #screen-achievements .br-ach-row>b{font-size:13px!important;text-align:right!important;}
+body.ui-v15 #modal #screen-achievements .br-ach-prog{
+ width:100%!important;height:5px!important;margin-top:7px!important;max-width:none!important;
+}
+body.ui-v15 #modal #screen-achievements .br-ach-prog i{
+ height:100%!important;max-width:100%!important;
+}
+/* Settings: two uncluttered columns, transparent content, no nested surfaces. */
+body.ui-v15 #modal #screen-settings .br-settings-layout{
+ position:absolute!important;left:50%!important;right:auto!important;
+ transform:translateX(-50%)!important;
+ top:clamp(96px,12.3vh,140px)!important;bottom:clamp(82px,11vh,116px)!important;
+ width:min(1100px,calc(100vw - 64px))!important;
+ display:grid!important;grid-template-columns:225px minmax(0,1fr)!important;
+ gap:clamp(20px,3vw,42px)!important;box-sizing:border-box;min-width:0!important;
+}
+body.ui-v15 #modal #screen-settings :is(.br-settings-nav,.br-settings-main,.br-settings-aside){
+ background:transparent!important;box-shadow:none!important;border-radius:0!important;
+}
+body.ui-v15 #modal #screen-settings .br-settings-nav{
+ padding:4px 19px 0 0!important;border:0!important;border-right:1px solid #594078!important;
+}
+body.ui-v15 #modal #screen-settings .br-settings-main{
+ padding:4px 5px 22px 0!important;max-width:none!important;min-width:0!important;
+ border:0!important;overflow-y:auto!important;
+}
+body.ui-v15 #modal #screen-settings .br-settings-aside{display:none!important;}
+body.ui-v15 #modal #screen-settings .br-settings-side-note{
+ font-size:11px!important;line-height:1.45!important;max-width:195px!important;
+ color:#9887b3!important;
+}
+body.ui-v15 #modal #screen-settings .br-option{
+ background:transparent!important;box-shadow:none!important;border:0!important;
+ border-bottom:1px solid #46315c!important;border-radius:0!important;
+ min-height:77px!important;padding:12px 4px!important;
+}
+body.ui-v15 #modal #screen-settings .br-option strong{
+ font-size:clamp(13px,.95vw,16px)!important;
+}
+body.ui-v15 #modal #screen-settings .br-pane-title{
+ padding-bottom:15px!important;border-bottom:2px solid #654896!important;
+}
+body.ui-v15 #modal #screen-settings .br-tab{
+ border:2px solid #635083!important;border-bottom:4px solid #3e2a62!important;
+ background:linear-gradient(160deg,#221731,#140e24)!important;
+ border-radius:5px!important;box-shadow:none!important;color:#efe7ff!important;
+}
+body.ui-v15 #modal #screen-settings .br-tab.active{
+ border-color:#b58bff!important;background:linear-gradient(150deg,#39235d,#1f123a)!important;
+ box-shadow:inset 3px 0 #bb94ff,0 0 14px #8a52ee50!important;
+}
+body.ui-v15 #modal #screen-settings .br-controls>div{
+ background:#17102380!important;border-color:#503a7a!important;
+}
+body.ui-v15 #modal #screen-settings .br-settings-foot{
+ left:50%!important;right:auto!important;transform:translateX(-50%)!important;
+ width:min(1100px,calc(100vw - 64px))!important;
+ border-top-color:#664b88!important;
+}
+body.ui-v15 #modal #screen-settings .br-select{
+ background:#150e25!important;border:2px solid #6a548f!important;border-bottom:3px solid #36234e!important;
+ color:#f6efff!important;border-radius:5px!important;
+}
+/* Other reference pages: structural sections remain transparent. */
+body.ui-v15 #modal :is(#screen-bestiary,#screen-statistics,#screen-music,#screen-evolution,#screen-upgrades)
+ :is(.br-best-list,.br-simple-intro,.music-heading,.music-layout,.br-ach-content){
+ background:transparent!important;border-color:transparent!important;box-shadow:none!important;
+}
+body.ui-v15 #modal #screen-bestiary .br-best-details{
+ background:#160e24a6!important;
+}
+body.ui-v15 #modal .screen:not(#screen-menu) :is(
+ .br-head-back,.back,.br-foot-primary,.br-foot-secondary,
+ .br-tab,.br-filter,.br-small-action,.br-inline-cta,
+ .br-best-row,.purchase,.music-control,.music-track-preview,.music-track-buy,
+ .map-corner.right button,.atlas-control
+){border-radius:5px!important;border-bottom-width:4px!important;}
+@media(hover:hover) and (pointer:fine){
+ body.ui-v15 #modal .screen:not(#screen-menu) :is(
+  .br-head-back,.back,.br-foot-primary,.br-foot-secondary,.br-tab,
+  .br-filter,.br-small-action,.br-inline-cta,.br-best-row,.purchase,
+  .music-control,.music-track-preview,.music-track-buy,
+  .map-corner.right button,.atlas-control
+ ):not(:disabled):hover{
+  border-color:#c9a9ff!important;border-bottom-color:#62409a!important;
+  box-shadow:0 0 18px #965beb75,0 5px 14px #0009!important;
+  transform:translateY(-1px)!important;
+ }
+}
+body.ui-v15 #modal .screen:not(#screen-menu) :is(button,input,select):focus-visible{
+ outline:2px solid #c9a9ff!important;outline-offset:3px!important;
+}
+@media(max-width:880px){
+ body.ui-v15 #modal #screen-settings .br-settings-layout{
+  grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto minmax(0,1fr)!important;
+  gap:12px!important;top:92px!important;bottom:91px!important;
+  width:calc(100vw - 28px)!important;
+ }
+ body.ui-v15 #modal #screen-settings .br-settings-nav{
+  display:flex!important;flex-direction:row!important;flex-wrap:wrap!important;
+  padding:0 0 8px!important;border:0!important;border-bottom:1px solid #583a7c!important;gap:6px!important;
+ }
+ body.ui-v15 #modal #screen-settings .br-settings-side-note,
+ body.ui-v15 #modal #screen-settings .br-side-label{display:none!important}
+ body.ui-v15 #modal #screen-settings .br-tab{flex:1 1 calc(50% - 6px)!important;min-width:0!important;padding:9px!important;}
+ body.ui-v15 #modal #screen-settings .br-settings-main{padding:0 3px 8px!important;}
+ body.ui-v15 #modal #screen-settings .br-settings-foot{width:calc(100vw - 28px)!important}
+ body.ui-v15 #modal #screen-achievements .br-ach-layout{
+  width:calc(100vw - 28px)!important;top:93px!important;bottom:18px!important;
+ }
+ body.ui-v15 #modal #screen-achievements .br-ach-list{grid-template-columns:minmax(0,1fr)!important;}
+ body.ui-v15 #modal #screen-achievements .br-ach-summary>p{display:none!important}
+}
+@media(max-width:420px){
+ body.ui-v15 #modal #screen-achievements .br-ach-summary{gap:8px!important;padding-bottom:8px!important;}
+ body.ui-v15 #modal #screen-achievements .br-ach-summary>.br-serial{display:none!important}
+ body.ui-v15 #modal #screen-achievements .br-ach-row{grid-template-columns:30px minmax(0,1fr) 37px!important;min-height:85px!important;padding:9px!important;gap:8px!important;}
+ body.ui-v15 #modal #screen-settings .br-settings-layout{top:84px!important;bottom:85px!important;}
+ body.ui-v15 #modal #screen-settings .br-tab{min-height:38px!important;}
+ body.ui-v15 #modal #screen-settings .br-option{gap:8px!important;padding:10px 2px!important;}
+}
+/* Shared live profile overlay adopts the exact same row measurements as the
+   Endless Space achievements page, including rarity progress colors. */
+.infinity-mode-achievements-overlay .infinity-mode-achievements-panel{
+ width:min(1380px,calc(100vw - 46px))!important;max-width:1380px!important;
+ max-height:calc(100dvh - 40px)!important;height:min(850px,calc(100dvh - 40px))!important;
+ padding:clamp(14px,2vw,24px)!important;
+ display:flex!important;flex-direction:column!important;gap:12px!important;
+ border:2px solid #805ead!important;border-bottom:5px solid #442b69!important;border-radius:7px!important;
+ background:linear-gradient(150deg,#130d25f7,#080512f8)!important;
+ box-shadow:0 25px 90px #000b!important;
+}
+.infinity-mode-achievements-panel .infinity-panel-top{flex:0 0 auto!important;margin:0!important;padding-bottom:10px!important;border-bottom:1px solid #644987!important;}
+.infinity-mode-achievements-panel .infinity-mode-achievements-summary{
+ display:flex!important;align-items:baseline!important;flex:0 0 auto!important;
+ gap:12px!important;min-height:0!important;padding:0!important;background:transparent!important;
+ border:0!important;box-shadow:none!important;
+}
+.infinity-mode-achievements-panel .infinity-mode-achievements-summary strong{
+ font-size:clamp(22px,2.1vw,36px)!important;color:#ad8aff!important;
+}
+.infinity-mode-achievements-panel .infinity-mode-achievements-list{
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ grid-auto-rows:max-content!important;gap:9px!important;align-content:start!important;
+ overflow-y:auto!important;min-height:0!important;padding:0 7px 4px 0!important;
+}
+.infinity-mode-achievements-panel .infinity-mode-achievement{
+ display:grid!important;grid-template-columns:36px minmax(0,1fr) 50px!important;
+ gap:11px!important;align-items:center!important;
+ min-height:89px!important;padding:10px 12px!important;border-radius:5px!important;
+ border:1px solid #594576!important;border-left:3px solid var(--rarity)!important;
+ border-bottom:3px solid #3b2659!important;
+ background:linear-gradient(110deg,#1c1330bd,#100b20d9)!important;
+ box-shadow:inset 0 1px #ffffff0c!important;
+}
+.infinity-mode-achievements-panel .infinity-mode-achievement-insignia{
+ width:35px!important;height:35px!important;border-radius:5px!important;color:var(--rarity)!important;
+}
+.infinity-mode-achievements-panel .infinity-mode-achievement-copy strong{font-size:clamp(12px,.95vw,15px)!important;}
+.infinity-mode-achievements-panel .infinity-mode-achievement-copy small{font-size:clamp(10px,.76vw,13px)!important;}
+.infinity-mode-achievements-panel .infinity-mode-achievement-track{width:100%!important;height:5px!important;}
+.infinity-mode-achievements-panel .infinity-mode-achievement>b{font-size:13px!important;}
+@media(max-width:780px){
+ .infinity-mode-achievements-panel .infinity-mode-achievements-list{grid-template-columns:minmax(0,1fr)!important;}
+}
