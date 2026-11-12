@@ -20,6 +20,7 @@ on:
       - 'menu-*.js'
       - 'player-profile.*'
       - 'index.html'
+      - 'tests/ui-snapshot-diagnostics.cjs'
       - 'tests/full-ui-audit.cjs'
       - 'tests/menu-layout-audit.cjs'
       - 'tests/browser-smoke.cjs'
@@ -50,6 +51,7 @@ jobs:
           python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/infinity-ui-audit-http.log 2>&1 &
           sleep 2
           timeout 50 node tests/renderer-startup-smoke.cjs
+          timeout 200 node tests/ui-snapshot-diagnostics.cjs
           timeout 300 node tests/menu-layout-audit.cjs
           timeout 150 node tests/mode-achievements-smoke.cjs
           timeout 500 node tests/full-ui-audit.cjs
