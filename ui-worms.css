@@ -726,3 +726,19 @@ body.worm-death-replay #worm-hud{transition:opacity .85s ease}
   border-color:#d4bfff!important;box-shadow:0 0 19px #9970f788,0 6px 14px #0009!important;
   filter:brightness(1.12)!important;transform:translateY(-2px)!important}
 }
+
+/* Settings layout and saturated cosmetic controls. */
+.worm-settings-panel{width:min(620px,calc(100vw - 28px))!important;max-height:min(85dvh,780px);margin:auto!important;box-sizing:border-box;}
+.worm-settings-panel :is(input[type=range],input[type=checkbox]){accent-color:#b357ff!important;}
+.worm-shade .worm-panel :is(button,input):focus-visible,.ws-overlay :is(button,input):focus-visible{outline:2px solid #ffd04b!important;outline-offset:3px;box-shadow:0 0 0 5px #ffba3828!important;}
+.worm-shade .worm-actions button:hover{border-color:#ffbc48!important;box-shadow:0 0 22px #f77b4266!important;}
+.ws-head-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0;}
+.ws-head-choice{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:12px 6px;color:#fff;border:1px solid #71548f;border-radius:10px;background:#20152f;cursor:pointer;font:700 12px system-ui;}
+.ws-head-choice.selected{border-color:#ffca51;background:#382349;box-shadow:0 0 16px #fa8d4645;}
+.ws-head-symbol{display:block;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle,#030008 0 33%,#ffc857 39% 47%,#f44c9f 51%,transparent 73%);box-shadow:0 0 16px #bb66fa;}
+.ws-head-choice[data-head=classic] .ws-head-symbol{background:radial-gradient(circle at 35% 30%,#fff,#9944ff 45%,#280c55);}
+.ws-head-choice[data-head=pulsar] .ws-head-symbol{background:radial-gradient(circle,#fff 0 25%,#ffe500 35%,#2860ff 65%,transparent 75%);}
+.ws-head-choice[data-head=comet] .ws-head-symbol{background:radial-gradient(circle at 75% 40%,#fff 0 25%,#ffe569 35%,#e85a38 65%,transparent 75%);}
+.ws-head-choice[data-head=crystal] .ws-head-symbol{border-radius:0;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);background:#7ee4ff;}
+.ws-head-choice[data-head=eclipse] .ws-head-symbol{background:radial-gradient(circle,#02010a 0 43%,#ff427e 48% 55%,transparent 64%);}
+@media(max-width:560px){.ws-head-options{grid-template-columns:repeat(2,minmax(0,1fr));}}
