@@ -21,7 +21,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   const firstTitles=new Set();
   for(let i=0;i<ids.length;i++){
    const mode=ids[i];
-   await page.locator('.hub-mode-dots button').nth(i+1).click();
+   await page.locator('.hub-mode-dots [data-mode="'+mode+'"]').click();
    const input=page.locator('.hub-mode-nickname input');
    assert.equal(await input.isVisible(),true,mode+' nickname field must remain visible');
    assert.equal(await input.inputValue(),'Mode Explorer',mode+' must share the saved callsign');
@@ -58,7 +58,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   assert.equal(state.storage.worms.first,true);
   assert.equal(state.storage.royale?.first,undefined);
   await page.reload({waitUntil:'domcontentloaded'});
-  await page.locator('.hub-mode-dots button').nth(2).click();
+  await page.locator('.hub-mode-dots [data-mode="arena"]').click();
   assert.ok((await page.evaluate(()=>window.InfinityProfile.achievementStats('arena'))).earned>=3,
    'Arena unlocks persist across reload');
   await page.locator('.hub-story-shortcut[data-shortcut="achievements"]').click();
