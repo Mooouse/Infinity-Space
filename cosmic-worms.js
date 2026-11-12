@@ -132,9 +132,17 @@ function lobbyBotIdentities(count){
  for(const role of BOT_ROSTER)roles.push(role,role);
  while(roles.length<count)roles.push(ROLE_POOL[Math.floor(Math.random()*ROLE_POOL.length)]);
  shuffleList(roles);
- const used=new Set();
+ const used=new Set(),roleSkins=new Map();
  return roles.slice(0,count).map(role=>{
   const identity=botIdentity(null,role);
+  // Within a match, AI level does not predict visual appearance: an AFK
+  // pilot and a top pro can be equally bright, without fixed role colors.
+  const assigned=roleSkins.get(role)||new Set();
+  if(assigned.has(identity.skin)&&assigned.size<SKINS.length){
+   const available=SKINS.filter(v=>!assigned.has(v.id));
+   identity.skin=available[Math.floor(Math.random()*available.length)].id;
+  }
+  assigned.add(identity.skin);roleSkins.set(role,assigned);
   for(let tries=0;tries<24&&used.has(identity.name);tries++)
    identity.name=NAMES[Math.floor(Math.random()*NAMES.length)]+(100+Math.floor(Math.random()*900));
   used.add(identity.name);
