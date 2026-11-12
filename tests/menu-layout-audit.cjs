@@ -99,7 +99,7 @@ const inspect=()=>{
      if(Math.abs(m.heroCenter-w/2)>5)issues.push('main-hero-not-centered');
      if(Math.abs(m.dock.cx-w/2)>5)issues.push('context-dock-not-centered');
      const allowed=n===0
-      ? ['map','evolution','achievements','music','settings']
+      ? ['map','evolution','achievements','music','bestiary','settings']
       : ['statistics','settings'];
      if(m.shortcuts.join(',')!==allowed.join(','))
       issues.push('unrelated-shortcuts-'+m.shortcuts.join(','));
