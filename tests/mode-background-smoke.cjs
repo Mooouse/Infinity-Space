@@ -19,17 +19,17 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   assert.equal(await page.locator('#screen-menu .hub-menu').isVisible(),false);
   assert.equal(await page.evaluate(()=>window.SpaceMenuSceneMode),null);
   assert.equal(await page.locator('.hub-mode-dots button').count(),6);
-  assert.equal(await page.locator('.hub-story-shortcut').count(),8,
-   'All main sections must be visible without opening a drawer');
-  for(const section of ['map','evolution','achievements','music','bestiary','statistics','settings','new']){
-   assert.equal(await page.locator('.hub-story-shortcut[data-shortcut="'+section+'"]').isVisible(),true,
-    section+' main-menu shortcut must be visible');
-  }
+  // Delegate elements remain mounted; each game mode shows only its actions.
+  assert.equal(await page.locator('.hub-story-shortcut').count(),8);
+  const visibleShortcuts=async()=>page.locator('.hub-story-shortcut:visible').evaluateAll(nodes=>nodes.map(n=>n.dataset.shortcut));
+  assert.deepEqual(await visibleShortcuts(),
+   ['map','evolution','achievements','music','bestiary','settings'],
+   'Endless Space must expose its six relevant game actions');
   await page.locator('.hub-story-shortcut[data-shortcut="settings"]').click();
   await page.locator('#screen-settings').waitFor({state:'visible',timeout:6000});
   await page.locator('#screen-settings .br-head-back').click();
   await page.locator('#hub-mode-story').waitFor({state:'visible',timeout:6000});
-  console.log('PASS: all eight real menu shortcuts are exposed and Settings opens and returns');
+  console.log('PASS: context-aware Endless Space shortcuts and Settings navigation');
 
   const forward=page.locator('.hub-mode-step[data-dir="1"]');
   await forward.click();
@@ -65,12 +65,15 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   // No Sections button; the bottom navigation is permanently available.
   assert.equal(await page.locator('.hub-mode-story-back').count(),0);
   assert.equal(await page.locator('.hub-story-shortcut').count(),8);
+  assert.deepEqual(await visibleShortcuts(),['statistics','settings'],
+   'Competitive mode menu must hide unrelated universe actions');
   assert.equal(await page.locator('.hub-story-shortcut[data-shortcut="map"]').isVisible(),false,
    'Universe map is hidden in competitive mode');
   await page.locator('.hub-mode-dots button').first().click();
   await page.waitForFunction(()=>window.SpaceMenuSceneMode===null,null,{timeout:5000});
-  assert.equal(await page.locator('.hub-story-shortcut[data-shortcut="map"]').isVisible(),true,
-   'Universe map is available on Endless Space');
+  assert.deepEqual(await visibleShortcuts(),
+   ['map','evolution','achievements','music','bestiary','settings'],
+   'Endless Space restores its relevant actions');
   console.log('PASS: visible navigation, campaign-only map, and smooth mode switching');
   await page.locator('.hub-mode-dots button').nth(4).click();
   await page.locator('.hub-mode-story-play').click();
@@ -87,8 +90,9 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   await mobile.goto(base+'/?tester=1',{waitUntil:'domcontentloaded',timeout:60000});
   await mobile.locator('#hub-mode-story').waitFor({state:'visible',timeout:45000});
   assert.equal(await mobile.locator('#screen-menu .hub-modes').count(),0);
-  assert.equal(await mobile.locator('.hub-story-shortcut').count(),8,
-   'Mobile must expose all sections without hiding them under More');
+  assert.equal(await mobile.locator('.hub-story-shortcut').count(),8);
+  assert.equal(await mobile.locator('.hub-story-shortcut:visible').count(),6,
+   'Mobile Endless Space must expose six relevant actions');
   assert.equal(await mobile.locator('.hub-story-shortcut[data-shortcut="settings"]').isVisible(),true);
   const box=await mobile.locator('#hub-mode-story').boundingBox();
   const y=Math.round(box.height*.45),left=Math.round(box.width*.78),right=Math.round(box.width*.2);
@@ -98,6 +102,8 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     el.dispatchEvent(new PointerEvent('pointerup',{bubbles:true,pointerType:'touch',clientX:right,clientY:y}));
   },{y,left,right});
   await mobile.waitForFunction(()=>window.SpaceMenuSceneMode==='arena',null,{timeout:5000});
+  assert.deepEqual(await mobile.locator('.hub-story-shortcut:visible').evaluateAll(nodes=>nodes.map(n=>n.dataset.shortcut)),
+   ['statistics','settings'],'Mobile competitive mode must hide unrelated actions');
   const overflow=await mobile.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth}));
   assert.ok(overflow.scroll<=overflow.width+2,'Main menu mode story must not overflow screen: '+JSON.stringify(overflow));
   assert.equal(errors.length,0,errors.join('\n'));

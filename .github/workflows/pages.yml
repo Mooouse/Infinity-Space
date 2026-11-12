@@ -35,7 +35,7 @@ jobs:
           test -s index.html
           test -s ui-app.css
           test -s favicon.svg
-      - name: Real browser smoke test for rewards and death
+      - name: Release gate — browser gameplay and responsive UI
         shell: bash
         run: |
           set -euo pipefail
@@ -50,7 +50,9 @@ jobs:
           timeout 220 node tests/browser-smoke.cjs
           timeout 180 node tests/arcade-browser-smoke.cjs
           timeout 180 node tests/mode-background-smoke.cjs
+          timeout 300 node tests/menu-layout-audit.cjs
           timeout 150 node tests/worms-browser-smoke.cjs
+          timeout 500 node tests/full-ui-audit.cjs
           timeout 180 node tests/profile-live-demo-smoke.cjs
       - name: Configure Pages
         uses: actions/configure-pages@v5

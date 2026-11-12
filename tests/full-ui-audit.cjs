@@ -102,7 +102,9 @@ async function clickBack(page){
     }
    }
    if(width===390||width===1366){
-    // Separate persistent statistics modal must close to the same menu, not blank.
+    // Statistics belongs to competitive modes; choose one before opening it.
+    await page.locator('.hub-mode-dots button').nth(1).click();
+    await page.locator('.hub-story-shortcut[data-shortcut="statistics"]').waitFor({state:'visible',timeout:5000});
     await page.locator('.hub-story-shortcut[data-shortcut="statistics"]').click();
     await page.locator('.infinity-stats-panel').waitFor({state:'visible',timeout:10000});
     const tabs=page.locator('.infinity-stats-tabs button');
@@ -114,6 +116,9 @@ async function clickBack(page){
     }
     await page.locator('.infinity-overlay-close').click();
     await page.locator('#screen-menu .hub-mode-story-play').waitFor({state:'visible',timeout:10000});
+    // Restore Endless Space before exercising its nested navigation chains.
+    await page.locator('.hub-mode-dots button').first().click();
+    await page.locator('.hub-story-shortcut[data-shortcut="map"]').waitFor({state:'visible',timeout:5000});
     for(const chain of [
      ['settings','music'],['settings','tutorial'],['map','settings'],['evolution','bestiary']
     ]){

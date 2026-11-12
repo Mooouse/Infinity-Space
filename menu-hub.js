@@ -195,7 +195,7 @@
    // bestiary and universe management. Competitive modes are not burdened
    // with unrelated persistent-universe actions.
    const allowed=entry.id==='endless'
-    ? new Set(['map','evolution','achievements','music','settings'])
+    ? new Set(['map','evolution','achievements','music','bestiary','settings'])
     : new Set(['statistics','settings']);
    const dock=q(overlay,'.hub-story-nav');
    let visible=0;
@@ -221,12 +221,12 @@
    const copy=q(overlay,'.hub-mode-story-copy');
    if(changed&&copy&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     copy.getAnimations().forEach(a=>a.cancel());
-    const slide=window.innerWidth<=800?0:22;
+    // Vertical fade preserves the horizontal center and stable hitboxes.
     copy.animate([
-      {opacity:.3,transform:'translate3d('+direction*slide+'px,5px,0)'},
-      {opacity:.92,transform:'translate3d('+direction*(slide?-2:0)+'px,0,0)'},
+      {opacity:.28,transform:'translate3d(0,7px,0)'},
+      {opacity:.86,transform:'translate3d(0,2px,0)'},
       {opacity:1,transform:'translate3d(0,0,0)'}
-    ],{duration:510,easing:'cubic-bezier(.22,.8,.2,1)'});
+    ],{duration:420,easing:'cubic-bezier(.22,.8,.2,1)'});
    }
   };
   // Visible bottom dock. Each shortcut delegates to the already wired

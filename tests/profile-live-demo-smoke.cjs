@@ -63,6 +63,8 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   await page.evaluate(()=>window.InfinityArenaQA.forceFinish(true));
   await page.locator('#result').waitFor({state:'visible',timeout:10000});
   await page.goto(base+'/index.html?tester=1',{waitUntil:'domcontentloaded'});
+  // The statistics shortcut is intentionally scoped to competitive modes.
+  await page.locator('.hub-mode-dots button').nth(1).click();
   await page.locator('.hub-story-shortcut[data-shortcut="statistics"]').waitFor({state:'visible',timeout:30000});
   await page.locator('.hub-story-shortcut[data-shortcut="statistics"]').click();
   await page.locator('.infinity-stats-panel').waitFor({state:'visible',timeout:15000});
