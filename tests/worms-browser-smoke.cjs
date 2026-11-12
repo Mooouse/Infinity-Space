@@ -105,6 +105,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     for(const role of ['afk','newcomer','casual','cautious','hunter','veteran','pro','reckless']){
      assert.ok(styles[role]>=2,'Missing realistic bot behavior: '+role);
     }
+    console.log('WORMS_QA_PHYSICS '+width+'x'+height);
     const botsBefore=await page.evaluate(()=>window.InfinityWormsQA.bots());
     await page.evaluate(()=>window.InfinityWormsQA.advancePhysics(.55));
     const botsAfter=await page.evaluate(()=>window.InfinityWormsQA.bots());

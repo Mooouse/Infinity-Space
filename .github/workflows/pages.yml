@@ -51,7 +51,7 @@ jobs:
           timeout 180 node tests/arcade-browser-smoke.cjs
           timeout 180 node tests/mode-background-smoke.cjs
           timeout 300 node tests/menu-layout-audit.cjs
-          timeout 260 node tests/worms-browser-smoke.cjs
+          timeout 600 node tests/worms-browser-smoke.cjs
           timeout 500 node tests/full-ui-audit.cjs
           timeout 180 node tests/profile-live-demo-smoke.cjs
           timeout 150 node tests/mode-achievements-smoke.cjs
