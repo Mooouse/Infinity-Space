@@ -15,14 +15,14 @@ body.ui-v15 #modal .screen:not(#screen-menu) :is(.br-head,.page-nav,.map-header)
 /* Achievements: compact centered timeline, without the vacant column. */
 body.ui-v15 :is(#modal #screen-achievements,#screen-mode-achievements) .br-ach-layout{
  position:absolute!important;left:50%!important;right:auto!important;
- top:clamp(98px,12.6vh,142px)!important;bottom:clamp(16px,3vh,45px)!important;
+ top:clamp(133px,15.4vh,176px)!important;bottom:clamp(16px,3vh,45px)!important;
  width:min(1380px,calc(100vw - 64px))!important;max-width:1380px;
  transform:translateX(-50%)!important;display:flex!important;flex-direction:column!important;
  gap:12px!important;min-height:0!important;box-sizing:border-box;
 }
 body.ui-v15 :is(#modal #screen-achievements,#screen-mode-achievements) .br-ach-summary{
  display:flex!important;align-items:center!important;flex-wrap:wrap!important;
- column-gap:18px!important;row-gap:4px!important;flex:0 0 auto!important;
+ column-gap:18px!important;row-gap:7px!important;flex:0 0 auto!important;
  width:100%!important;min-width:0!important;padding:0 0 12px!important;
  border:0!important;border-bottom:1px solid #51376f!important;
  border-radius:0!important;background:transparent!important;box-shadow:none!important;
@@ -89,7 +89,7 @@ body.ui-v15 #modal #screen-settings .br-settings-layout{
  transform:translateX(-50%)!important;
  top:clamp(96px,12.3vh,140px)!important;bottom:clamp(82px,11vh,116px)!important;
  width:min(1100px,calc(100vw - 64px))!important;
- display:grid!important;grid-template-columns:225px minmax(0,1fr)!important;
+ display:grid!important;grid-template-columns:245px minmax(0,1fr)!important;
  gap:clamp(20px,3vw,42px)!important;box-sizing:border-box;min-width:0!important;
 }
 body.ui-v15 #modal #screen-settings :is(.br-settings-nav,.br-settings-main,.br-settings-aside){
@@ -184,7 +184,7 @@ body.ui-v15 #modal .screen:not(#screen-menu) :is(button,input,select):focus-visi
  body.ui-v15 #modal #screen-settings .br-settings-main{padding:0 3px 8px!important;}
  body.ui-v15 #modal #screen-settings .br-settings-foot{width:calc(100vw - 28px)!important}
  body.ui-v15 :is(#modal #screen-achievements,#screen-mode-achievements) .br-ach-layout{
-  width:calc(100vw - 28px)!important;top:93px!important;bottom:18px!important;
+  width:calc(100vw - 28px)!important;top:116px!important;bottom:18px!important;
  }
  body.ui-v15 :is(#modal #screen-achievements,#screen-mode-achievements) .br-ach-list{grid-template-columns:minmax(0,1fr)!important;}
  body.ui-v15 :is(#modal #screen-achievements,#screen-mode-achievements) .br-ach-summary>p{display:none!important}

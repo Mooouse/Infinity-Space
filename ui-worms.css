@@ -531,79 +531,6 @@ body.worm-death-replay #worm-hud{transition:opacity .85s ease}
 }
 
 
-/* v15 — the same compact, neutral controls as the shared skin workshop.
-   Accent is a thin stripe instead of a fully colored rectangle. */
-.worm-panel{
- width:min(560px,100%);background:#111724!important;
- border:1px solid #3e4a62!important;border-bottom:2px solid #27344c!important;
- border-radius:16px!important;
- box-shadow:0 25px 95px #000b,inset 0 1px #ffffff1a!important;
- color:#e8eefb!important;
-}
-.worm-panel h1{color:#f2f6ff!important;letter-spacing:-.025em}
-.worm-panel p{color:#b6c1d6!important;line-height:1.55}
-.worm-eyebrow{color:#628aff!important;font-weight:850!important}
-.worm-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px}
-.worm-actions button{
- min-width:0;width:100%;min-height:49px;padding:10px 12px;
- border:1px solid #43536c!important;
- border-left:3px solid var(--worm-accent,#2860ff)!important;
- border-bottom:2px solid #27354e!important;
- border-radius:9px!important;
- background:linear-gradient(145deg,#202b3e,#131b2a)!important;
- box-shadow:inset 0 1px #ffffff18!important;
- color:#edf2ff!important;
- text-shadow:none!important;
- letter-spacing:.02em!important;font-size:12px!important;font-weight:825!important;
-}
-.worm-actions button.worm-primary{
- --worm-accent:#9922ff!important;
- background:linear-gradient(140deg,#322951,#201f3a)!important;
-}
-.worm-actions button#worm-skins-open{
- --worm-accent:#ffe500!important;
- background:linear-gradient(140deg,#302c22,#222624)!important;
-}
-.worm-actions button#worm-exit,.worm-actions button#worm-result-menu{
- --worm-accent:#ff1744!important;
- background:linear-gradient(140deg,#30212d,#201b28)!important;
-}
-.worm-actions button#worm-settings-open,.worm-actions button#worm-open-guide,
-.worm-actions button#worm-settings-back{--worm-accent:#2860ff!important}
-.worm-actions button#worm-exit,.worm-actions button#worm-settings-back{grid-column:1/-1}
-@media(hover:hover) and (pointer:fine){
- .worm-actions button:hover{
-  background:linear-gradient(145deg,#2c3b52,#19243a)!important;
-  border-color:#587093!important;
-  border-top-color:var(--worm-accent,#2860ff)!important;
-  border-left-color:var(--worm-accent,#2860ff)!important;
-  box-shadow:0 0 12px color-mix(in srgb,var(--worm-accent,#2860ff) 19%,transparent)!important;
-  filter:none!important;transform:translateY(-1px);
- }
- .worm-actions button.worm-primary:hover{background:linear-gradient(145deg,#413463,#25243e)!important}
- .worm-actions button#worm-skins-open:hover{background:linear-gradient(145deg,#3c3928,#262d26)!important}
- .worm-actions button#worm-exit:hover{background:linear-gradient(145deg,#442836,#29212e)!important}
-}
-.worm-setting-toggle,.worm-setting-range{
- border:1px solid #3d4961!important;
- background:#182236!important;border-radius:9px!important;
- color:#e5edfb!important;
-}
-.worm-setting-toggle input:checked+i{background:#1a5e37!important;border-color:#27ff40!important}
-.worm-setting-range strong{color:#ffe500!important}
-.worm-setting-range input{accent-color:#2860ff!important}
-@media(max-width:560px){
- .worm-panel{border-radius:12px!important;padding:15px!important}
- .worm-actions{gap:7px}
- .worm-actions button{min-height:44px;padding:8px;font-size:10px!important}
- .worm-panel h1{font-size:clamp(25px,7.8vw,38px)}
-}
-@media(max-height:510px) and (orientation:landscape){
- .worm-panel{padding:12px!important}
- .worm-actions{gap:6px;margin-top:9px}
- .worm-actions button{min-height:37px}
-}
-
 /* SKIN DESIGNER */
 /* Infinity Space / Cosmic Worms: shared neutral visual system and segmented skin studio */
 .ws-overlay,.ws-overlay *{box-sizing:border-box}
@@ -687,59 +614,6 @@ body.worm-death-replay #worm-hud{transition:opacity .85s ease}
  .ws-footer button{min-height:33px;padding:6px}
 }
 @media(prefers-reduced-motion:reduce){.ws-overlay *, .ws-overlay *::before,.ws-overlay *::after{transition:none!important;animation:none!important}}
-/* CLASSIC V15.3 UI / restored from the supplied legacy build.
-   Worm skins, arena food and HUD danger colors remain gameplay information. */
-.worm-shade{background:#050313d9!important;backdrop-filter:blur(9px)!important}
-.worm-shade .worm-panel{background:linear-gradient(155deg,#25193afa,#100c22fb)!important;
- border:1px solid #7655ab!important;border-bottom:5px solid #412a75!important;border-radius:8px!important;
- box-shadow:inset 0 1px #ffffff18,0 23px 85px #000b!important;color:#f8f3ff!important}
-.worm-shade .worm-eyebrow{color:#bd9eff!important}
-.worm-shade .worm-panel :is(h1,h2){color:#faf6ff!important;letter-spacing:-.03em!important}
-.worm-shade .worm-actions button,
-.worm-shade .worm-settings-panel button:not(.worm-skin-card){
- background:linear-gradient(180deg,#30234a,#19112c)!important;
- border:1px solid #7859aa!important;border-bottom:4px solid #442a74!important;
- border-radius:6px!important;color:#ede3ff!important;
- box-shadow:inset 0 1px #ffffff17,0 5px 12px #0006!important;font-weight:900!important}
-.worm-shade .worm-actions .primary{
- background:linear-gradient(180deg,#815af3,#4d22c6)!important;border:2px solid #b8a1ff!important;
- border-bottom:5px solid #301174!important;color:white!important;
- box-shadow:inset 0 1px #ffffff31,0 5px 0 #18093b!important}
-.ws-dialog{background:linear-gradient(155deg,#221735,#110c23)!important;
- border:1px solid #7b5bad!important;border-bottom:5px solid #412a71!important;border-radius:8px!important;
- box-shadow:0 25px 90px #000c!important}
-.ws-header,.ws-footer{background:#151027!important;border-color:#503a78!important}
-.ws-section{border-color:#4c3873!important}
-.ws-preset{background:linear-gradient(155deg,#281e42,#171127)!important;
- border:1px solid #68508c!important;border-bottom:3px solid #3c2a60!important;
- border-radius:6px!important;color:#f0e6ff!important}
-.ws-preset.selected{background:linear-gradient(155deg,#503281,#25143f)!important;border-color:#c2a1ff!important}
-.ws-footer button{background:linear-gradient(180deg,#302048,#19112e)!important;
- border:1px solid #7656a7!important;border-bottom:3px solid #43296f!important;
- border-radius:6px!important;color:#f2e9ff!important}
-.ws-footer .ws-done{background:linear-gradient(180deg,#835af3,#4d22c6)!important;
- border-color:#b69eff!important;border-bottom-color:#351478!important;color:white!important}
-@media(hover:hover) and (pointer:fine){
- .worm-shade .worm-actions button:not(:disabled):hover,
- .worm-shade .worm-settings-panel button:not(.worm-skin-card):not(:disabled):hover,
- .ws-footer button:not(:disabled):hover,.ws-preset:not(:disabled):hover{
-  border-color:#d4bfff!important;box-shadow:0 0 19px #9970f788,0 6px 14px #0009!important;
-  filter:brightness(1.12)!important;transform:translateY(-2px)!important}
-}
-
-/* Settings layout and saturated cosmetic controls. */
-.worm-settings-panel{width:min(620px,calc(100vw - 28px))!important;max-height:min(85dvh,780px);margin:auto!important;box-sizing:border-box;}
-.worm-settings-panel :is(input[type=range],input[type=checkbox]){accent-color:#b357ff!important;}
-.worm-shade .worm-panel :is(button,input):focus-visible,.ws-overlay :is(button,input):focus-visible{outline:2px solid #ffd04b!important;outline-offset:3px;box-shadow:0 0 0 5px #ffba3828!important;}
-.worm-shade .worm-actions button:hover{border-color:#ffbc48!important;box-shadow:0 0 22px #f77b4266!important;}
-/* Override legacy high-specificity purple hover on the save-and-exit control. */
-.worm-shade .worm-settings-panel .worm-actions button#worm-settings-back{--worm-accent:#ffbc48!important;}
-@media(hover:hover) and (pointer:fine){
- .worm-shade .worm-settings-panel .worm-actions button#worm-settings-back:not(:disabled):hover{
-  border-color:#ffbc48!important;border-top-color:#ffbc48!important;
-  box-shadow:0 0 22px #f77b4266,0 6px 14px #0009!important;
- }
-}
 .ws-head-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0;}
 .ws-head-choice{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:12px 6px;color:#fff;border:1px solid #71548f;border-radius:10px;background:#20152f;cursor:pointer;font:700 12px system-ui;}
 .ws-head-choice.selected{border-color:#ffca51;background:#382349;box-shadow:0 0 16px #fa8d4645;}

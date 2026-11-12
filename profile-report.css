@@ -143,7 +143,7 @@ body.ui-v15 #screen-mode-achievements .br-ach-row[data-rarity="mythic"]{--rarity
 .infinity-stats-overlay .infinity-stats-section{min-width:0;}
 .infinity-stats-overlay .infinity-stats-section h3{
  margin:0 0 8px;padding:0 0 11px;border-bottom:2px solid #644787;
- font-size:12px;letter-spacing:.075em;font-weight:950;color:#c9b1f0;
+ font-size:clamp(14px,.94vw,18px);letter-spacing:.075em;font-weight:950;color:#c9b1f0;
 }
 .infinity-stats-overlay .infinity-stats-rows{display:flex;flex-direction:column;min-width:0;}
 .infinity-stats-overlay .infinity-stats-row{
@@ -151,11 +151,11 @@ body.ui-v15 #screen-mode-achievements .br-ach-row[data-rarity="mythic"]{--rarity
  padding:12px 2px;border-bottom:1px solid #30243f;min-width:0;
 }
 .infinity-stats-overlay .infinity-stats-row>span{
- min-width:0;font-size:clamp(11px,.8vw,14px);color:#b8acc8;line-height:1.4;
+ min-width:0;font-size:clamp(13px,.89vw,16px);color:#c7b9d9;line-height:1.4;
 }
 .infinity-stats-overlay .infinity-stats-row>strong{
  flex:0 0 auto;text-align:right;color:#f1e8ff;font-weight:900;
- font-size:clamp(13px,1vw,18px);font-variant-numeric:tabular-nums;
+ font-size:clamp(15px,1.05vw,20px);font-variant-numeric:tabular-nums;
  max-width:52%;overflow-wrap:anywhere;
 }
 /* Main-menu header stays uncluttered: rewards, roulette and profile are
@@ -163,14 +163,42 @@ body.ui-v15 #screen-mode-achievements .br-ach-row[data-rarity="mythic"]{--rarity
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top>.hub-story-quick{
  display:none!important;
 }
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
- grid-template-columns:repeat(3,minmax(0,1fr))!important;
- width:min(775px,100%)!important;max-width:100%!important;
- gap:clamp(4px,.6vw,8px) clamp(5px,.8vw,10px)!important;
+/* Desktop shortcut dock: nine readable actions, no 77px stacked letters.
+   Mobile intentionally retains its three-column grid. */
+@media(min-width:801px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
+  display:flex!important;flex-wrap:nowrap!important;
+  width:min(1200px,calc(100vw - 54px))!important;
+  max-width:calc(100vw - 54px)!important;
+  gap:clamp(5px,.62vw,12px)!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-story-shortcut{
+  flex:1 1 0!important;box-sizing:border-box!important;
+  width:auto!important;max-width:none!important;min-width:0!important;
+  height:64px!important;min-height:64px!important;
+  padding:8px 6px!important;gap:5px!important;
+  display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:center!important;
+  border-bottom-width:3px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut-label{
+  max-width:100%!important;white-space:nowrap!important;
+  word-break:normal!important;overflow-wrap:normal!important;
+  font-size:clamp(10px,.83vw,14px)!important;line-height:1.15!important;
+  text-align:center!important;overflow:hidden!important;text-overflow:ellipsis!important;
+ }
 }
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-story-shortcut[data-shortcut]{
- box-sizing:border-box!important;min-width:0!important;max-width:none!important;
- border-bottom-width:3px!important;
+@media(min-width:2000px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
+  width:min(1540px,calc(100vw - 120px))!important;
+  max-width:calc(100vw - 120px)!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-story-shortcut{
+  height:76px!important;min-height:76px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut-label{
+  font-size:16px!important;
+ }
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-profile-chip{
  display:flex!important;justify-content:center!important;align-items:center!important;

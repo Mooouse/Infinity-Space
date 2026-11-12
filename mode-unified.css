@@ -144,8 +144,9 @@
  --mode-action:#ff1744;border-left-color:#ff1744!important;
 }
 .worm-actions button#worm-settings-back{--mode-action:#ffbc48;border-left-color:#ffbc48!important}
-.worm-shade .worm-actions button#worm-exit,
 .worm-shade .worm-actions button#worm-settings-back{grid-column:1/-1!important}
+/* Five pause buttons: balanced 1+2+2 grid, not an empty cell. */
+.worm-shade .worm-pause-panel .worm-actions button#worm-exit{grid-column:auto!important}
 @media(hover:hover) and (pointer:fine){
  .worm-actions button:not(:disabled):hover,
  .arena-dialog-actions button:not(:disabled):hover,
@@ -193,7 +194,10 @@
 .worm-brand small{color:#c2acdf!important;font-size:clamp(10px,.73vw,13px)!important;letter-spacing:.04em!important}
 .worm-metric{min-width:clamp(92px,7vw,145px)!important;padding:10px 16px!important}
 .worm-metric small{font-size:clamp(9px,.68vw,12px)!important}
-.worm-metric strong{font-size:clamp(21px,1.55vw,30px)!important;color:#fff!important}
+.worm-metric strong{font-size:clamp(21px,1.55vw,30px)!important}
+.worm-metric:nth-child(1) strong{color:#f7f8ff!important}
+.worm-metric:nth-child(2) strong{color:#ffe500!important}
+.worm-metric:nth-child(3) strong{color:#e0e5f8!important}
 .worm-leaders{width:clamp(180px,13vw,230px)!important}
 .worm-leaders .worm-rank{font-size:clamp(11px,.76vw,14px)!important}
 .worm-radar{padding:10px!important}
@@ -243,13 +247,13 @@
 }
 /* Seamless capsule thumbnail for every premade cosmic skin. */
 .ws-overlay .ws-dialog{
- width:min(1030px,calc(100vw - 18px))!important;
+ width:min(1180px,calc(100vw - 28px))!important;
  background:#160e2a!important;
 }
-.ws-overlay .ws-presets{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:10px!important}
+.ws-overlay .ws-presets{grid-template-columns:repeat(8,minmax(0,1fr))!important;gap:8px!important}
 .ws-overlay .ws-preset{
- min-height:96px!important;background:#211534!important;
- padding:13px 10px!important;
+ min-height:78px!important;background:#211534!important;
+ padding:8px 5px!important;
  border:2px solid #604682!important;
  border-bottom:4px solid #35224f!important;
  border-radius:7px!important;font-size:12px!important;
