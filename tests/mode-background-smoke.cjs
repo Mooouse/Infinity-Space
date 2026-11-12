@@ -71,13 +71,13 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
    'Competitive mode menu must hide unrelated universe actions');
   assert.equal(await page.locator('.hub-story-shortcut[data-shortcut="map"]').isVisible(),false,
    'Universe map is hidden in competitive mode');
-  await page.locator('.hub-mode-dots button').first().click();
+  await page.locator('.hub-mode-dots [data-mode="endless"]').click();
   await page.waitForFunction(()=>window.SpaceMenuSceneMode===null,null,{timeout:5000});
   assert.deepEqual(await visibleShortcuts(),
    ['map','evolution','achievements','music','bestiary','settings'],
    'Endless Space restores its relevant actions');
   console.log('PASS: visible navigation, campaign-only map, and smooth mode switching');
-  await page.locator('.hub-mode-dots button').nth(5).click();
+  await page.locator('.hub-mode-dots [data-mode="race"]').click();
   await page.locator('.hub-mode-story-play').click();
   await page.waitForURL(/cosmic-arena\.html\?mode=race/,{timeout:15000});
   await page.locator('#hud:not([hidden])').waitFor({state:'visible',timeout:12000});
