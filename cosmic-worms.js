@@ -1371,6 +1371,14 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
     game.player.foodEaten++;updateUI();},
   setHeading:angle=>{input.mouseMoved=false;input.keys.clear();input.touchAngle=null;
     input.stickPower=0;game.player.target=Number(angle);},
+  // Fixed-step simulation for deterministic movement assertions in slow CI.
+  // This verifies actual bot/player physics independently of paint FPS.
+  advancePhysics:seconds=>{
+   const ticks=Math.max(0,Math.min(240,Math.round(Number(seconds)*60)));
+   if(game.state!=='playing')return {ticks:0,time:game.time};
+   for(let i=0;i<ticks&&game.state==='playing';i++)simulate(1/60);
+   return {ticks,time:game.time};
+  },
   // Stable UI smoke tests must not randomly die while inspecting controls.
   testProtection:seconds=>{game.player.invulnerable=clamp(Number(seconds)||30,0,120);},
   forceDeath:()=>{game.player.invulnerable=0;kill(game.player,null,'body');},

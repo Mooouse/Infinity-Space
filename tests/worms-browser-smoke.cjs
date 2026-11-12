@@ -106,7 +106,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
      assert.ok(styles[role]>=2,'Missing realistic bot behavior: '+role);
     }
     const botsBefore=await page.evaluate(()=>window.InfinityWormsQA.bots());
-    await page.waitForTimeout(550);
+    await page.evaluate(()=>window.InfinityWormsQA.advancePhysics(.55));
     const botsAfter=await page.evaluate(()=>window.InfinityWormsQA.bots());
     const beforeById=new Map(botsBefore.map(b=>[b.id,b]));
     const afkBots=botsAfter.filter(b=>b.persona==='afk'&&b.alive&&beforeById.get(b.id)?.alive);
@@ -125,16 +125,16 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     a=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
     const targetAngle=a.angle+Math.PI;
     await page.evaluate(v=>window.InfinityWormsQA.setHeading(v),targetAngle);
-    await page.waitForTimeout(80);
+    await page.evaluate(()=>window.InfinityWormsQA.advancePhysics(.08));
     const turning=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
     const distanceToTarget=v=>Math.abs(Math.atan2(Math.sin(targetAngle-v.angle),Math.cos(targetAngle-v.angle)));
     assert.ok(distanceToTarget(turning)>2.55,'180-degree turn must follow a real curved path rather than snapping');
     assert.ok(distanceToTarget(turning)<Math.PI-.08,'Worm must start following the steering input');
-    await page.waitForTimeout(470);
+    await page.evaluate(()=>window.InfinityWormsQA.advancePhysics(.47));
     const halfway=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
     assert.ok(distanceToTarget(halfway)>.55 && distanceToTarget(halfway)<2.5,
      'Turn must progress smoothly through a substantial radius');
-    await page.waitForTimeout(800);
+    await page.evaluate(()=>window.InfinityWormsQA.advancePhysics(.8));
     const completed=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
     assert.ok(distanceToTarget(completed)<.16,'Worm must finish its turn instead of drifting endlessly');
     assert.ok(a.length>=18,'Worm begins with an actual segmented body');
