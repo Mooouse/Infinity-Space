@@ -10,6 +10,7 @@ on:
       - 'cosmic-worms.html'
       - 'cosmic-worms.js'
       - 'ui-worms.css'
+      - 'unified-space.css'
       - 'ui-app.css'
       - 'ui-v15*.js'
       - 'ui-arena.css'
