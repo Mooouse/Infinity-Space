@@ -1,0 +1,48 @@
+name: Pre-merge game integration tests
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: premerge-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check scripts, data and game invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in game.js menu-hub.js cosmic-worms.js cosmic-arena.js platform.js space-meta.js; do
+            test -s "$file"
+            node --check "$file"
+          done
+          node tests/reward-navigation.cjs
+          node tests/meta.cjs
+          node tests/regressions.cjs
+          node tests/music.cjs
+          node tests/joystick.cjs
+          node tests/mobile-controls.cjs
+      - name: Install and exercise real Chromium before merging to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --silent --no-audit --no-fund --prefix "$RUNNER_TEMP/premerge-playwright" playwright@1.56.1
+          export PLAYWRIGHT_BROWSERS_PATH="$RUNNER_TEMP/premerge-chromium"
+          "$RUNNER_TEMP/premerge-playwright/node_modules/.bin/playwright" install chromium --only-shell
+          python3 -m http.server 8765 --bind 127.0.0.1 > "$RUNNER_TEMP/premerge-http.log" 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          export NODE_PATH="$RUNNER_TEMP/premerge-playwright/node_modules"
+          export INFINITI_SMOKE_URL="http://127.0.0.1:8765"
+          timeout 220 node tests/browser-smoke.cjs
+          timeout 180 node tests/arcade-browser-smoke.cjs
+          timeout 180 node tests/mode-background-smoke.cjs
+          timeout 300 node tests/menu-layout-audit.cjs
+          timeout 150 node tests/worms-browser-smoke.cjs
+          timeout 180 node tests/profile-live-demo-smoke.cjs
