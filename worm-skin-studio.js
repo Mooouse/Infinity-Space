@@ -61,8 +61,9 @@ function open({onChange,onClose}={}){
  root.innerHTML='<section class="ws-dialog"><header class="ws-header"><div><span class="ws-eyebrow">INFINITY SPACE / COSMIC WORMS</span><h2 class="ws-title"></h2><p class="ws-desc"></p></div><button class="ws-x" type="button" aria-label=""></button></header>'+
  '<div class="ws-body"><div class="ws-live-preview"><div class="ws-live-caption"><strong class="ws-preview-title"></strong><span class="ws-preview-hint"></span></div><canvas class="ws-preview-canvas" width="920" height="220" aria-label="Animated worm appearance preview"></canvas></div><h3 class="ws-presets-title"></h3><div class="ws-presets"></div>'+
  '<div class="ws-section"><h3 class="ws-head-heading"></h3><div class="ws-head-options"></div></div>'+
+ '<details class="ws-advanced"><summary class="ws-advanced-summary"></summary>'+
  '<div class="ws-section"><div class="ws-part-head"><h3 class="ws-segments-title"></h3><span class="ws-indicator"></span></div><p class="ws-tip"></p><div class="ws-segments" role="group"></div></div>'+
- '<div class="ws-section"><h3 class="ws-palette-title"></h3><div class="ws-palette"></div><label class="ws-custom-label"><span class="ws-custom-title"></span><input type="color" class="ws-custom" value="#ff1744"></label></div>'+
+ '<div class="ws-section"><h3 class="ws-palette-title"></h3><div class="ws-palette"></div><label class="ws-custom-label"><span class="ws-custom-title"></span><input type="color" class="ws-custom" value="#ff1744"></label></div></details>'+
  '</div><footer class="ws-footer"><button class="ws-reset" type="button"></button><button class="ws-stripes" type="button"></button><button class="ws-fill" type="button"></button><button class="ws-done" type="button"></button></footer></section>';
  const $=s=>root.querySelector(s);
  $('.ws-title').textContent=t.title;$('.ws-desc').textContent=t.desc;
@@ -73,6 +74,7 @@ function open({onChange,onClose}={}){
  $('.ws-tip').textContent=t.tip;$('.ws-palette-title').textContent=t.palette;
  $('.ws-custom-title').textContent=t.custom;
  $('.ws-head-heading').textContent=lang==='ru'?'Форма головы':lang==='es'?'Forma de cabeza':'Head shape';
+ $('.ws-advanced-summary').textContent=lang==='ru'?'ТОЧНАЯ НАСТРОЙКА ЦВЕТОВ · 64 СЕГМЕНТА':lang==='es'?'COLORES PERSONALIZADOS · 64 SEGMENTOS':'ADVANCED COLORS · 64 SEGMENTS';
  const headLabels={classic:['Классическая','Classic','Clásica'],blackhole:['Чёрная дыра','Black Hole','Agujero negro'],pulsar:['Пульсар','Pulsar','Púlsar'],comet:['Комета','Comet','Cometa'],crystal:['Кристалл','Crystal','Cristal'],eclipse:['Затмение','Eclipse','Eclipse']};
  for(const id of HEADS){const b=document.createElement('button');b.type='button';b.className='ws-head-choice';b.dataset.head=id;b.innerHTML='<span class="ws-head-symbol" aria-hidden="true"></span><span></span>';b.lastChild.textContent=headLabels[id][lang==='ru'?0:lang==='es'?2:1];b.onclick=()=>{data.head=id;persist();root.querySelectorAll('.ws-head-choice').forEach(x=>x.classList.toggle('selected',x.dataset.head===id))};$('.ws-head-options').append(b)}
  root.querySelectorAll('.ws-head-choice').forEach(x=>x.classList.toggle('selected',x.dataset.head===data.head));
@@ -104,10 +106,12 @@ function open({onChange,onClose}={}){
   PRESETS.forEach(p=>{
    const item=document.createElement('button');item.type='button';
    item.className='ws-preset'+(data.skin===p[0]&&!data.customEnabled?' selected':'');
+   item.dataset.skin=p[0];
    item.setAttribute('aria-pressed',String(data.skin===p[0]&&!data.customEnabled));
-   const beads=document.createElement('span');beads.className='ws-preset-beads';
-   for(const color of p[4].slice(0,4)){
-    const bead=document.createElement('i');bead.style.background=color;beads.append(bead);
+   const beads=document.createElement('span');beads.className='ws-preset-beads ws-preset-worm';
+   for(let bi=0;bi<12;bi++){
+    const color=p[4][bi%p[4].length];
+    const bead=document.createElement('i');bead.style.background=color;bead.style.setProperty('--bead-i',String((bi%7)-3));beads.append(bead);
    }
    const label=document.createElement('span');label.textContent=p[lang==='ru'?2:lang==='es'?3:1];
    item.append(beads,label);
