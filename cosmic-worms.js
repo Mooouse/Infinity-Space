@@ -1165,7 +1165,7 @@ function updateCamera(){
 function paint(t){
  ctx.setTransform(dpr,0,0,dpr,0,0);
  backdrop(t);
- if(!game.player)return;
+ const p=game.player;if(!p)return;
  updateCamera();
  ctx.save();ctx.translate(vw*.5,vh*.5);ctx.scale(camera.zoom,camera.zoom);ctx.translate(-camera.x,-camera.y);
  ctx.strokeStyle='#8555d492';ctx.lineWidth=6;ctx.shadowColor='#8a4eea';ctx.shadowBlur=19;

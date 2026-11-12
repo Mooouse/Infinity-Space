@@ -46,6 +46,7 @@ jobs:
         run: |
           python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/infinity-ui-audit-http.log 2>&1 &
           sleep 2
+          timeout 50 node tests/renderer-startup-smoke.cjs
           timeout 300 node tests/menu-layout-audit.cjs
           timeout 150 node tests/mode-achievements-smoke.cjs
           timeout 600 node tests/worms-browser-smoke.cjs
