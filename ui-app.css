@@ -8330,3 +8330,165 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut-ic
   transition:none!important;
  }
 }
+
+
+
+/* MODE HERO v3.92 — small product mark at the left, large selected MODE
+   centered above Play. The game name is no longer the central headline. */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-reference-brand{
+ position:absolute!important;z-index:18!important;grid-area:auto!important;
+ left:clamp(16px,3.2vw,84px)!important;top:clamp(16px,2.8vh,56px)!important;
+ margin:0!important;padding:0!important;
+ width:max-content!important;max-width:26vw!important;
+ font-size:clamp(26px,1.95vw,51px)!important;line-height:.88!important;
+ letter-spacing:-.069em!important;text-align:left!important;
+ pointer-events:none!important;text-shadow:0 5px 18px #000c!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-reference-brand em{
+ display:block!important;font-style:normal;color:#ab8aff!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
+ font:950 clamp(42px,3.8vw,85px)/1.05 'Inter Display','Inter',system-ui,sans-serif!important;
+ letter-spacing:-.051em!important;color:#faf7ff!important;
+ max-width:100%!important;margin:0 auto clamp(10px,1.3vh,20px)!important;
+ text-align:center!important;text-wrap:balance!important;overflow-wrap:normal!important;
+ word-break:normal!important;text-shadow:0 5px 23px #000d!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nickname[hidden],
+body.ui-v15 #screen-menu.hub-main-carousel .hub-profile-chip[hidden]{display:none!important}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nickname:not([hidden]){
+ width:min(420px,100%)!important;display:flex!important;
+ flex-direction:column!important;align-items:center!important;justify-content:center!important;
+ gap:5px!important;margin:clamp(9px,1.6vh,19px) auto clamp(11px,1.4vh,18px)!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nickname label{
+ color:#d1baff!important;letter-spacing:.14em!important;
+ font-size:clamp(10px,.72vw,15px)!important;font-weight:950!important;text-align:center!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nickname input{
+ box-sizing:border-box!important;display:block!important;width:100%!important;
+ min-height:clamp(45px,3vw,64px)!important;padding:10px 15px!important;
+ border:1px solid #8462b9!important;border-bottom:4px solid #482778!important;
+ border-radius:6px!important;background:linear-gradient(155deg,#291c43,#110c23)!important;
+ box-shadow:inset 0 2px 9px #0008,0 7px 16px #0007!important;
+ font:850 clamp(16px,1.16vw,24px)/1.2 'Inter Display','Inter',system-ui,sans-serif!important;
+ color:#f9f2ff!important;letter-spacing:.03em!important;text-align:center!important;
+ outline:none!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nickname input::placeholder{
+ color:#9387ad!important;opacity:1;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nickname input:focus-visible{
+ border-color:#d8bdff!important;outline:2px solid #9d70f59e!important;
+ outline-offset:1px!important;box-shadow:inset 0 1px 6px #0005,0 0 19px #a075ff88!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nickname-status{
+ font-size:clamp(10px,.7vw,14px)!important;line-height:1.2!important;
+ color:#d9c7ff!important;
+}
+/* Persistent achievements for each competitive mode. The six unique goals
+   read the existing per-mode match statistics; the sandbox keeps its own list. */
+.infinity-mode-achievements-panel{
+ width:min(920px,95vw)!important;max-width:95vw!important;
+ max-height:min(91dvh,1000px)!important;min-height:0!important;
+ overflow:hidden!important;display:flex!important;flex-direction:column!important;
+ gap:16px!important;background:linear-gradient(155deg,#241839f8,#100b21fa)!important;
+ border:1px solid #805bac!important;border-bottom:5px solid #412a75!important;
+ border-radius:8px!important;box-shadow:0 25px 85px #000c!important;
+}
+.infinity-mode-achievements-panel .infinity-panel-top{flex:0 0 auto!important}
+.infinity-mode-achievements-summary{
+ display:flex;align-items:center;gap:14px;min-width:0;
+ color:#c7b8df;font-size:clamp(13px,.95vw,18px);
+}
+.infinity-mode-achievements-summary strong{
+ font:950 clamp(27px,1.9vw,40px)/1.1 'Inter Display','Inter',system-ui,sans-serif;
+ color:#fbf5ff;font-variant-numeric:tabular-nums;
+}
+.infinity-mode-achievements-list{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;
+ min-height:0;overflow-y:auto;overscroll-behavior:contain;
+ scrollbar-color:#7654a5 #150f29;padding:2px 6px 8px 0;
+}
+.infinity-mode-achievement{
+ --rarity:#b6a7d9;display:grid;grid-template-columns:36px minmax(0,1fr) auto;
+ align-items:center;gap:12px;min-width:0;padding:13px 12px;min-height:100px;
+ background:linear-gradient(155deg,#2b1c48,#160e2b);
+ border:1px solid #594479;border-left:3px solid var(--rarity);
+ border-bottom:3px solid #3d285b;border-radius:6px;
+ box-shadow:inset 0 1px #ffffff10,0 5px 12px #0005;color:#f3ebff;
+}
+.infinity-mode-achievement.unlocked{
+ border-color:color-mix(in srgb,var(--rarity) 70%,#594479);
+ border-left-color:var(--rarity);
+ box-shadow:0 0 14px color-mix(in srgb,var(--rarity) 18%,transparent);
+}
+.infinity-mode-achievement-insignia{
+ display:grid;place-items:center;width:34px;height:34px;font-size:23px;
+ border:1px solid var(--rarity);border-radius:5px;
+ background:#110b25;color:var(--rarity);
+}
+.infinity-mode-achievement-copy{min-width:0;display:flex;flex-direction:column;gap:6px}
+.infinity-mode-achievement-copy strong{font-size:clamp(13px,.86vw,17px);color:#faf6ff;font-weight:900}
+.infinity-mode-achievement-copy small{font-size:clamp(11px,.73vw,14px);line-height:1.35;color:#c1b1d9}
+.infinity-mode-achievement-track{
+ height:6px;border:1px solid #503772;background:#150e29;border-radius:3px;overflow:hidden;
+}
+.infinity-mode-achievement-track i{
+ display:block;height:100%;background:var(--rarity);
+ box-shadow:0 0 9px var(--rarity);border-radius:2px;
+}
+.infinity-mode-achievement>b{font-size:clamp(12px,.8vw,17px);color:#c5b3e0;font-variant-numeric:tabular-nums}
+@media(min-width:2000px) and (min-height:1000px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-reference-brand{
+  font-size:clamp(39px,2vw,57px)!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
+  font-size:clamp(72px,3.55vw,94px)!important;
+ }
+}
+@media(min-width:801px) and (max-height:760px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
+  font-size:clamp(36px,3.2vw,62px)!important;margin-bottom:8px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nickname:not([hidden]){
+  margin:6px auto 9px!important;gap:3px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nickname input{
+  min-height:42px!important;
+ }
+}
+@media(max-width:800px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-reference-brand{
+  top:max(10px,env(safe-area-inset-top))!important;left:12px!important;
+  max-width:37vw!important;font-size:clamp(19px,4.3vw,31px)!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
+  font-size:clamp(29px,7.4vw,48px)!important;line-height:1.05!important;margin-bottom:7px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nickname:not([hidden]){
+  width:min(340px,100%)!important;margin:6px auto 8px!important;gap:3px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nickname label{font-size:9px!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nickname input{
+  font-size:14px!important;min-height:40px!important;padding:6px 10px!important;
+  border-bottom-width:3px!important;
+ }
+ .infinity-mode-achievements-panel{padding:14px!important;gap:12px!important}
+ .infinity-mode-achievements-list{grid-template-columns:minmax(0,1fr);gap:9px}
+ .infinity-mode-achievement{min-height:82px;padding:10px 9px;gap:10px}
+}
+@media(max-width:390px) and (max-height:650px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-reference-brand{
+  font-size:17px!important;top:8px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
+  font-size:clamp(26px,7vw,34px)!important;margin-bottom:5px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nickname:not([hidden]){
+  margin:3px auto 6px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nickname input{
+  min-height:36px!important;
+ }
+}
