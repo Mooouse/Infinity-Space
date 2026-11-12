@@ -788,197 +788,106 @@ const SKIN_NEBULAE={
  royal:['#ffe25a','#8b5cff','#ff76d1'],
  voidbloom:['#a72dff','#ff56b5','#4b21b6']
 };
-function drawCosmicInterior(w,t,r){
+/* Seamless illuminated worm body: no bead/ring segments, even when a
+   custom multi-color gradient is selected. All 16 cosmic skins use this. */
+function wormBodyPath(w){
+ const nodes=[w,...w.segments],length=nodes.length;
+ const stride=Math.max(1,Math.ceil(length/440));
+ const points=[nodes[0]];
+ for(let i=stride;i<length-1;i+=stride)points.push(nodes[i]);
+ points.push(nodes[length-1]);
+ const path=new Path2D();
+ path.moveTo(points[0].x,points[0].y);
+ for(let i=1;i<points.length-1;i++){
+  const p=points[i],q=points[i+1];
+  path.quadraticCurveTo(p.x,p.y,(p.x+q.x)*.5,(p.y+q.y)*.5);
+ }
+ path.lineTo(points[points.length-1].x,points[points.length-1].y);
+ return {path,points};
+}
+function drawCosmicInterior(w,t,r,detail){
  const nodes=[w,...w.segments],n=nodes.length;
  if(n<4)return;
  const theme=SKIN_NEBULAE[w.skin]||SKIN_NEBULAE.nebula;
- // Build a real filled silhouette, not a floating star layer: every nebula,
- // bright star and comet is clipped INSIDE the curving worm's body.
- const normals=new Array(n),shape=new Path2D(),half=r*.76;
- for(let i=0;i<n;i++){
-  const a=nodes[Math.max(0,i-1)],b=nodes[Math.min(n-1,i+1)];
+ const stride=Math.max(1,Math.ceil(n/(w.human?260:145)));
+ const sampled=[];
+ for(let i=0;i<n;i+=stride)sampled.push(nodes[i]);
+ if(sampled[sampled.length-1]!==nodes[n-1])sampled.push(nodes[n-1]);
+ const count=sampled.length,normal=new Array(count);
+ const shape=new Path2D(),half=r*.81;
+ for(let i=0;i<count;i++){
+  const a=sampled[Math.max(0,i-1)],b=sampled[Math.min(count-1,i+1)];
   const dx=a.x-b.x,dy=a.y-b.y,l=Math.hypot(dx,dy)||1;
-  normals[i]={x:-dy/l,y:dx/l};
+  normal[i]={x:-dy/l,y:dx/l};
  }
- for(let i=0;i<n;i++){
-  const p=nodes[i],q=normals[i];
+ for(let i=0;i<count;i++){
+  const p=sampled[i],q=normal[i];
   if(i===0)shape.moveTo(p.x+q.x*half,p.y+q.y*half);
   else shape.lineTo(p.x+q.x*half,p.y+q.y*half);
  }
- for(let i=n-1;i>=0;i--){
-  const p=nodes[i],q=normals[i];shape.lineTo(p.x-q.x*half,p.y-q.y*half);
+ for(let i=count-1;i>=0;i--){
+  const p=sampled[i],q=normal[i];
+  shape.lineTo(p.x-q.x*half,p.y-q.y*half);
  }
  shape.closePath();
  ctx.save();ctx.clip(shape);
- ctx.globalAlpha=.84;
- ctx.fillStyle=w.skin==='horizon'?'#070614':'#071026';
+ ctx.globalAlpha=1;
+ ctx.fillStyle=w.skin==='horizon'||w.skin==='eclipse'?'#04040e':'#070d23';
  ctx.fill(shape);
- ctx.globalAlpha=1;
- // Colour clouds remain anchored to segments as the body curves.
- for(let i=3;i<n;i+=17){
-  const p=nodes[i],q=normals[i],phase=t*.85+i*.17+w.id;
-  const off=Math.sin(phase)*half*.43;
-  const size=r*(1.2+.25*Math.sin(i*1.38));
-  const grad=ctx.createRadialGradient(p.x+off*q.x,p.y+off*q.y,0,
+ // Diffuse colored nebula clouds move across the seamless body.
+ const cloudStep=Math.max(5,Math.ceil(count/(w.human?28:13)));
+ for(let i=3;i<count;i+=cloudStep){
+  const p=sampled[i],q=normal[i];
+  const phase=t*.65+i*.21+w.id*1.7;
+  const off=Math.sin(phase)*half*.39;
+  const size=r*(1.17+.30*Math.sin(i*1.38));
+  const gradient=ctx.createRadialGradient(p.x+off*q.x,p.y+off*q.y,0,
    p.x+off*q.x,p.y+off*q.y,size);
-  const col=theme[Math.floor(i/17+w.id)%theme.length];
-  grad.addColorStop(0,col+'aa');grad.addColorStop(.42,col+'54');grad.addColorStop(1,col+'00');
-  ctx.fillStyle=grad;ctx.fillRect(p.x-size*1.4,p.y-size*1.4,size*2.8,size*2.8);
- }
- // Compact moving star clusters: seed is deterministic for stable animation.
- for(let i=2;i<n-1;i+=3){
-  const p=nodes[i],q=normals[i],seed=i*13.73+w.id*27.19;
-  const side=(Math.sin(seed*1.71+t*(.28+(w.id%3)*.09))*.69)*half;
-  const x=p.x+side*q.x,y=p.y+side*q.y;
-  const twinkle=.5+.5*Math.sin(t*3.3+seed);
-  const size=(i%11===0?2.2:1.15)+twinkle*.85;
-  ctx.fillStyle=i%7===0?theme[2]:'#fff8ec';
-  ctx.globalAlpha=.34+twinkle*.64;
-  ctx.beginPath();ctx.arc(x,y,size,0,TAU);ctx.fill();
-  if(i%13===0){
-   ctx.strokeStyle=theme[2];ctx.lineWidth=.9;
-   ctx.beginPath();ctx.moveTo(x-size*2.5,y);ctx.lineTo(x+size*2.5,y);
-   ctx.moveTo(x,y-size*2.5);ctx.lineTo(x,y+size*2.5);ctx.stroke();
-  }
+  const color=theme[Math.floor(i/cloudStep+w.id)%theme.length];
+  gradient.addColorStop(0,color+'de');
+  gradient.addColorStop(.42,color+'73');
+  gradient.addColorStop(1,color+'00');
+  ctx.globalAlpha=.94;
+  ctx.fillStyle=gradient;
+  ctx.fillRect(p.x-size*1.4,p.y-size*1.4,size*2.8,size*2.8);
  }
  ctx.globalAlpha=1;
- // Small icy comets flow from tail towards the head along curved body nodes.
- const cometCount=w.human?4:2;
- for(let j=0;j<cometCount;j++){
-  const progress=((t*(6.1+j*1.22)+(j*.31)*n+w.id*7.4)%(n-12));
-  const index=Math.max(2,Math.min(n-11,Math.floor(n-4-progress)));
-  const head=nodes[index],trail=nodes[index+Math.min(10,Math.floor(n*.17))];
-  const gradient=ctx.createLinearGradient(trail.x,trail.y,head.x,head.y);
-  gradient.addColorStop(0,'#ffffff00');gradient.addColorStop(.5,theme[j%3]+'90');
-  gradient.addColorStop(1,'#ffffff');
-  ctx.strokeStyle=gradient;ctx.lineWidth=r*.13+(j%2)*.55;
-  ctx.lineCap='round';
-  ctx.beginPath();
-  for(let k=Math.min(n-1,index+8);k>=index;k--){
-   const p=nodes[k];if(k===Math.min(n-1,index+8))ctx.moveTo(p.x,p.y);
-   else ctx.lineTo(p.x,p.y);
+ if(detail){
+  const starStep=Math.max(2,Math.ceil(count/(w.human?110:50)));
+  for(let i=2;i<count-1;i+=starStep){
+   const p=sampled[i],q=normal[i],seed=i*13.73+w.id*27.19;
+   const side=Math.sin(seed*1.71+t*(.32+(w.id%3)*.08))*.65*half;
+   const x=p.x+side*q.x,y=p.y+side*q.y;
+   const twinkle=.55+.45*Math.sin(t*3.1+seed);
+   const size=(i%11===0?1.8:.98)+twinkle*.7;
+   ctx.fillStyle=i%7===0?theme[2]:'#fff8f0';
+   ctx.globalAlpha=.45+twinkle*.48;
+   ctx.beginPath();ctx.arc(x,y,size,0,TAU);ctx.fill();
+   if(i%13===0){
+    ctx.strokeStyle='#fff3df';ctx.lineWidth=.85;
+    ctx.beginPath();ctx.moveTo(x-size*3,y);ctx.lineTo(x+size*3,y);
+    ctx.moveTo(x,y-size*3);ctx.lineTo(x,y+size*3);ctx.stroke();
+   }
   }
-  ctx.stroke();
-  ctx.fillStyle='#ffffff';ctx.shadowBlur=options.glow?9:0;ctx.shadowColor=theme[j%3];
-  ctx.beginPath();ctx.arc(head.x,head.y,Math.max(1.6,r*.12),0,TAU);ctx.fill();ctx.shadowBlur=0;
- }
- ctx.restore();
-}
-
-
-/* Every skin has its own outline and materials, not just a new body colour. */
-function drawSkinGeometry(w,t,r){
- const ns=w.segments,p=w.pattern;
- ctx.save();ctx.lineJoin='round';ctx.lineCap='round';
- for(let i=4;i<ns.length-2;i+=p==='flare'||p==='meteor'?5:7){
-  const a=ns[i-2],b=ns[i+2],node=ns[i];
-  const angle=Math.atan2(a.y-b.y,a.x-b.x),pulse=Math.sin(t*2+i*.23+w.id*.4);
-  ctx.save();ctx.translate(node.x,node.y);ctx.rotate(angle);
-  ctx.lineWidth=Math.max(1.1,r*.1);
-  if(p==='aurora'||p==='flare'){
-   // Wings for Aurora, pointed flames for Solar Flare.
-   for(const side of [-1,1]){
-    ctx.fillStyle=p==='aurora'?(i%2?'#27ff40':'#ffe500'):(i%2?'#ff1744':'#ffe500');
-    ctx.beginPath();ctx.moveTo(-r*.6,side*r*.43);
-    if(p==='aurora')ctx.quadraticCurveTo(-r*.5,side*r*1.6,r*.62,side*r*(1.2+.17*pulse));
-    else ctx.lineTo(r*.3,side*r*(1.67+.14*pulse));
-    ctx.lineTo(r*.58,side*r*.41);ctx.closePath();ctx.fill();
-   }
-  }else if(p==='pulsar'||p==='horizon'||p==='eclipse'){
-   // Pulsar rings / glowing accretion halos.
-   ctx.strokeStyle=p==='pulsar'?(i%2?'#ffe500':'#fff'):p==='eclipse'?'#ff1744':'#9922ff';
-   ctx.lineWidth=r*(p==='pulsar'?.18:.14);
-   ctx.beginPath();ctx.ellipse(0,0,r*.4,r*1.2,0,0,TAU);ctx.stroke();
-   if(p==='eclipse'){
-    ctx.fillStyle='#05050d';ctx.beginPath();ctx.arc(0,0,r*.45,0,TAU);ctx.fill();
-    ctx.strokeStyle='#ffe500';ctx.lineWidth=r*.1;ctx.stroke();
-   }
-  }else if(p==='supernova'||p==='stardust'){
-   // Starbursts versus luminous golden pentagrams.
-   if(p==='stardust'){ctx.fillStyle='#1c103a';ctx.beginPath();ctx.arc(0,0,r*.7,0,TAU);ctx.fill()}
-   ctx.fillStyle=p==='stardust'?'#ffe500':i%2?'#ff1744':'#ffe500';
-   ctx.beginPath();
-   const count=p==='stardust'?10:16;
-   for(let j=0;j<count;j++){
-    const theta=j*TAU/count-PI/2,rad=j%2?r*.25:r*(p==='stardust'?.58:.98);
-    if(!j)ctx.moveTo(Math.cos(theta)*rad,Math.sin(theta)*rad);
-    else ctx.lineTo(Math.cos(theta)*rad,Math.sin(theta)*rad);
-   }
-   ctx.closePath();ctx.fill();
-  }else if(p==='comet'||p==='crystal'||p==='meteor'){
-   // Ice fins, diamond plates, jagged meteor armour.
-   ctx.fillStyle=p==='comet'?'#2860ff':p==='crystal'?(i%2?'#27ff40':'#2860ff'):'#ff1744';
-   ctx.strokeStyle=p==='meteor'?'#ffe500':'#f4f7ff';
-   ctx.beginPath();
-   if(p==='comet'){
-    const side=i%2?1:-1;
-    ctx.moveTo(-r*.52,side*r*.4);ctx.lineTo(-r*.14,side*r*1.65);
-    ctx.lineTo(r*.51,side*r*1.06);ctx.lineTo(r*.6,side*r*.39);
-   }else{
-    ctx.moveTo(-r*.85,0);ctx.lineTo(-r*.2,-r*1.06);
-    ctx.lineTo(r*.62,-r*.72);ctx.lineTo(r*.86,0);
-    ctx.lineTo(r*.25,r*1.03);ctx.lineTo(-r*.63,r*.68);
-   }
-   ctx.closePath();ctx.fill();ctx.stroke();
-   if(p==='meteor'){ctx.beginPath();ctx.moveTo(-r*.5,-r*.4);ctx.lineTo(r*.18,r*.16);ctx.lineTo(r*.54,-r*.29);ctx.stroke()}
-  }else if(p==='rift'){
-   // Charged angular fractures race along this worm's translucent shell.
-   ctx.strokeStyle=i%2?'#ff55bc':'#9a65ff';ctx.lineWidth=r*.15;
-   ctx.shadowColor=ctx.strokeStyle;ctx.shadowBlur=r*.45;
-   ctx.beginPath();ctx.moveTo(-r*.8,-r*.45);
-   ctx.lineTo(-r*.18,r*.25);ctx.lineTo(r*.15,-r*.67);
-   ctx.lineTo(r*.72,r*.4);ctx.stroke();
-   ctx.shadowBlur=0;
-  }else if(p==='dragon'){
-   // Alternating stellar horns and golden scale plates.
-   ctx.fillStyle=i%2?'#ff3b6a':'#ffcc39';
-   const side=i%2?1:-1;
-   ctx.beginPath();ctx.moveTo(-r*.5,side*r*.35);
-   ctx.lineTo(-r*.22,side*r*1.86);
-   ctx.quadraticCurveTo(r*.5,side*r*1.2,r*.67,side*r*.36);
-   ctx.closePath();ctx.fill();
-   ctx.strokeStyle='#ffe690';ctx.lineWidth=r*.11;
-   ctx.beginPath();ctx.moveTo(-r*.4,-r*.44);ctx.lineTo(r*.45,r*.45);ctx.stroke();
-  }else if(p==='royal'){
-   // Starlight constellations linked by a fine golden orbit.
-   ctx.strokeStyle='#ffe28c';ctx.lineWidth=Math.max(.9,r*.09);
-   ctx.beginPath();ctx.moveTo(-r*.68,-r*.32);ctx.lineTo(r*.06,r*.68);
-   ctx.lineTo(r*.74,-r*.3);ctx.stroke();
-   for(const [x,y] of [[-r*.68,-r*.32],[r*.06,r*.68],[r*.74,-r*.3]]){
-    ctx.fillStyle='#fff7c5';ctx.shadowColor='#ffe262';ctx.shadowBlur=r*.65;
-    ctx.beginPath();ctx.arc(x,y,r*.14,0,TAU);ctx.fill();
-   }
-   ctx.shadowBlur=0;
-  }else if(p==='voidbloom'){
-   // Rotating iridescent petals in the darkness.
-   for(let j=0;j<4;j++){
-    const angle=j*TAU/4+t*.27+i*.17;
-    ctx.save();ctx.rotate(angle);
-    ctx.fillStyle=j%2?'#d15aff':'#ff65bf';
-    ctx.globalAlpha=.78;ctx.beginPath();
-    ctx.ellipse(r*.43,0,r*.69,r*.27,0,0,TAU);ctx.fill();
-    ctx.restore();
-   }
-   ctx.globalAlpha=1;
-  }else if(p==='galaxy'){
-   // Noticeable rotating galactic spirals.
-   ctx.strokeStyle=i%2?'#a928ff':'#ffe500';ctx.lineWidth=r*.14;
-   ctx.beginPath();
-   for(let j=0;j<=20;j++){
-    const theta=j*.51+t*.55+i*.21,rad=r*(.07+j*.039);
-    if(!j)ctx.moveTo(Math.cos(theta)*rad,Math.sin(theta)*rad);
-    else ctx.lineTo(Math.cos(theta)*rad,Math.sin(theta)*rad);
-   }
+  ctx.globalAlpha=1;
+  const cometCount=w.human?4:2;
+  for(let j=0;j<cometCount;j++){
+   const span=Math.max(2,count-9);
+   const progress=(t*(6.0+j*1.12)+(j*.28)*count+w.id*7.4)%span;
+   const index=Math.max(2,Math.min(count-3,Math.floor(count-2-progress)));
+   const head=sampled[index],tail=sampled[Math.min(count-1,index+7)];
+   const gradient=ctx.createLinearGradient(tail.x,tail.y,head.x,head.y);
+   gradient.addColorStop(0,'#ffffff00');
+   gradient.addColorStop(.5,theme[j%3]+'99');
+   gradient.addColorStop(1,'#ffffff');
+   ctx.strokeStyle=gradient;ctx.lineWidth=Math.max(1,r*.12);
+   ctx.lineCap='round';ctx.beginPath();ctx.moveTo(tail.x,tail.y);
+   for(let k=Math.min(count-1,index+6);k>=index;k--)ctx.lineTo(sampled[k].x,sampled[k].y);
    ctx.stroke();
-  }else{
-   // Nebula: four bright gas clusters.
-   for(let j=0;j<4;j++){
-    const theta=j*PI/2+t*.1;
-    ctx.fillStyle=['#9922ff','#ff1744','#2860ff','#fff'][j];
-    ctx.beginPath();ctx.arc(Math.cos(theta)*r*.48,Math.sin(theta)*r*.48,r*.23,0,TAU);ctx.fill();
-   }
+   ctx.fillStyle='#fffdf2';ctx.shadowBlur=options.glow?8:0;ctx.shadowColor=theme[j%3];
+   ctx.beginPath();ctx.arc(head.x,head.y,Math.max(1.3,r*.115),0,TAU);ctx.fill();
+   ctx.shadowBlur=0;
   }
-  ctx.restore();
  }
  ctx.restore();
 }
@@ -1099,60 +1008,49 @@ function drawWorm(w,t){
  if(Math.abs(w.x-camera.x)>vw/z*.8+1700||Math.abs(w.y-camera.y)>vh/z*.8+1700)return;
  const r=wormRadius(w),n=w.segments.length;
  if(!n)return;
- const nodes=w.segments,custom=!!(w.human&&options.customEnabled&&options.customSegments?.length);
- const palette=custom?options.customSegments:null;
+ const {path,points}=wormBodyPath(w);
+ const detail=z>.56;
+ const custom=!!(w.human&&options.customEnabled&&options.customSegments?.length);
  const theme=SKIN_NEBULAE[w.skin]||SKIN_NEBULAE.nebula;
- const detail=z>.59;
- const left=camera.x-vw/z*.6-r*3,right=camera.x+vw/z*.6+r*3;
- const top=camera.y-vh/z*.6-r*3,bottom=camera.y+vh/z*.6+r*3;
+ const head=points[0],tail=points[points.length-1];
  ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+ ctx.globalAlpha=w.invulnerable>0?.78:1;
  drawBoostWake(w,t,r);
- // Cosmic worm segments grow in radius as mass increases, as well as in length.
- const step=z<.47&&n>520?2:1;
- for(let i=n-1;i>=0;i-=step){
-  const p=nodes[i];
-  if(p.x<left||p.x>right||p.y<top||p.y>bottom)continue;
-  const taper=clamp((n-i)/Math.min(20,n),0,1);
-  const size=r*(.68+.32*taper);
-  const color=palette?palette[i%palette.length]:
-   (w.pattern==='nebula'||w.pattern==='galaxy'||w.pattern==='aurora')
-    ?theme[Math.floor(i/5+w.id)%theme.length]
-    :i%5===0?w.accent:w.color[0];
-  ctx.globalAlpha=w.invulnerable>0?.73:1;
-  ctx.fillStyle=w.color[1];ctx.beginPath();ctx.arc(p.x,p.y,size*1.03,0,TAU);ctx.fill();
-  ctx.fillStyle=color;ctx.beginPath();ctx.arc(p.x,p.y,size*.87,0,TAU);ctx.fill();
-  if(detail){
-   ctx.globalAlpha=.31;ctx.fillStyle='#ffffff';ctx.beginPath();
-   ctx.arc(p.x-size*.27,p.y-size*.32,size*.26,0,TAU);ctx.fill();
-   if(!custom&&i%4===0){
-    const phase=t*1.6+i*.67+w.id,dist=size*.3;
-    ctx.globalAlpha=.76;
-    ctx.fillStyle=w.pattern==='stardust'?'#ffe500':'#fff';
-    ctx.beginPath();ctx.arc(p.x+Math.cos(phase)*dist,p.y+Math.sin(phase)*dist,size*.12,0,TAU);ctx.fill();
-   }
-  }
+ // One continuous stroke replaces hundreds of separate opaque circles.
+ // Rounded edges and soft shadows preserve smooth curves during tight turns.
+ ctx.strokeStyle=w.color[1];
+ ctx.lineWidth=r*2.12;
+ ctx.shadowBlur=options.glow&&z>.39?Math.min(r*.46,22):0;
+ ctx.shadowColor=w.accent;
+ ctx.stroke(path);ctx.shadowBlur=0;
+ const gradient=ctx.createLinearGradient(tail.x,tail.y,head.x+0.1,head.y+0.1);
+ if(custom){
+  const colors=options.customSegments;
+  const stops=Math.min(colors.length,16);
+  for(let i=0;i<stops;i++)gradient.addColorStop(i/(stops-1),colors[Math.floor(i*(colors.length-1)/(stops-1))]);
+ }else{
+  gradient.addColorStop(0,w.color[1]);
+  gradient.addColorStop(.44,theme[0]);
+  gradient.addColorStop(.77,theme[1]);
+  gradient.addColorStop(1,w.color[0]);
  }
- ctx.globalAlpha=1;
- // Premade cosmic skins show animated nebulae, stars and comets INSIDE
- // the live body; custom-colored skins retain their exact selected colors.
- if(w.human&&!custom&&detail&&n>=20&&n<950)drawCosmicInterior(w,t,r);
+ ctx.strokeStyle=gradient;ctx.lineWidth=r*1.88;ctx.stroke(path);
+ if(detail){
+  // All cosmic presets are animated for both bots and the player. There
+  // are no decorative circles, rings, plates, or artificial segment joins.
+  drawCosmicInterior(w,t,r,true);
+ }else if(z>.26)drawCosmicInterior(w,t,r,false);
  if(w.boost&&w.mass>38){
   ctx.save();ctx.globalCompositeOperation='lighter';
-  ctx.shadowColor=w.accent;ctx.shadowBlur=options.glow?19:4;
-  ctx.lineWidth=Math.max(3,r*.27);ctx.strokeStyle=w.accent;ctx.globalAlpha=.66;
-  const tail=nodes[Math.min(n-1,Math.max(28,Math.round(n*.3)))];
-  ctx.beginPath();ctx.moveTo(tail.x,tail.y);
-  const stride=Math.max(1,Math.floor(Math.min(n,1000)/550));
-  for(let i=Math.min(n-1,Math.max(27,Math.round(n*.3)))-1;i>=0;i-=stride)
-   ctx.lineTo(nodes[i].x,nodes[i].y);
-  ctx.lineTo(w.x,w.y);ctx.stroke();ctx.restore();
+  ctx.shadowColor=w.accent;ctx.shadowBlur=options.glow?20:5;
+  ctx.lineWidth=Math.max(3,r*.27);ctx.strokeStyle=w.accent;ctx.globalAlpha=.68;
+  ctx.stroke(path);ctx.restore();
  }
- // Existing decorative motifs, but only at close zoom and shorter lengths.
- if(!custom&&detail&&n<480)drawSkinGeometry(w,t,r*.63);
  drawSkinHead(w,r);
  if(options.names||w.human){
-  ctx.font='800 12px Inter,system-ui,sans-serif';ctx.textAlign='center';
-  ctx.fillStyle='#fff';ctx.shadowColor='#03020b';ctx.shadowBlur=8;
+  ctx.globalAlpha=1;ctx.font='800 12px Inter,system-ui,sans-serif';
+  ctx.textAlign='center';ctx.fillStyle='#fff';
+  ctx.shadowColor='#03020b';ctx.shadowBlur=8;
   ctx.fillText(w.name,w.x,w.y-r*2.5);ctx.shadowBlur=0;
  }
  ctx.restore();
