@@ -1,0 +1,356 @@
+/* Infinity Space: one shared visual contract for the menu, Endless Space,
+   Cosmic Worms, four arena modes, achievements, statistics and cosmetics.
+   Source of truth for arcade geometry; avoid one-off differently colored cards. */
+:root{
+ --ix-bg:#0a0618;
+ --ix-surface:#160e2a;
+ --ix-deep:#0c071b;
+ --ix-edge:#6a4b94;
+ --ix-edge-dark:#3d285c;
+ --ix-text:#f8f1ff;
+ --ix-secondary:#c8b7df;
+ --ix-purple:#9922ff;
+ --ix-blue:#2860ff;
+ --ix-red:#ff1744;
+ --ix-green:#27ff40;
+ --ix-gold:#ffe500;
+}
+:where(.worm-shade,.ws-overlay,.shade,.infinity-profile-overlay){
+ color:var(--ix-text);
+ font-family:Inter,'Segoe UI',system-ui,sans-serif;
+}
+:where(.worm-shade,.shade,.ws-overlay){background:rgba(5,3,16,.88)!important;backdrop-filter:blur(9px)!important}
+:where(.worm-shade .worm-panel,.shade .panel,.ws-overlay .ws-dialog){
+ box-sizing:border-box;
+ border:2px solid var(--ix-edge)!important;
+ border-bottom:5px solid var(--ix-edge-dark)!important;
+ border-radius:8px!important;
+ background:var(--ix-surface)!important;
+ box-shadow:inset 0 1px #ffffff17,0 17px 75px #0009!important;
+ color:var(--ix-text)!important;
+ overscroll-behavior:contain;
+}
+/* Match reading widths and spacing across different competitive modes. */
+.worm-shade .worm-panel,
+.shade :is(.arena-pause-panel,.arena-guide-panel),
+.shade#result .panel{
+ width:min(680px,calc(100vw - 28px))!important;
+ max-width:680px!important;
+ padding:clamp(19px,2.6vw,36px)!important;
+ max-height:calc(100dvh - 24px)!important;
+ overflow-y:auto;
+}
+.worm-shade .worm-panel :is(h1,h2),
+.shade .panel :is(.hero,#guide-title){
+ color:#fff!important;
+ text-shadow:none!important;
+ font-weight:950!important;
+ font-size:clamp(29px,3.3vw,52px)!important;
+ letter-spacing:-.04em!important;
+ line-height:1.08!important;
+ overflow-wrap:anywhere;
+}
+.worm-shade .worm-panel p,
+.shade .panel :is(.desc,.sub){
+ color:var(--ix-secondary)!important;
+ font-size:clamp(13px,.95vw,16px)!important;
+ line-height:1.55!important;
+ max-width:56ch;
+}
+.worm-shade .worm-eyebrow,
+.shade .panel .eyebrow{
+ color:#c5a1ff!important;
+ font-size:11px!important;
+ font-weight:950!important;
+ letter-spacing:.14em!important;
+}
+.worm-pause-stats,.worm-results,.arena-pause-stats,#result-stat{
+ display:grid!important;
+ grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ gap:0!important;
+ padding:14px 0!important;
+ margin:19px 0!important;
+ border-top:1px solid #5b437c!important;
+ border-bottom:1px solid #5b437c!important;
+ background:transparent!important;
+}
+.worm-pause-stats>div,.worm-results>div,.arena-pause-stats>div,
+#result-stat .result-cell{
+ min-width:0!important;
+ display:flex!important;
+ flex-direction:column!important;
+ align-items:center!important;
+ justify-content:center!important;
+ gap:7px!important;
+ padding:8px 12px!important;
+ min-height:72px!important;
+ border:0!important;
+ border-right:1px solid #49365f!important;
+ background:transparent!important;
+ border-radius:0!important;
+ box-shadow:none!important;
+}
+.worm-pause-stats>div:last-child,.worm-results>div:last-child,
+.arena-pause-stats>div:last-child,#result-stat .result-cell:last-child{border-right:0!important}
+.worm-pause-stats strong,.worm-results strong,.arena-pause-stats strong,
+#result-stat .result-cell b{
+ font-size:clamp(23px,2.3vw,35px)!important;line-height:1!important;
+ font-weight:950!important;font-variant-numeric:tabular-nums;
+ color:#f8f1ff!important;text-shadow:none!important;
+}
+.worm-pause-stats small,.worm-results small,.arena-pause-stats small,
+#result-stat .result-cell small{
+ color:#bba4d9!important;font-size:10px!important;
+ letter-spacing:.1em!important;font-weight:800!important;
+}
+.worm-actions,.arena-dialog-actions,.arena-guide-actions{
+ display:grid!important;
+ grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ gap:11px!important;
+ align-items:stretch!important;
+ margin-top:19px!important;
+}
+.worm-actions button,
+.worm-shade .worm-settings-panel button:not(.worm-skin-card),
+.arena-dialog-actions button,.arena-guide-actions button{
+ appearance:none!important;
+ flex:none!important;
+ width:100%!important;min-width:0!important;
+ min-height:53px!important;
+ padding:12px 15px!important;
+ border:2px solid #70528f!important;
+ border-bottom:4px solid #3b2659!important;
+ border-radius:6px!important;
+ background:#26183a!important;
+ box-shadow:0 4px 0 #07041288!important;
+ color:#f9f4ff!important;
+ font:900 clamp(11px,.9vw,14px)/1.2 Inter,'Segoe UI',system-ui!important;
+ letter-spacing:.04em!important;
+ text-align:center!important;
+ text-shadow:none!important;
+ overflow-wrap:anywhere;
+ transition:transform .12s,background .12s,border-color .12s,box-shadow .12s!important;
+}
+.worm-actions button.worm-primary,.arena-dialog-actions .primary,.arena-guide-actions .primary{
+ --mode-action:#9922ff;
+ background:#4d22c6!important;border-color:#aa75ff!important;
+ border-bottom-color:#341475!important;
+}
+.worm-actions button#worm-skins-open{--mode-action:#ffe500;border-left-color:#ffe500!important}
+.worm-actions button#worm-settings-open,
+.worm-actions button#worm-open-guide{--mode-action:#2860ff;border-left-color:#2860ff!important}
+.worm-actions button#worm-exit,.worm-actions button#worm-result-menu,
+.arena-dialog-actions #change,.arena-dialog-actions #change2{
+ --mode-action:#ff1744;border-left-color:#ff1744!important;
+}
+.worm-actions button#worm-settings-back{--mode-action:#ffbc48;border-left-color:#ffbc48!important}
+.worm-shade .worm-actions button#worm-exit,
+.worm-shade .worm-actions button#worm-settings-back{grid-column:1/-1!important}
+@media(hover:hover) and (pointer:fine){
+ .worm-actions button:not(:disabled):hover,
+ .arena-dialog-actions button:not(:disabled):hover,
+ .arena-guide-actions button:not(:disabled):hover,
+ .ws-footer button:not(:disabled):hover,.ws-preset:not(:disabled):hover{
+  filter:brightness(1.12)!important;
+  border-color:var(--mode-action,#b28bff)!important;
+  box-shadow:0 0 14px color-mix(in srgb,var(--mode-action,#9922ff) 42%,transparent),0 5px 12px #0008!important;
+  transform:translateY(-2px)!important;
+ }
+}
+.worm-shade .worm-settings-panel h2{
+ color:#e5d6ff!important;font-size:15px!important;margin:21px 0 9px!important;
+ letter-spacing:.07em!important;
+}
+.worm-shade .worm-setting-toggle,.worm-shade .worm-setting-range{
+ min-height:54px!important;
+ padding:12px 0!important;
+ border:0!important;border-bottom:1px solid #543d70!important;
+ border-radius:0!important;background:transparent!important;
+ box-shadow:none!important;color:#e8deef!important;
+ font-size:13px!important;font-weight:750!important;
+}
+.worm-setting-toggle i{border-radius:3px!important}
+.worm-setting-toggle i::after{border-radius:1px!important}
+.worm-setting-range input[type=range]{accent-color:#a76bff!important}
+.worm-shade .worm-setting-range strong{color:#ffe500!important}
+.worm-settings-panel .worm-actions{grid-template-columns:1fr!important}
+.worm-guide-visual,.arena-guide-demo{
+ background:#100b21!important;border:1px solid #5a427d!important;
+ border-radius:6px!important;
+}
+/* Make the actual current mode more readable on large 2K monitors. */
+.worm-hud .worm-brand,
+.worm-hud .worm-metric,.worm-hud .worm-leaders,.worm-hud .worm-radar,
+.hud .brand,.hud .stat,.hud .left,.hud #radar{
+ background:#100a1fdb!important;
+ border:1px solid #604783!important;border-bottom:3px solid #34234f!important;
+ border-radius:7px!important;
+ backdrop-filter:blur(6px);
+ box-shadow:0 4px 16px #0005!important;
+}
+.worm-brand{padding:12px 16px!important;min-width:0!important}
+.worm-brand b{font-size:clamp(13px,1.04vw,19px)!important;letter-spacing:.025em!important}
+.worm-brand small{color:#c2acdf!important;font-size:clamp(10px,.73vw,13px)!important;letter-spacing:.04em!important}
+.worm-metric{min-width:clamp(92px,7vw,145px)!important;padding:10px 16px!important}
+.worm-metric small{font-size:clamp(9px,.68vw,12px)!important}
+.worm-metric strong{font-size:clamp(21px,1.55vw,30px)!important;color:#fff!important}
+.worm-leaders{width:clamp(180px,13vw,230px)!important}
+.worm-leaders .worm-rank{font-size:clamp(11px,.76vw,14px)!important}
+.worm-radar{padding:10px!important}
+.worm-hint{color:#d8caec!important;background:#110a23ce!important;border:1px solid #67528c!important}
+/* HUD actions share the same bottom dock; there is no floating Pause at top. */
+#worm-hud .worm-pause-button{
+ position:absolute!important;top:auto!important;left:auto!important;
+ bottom:calc(21px + env(safe-area-inset-bottom))!important;
+ right:calc(135px + env(safe-area-inset-right))!important;
+ transform:none!important;
+ min-width:99px!important;height:69px!important;
+ font-size:13px!important;
+ border:2px solid #2860ff!important;border-bottom:4px solid #1639a2!important;
+ border-radius:7px!important;background:#152b78ed!important;
+ color:#fff!important;box-shadow:0 5px 17px #0009!important;
+}
+#worm-hud .worm-boost-button{
+ position:absolute!important;top:auto!important;left:auto!important;
+ bottom:calc(21px + env(safe-area-inset-bottom))!important;
+ right:calc(17px + env(safe-area-inset-right))!important;
+ width:103px!important;min-height:69px!important;
+ border:2px solid #ff1744!important;border-bottom:4px solid #7b1430!important;
+ border-radius:7px!important;background:#6b1230ee!important;
+ box-shadow:0 5px 17px #0009!important;
+}
+#worm-hud .worm-pause-button:hover{border-top-color:#2860ff!important;transform:translateY(-2px)!important}
+#worm-hud .worm-boost-button:hover{border-top-color:#ff1744!important;transform:translateY(-2px)!important}
+#worm-hud .worm-boost-button.is-boosting{background:#ba1740!important;box-shadow:0 0 30px #ff174476!important}
+/* Arena mode: same pause-in-dock geometry and action palette. */
+.hud #pause{
+ top:auto!important;left:auto!important;transform:none!important;
+ bottom:calc(23px + env(safe-area-inset-bottom))!important;
+ right:calc(265px + env(safe-area-inset-right))!important;
+ border:2px solid #2860ff!important;border-bottom:4px solid #173bab!important;
+ border-radius:7px!important;background:#162d79!important;
+ color:#fff!important;height:65px!important;min-width:104px!important;
+ padding:11px!important;font-weight:950!important;font-size:12px!important;
+ box-shadow:0 5px 15px #0008!important;
+}
+.hud .ability{border-radius:7px!important;min-width:60px!important;min-height:65px!important}
+.hud .ability#dash{--action:#ff1744;border-color:#ff1744!important}
+.hud .ability#pulse{--action:#9922ff;border-color:#9922ff!important}
+.hud .ability#shield{--action:#27ff40;border-color:#27ff40!important}
+@media(hover:hover) and (pointer:fine){
+ .hud #pause:hover{border-color:#2860ff!important;box-shadow:0 0 19px #2860ff7b!important}
+ .hud .ability:hover{border-color:var(--action,#9922ff)!important;box-shadow:0 0 19px color-mix(in srgb,var(--action,#9922ff) 45%,transparent)!important}
+}
+/* Seamless capsule thumbnail for every premade cosmic skin. */
+.ws-overlay .ws-dialog{
+ width:min(1030px,calc(100vw - 18px))!important;
+ background:#160e2a!important;
+}
+.ws-overlay .ws-presets{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:10px!important}
+.ws-overlay .ws-preset{
+ min-height:96px!important;background:#211534!important;
+ padding:13px 10px!important;
+ border:2px solid #604682!important;
+ border-bottom:4px solid #35224f!important;
+ border-radius:7px!important;font-size:12px!important;
+}
+.ws-overlay .ws-preset.selected{background:#35214e!important;border-color:#bf92ff!important}
+.ws-preset-beads.ws-preset-worm{
+ width:94%!important;height:29px!important;display:block!important;
+ position:relative;border:2px solid #3e235e!important;
+ border-radius:99px!important;
+ background:var(--worm-skin-gradient,linear-gradient(90deg,#3c146d,#9922ff,#ff1744))!important;
+ box-shadow:0 0 13px #8b43ff5b,inset 0 0 9px #080617cc!important;
+}
+.ws-preset-worm::after{
+ content:'✦    ·  ✧   ·    ✦';position:absolute;inset:0;
+ display:grid;place-items:center;font-size:11px;letter-spacing:.25em;
+ color:#fff5e4;text-shadow:0 0 7px #fff8;
+}
+.ws-overlay .ws-advanced{margin-top:12px}
+.ws-segments{gap:2px!important}
+.ws-bead{
+ width:20px!important;height:33px!important;border:0!important;
+ border-radius:2px!important;box-shadow:none!important;
+ background:var(--bead-color)!important;
+}
+.ws-bead.selected{outline:2px solid #fff!important;outline-offset:2px!important}
+.ws-preview-canvas{border-color:#674b8f!important;border-radius:5px!important}
+.ws-overlay :is(.ws-title,.ws-body h3){color:#fff!important}
+.ws-overlay .ws-desc{color:#d3c4e5!important;font-size:13px!important}
+.ws-overlay .ws-footer{background:#120b23!important;border-color:#59417b!important}
+.ws-overlay .ws-footer button{border-radius:6px!important;min-height:46px!important}
+.ws-overlay .ws-head-choice{border-radius:7px!important;background:#221535!important;border-color:#694d8d!important}
+.ws-overlay .ws-head-choice.selected{border-color:#ffe500!important;box-shadow:0 0 12px #ffe50055!important}
+/* Statistics and separate-mode achievements share the primary Endless Space
+   typography and page geometry, instead of compact mismatched pop-up cards. */
+.infinity-stats-overlay .infinity-stats-heading h2,
+#screen-mode-achievements .br-head h2{color:#fff!important}
+.infinity-stats-overlay .infinity-stats-player-name{color:#f9f3ff!important}
+.infinity-mode-achievements-overlay #screen-mode-achievements,
+.infinity-stats-overlay .infinity-stats-panel{
+ background:#0a0618!important;color:#f6efff!important;
+}
+.infinity-mode-achievements-overlay .br-ach-row{
+ border-radius:5px!important;
+ background:#170f27!important;
+ border-color:#594375!important;
+}
+.infinity-mode-achievements-overlay .br-ach-row .br-ach-prog{width:100%!important}
+.infinity-mode-achievements-overlay .br-ach-row .br-ach-prog>i{max-width:100%!important}
+@media(min-width:1650px){
+ .worm-shade .worm-panel,.shade .panel{font-size:16px!important}
+ .worm-shade .worm-panel p{font-size:16px!important}
+ .worm-leaders h3,.worm-radar small{font-size:12px!important}
+}
+@media(max-width:760px), (pointer:coarse) and (max-width:1024px){
+ .worm-brand{padding:8px 10px!important;max-width:40%!important;flex:0 0 auto!important}
+ .worm-brand b{font-size:clamp(10px,2.5vw,13px)!important}
+ .worm-brand small{font-size:clamp(8px,2vw,10px)!important;max-width:145px}
+ .worm-metric{padding:6px!important;min-width:0!important;min-height:48px!important}
+ .worm-metric small{font-size:clamp(7px,1.55vw,9px)!important}
+ .worm-metric strong{font-size:clamp(14px,3.8vw,19px)!important}
+ .worm-leaders,.worm-radar{display:none!important}
+ #worm-hud .worm-pause-button{
+  right:calc(110px + env(safe-area-inset-right))!important;
+  bottom:calc(12px + env(safe-area-inset-bottom))!important;
+  min-width:83px!important;height:53px!important;font-size:10px!important;
+ }
+ #worm-hud .worm-boost-button{
+  right:calc(8px + env(safe-area-inset-right))!important;
+  bottom:calc(12px + env(safe-area-inset-bottom))!important;
+  width:94px!important;min-height:53px!important;
+ }
+ .worm-hint{display:none!important}
+ .worm-shade .worm-panel,.shade .panel{padding:16px!important;max-width:calc(100vw - 15px)!important}
+ .worm-actions,.arena-dialog-actions,.arena-guide-actions{gap:7px!important}
+ .worm-actions button,.arena-dialog-actions button,.arena-guide-actions button{min-height:46px!important;padding:9px 7px!important;font-size:11px!important}
+ .worm-pause-stats,.worm-results,.arena-pause-stats,#result-stat{padding:8px 0!important;margin:11px 0!important}
+ .worm-pause-stats>div,.worm-results>div,.arena-pause-stats>div,#result-stat .result-cell{min-height:55px!important;padding:4px!important}
+ .worm-pause-stats strong,.worm-results strong,.arena-pause-stats strong,#result-stat .result-cell b{font-size:20px!important}
+ .worm-pause-stats small,.worm-results small,.arena-pause-stats small,#result-stat .result-cell small{font-size:8px!important}
+ .ws-overlay .ws-presets{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .ws-overlay .ws-preset{min-height:78px!important;padding:7px!important;font-size:10px!important}
+ .ws-preset-beads.ws-preset-worm{height:21px!important}
+ .hud #pause{right:calc(215px + env(safe-area-inset-right))!important;bottom:calc(11px + env(safe-area-inset-bottom))!important;
+  min-width:75px!important;height:52px!important;padding:5px!important;font-size:10px!important}
+ .hud .ability{min-height:52px!important;height:52px!important;min-width:52px!important}
+}
+@media(max-width:520px){
+ .worm-shade .worm-actions,.arena-dialog-actions,.arena-guide-actions{grid-template-columns:1fr!important;gap:7px!important}
+ .worm-shade .worm-panel h1,.shade .panel .hero{font-size:clamp(27px,7vw,35px)!important}
+ .ws-overlay .ws-dialog{max-height:calc(100dvh - 10px)!important}
+ .ws-overlay .ws-header{padding:12px 15px!important}
+}
+@media(max-height:420px) and (orientation:landscape){
+ .worm-shade .worm-panel,.shade .panel{padding:9px 15px!important}
+ .worm-shade .worm-panel :is(h1,h2),.shade .panel .hero{font-size:27px!important;margin:5px 0!important}
+ .worm-shade .worm-panel p,.shade .panel .desc{margin:5px 0!important}
+ .worm-pause-stats,.worm-results,.arena-pause-stats,#result-stat{margin:6px 0!important;padding:4px 0!important}
+ .worm-actions button,.arena-dialog-actions button{min-height:37px!important}
+ .ws-overlay .ws-dialog{max-height:calc(100dvh - 8px)!important}
+ .ws-overlay .ws-presets{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .worm-actions button,.arena-dialog-actions button,.ws-overlay button{transition:none!important}
+}
