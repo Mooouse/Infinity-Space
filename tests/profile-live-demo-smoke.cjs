@@ -24,6 +24,8 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   // The background is an actual same-origin instance of the arcade engine,
   // with AI actors and material, not a looping video or a decorative still.
   await page.locator('.hub-mode-step[data-dir="1"]').click();
+  await page.waitForFunction(()=>window.SpaceMenuSceneMode==='worms',null,{timeout:6000});
+  await page.locator('.hub-mode-step[data-dir="1"]').click();
   await page.waitForFunction(()=>window.SpaceMenuSceneMode==='arena',null,{timeout:6000});
   const active=page.locator('.hub-demo-frame.ready iframe[src*="demo=arena"]');
   await active.waitFor({state:'attached',timeout:20000});
@@ -59,7 +61,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   await page.locator('.hub-mode-dots button').nth(5).click();
   assert.equal(await page.locator('.hub-mode-nickname input').inputValue(),'Comet Captain');
   await page.reload({waitUntil:'domcontentloaded'});
-  await page.locator('.hub-mode-dots button').nth(1).click();
+  await page.locator('.hub-mode-dots button').nth(2).click();
   assert.equal(await page.locator('.hub-mode-nickname input').inputValue(),'Comet Captain');
   // End-to-end arena record: use the QA-only finish hook to avoid a long match.
   await page.goto(base+'/cosmic-arena.html?mode=arena&tester=1',{waitUntil:'domcontentloaded'});
@@ -72,7 +74,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   await page.locator('#result').waitFor({state:'visible',timeout:10000});
   await page.goto(base+'/index.html?tester=1',{waitUntil:'domcontentloaded'});
   // The statistics shortcut is intentionally scoped to competitive modes.
-  await page.locator('.hub-mode-dots button').nth(1).click();
+  await page.locator('.hub-mode-dots button').nth(2).click();
   await page.locator('.hub-story-shortcut[data-shortcut="statistics"]').waitFor({state:'visible',timeout:30000});
   await page.locator('.hub-story-shortcut[data-shortcut="statistics"]').click();
   await page.locator('.infinity-stats-panel').waitFor({state:'visible',timeout:15000});
