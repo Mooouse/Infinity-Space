@@ -17,7 +17,11 @@ const PRESETS=[
  ['eclipse','Eclipse','Затмение','Eclipse',['#15192e','#ff1744','#a928ff','#ffe500']],
  ['meteor','Meteor','Метеор','Meteoro',['#ff1744','#ffe500','#601017','#ffffff']],
  ['galaxy','Spiral Galaxy','Спиральная галактика','Galaxia espiral',['#2860ff','#9922ff','#ffe500','#a928ff']],
- ['crystal','Crystal','Кристалл','Cristal',['#27ff40','#2860ff','#ffffff','#10255c']]
+ ['crystal','Crystal','Кристалл','Cristal',['#27ff40','#2860ff','#ffffff','#10255c']],
+ ['rift','Riftwalker','Разлом','Fractura',['#b832ff','#ff4bb7','#375aff','#270050']],
+ ['dragon','Cosmic Dragon','Космический дракон','Dragón cósmico',['#fc244c','#ffdf47','#9d27ff','#570a2e']],
+ ['royal','Royal Nebula','Королевская туманность','Nebulosa real',['#ffd24e','#a86cff','#ff76d1','#231461']],
+ ['voidbloom','Void Bloom','Цветок пустоты','Flor del vacío',['#9c2ce7','#ff6cb9','#4b21b6','#080413']]
 ];
 const L={
  ru:{title:'Конструктор червя',desc:'Выбирай готовый облик или раскрашивай каждый круг отдельно. Рисунок повторяется при росте червя.',
@@ -186,6 +190,26 @@ function open({onChange,onClose}={}){
     const sx=node.x+Math.sin(t*.9+i*4.1)*radius*.43;
     const sy=node.y+Math.cos(t*.7+i*1.3)*radius*.43;
     pc.fillStyle='#fff9ee';pc.beginPath();pc.arc(sx,sy,i%9===0?2.5:1.4,0,Math.PI*2);pc.fill();
+   }
+   if(i%6===0&&['rift','dragon','royal','voidbloom'].includes(data.skin)){
+    pc.save();pc.translate(node.x,node.y);
+    if(data.skin==='rift'){
+     pc.strokeStyle='#ff91ee';pc.lineWidth=2;pc.beginPath();pc.moveTo(-11,-8);
+     pc.lineTo(0,7);pc.lineTo(10,-9);pc.stroke();
+    }else if(data.skin==='dragon'){
+     pc.fillStyle=i%12===0?'#ffdd48':'#ff426f';
+     pc.beginPath();pc.moveTo(-8,-12);pc.lineTo(0,-33);pc.lineTo(9,-12);pc.fill();
+    }else if(data.skin==='royal'){
+     pc.strokeStyle='#ffe67e';pc.lineWidth=1.4;pc.beginPath();pc.moveTo(-9,-6);
+     pc.lineTo(2,10);pc.lineTo(13,-5);pc.stroke();
+     pc.fillStyle='#fff7ce';pc.fillRect(-10,-8,3,3);pc.fillRect(0,9,3,3);pc.fillRect(12,-7,3,3);
+    }else{
+     pc.fillStyle='#ff6cb9';for(let j=0;j<4;j++){
+      pc.save();pc.rotate(j*Math.PI/2+t*.24);pc.beginPath();
+      pc.ellipse(9,0,10,4,0,0,Math.PI*2);pc.fill();pc.restore();
+     }
+    }
+    pc.restore();
    }
    if(i%14===0){
     pc.strokeStyle='#ffe8ffb5';pc.lineWidth=1.2;

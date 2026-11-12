@@ -70,7 +70,11 @@ const SKINS=[
  {id:'eclipse',en:'Eclipse',ru:'Затмение',es:'Eclipse',light:'#a928ff',dark:'#05050e',accent:'#ff1744',pattern:'eclipse'},
  {id:'meteor',en:'Meteor',ru:'Метеор',es:'Meteoro',light:'#ff1744',dark:'#601017',accent:'#ffe500',pattern:'meteor'},
  {id:'galaxy',en:'Spiral Galaxy',ru:'Спиральная галактика',es:'Galaxia espiral',light:'#2860ff',dark:'#1c0a6b',accent:'#a928ff',pattern:'galaxy'},
- {id:'crystal',en:'Crystal',ru:'Кристалл',es:'Cristal',light:'#27ff40',dark:'#10255c',accent:'#2860ff',pattern:'crystal'}
+ {id:'crystal',en:'Crystal',ru:'Кристалл',es:'Cristal',light:'#27ff40',dark:'#10255c',accent:'#2860ff',pattern:'crystal'},
+ {id:'rift',en:'Riftwalker',ru:'Разлом',es:'Fractura',light:'#b832ff',dark:'#270050',accent:'#ff4bb7',pattern:'rift'},
+ {id:'dragon',en:'Cosmic Dragon',ru:'Космический дракон',es:'Dragón cósmico',light:'#fc244c',dark:'#570a2e',accent:'#ffdf47',pattern:'dragon'},
+ {id:'royal',en:'Royal Nebula',ru:'Королевская туманность',es:'Nebulosa real',light:'#ffd24e',dark:'#231461',accent:'#a86cff',pattern:'royal'},
+ {id:'voidbloom',en:'Void Bloom',ru:'Цветок пустоты',es:'Flor del vacío',light:'#9c2ce7',dark:'#080413',accent:'#ff6cb9',pattern:'voidbloom'}
 ];
 const SETTINGS_KEY='infinity-space-worms-settings-v2';
 function loadSettings(){
@@ -726,7 +730,11 @@ const SKIN_NEBULAE={
  eclipse:['#a928ff','#ff1744','#ffe500'],
  meteor:['#ff1744','#ffe500','#ff1744'],
  galaxy:['#2860ff','#a928ff','#ffe500'],
- crystal:['#27ff40','#2860ff','#ffe500']
+ crystal:['#27ff40','#2860ff','#ffe500'],
+ rift:['#ae45ff','#ff41a8','#375aff'],
+ dragon:['#ff234a','#ffd34f','#9d27ff'],
+ royal:['#ffe25a','#8b5cff','#ff76d1'],
+ voidbloom:['#a72dff','#ff56b5','#4b21b6']
 };
 function drawCosmicInterior(w,t,r){
  const nodes=[w,...w.segments],n=nodes.length;
@@ -861,6 +869,45 @@ function drawSkinGeometry(w,t,r){
    }
    ctx.closePath();ctx.fill();ctx.stroke();
    if(p==='meteor'){ctx.beginPath();ctx.moveTo(-r*.5,-r*.4);ctx.lineTo(r*.18,r*.16);ctx.lineTo(r*.54,-r*.29);ctx.stroke()}
+  }else if(p==='rift'){
+   // Charged angular fractures race along this worm's translucent shell.
+   ctx.strokeStyle=i%2?'#ff55bc':'#9a65ff';ctx.lineWidth=r*.15;
+   ctx.shadowColor=ctx.strokeStyle;ctx.shadowBlur=r*.45;
+   ctx.beginPath();ctx.moveTo(-r*.8,-r*.45);
+   ctx.lineTo(-r*.18,r*.25);ctx.lineTo(r*.15,-r*.67);
+   ctx.lineTo(r*.72,r*.4);ctx.stroke();
+   ctx.shadowBlur=0;
+  }else if(p==='dragon'){
+   // Alternating stellar horns and golden scale plates.
+   ctx.fillStyle=i%2?'#ff3b6a':'#ffcc39';
+   const side=i%2?1:-1;
+   ctx.beginPath();ctx.moveTo(-r*.5,side*r*.35);
+   ctx.lineTo(-r*.22,side*r*1.86);
+   ctx.quadraticCurveTo(r*.5,side*r*1.2,r*.67,side*r*.36);
+   ctx.closePath();ctx.fill();
+   ctx.strokeStyle='#ffe690';ctx.lineWidth=r*.11;
+   ctx.beginPath();ctx.moveTo(-r*.4,-r*.44);ctx.lineTo(r*.45,r*.45);ctx.stroke();
+  }else if(p==='royal'){
+   // Starlight constellations linked by a fine golden orbit.
+   ctx.strokeStyle='#ffe28c';ctx.lineWidth=Math.max(.9,r*.09);
+   ctx.beginPath();ctx.moveTo(-r*.68,-r*.32);ctx.lineTo(r*.06,r*.68);
+   ctx.lineTo(r*.74,-r*.3);ctx.stroke();
+   for(const [x,y] of [[-r*.68,-r*.32],[r*.06,r*.68],[r*.74,-r*.3]]){
+    ctx.fillStyle='#fff7c5';ctx.shadowColor='#ffe262';ctx.shadowBlur=r*.65;
+    ctx.beginPath();ctx.arc(x,y,r*.14,0,TAU);ctx.fill();
+   }
+   ctx.shadowBlur=0;
+  }else if(p==='voidbloom'){
+   // Rotating iridescent petals in the darkness.
+   for(let j=0;j<4;j++){
+    const angle=j*TAU/4+t*.27+i*.17;
+    ctx.save();ctx.rotate(angle);
+    ctx.fillStyle=j%2?'#d15aff':'#ff65bf';
+    ctx.globalAlpha=.78;ctx.beginPath();
+    ctx.ellipse(r*.43,0,r*.69,r*.27,0,0,TAU);ctx.fill();
+    ctx.restore();
+   }
+   ctx.globalAlpha=1;
   }else if(p==='galaxy'){
    // Noticeable rotating galactic spirals.
    ctx.strokeStyle=i%2?'#a928ff':'#ffe500';ctx.lineWidth=r*.14;
