@@ -34,9 +34,16 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   const forward=page.locator('.hub-mode-step[data-dir="1"]');
   await forward.click();
   await page.waitForFunction(()=>window.SpaceMenuSceneMode==='worms',null,{timeout:5000});
-  await forward.click();
+  // Sample the animation synchronously with its triggering click. Waiting until
+  // after a frame/iframe load is flaky: the 420ms animation may already finish.
+  const startedAnimation=await forward.evaluate(button=>{
+   button.click();
+   const copy=document.querySelector('.hub-mode-story-copy');
+   return !!copy?.getAnimations().some(a=>a.playState==='running')||
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  });
   await page.waitForFunction(()=>window.SpaceMenuSceneMode==='arena',null,{timeout:5000});
-  await page.waitForFunction(()=>document.querySelector('.hub-mode-story-copy')?.getAnimations().some(a=>a.playState==='running'),null,{timeout:2000});
+  assert.equal(startedAnimation,true,'Mode transition animation must start on click (or honor reduced motion)');
   assert.equal(await page.evaluate(()=>typeof window.SpaceMenuBeginTransition),'function',
    'Background crossfade must be connected to the original universe renderer');
   await page.waitForTimeout(360);
