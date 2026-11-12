@@ -167,16 +167,22 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top>.hub-story-quick{
    Mobile intentionally retains its three-column grid. */
 @media(min-width:801px){
  body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
+  position:fixed!important;left:50%!important;right:auto!important;
+  bottom:max(10px,env(safe-area-inset-bottom))!important;top:auto!important;
+  transform:translateX(-50%)!important;z-index:9!important;
+  grid-area:auto!important;justify-self:auto!important;align-self:auto!important;
   display:flex!important;flex-wrap:nowrap!important;
+  justify-content:center!important;align-items:stretch!important;
   width:min(1200px,calc(100vw - 54px))!important;
   max-width:calc(100vw - 54px)!important;
   gap:clamp(5px,.62vw,12px)!important;
  }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-story-shortcut{
-  flex:1 1 0!important;box-sizing:border-box!important;
-  width:auto!important;max-width:none!important;min-width:0!important;
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-story-shortcut[data-shortcut],
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-profile-chip{
+  flex:0 1 clamp(105px,10vw,170px)!important;box-sizing:border-box!important;
+  width:auto!important;max-width:170px!important;min-width:0!important;
   height:64px!important;min-height:64px!important;
-  padding:8px 6px!important;gap:5px!important;
+  padding:7px 5px!important;gap:3px!important;
   display:flex!important;flex-direction:column!important;
   align-items:center!important;justify-content:center!important;
   border-bottom-width:3px!important;
@@ -193,8 +199,9 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top>.hub-story-quick{
   width:min(1540px,calc(100vw - 120px))!important;
   max-width:calc(100vw - 120px)!important;
  }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-story-shortcut{
-  height:76px!important;min-height:76px!important;
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-story-shortcut[data-shortcut],
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-profile-chip{
+  flex-basis:170px!important;height:76px!important;min-height:76px!important;
  }
  body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut-label{
   font-size:16px!important;
@@ -202,7 +209,7 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top>.hub-story-quick{
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-profile-chip{
  display:flex!important;justify-content:center!important;align-items:center!important;
- padding:7px 10px!important;width:100%!important;
+ padding:7px 10px!important;width:auto!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-profile-chip[hidden],
 body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-story-shortcut[hidden]{display:none!important;}
