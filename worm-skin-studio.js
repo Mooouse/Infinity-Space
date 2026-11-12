@@ -24,12 +24,12 @@ const PRESETS=[
  ['voidbloom','Void Bloom','Цветок пустоты','Flor del vacío',['#9c2ce7','#ff6cb9','#4b21b6','#080413']]
 ];
 const L={
- ru:{title:'Конструктор червя',desc:'Выбирай готовый облик или раскрашивай каждый круг отдельно. Рисунок повторяется при росте червя.',
- templates:'Готовые стили',segment:'Цвет отдельных сегментов',palette:'Палитра',all:'Залить всё',stripes:'Чередовать',reset:'Сбросить рисунок',done:'Готово',close:'Закрыть',picked:'Сегмент',custom:'Свой цвет',tip:'Нажми на круг для окрашивания. Shift + нажатие — закрасить диапазон.'},
- en:{title:'Worm Workshop',desc:'Pick a preset or paint individual body circles. Your pattern continues as your worm grows.',
- templates:'Ready-made styles',segment:'Individual body circles',palette:'Colors',all:'Fill all',stripes:'Alternate',reset:'Reset pattern',done:'Done',close:'Close',picked:'Segment',custom:'Custom color',tip:'Click any circle to paint it. Shift + click paints a range.'},
- es:{title:'Taller de gusanos',desc:'Elige un estilo o pinta cada segmento. El patrón continúa al crecer.',
- templates:'Estilos',segment:'Segmentos individuales',palette:'Colores',all:'Rellenar',stripes:'Alternar',reset:'Restablecer',done:'Listo',close:'Cerrar',picked:'Segmento',custom:'Color propio',tip:'Pulsa un círculo para pintarlo. Mayús + clic pinta un rango.'}
+ ru:{title:'Конструктор червя',desc:'Выбирай цельный космический облик со звёздами и кометами внутри тела или настрой плавный перелив цветов.',
+ templates:'Готовые стили',segment:'Цветовой перелив',palette:'Палитра',all:'Залить всё',stripes:'Чередовать',reset:'Сбросить рисунок',done:'Готово',close:'Закрыть',picked:'Сегмент',custom:'Свой цвет',tip:'Изменяй плавные цветовые переходы, не деля червя на секции.'},
+ en:{title:'Worm Workshop',desc:'Choose a seamless cosmic body with living stars and comets, or customize its smooth color gradients.',
+ templates:'Ready-made styles',segment:'Color gradient',palette:'Colors',all:'Fill all',stripes:'Alternate',reset:'Reset pattern',done:'Done',close:'Close',picked:'Segment',custom:'Custom color',tip:'Customize the seamless gradient; Shift + click edits a range.'},
+ es:{title:'Taller de gusanos',desc:'Elige un cuerpo cósmico continuo con estrellas, cometas y degradados.',
+ templates:'Estilos',segment:'Degradado',palette:'Colores',all:'Rellenar',stripes:'Alternar',reset:'Restablecer',done:'Listo',close:'Cerrar',picked:'Segmento',custom:'Color propio',tip:'Pulsa un círculo para pintarlo. Mayús + clic pinta un rango.'}
 };
 const normalize=x=>/^#[0-9a-f]{6}$/i.test(x)?x.toLowerCase():null;
 const presetColors=id=>PRESETS.find(x=>x[0]===id)?.[4]||PRESETS[0][4];
@@ -78,7 +78,7 @@ function open({onChange,onClose}={}){
  $('.ws-tip').textContent=t.tip;$('.ws-palette-title').textContent=t.palette;
  $('.ws-custom-title').textContent=t.custom;
  $('.ws-head-heading').textContent=lang==='ru'?'Форма головы':lang==='es'?'Forma de cabeza':'Head shape';
- $('.ws-advanced-summary').textContent=lang==='ru'?'ТОЧНАЯ НАСТРОЙКА ЦВЕТОВ · 64 СЕГМЕНТА':lang==='es'?'COLORES PERSONALIZADOS · 64 SEGMENTOS':'ADVANCED COLORS · 64 SEGMENTS';
+ $('.ws-advanced-summary').textContent=lang==='ru'?'НАСТРОЙКА ПЕРЕЛИВОВ · 64 ЦВЕТОВЫЕ ТОЧКИ':lang==='es'?'COLORES PERSONALIZADOS · 64 SEGMENTOS':'ADVANCED GRADIENT · 64 COLOR POINTS';
  const headLabels={classic:['Классическая','Classic','Clásica'],blackhole:['Чёрная дыра','Black Hole','Agujero negro'],pulsar:['Пульсар','Pulsar','Púlsar'],comet:['Комета','Comet','Cometa'],crystal:['Кристалл','Crystal','Cristal'],eclipse:['Затмение','Eclipse','Eclipse']};
  for(const id of HEADS){const b=document.createElement('button');b.type='button';b.className='ws-head-choice';b.dataset.head=id;b.innerHTML='<span class="ws-head-symbol" aria-hidden="true"></span><span></span>';b.lastChild.textContent=headLabels[id][lang==='ru'?0:lang==='es'?2:1];b.onclick=()=>{data.head=id;persist();root.querySelectorAll('.ws-head-choice').forEach(x=>x.classList.toggle('selected',x.dataset.head===id))};$('.ws-head-options').append(b)}
  root.querySelectorAll('.ws-head-choice').forEach(x=>x.classList.toggle('selected',x.dataset.head===data.head));
@@ -179,46 +179,66 @@ function open({onChange,onClose}={}){
    const y=111+Math.sin(i*.145-t*1.9)*21+Math.sin(i*.057+t*.55)*11;
    body.push({x,y});
   }
-  pc.save();
-  for(let i=0;i<count;i++){
-   const node=body[i],radius=23*(.56+.44*Math.min(1,i/15));
-   const color=colors[(count-1-i)%colors.length];
-   // Solid satin segments are GPU-friendly; stars/comets supply motion.
-   pc.fillStyle='#09091f';pc.beginPath();pc.arc(node.x,node.y,radius*1.07,0,Math.PI*2);pc.fill();
-   pc.fillStyle=color;pc.beginPath();pc.arc(node.x,node.y,radius*.91,0,Math.PI*2);pc.fill();
-   pc.fillStyle='#ffffff68';pc.beginPath();
-   pc.arc(node.x-radius*.28,node.y-radius*.34,radius*.27,0,Math.PI*2);pc.fill();
-   if(i%3===0){
-    const sx=node.x+Math.sin(t*.9+i*4.1)*radius*.43;
-    const sy=node.y+Math.cos(t*.7+i*1.3)*radius*.43;
-    pc.fillStyle='#fff9ee';pc.beginPath();pc.arc(sx,sy,i%9===0?2.5:1.4,0,Math.PI*2);pc.fill();
-   }
-   if(i%6===0&&['rift','dragon','royal','voidbloom'].includes(data.skin)){
-    pc.save();pc.translate(node.x,node.y);
-    if(data.skin==='rift'){
-     pc.strokeStyle='#ff91ee';pc.lineWidth=2;pc.beginPath();pc.moveTo(-11,-8);
-     pc.lineTo(0,7);pc.lineTo(10,-9);pc.stroke();
-    }else if(data.skin==='dragon'){
-     pc.fillStyle=i%12===0?'#ffdd48':'#ff426f';
-     pc.beginPath();pc.moveTo(-8,-12);pc.lineTo(0,-33);pc.lineTo(9,-12);pc.fill();
-    }else if(data.skin==='royal'){
-     pc.strokeStyle='#ffe67e';pc.lineWidth=1.4;pc.beginPath();pc.moveTo(-9,-6);
-     pc.lineTo(2,10);pc.lineTo(13,-5);pc.stroke();
-     pc.fillStyle='#fff7ce';pc.fillRect(-10,-8,3,3);pc.fillRect(0,9,3,3);pc.fillRect(12,-7,3,3);
-    }else{
-     pc.fillStyle='#ff6cb9';for(let j=0;j<4;j++){
-      pc.save();pc.rotate(j*Math.PI/2+t*.24);pc.beginPath();
-      pc.ellipse(9,0,10,4,0,0,Math.PI*2);pc.fill();pc.restore();
-     }
-    }
-    pc.restore();
-   }
-   if(i%14===0){
-    pc.strokeStyle='#ffe8ffb5';pc.lineWidth=1.2;
-    const comet=node.x+Math.sin(t*1.8+i)*radius*.4;
-    pc.beginPath();pc.moveTo(comet-13,node.y+6);pc.lineTo(comet+6,node.y-3);pc.stroke();
-   }
+  // Render the same seamless nebula body as the game: no separate circles.
+  pc.save();pc.lineCap='round';pc.lineJoin='round';
+  const path=new Path2D();path.moveTo(body[0].x,body[0].y);
+  for(let i=1;i<count-1;i++){
+   const p=body[i],q=body[i+1];
+   path.quadraticCurveTo(p.x,p.y,(p.x+q.x)*.5,(p.y+q.y)*.5);
   }
+  path.lineTo(body[count-1].x,body[count-1].y);
+  pc.shadowColor=presetColors(data.skin)[0];pc.shadowBlur=15;
+  pc.lineWidth=49;pc.strokeStyle='#0d071d';pc.stroke(path);pc.shadowBlur=0;
+  const gradient=pc.createLinearGradient(body[0].x,0,body[count-1].x,0);
+  if(data.customEnabled){
+   for(let j=0;j<16;j++)gradient.addColorStop(j/15,colors[Math.floor(j*63/15)]);
+  }else{
+   const c=presetColors(data.skin);
+   gradient.addColorStop(0,c[3]);gradient.addColorStop(.35,c[0]);
+   gradient.addColorStop(.7,c[2]);gradient.addColorStop(1,c[1]);
+  }
+  pc.lineWidth=44;pc.strokeStyle=gradient;pc.stroke(path);
+  const normal=body.map((p,i)=>{
+   const a=body[Math.max(0,i-1)],b=body[Math.min(count-1,i+1)];
+   const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1;
+   return {x:-dy/len,y:dx/len};
+  });
+  const silhouette=new Path2D();
+  body.forEach((p,i)=>{const v=normal[i];
+   i?silhouette.lineTo(p.x+v.x*19,p.y+v.y*19):
+     silhouette.moveTo(p.x+v.x*19,p.y+v.y*19);
+  });
+  for(let i=count-1;i>=0;i--){
+   const p=body[i],v=normal[i];silhouette.lineTo(p.x-v.x*19,p.y-v.y*19);
+  }
+  silhouette.closePath();
+  pc.save();pc.clip(silhouette);
+  pc.fillStyle=data.skin==='horizon'?'#03020c':'#071022';pc.fill(silhouette);
+  const theme=presetColors(data.skin);
+  for(let i=5;i<count;i+=10){
+   const p=body[i],v=normal[i],x=p.x+v.x*Math.sin(t+i)*7,y=p.y+v.y*Math.sin(t+i)*7;
+   const cloud=pc.createRadialGradient(x,y,0,x,y,38),color=theme[(i/10|0)%3];
+   cloud.addColorStop(0,color+'cc');cloud.addColorStop(.45,color+'66');cloud.addColorStop(1,color+'00');
+   pc.fillStyle=cloud;pc.fillRect(x-38,y-38,76,76);
+  }
+  for(let i=3;i<count-2;i+=2){
+   const p=body[i],v=normal[i],x=p.x+v.x*Math.sin(t+i*1.7)*13,y=p.y+v.y*Math.sin(t+i*1.7)*13;
+   pc.globalAlpha=.55+.45*Math.sin(t*3+i*11.1)**2;
+   pc.fillStyle=i%9===0?'#ffe7aa':'#fffaf5';
+   pc.beginPath();pc.arc(x,y,i%7===0?2.2:1.2,0,Math.PI*2);pc.fill();
+  }
+  pc.globalAlpha=1;
+  for(let j=0;j<3;j++){
+   const i=Math.max(1,Math.floor(count-4-(t*(8+j*.8)+j*15)%(count-8)));
+   const p=body[i],tail=body[Math.min(count-1,i+7)];
+   const trail=pc.createLinearGradient(tail.x,tail.y,p.x,p.y);
+   trail.addColorStop(0,'#ffffff00');trail.addColorStop(.5,theme[j]+'aa');trail.addColorStop(1,'#ffffff');
+   pc.strokeStyle=trail;pc.lineWidth=2.5;pc.beginPath();pc.moveTo(tail.x,tail.y);
+   for(let k=Math.min(count-1,i+6);k>=i;k--)pc.lineTo(body[k].x,body[k].y);
+   pc.stroke();
+   pc.fillStyle='#fff';pc.beginPath();pc.arc(p.x,p.y,3,0,Math.PI*2);pc.fill();
+  }
+  pc.restore();
   const head=body[count-1],next=body[count-2],angle=Math.atan2(head.y-next.y,head.x-next.x);
   pc.translate(head.x,head.y);pc.rotate(angle);
   const radius=25,accent=data.customEnabled?colors[0]:presetColors(data.skin)[0];
