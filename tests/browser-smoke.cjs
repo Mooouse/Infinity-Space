@@ -28,7 +28,7 @@ const log=(...a)=>process.stdout.write(a.join(' ')+'\n');
   assert.equal(await page.locator('#screen-menu .hub-menu').isVisible(),false);
   // No redundant Sections drawer: the existing shortcuts stay available.
   assert.equal(await page.locator('#screen-menu .hub-mode-story-back').count(),0);
-  assert.equal(await page.locator('#screen-menu .hub-story-shortcut').count(),8);
+  assert.equal(await page.locator('#screen-menu .hub-story-shortcut').count(),11);
   assert.equal(await page.locator('#screen-menu .hub-story-shortcut[data-shortcut="settings"]').isVisible(),true);
   assert.equal(await page.locator('#screen-menu .hub-story-shortcut[data-shortcut="map"]').isVisible(),true);
   const firstBonusHit=await page.evaluate(()=>{

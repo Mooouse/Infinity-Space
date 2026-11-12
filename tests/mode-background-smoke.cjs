@@ -20,10 +20,10 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   assert.equal(await page.evaluate(()=>window.SpaceMenuSceneMode),null);
   assert.equal(await page.locator('.hub-mode-dots button').count(),6);
   // Delegate elements remain mounted; each game mode shows only its actions.
-  assert.equal(await page.locator('.hub-story-shortcut').count(),8);
+  assert.equal(await page.locator('.hub-story-shortcut').count(),11);
   const visibleShortcuts=async()=>page.locator('.hub-story-shortcut:visible').evaluateAll(nodes=>nodes.map(n=>n.dataset.shortcut));
   assert.deepEqual(await visibleShortcuts(),
-   ['map','evolution','achievements','music','bestiary','settings'],
+   ['map','evolution','achievements','music','bestiary','settings','daily','roulette','profile'],
    'Endless Space must expose its six relevant game actions');
   await page.locator('.hub-story-shortcut[data-shortcut="settings"]').click();
   await page.locator('#screen-settings').waitFor({state:'visible',timeout:6000});
@@ -73,7 +73,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   await page.waitForFunction(()=>window.SpaceMenuSceneMode==='race',null,{timeout:4000});
   // No Sections button; the bottom navigation is permanently available.
   assert.equal(await page.locator('.hub-mode-story-back').count(),0);
-  assert.equal(await page.locator('.hub-story-shortcut').count(),8);
+  assert.equal(await page.locator('.hub-story-shortcut').count(),11);
   assert.deepEqual(await visibleShortcuts(),['achievements','statistics','settings'],
    'Competitive mode menu must hide unrelated universe actions');
   assert.equal(await page.locator('.hub-story-shortcut[data-shortcut="map"]').isVisible(),false,
@@ -81,7 +81,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   await page.locator('.hub-mode-dots [data-mode="endless"]').click();
   await page.waitForFunction(()=>window.SpaceMenuSceneMode===null,null,{timeout:5000});
   assert.deepEqual(await visibleShortcuts(),
-   ['map','evolution','achievements','music','bestiary','settings'],
+   ['map','evolution','achievements','music','bestiary','settings','daily','roulette','profile'],
    'Endless Space restores its relevant actions');
   console.log('PASS: visible navigation, campaign-only map, and smooth mode switching');
   await page.locator('.hub-mode-dots [data-mode="race"]').click();
@@ -99,9 +99,9 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   await mobile.goto(base+'/?tester=1',{waitUntil:'domcontentloaded',timeout:60000});
   await mobile.locator('#hub-mode-story').waitFor({state:'visible',timeout:45000});
   assert.equal(await mobile.locator('#screen-menu .hub-modes').count(),0);
-  assert.equal(await mobile.locator('.hub-story-shortcut').count(),8);
-  assert.equal(await mobile.locator('.hub-story-shortcut:visible').count(),6,
-   'Mobile Endless Space must expose six relevant actions');
+  assert.equal(await mobile.locator('.hub-story-shortcut').count(),11);
+  assert.equal(await mobile.locator('.hub-story-shortcut:visible').count(),9,
+   'Mobile Endless Space must expose all nine bottom shortcuts');
   assert.equal(await mobile.locator('.hub-story-shortcut[data-shortcut="settings"]').isVisible(),true);
   const box=await mobile.locator('#hub-mode-story').boundingBox();
   const y=Math.round(box.height*.45),left=Math.round(box.width*.78),right=Math.round(box.width*.2);
