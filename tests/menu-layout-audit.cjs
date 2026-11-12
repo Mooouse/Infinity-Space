@@ -1,4 +1,4 @@
-// Visual regression gate for the five-mode main menu in a real browser.
+// Visual regression gate for the six-mode main menu in a real browser.
 'use strict';
 const assert=require('node:assert/strict');
 const {chromium}=require('playwright');
@@ -46,8 +46,9 @@ const inspect=()=>{
   viewport:[innerWidth,innerHeight],doc:document.documentElement.scrollWidth,
   mode:document.querySelector('.hub-mode-dots .current')?.getAttribute('aria-label')||'',
   title:title.textContent,lines:[...lines.values()],lineLengths,
-  navDelta:Math.round(rnav.cx-innerWidth/2),
+  navDelta:Math.round(rnav.cx-rfoot.cx),
   footer:rfoot,dock:rdock,titleRect:rtitle,subtitle:rect(subtitle),
+   collision:rfoot.left<rdock.right-2&&rfoot.right>rdock.left+2&&rfoot.top<rdock.bottom-2&&rfoot.bottom>rdock.top+2,
   navVisible:getComputedStyle(nav).display!=='none',
   dockVisible:getComputedStyle(dock).display!=='none',
   playSvg:!!button.querySelector('svg'),
@@ -80,28 +81,26 @@ const inspect=()=>{
      if(m.doc>w+2)issues.push('horizontal-document-overflow');
      if(!m.navVisible||Math.abs(m.navDelta)>3)issues.push('carousel-not-centered');
      if(!m.dockVisible||m.dock.bottom>h+2||m.dock.top<0)issues.push('bottom-navigation-outside-viewport');
-     if(m.footer.bottom>m.dock.top+2)issues.push('footer-overlaps-navigation');
+     if(m.collision)issues.push('footer-overlaps-navigation');
      if(m.titleRect.right>w+2||m.titleRect.left<0||m.titleScroll>4)issues.push('title-overflows');
      if(m.lineLengths.length&&m.lineLengths.at(-1)===1)issues.push('title-orphan-letter');
      if(!m.playSvg)issues.push('legacy-cta-arrow');
      if(!m.prevHit||!m.nextHit||!m.playHit)issues.push('button-not-hittable');
-     // A saturated button must never inherit a violet halo from another theme.
-     // Verify real computed hover borders across every mode and semantic dock key.
+     // The supplied original design uses one violet control language;
+     // test a visible hover glow and consistent palette, not a rainbow hue.
      if(w===1920&&h===1080){
-      const hue=['rgb(40, 96, 255)','rgb(255, 23, 68)','rgb(153, 34, 255)',
-       'rgb(39, 255, 64)','rgb(255, 229, 0)','rgb(153, 34, 255)'][n];
-      await page.locator('.hub-mode-story-play').hover();
-      await page.waitForTimeout(210);
-      const actual=await page.locator('.hub-mode-story-play').evaluate(el=>getComputedStyle(el).borderTopColor);
-      if(actual!==hue)issues.push('play-hover-mismatched-'+actual+'-expected-'+hue);
-      for(const [id,expected] of [['new','rgb(255, 23, 68)'],
-       ['music','rgb(153, 34, 255)'],['map','rgb(40, 96, 255)']]){
+      const play=page.locator('.hub-mode-story-play');
+      await play.hover();await page.waitForTimeout(220);
+      const state=await play.evaluate(el=>({border:getComputedStyle(el).borderTopColor,shadow:getComputedStyle(el).boxShadow}));
+      if(state.border!=='rgb(230, 215, 255)'||state.shadow==='none')
+       issues.push('reference-play-glow-'+JSON.stringify(state));
+      for(const id of ['new','music','map']){
        const el=page.locator('.hub-story-shortcut[data-shortcut="'+id+'"]');
-       if(await el.count() && await el.isVisible()){
-        await el.hover();
-        await page.waitForTimeout(240);
-        const border=await el.evaluate(node=>getComputedStyle(node).borderTopColor);
-        if(border!==expected)issues.push('shortcut-'+id+'-hover-'+border);
+       if(await el.count()&&await el.isVisible()){
+        await el.hover();await page.waitForTimeout(220);
+        const state=await el.evaluate(node=>({border:getComputedStyle(node).borderTopColor,shadow:getComputedStyle(node).boxShadow}));
+        if(state.border!=='rgb(185, 150, 255)'||state.shadow==='none')
+         issues.push('reference-shortcut-glow-'+id+'-'+JSON.stringify(state));
        }
       }
      }
