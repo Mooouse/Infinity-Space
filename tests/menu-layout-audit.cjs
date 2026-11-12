@@ -149,7 +149,21 @@ const inspect=()=>{
       }
      }
      if(issues.length)failures.push({w,h,lang,n,issues,layout:m});
-    }catch(e){failures.push({w,h,lang,n,error:String(e).slice(0,350)});}
+    }catch(e){
+     // Make click-interception failures diagnosable on the first run.
+     const hit=await page.evaluate(index=>{
+      const el=document.querySelectorAll('.hub-mode-dots button')[index];
+      if(!el)return {missing:true};
+      const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
+      const top=document.elementFromPoint(x,y),parent=el.closest('.hub-mode-story-footer');
+      return {x:Math.round(x),y:Math.round(y),viewport:[innerWidth,innerHeight],
+       target:top?.tagName+'#'+(top?.id||'')+'.'+(typeof top?.className==='string'?top.className:''),
+       footerZ:parent?getComputedStyle(parent).zIndex:null,
+       footerRect:parent?.getBoundingClientRect().toJSON(),
+       dotRect:r.toJSON(),overlap:top!==el&&!el.contains(top)};
+     },n).catch(()=>null);
+     failures.push({w,h,lang,n,error:String(e).slice(0,1000),hit});
+    }
    }
    await context.close();
   }
