@@ -222,7 +222,7 @@
    // bestiary and universe management. Competitive modes are not burdened
    // with unrelated persistent-universe actions.
    const allowed=entry.id==='endless'
-    ? new Set(['map','evolution','achievements','music','bestiary','settings'])
+    ? new Set(['map','evolution','achievements','music','bestiary','settings','daily','roulette','profile'])
     : new Set(['achievements','statistics','settings']);
    nicknameField.hidden=entry.id==='endless';
    chip.hidden=entry.id!=='endless';
@@ -237,7 +237,7 @@
    dock.style.setProperty('--mode-nav-count',String(visible));
    dock.style.setProperty('--mode-nav-mobile-cols',String(Math.min(visible,3)));
    const quickActions=q(overlay,'.hub-story-quick');
-   if(quickActions)quickActions.hidden=entry.id!=='endless';
+   if(quickActions)quickActions.hidden=true; // rewards now live alongside the bottom shortcuts
       q(overlay,'.hub-mode-story-skins').hidden=entry.id!=='worms';
     q(overlay,'.hub-mode-story-play span').textContent=entry.id==='endless'?
     t(['CONTINUE EXPLORING','ПРОДОЛЖИТЬ ПОЛЁТ','CONTINUAR EXPLORANDO']):
@@ -299,6 +299,29 @@
    };
    nav.append(item);
   }
+  // The formerly top-right Daily/Roulette controls are the ORIGINAL live
+  // buttons, moved into the bottom dock so their reward handlers stay intact.
+  // The profile control also lives here; no floating right-side buttons.
+  for(const [kind,labels] of [
+   ['daily',['Daily rewards','Награды','Recompensas']],
+   ['roulette',['Roulette','Рулетка','Ruleta']]
+  ]){
+   const button=q(quick,'[data-reward-page="'+kind+'"]');if(!button)continue;
+   const icon=button.querySelector('svg')?.outerHTML||
+    (kind==='daily'?'✦':'◉');
+   button.classList.add('hub-story-shortcut');
+   button.dataset.shortcut=kind;
+   button.innerHTML='<span class="hub-story-shortcut-icon" aria-hidden="true">'+icon+'</span>'+
+    '<span class="hub-story-shortcut-label">'+esc(t(labels))+'</span>';
+   button.setAttribute('aria-label',t(labels));
+   nav.append(button);
+  }
+  chip.classList.add('hub-story-shortcut');
+  chip.dataset.shortcut='profile';
+  chip.innerHTML='<span class="hub-story-shortcut-icon" aria-hidden="true">✧</span>'+
+   '<span class="hub-story-shortcut-label hub-profile-name">PLAYER</span>';
+  nav.append(chip);syncNickname();
+  quick.hidden=true;
   const dots=q(overlay,'.hub-mode-dots');
   modeStories.forEach((entry,i)=>{
    const dot=document.createElement('button');dot.type='button';
