@@ -97,10 +97,50 @@ const NAMES=['Astra','Orbit','Nova','Pulsar','Quasar','Mira','Voidling','Zenith'
  'Nebula','Kepler','Comet','Krypton','Lumen','Solaris','Aether','Cosmo','Rift','Ion','Rigel','Helix','Antares','Nix','Altair'];
 // The lobby has a stable mixture of player archetypes rather than one global AI
 // difficulty. Timing, awareness, aim, aggression, speed and AFK habits vary.
-const BOT_ROSTER=[
- 'newcomer','casual','cautious','hunter','afk','casual','newcomer','veteran',
- 'casual','hunter','casual','pro','cautious','newcomer','casual','reckless'
-];
+const BOT_ROSTER=['newcomer','casual','cautious','hunter','afk','veteran','pro','reckless'];
+const ROLE_POOL=['newcomer','newcomer','casual','casual','casual','casual','cautious','cautious','hunter','hunter','veteran','pro','reckless','afk'];
+const BOT_HEADS=['classic','blackhole','pulsar','comet','crystal','eclipse'];
+const BOT_SUFFIX=['','','','','_x','77','_tv','_io','_2','_sun','_star'];
+function shuffleList(list){
+ for(let i=list.length-1;i>0;i--){
+  const j=Math.floor(Math.random()*(i+1));
+  [list[i],list[j]]=[list[j],list[i]];
+ }
+ return list;
+}
+function chooseBotRole(previous){
+ let next,tries=0;
+ do{next=ROLE_POOL[Math.floor(Math.random()*ROLE_POOL.length)];}
+ while(next===previous&&tries++<22);
+ return next===previous?BOT_ROSTER[(BOT_ROSTER.indexOf(previous)+1)%BOT_ROSTER.length]:next;
+}
+function botIdentity(previous=null,role=null){
+ const persona=role||chooseBotRole(previous?.persona);
+ const candidates=SKINS.filter(v=>v.id!==previous?.skin);
+ const skin=candidates[Math.floor(Math.random()*candidates.length)];
+ const heads=BOT_HEADS.filter(x=>x!==previous?.head);
+ const head=heads[Math.floor(Math.random()*heads.length)];
+ let name;
+ for(let tries=0;tries<24;tries++){
+  name=NAMES[Math.floor(Math.random()*NAMES.length)]+BOT_SUFFIX[Math.floor(Math.random()*BOT_SUFFIX.length)];
+  if(name!==previous?.name)break;
+ }
+ return {persona,skin:skin.id,head,name};
+}
+function lobbyBotIdentities(count){
+ const roles=[];
+ for(const role of BOT_ROSTER)roles.push(role,role);
+ while(roles.length<count)roles.push(ROLE_POOL[Math.floor(Math.random()*ROLE_POOL.length)]);
+ shuffleList(roles);
+ const used=new Set();
+ return roles.slice(0,count).map(role=>{
+  const identity=botIdentity(null,role);
+  for(let tries=0;tries<24&&used.has(identity.name);tries++)
+   identity.name=NAMES[Math.floor(Math.random()*NAMES.length)]+(100+Math.floor(Math.random()*900));
+  used.add(identity.name);
+  return identity;
+ });
+}
 const BOT_PERSONAS={
  afk:      {reaction:[1.6,3],    sight:0,   samples:0,  look:[90],            awareness:0,   error:0,    hunt:0,   boost:0,    speed:1},
  newcomer: {reaction:[.55,.95],  sight:360, samples:4,  look:[100],           awareness:.14, error:.65,  hunt:0,   boost:.07,  speed:.83},
@@ -169,7 +209,7 @@ function spawnPosition(angle,count,nearPlayer=false){
  }
  return null; // No unsafe fallback: retry after other worms have moved.
 }
-function createWorm(name,human,index,preferEncounter=false){
+function createWorm(name,human,index,preferEncounter=false,identity=null){
  const angle=human?-.28:rand(0,TAU);
  const mass=human?61:rand(54,171);
  const count=segmentCount({mass});
@@ -179,7 +219,8 @@ function createWorm(name,human,index,preferEncounter=false){
   mass,bestMass:mass,bestLength:count,alive:true,invulnerable:human?2.3:2.0,
   segments:[],boost:false,dropClock:0,think:rand(.1,.2),targetFood:null,kills:0,
   foodEaten:0,bestRank:99,leadTime:0,deathDelay:0,
-  persona:human?'human':BOT_ROSTER[(Math.max(1,index)-1)%BOT_ROSTER.length],
+  persona:human?'human':(identity?.persona||chooseBotRole()),
+  head:human?options.head:(identity?.head||BOT_HEADS[Math.floor(Math.random()*BOT_HEADS.length)]),
   wiggle:rand(0,TAU),speed:172,boostFlash:0,afkTimer:0,goalUntil:0};
  if(!human){
   const type=BOT_PERSONAS[w.persona];
@@ -188,7 +229,7 @@ function createWorm(name,human,index,preferEncounter=false){
   // AFK rivals coast forward without steering; they never stand still.
   w.afkTimer=w.persona==='afk'?Infinity:0;
  }
- applySkin(w,human?options.skin:SKINS[index%SKINS.length].id);
+ applySkin(w,human?options.skin:(identity?.skin||SKINS[Math.floor(Math.random()*SKINS.length)].id));
  for(let i=0;i<count;i++){
   w.segments.push({x:w.x-Math.cos(angle)*11.8*(i+1),
    y:w.y-Math.sin(angle)*11.8*(i+1)});
@@ -315,9 +356,10 @@ function init(){
  const human=!DEMO;
  const p=createWorm(DEMO?'Astra':(window.InfinityProfile?.getName()||'PILOT'),human,0);
  game.player=p;game.worms.push(p);
+ const identities=lobbyBotIdentities(BOT_COUNT);
  for(let i=1;i<=BOT_COUNT;i++){
-  const label=NAMES[(i-1)%NAMES.length]+(i>NAMES.length?' '+(Math.floor((i-1)/NAMES.length)+1):'');
-  const b=createWorm(label,false,i,i<=32);
+  const identity=identities[i-1];
+  const b=createWorm(identity.name,false,i,i<=32,identity);
   if(b)game.worms.push(b);
  }
  fillFood(FOOD_TARGET);
@@ -617,7 +659,8 @@ function recycleBots(dt){
   if(w.human||w.alive)continue;
   w.deathDelay-=dt;
   if(w.deathDelay>0)continue;
-  const fresh=createWorm(w.name,false,w.id,w.id%3===0);
+  const identity=botIdentity(w);
+  const fresh=createWorm(identity.name,false,w.id,w.id%3===0,identity);
   if(fresh)Object.assign(w,fresh);
   else w.deathDelay=1.3; // Never force a bot into the player if no safe zone exists.
  }
@@ -940,7 +983,7 @@ function drawSkinGeometry(w,t,r){
  ctx.restore();
 }
 function drawSkinHead(w,r){
- const p=w.pattern,head=w.human?options.head:'classic';
+ const p=w.pattern,head=w.human?options.head:(w.head||'classic');
  if(head==='blackhole'){
   ctx.save();ctx.translate(w.x,w.y);ctx.rotate(w.angle);
   const pulse=performance.now()*.0015;
@@ -1382,9 +1425,16 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
     resultVisible:!$('worm-result').hidden,
     resultAnimating:$('worm-result').classList.contains('is-revealing')}),
   bots:()=>game.worms.filter(w=>!w.human).map(w=>({
-    id:w.id,persona:w.persona,x:w.x,y:w.y,alive:w.alive,
+    id:w.id,name:w.name,persona:w.persona,skin:w.skin,head:w.head,x:w.x,y:w.y,alive:w.alive,
     speed:w.speed,reaction:w.reaction,afk:w.afkTimer>0,mass:w.mass
   })),
+  botReshuffleProbe:()=>{
+   const b=game.worms.find(w=>!w.human&&w.alive);
+   if(!b)return null;
+   const after=botIdentity(b);
+   return {before:{persona:b.persona,skin:b.skin,head:b.head,name:b.name},
+     after,independent:after.persona!==b.persona&&after.skin!==b.skin&&after.head!==b.head&&after.name!==b.name};
+  },
   botStyles:()=>Object.fromEntries(
     Object.keys(BOT_PERSONAS).map(id=>[id,
       game.worms.filter(w=>!w.human&&w.persona===id).length])),
