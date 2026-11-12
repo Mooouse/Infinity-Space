@@ -98,51 +98,111 @@ function showStats(selected){
  statsMode=(selected&&MODE_IDS.includes(selected))?selected:'overall';
  if(statsNode)statsNode.remove();
  const node=document.createElement('div');statsNode=node;
- node.className='infinity-profile-overlay';node.setAttribute('role','dialog');
- node.setAttribute('aria-modal','true');node.setAttribute('aria-label',text('stats'));
- node.innerHTML='<section class="infinity-profile-panel infinity-stats-panel">'+
-  '<div class="infinity-panel-top"><div><small>INFINITY SPACE / '+text('profile')+'</small><h2>'+text('stats')+'</h2></div>'+
-  '<button class="infinity-overlay-close" type="button" aria-label="'+text('close')+'">×</button></div>'+
-  '<div class="infinity-stats-player"><span class="infinity-profile-avatar">✧</span>'+
-  '<strong class="infinity-stats-player-name"></strong><button class="infinity-stats-change-name" type="button">'+text('edit')+'</button></div>'+
-  '<div class="infinity-stats-tabs" role="tablist"></div><div class="infinity-stats-detail"></div></section>';
- document.body.appendChild(node);
- node.querySelector('.infinity-stats-player-name').textContent=getName()||'PLAYER';
- const tabs=node.querySelector('.infinity-stats-tabs'),labels=NAMES[language()];
- ['overall',...MODE_IDS].forEach((id,i)=>{
+ node.className='infinity-profile-overlay infinity-stats-overlay';
+ node.setAttribute('role','dialog');node.setAttribute('aria-modal','true');
+ node.setAttribute('aria-label',text('stats'));
+ const panel=document.createElement('section');panel.className='infinity-profile-panel infinity-stats-panel';
+ panel.innerHTML='<div class="infinity-panel-top infinity-stats-heading">'+
+  '<button class="infinity-overlay-close" type="button" aria-label="'+text('close')+'">'+
+   localeTriple(['← BACK','← НАЗАД','← VOLVER'])+'</button>'+
+  '<div><small>INFINITY SPACE / '+text('stats')+'</small><h2>'+text('stats')+'</h2></div></div>'+
+  '<div class="infinity-stats-identity"><span aria-hidden="true">✧</span>'+
+    '<small>'+text('nickname')+'</small><strong class="infinity-stats-player-name"></strong></div>'+
+  '<div class="infinity-stats-tabs" role="tablist"></div>'+
+  '<div class="infinity-stats-content"><div class="infinity-stats-context"></div>'+
+  '<div class="infinity-stats-hero"></div><div class="infinity-stats-detail"></div></div>';
+ node.append(panel);document.body.append(node);
+ panel.querySelector('.infinity-stats-player-name').textContent=getName()||'PLAYER';
+ const tabs=panel.querySelector('.infinity-stats-tabs'),labels=NAMES[language()];
+ for(const [i,id] of ['overall',...MODE_IDS].entries()){
   const b=document.createElement('button');b.type='button';b.dataset.mode=id;
   b.textContent=labels[i];b.setAttribute('role','tab');
-  b.onclick=()=>{statsMode=id;paint();};
-  tabs.appendChild(b);
- });
- node.querySelector('.infinity-overlay-close').onclick=()=>{node.remove();if(statsNode===node)statsNode=null;};
- node.querySelector('.infinity-stats-change-name').onclick=()=>promptName(false,()=>{node.querySelector('.infinity-stats-player-name').textContent=getName();});
- node.addEventListener('pointerdown',ev=>{if(ev.target===node)node.querySelector('.infinity-overlay-close').click();});
- const key=e=>{if(!node.isConnected){document.removeEventListener('keydown',key,true);return;}
-  if(e.code==='Escape'){e.preventDefault();e.stopImmediatePropagation();node.querySelector('.infinity-overlay-close').click();document.removeEventListener('keydown',key,true);}};
- document.addEventListener('keydown',key,true);
+  b.onclick=()=>{statsMode=id;paint();};tabs.append(b);
+ }
+ const close=()=>{
+  document.removeEventListener('keydown',onKey,true);
+  node.remove();if(statsNode===node)statsNode=null;
+ };
+ panel.querySelector('.infinity-overlay-close').onclick=close;
+ node.addEventListener('pointerdown',ev=>{if(ev.target===node)close();});
+ const onKey=e=>{if(e.key==='Escape'){
+  e.preventDefault();e.stopImmediatePropagation();close();
+ }};
+ document.addEventListener('keydown',onKey,true);
  function paint(){
-  const s=getStats(),b=statsMode==='overall'?total(s):s[statsMode];
-  [...tabs.children].forEach(button=>{const active=button.dataset.mode===statsMode;button.classList.toggle('active',active);button.setAttribute('aria-selected',String(active));});
-  const list=[
-   ['matches',b.matches],['wins',b.wins],['winrate',(statsMode==='overall'?MODE_IDS.slice(1).reduce((sum,id)=>sum+s[id].matches,0):b.matches)?Math.round(b.wins/(statsMode==='overall'?MODE_IDS.slice(1).reduce((sum,id)=>sum+s[id].matches,0):b.matches)*100)+'%':'0%'],
-   ['kills',b.kills],['objects',b.objects],['mass',b.maxMass],['time',clock(b.time)]
+  const all=getStats(),b=statsMode==='overall'?total(all):all[statsMode];
+  [...tabs.children].forEach(button=>{
+   const active=button.dataset.mode===statsMode;
+   button.classList.toggle('active',active);
+   button.setAttribute('aria-selected',String(active));
+   button.tabIndex=active?0:-1;
+  });
+  const competitive=statsMode!=='endless';
+  const matchCount=statsMode==='overall'?MODE_IDS.filter(id=>id!=='endless')
+   .reduce((sum,id)=>sum+all[id].matches,0):b.matches;
+  const winrate=matchCount?Math.round(b.wins/matchCount*100)+'%':'0%';
+  const metric=(key,value)=>({key,label:text(key),
+   value:typeof value==='number'?num(value):String(value)});
+  const sections=[];
+  const add=(title,values)=>{if(values.length)sections.push({title,values});};
+  const group=(en,ru,es)=>localeTriple([en,ru,es]);
+  const isOverview=statsMode==='overall';
+  const isEndless=statsMode==='endless';
+  const isRace=statsMode==='race';
+  const isCore=statsMode==='core';
+  const isWorm=statsMode==='worms';
+  const modeIndex=statsMode==='overall'?0:MODE_IDS.indexOf(statsMode)+1;
+  panel.querySelector('.infinity-stats-context').textContent=labels[modeIndex];
+  const hero=isEndless?
+   [metric('time',clock(b.time)),metric('objects',b.objects),metric('mass',b.maxMass)]:
+   isOverview?
+   [metric('matches',b.matches),metric('time',clock(b.time)),metric('wins',b.wins)]:
+   [metric('matches',b.matches),metric('wins',b.wins),metric('winrate',winrate)];
+  const heroNode=panel.querySelector('.infinity-stats-hero');heroNode.replaceChildren();
+  for(const [i,item] of hero.entries()){
+   const card=document.createElement('div');card.className='infinity-stats-highlight';
+   card.dataset.position=String(i+1);
+   const label=document.createElement('small');label.textContent=item.label;
+   const strong=document.createElement('strong');strong.textContent=item.value;
+   card.append(label,strong);heroNode.append(card);
+  }
+  if(competitive){
+   add(group('MATCH PERFORMANCE','РЕЗУЛЬТАТЫ МАТЧЕЙ','RESULTADOS DE PARTIDAS'),[
+    metric('wins',b.wins),metric('winrate',winrate),
+    metric('kills',b.kills),metric('top3',b.top3),
+    metric('deaths',b.deaths)
+   ]);
+  }
+  add(group('ACTIVITY','АКТИВНОСТЬ','ACTIVIDAD'),[
+   metric('time',clock(b.time)),metric('objects',b.objects),
+   ...(isEndless||isOverview?[metric('matter',b.matter),
+    metric('rare',b.rare),metric('blackholes',b.blackholes)]:[])
+  ]);
+  const records=[
+   metric('mass',b.maxMass),
+   ...(isEndless||isOverview?[metric('stage',b.maxStage>0?b.maxStage+1:0)]:[]),
+   ...(!isEndless&&(isOverview||['arena','royale','worms'].includes(statsMode))?
+    [metric('best',b.bestPlace===null?'—':'#'+b.bestPlace)]:[]),
+   ...(isCore||isOverview?[metric('points',b.points)]:[]),
+   ...(isRace||isOverview?[metric('finish',b.bestFinish===null?'—':clock(b.bestFinish))]:[]),
+   ...(isRace?[metric('forms',b.forms.slice(1).join(' / '))]:[])
   ];
-  if(statsMode==='endless'||statsMode==='overall')list.push(['stage',b.maxStage+1],['matter',b.matter],['rare',b.rare],['blackholes',b.blackholes]);
-  if(['arena','royale','worms','overall'].includes(statsMode))list.push(['best',b.bestPlace===null?'—':'#'+b.bestPlace],['top3',b.top3]);
-  if(statsMode==='core'||statsMode==='overall')list.push(['points',b.points]);
-  if(statsMode==='race'||statsMode==='overall')list.push(['finish',b.bestFinish===null?'—':clock(b.bestFinish)]);
-  if(statsMode==='race')list.push(['forms',b.forms.slice(1).join(' / ')]);
-  const detail=node.querySelector('.infinity-stats-detail');detail.replaceChildren();
-  for(const [key,value] of list){
-   const card=document.createElement('div');card.className='infinity-stats-card';
-   const label=document.createElement('small');label.textContent=text(key);
-   const strong=document.createElement('strong');strong.textContent=typeof value==='number'?num(value):String(value);
-   card.append(label,strong);detail.append(card);
+  add(group('PERSONAL RECORDS','ЛИЧНЫЕ РЕКОРДЫ','RÉCORDS PERSONALES'),records);
+  const detail=panel.querySelector('.infinity-stats-detail');detail.replaceChildren();
+  for(const section of sections){
+   const region=document.createElement('section');region.className='infinity-stats-section';
+   const heading=document.createElement('h3');heading.textContent=section.title;
+   const rows=document.createElement('div');rows.className='infinity-stats-rows';
+   for(const item of section.values){
+    const row=document.createElement('div');row.className='infinity-stats-row';
+    const label=document.createElement('span');label.textContent=item.label;
+    const value=document.createElement('strong');value.textContent=item.value;
+    row.append(label,value);rows.append(row);
+   }
+   region.append(heading,rows);detail.append(region);
   }
  }
- paint();
- return node;
+ paint();return node;
 }
 function promptName(required=true,onSave){
  const current=document.querySelector('.infinity-nickname-prompt');if(current){current.querySelector('input')?.focus();return current;}
@@ -277,32 +337,49 @@ function achievementStats(mode,stats){
  return {mode,earned:items.filter(a=>a.unlocked).length,total:items.length,items};
 }
 function showModeAchievements(mode){
- const state=achievementStats(mode);
- if(!state)return null;
+ const state=achievementStats(mode);if(!state)return null;
  document.querySelector('.infinity-mode-achievements-overlay')?.remove();
  const node=document.createElement('div');
  node.className='infinity-profile-overlay infinity-mode-achievements-overlay';
  node.setAttribute('role','dialog');node.setAttribute('aria-modal','true');
+ node.setAttribute('aria-label',localeTriple(['ACHIEVEMENTS','ДОСТИЖЕНИЯ','LOGROS']));
+ // The exact V15.3 Achievements page structure is shared by all game modes.
+ // Only the achievement DATA differs; the cards, filters, summary and heading
+ // are identical to Endless Space's #screen-achievements.
  const panel=document.createElement('section');
- panel.className='infinity-profile-panel infinity-mode-achievements-panel';
- const top=document.createElement('div');top.className='infinity-panel-top';
- const heading=document.createElement('div');
- const subtitle=document.createElement('small');
- subtitle.textContent='INFINITY SPACE / '+NAMES[language()][MODE_IDS.indexOf(mode)+1];
- const title=document.createElement('h2');title.textContent=localeTriple(['ACHIEVEMENTS','ДОСТИЖЕНИЯ','LOGROS']);
- heading.append(subtitle,title);
- const closeBtn=document.createElement('button');
- closeBtn.type='button';closeBtn.className='infinity-overlay-close';
- closeBtn.setAttribute('aria-label',text('close'));closeBtn.textContent=localeTriple(['← BACK','← НАЗАД','← VOLVER']);
- top.append(heading,closeBtn);
- const summary=document.createElement('div');summary.className='infinity-mode-achievements-summary';
- const total=document.createElement('strong');total.textContent=state.earned+' / '+state.total;
- const explanation=document.createElement('span');
- explanation.textContent=localeTriple(['Unlocked in this mode','Открыто в этом режиме','Desbloqueados en este modo']);
- summary.append(total,explanation);
- const filters=document.createElement('nav');filters.className='infinity-mode-achievements-filters br-ach-filters';
- filters.setAttribute('aria-label',localeTriple(['Achievement rarity','Редкость достижений','Rareza de logros']));
- const filterDefs=[
+ panel.id='screen-mode-achievements';panel.className='screen active overlay-screen br-full';
+ const tr=localeTriple;
+ const back=tr(['← BACK','← НАЗАД','← VOLVER']);
+ const title=tr(['ACHIEVEMENTS','ДОСТИЖЕНИЯ','LOGROS']);
+ panel.innerHTML='<div class="br-head">'+
+   '<button type="button" class="br-head-back infinity-overlay-close"></button>'+
+   '<div><span class="br-serial"></span><h2></h2></div>'+
+   '<div class="br-head-tag"></div></div>'+
+  '<div class="br-ach-layout">'+
+   '<aside class="br-ach-summary"><span class="br-serial"></span>'+
+    '<div class="br-ach-big"></div><strong></strong><p></p></aside>'+
+   '<div class="br-ach-content"><div class="br-ach-filters infinity-mode-achievements-filters"></div>'+
+    '<div class="br-ach-list infinity-mode-achievements-list"></div></div>'+
+  '</div>';
+ panel.querySelector('.infinity-overlay-close').textContent=back;
+ panel.querySelector('.infinity-overlay-close').setAttribute('aria-label',text('close'));
+ panel.querySelector('.br-head .br-serial').textContent='INFINITY SPACE / '+
+  NAMES[language()][MODE_IDS.indexOf(mode)+1];
+ panel.querySelector('.br-head h2').textContent=title;
+ panel.querySelector('.br-head-tag').textContent=tr(['6 RARITIES','6 РЕДКОСТЕЙ','6 RAREZAS']);
+ panel.querySelector('.br-ach-summary .br-serial').textContent=
+  tr(['FULL CATALOG','ПОЛНЫЙ СПИСОК','CATÁLOGO COMPLETO']);
+ const summary=panel.querySelector('.br-ach-big');
+ summary.textContent=String(state.earned);
+ const total=document.createElement('span');total.textContent='/'+state.total;
+ summary.append(total);
+ panel.querySelector('.br-ach-summary strong').textContent=
+  tr(['UNLOCK THE IMPOSSIBLE','ОТКРЫТЬ НЕВОЗМОЖНОЕ','DESBLOQUEA LO IMPOSIBLE']);
+ panel.querySelector('.br-ach-summary p').textContent=
+  tr(['Progress is saved separately for this mode',
+   'Прогресс сохраняется отдельно для этого режима',
+   'El progreso se guarda por separado para este modo']);
+ const definitions=[
   ['all',['ALL','ВСЕ','TODOS']],
   ['common',['COMMON','ОБЫЧНЫЕ','COMUNES']],
   ['uncommon',['UNCOMMON','НЕОБЫЧНЫЕ','POCO COMUNES']],
@@ -311,51 +388,54 @@ function showModeAchievements(mode){
   ['legendary',['LEGENDARY','ЛЕГЕНДАРНЫЕ','LEGENDARIOS']],
   ['mythic',['MYTHIC','МИФИЧЕСКИЕ','MÍTICOS']]
  ];
- const list=document.createElement('div');list.className='infinity-mode-achievements-list br-ach-list';
+ const filters=panel.querySelector('.infinity-mode-achievements-filters');
+ const list=panel.querySelector('.infinity-mode-achievements-list');
  const cards=[];
- for(const a of state.items){
-  const rarity=ACHIEVEMENT_RARITY.find(row=>row[1]===a.color)?.[0]||'common';
-  const card=document.createElement('article');
-  card.className='infinity-mode-achievement br-ach-row'+(a.unlocked?' unlocked':'');
-  card.dataset.rarity=rarity;
-  card.style.setProperty('--rarity',a.color);
-  const insignia=document.createElement('span');insignia.className='infinity-mode-achievement-insignia br-ach-symbol '+rarity;
-  insignia.textContent=a.unlocked?'✓':'✧';
-  const content=document.createElement('div');content.className='infinity-mode-achievement-copy br-ach-copy';
+ for(const achievement of state.items){
+  const rarity=ACHIEVEMENT_RARITY.find(x=>x[1]===achievement.color)?.[0]||'common';
+  const row=document.createElement('div');
+  row.className='br-ach-row infinity-mode-achievement'+(achievement.unlocked?' unlocked':'');
+  row.dataset.rarity=rarity;row.style.setProperty('--rarity',achievement.color);
+  const emblem=document.createElement('div');
+  emblem.className='br-ach-symbol '+rarity+' infinity-mode-achievement-insignia';
+  emblem.textContent=achievement.unlocked?'✓':'✧';
+  const copy=document.createElement('div');copy.className='br-ach-copy infinity-mode-achievement-copy';
   const label=document.createElement('span');label.className='br-ach-rarity '+rarity;
-  const rarityRow=filterDefs.find(row=>row[0]===rarity);
-  label.textContent=localeTriple(rarityRow?.[1]||filterDefs[1][1]);
-  const name=document.createElement('strong');name.textContent=a.title;
-  const description=document.createElement('small');description.textContent=a.hint;
-  const track=document.createElement('div');track.className='infinity-mode-achievement-track br-ach-prog';
-  track.setAttribute('role','progressbar');track.setAttribute('aria-label',a.title);
-  track.setAttribute('aria-valuemin','0');track.setAttribute('aria-valuemax','100');
-  track.setAttribute('aria-valuenow',String(Math.round(a.percent)));
-  const fill=document.createElement('i');fill.style.width=a.percent+'%';track.append(fill);
-  content.append(label,name,description,track);
-  const percent=document.createElement('b');percent.textContent=Math.round(a.percent)+'%';
-  card.append(insignia,content,percent);
-  cards.push(card);list.append(card);
+  label.textContent=tr((definitions.find(x=>x[0]===rarity)||definitions[1])[1]);
+  const name=document.createElement('strong');name.textContent=achievement.title;
+  const desc=document.createElement('small');desc.textContent=achievement.hint;
+  const progress=document.createElement('div');
+  progress.className='br-ach-prog infinity-mode-achievement-track';
+  progress.setAttribute('role','progressbar');
+  progress.setAttribute('aria-label',achievement.title);
+  progress.setAttribute('aria-valuemin','0');progress.setAttribute('aria-valuemax','100');
+  progress.setAttribute('aria-valuenow',String(Math.round(achievement.percent)));
+  const fill=document.createElement('i');fill.style.width=achievement.percent+'%';
+  progress.append(fill);copy.append(label,name,desc,progress);
+  const percentage=document.createElement('b');
+  percentage.textContent=achievement.percent>0&&achievement.percent<.01?
+   '<0.01%':(Math.round(achievement.percent*100)/100)+'%';
+  row.append(emblem,copy,percentage);cards.push(row);list.append(row);
  }
- const setFilter=(filter)=>{
-  for(const card of cards)card.hidden=filter!=='all'&&card.dataset.rarity!==filter;
+ const setFilter=rarity=>{
+  for(const row of cards)row.hidden=rarity!=='all'&&row.dataset.rarity!==rarity;
   for(const button of filters.querySelectorAll('button')){
-   const selected=button.dataset.achFilter===filter;
-   button.classList.toggle('active',selected);
-   button.setAttribute('aria-pressed',String(selected));
+   const active=button.dataset.achFilter===rarity;
+   button.classList.toggle('active',active);
+   button.setAttribute('aria-pressed',String(active));
   }
  };
- for(const [key,label] of filterDefs){
-  const button=document.createElement('button');
-  button.type='button';button.className='br-filter'+(key==='all'?' active':'');
-  button.dataset.achFilter=key;button.textContent=localeTriple(label);
-  button.onclick=()=>setFilter(key);filters.append(button);
+ for(const [rarity,words] of definitions){
+  const b=document.createElement('button');
+  b.type='button';b.className='br-filter'+(rarity==='all'?' active':'');
+  b.dataset.achFilter=rarity;b.textContent=tr(words);
+  b.onclick=()=>setFilter(rarity);filters.append(b);
  }
- panel.append(top,summary,filters,list);node.append(panel);document.body.append(node);
+ node.append(panel);document.body.append(node);
  const onKey=e=>{if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();close();}};
  const close=()=>{document.removeEventListener('keydown',onKey,true);node.remove();};
  document.addEventListener('keydown',onKey,true);
- closeBtn.addEventListener('click',close);
+ panel.querySelector('.infinity-overlay-close').addEventListener('click',close);
  node.addEventListener('pointerdown',e=>{if(e.target===node)close();});
  return node;
 }
