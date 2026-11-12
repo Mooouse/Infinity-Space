@@ -46,8 +46,8 @@ function save(obj){
 let active=null;
 function close(){
  if(!active)return;
- const {root,onClose}=active;
- active=null;root.remove();
+ const {root,onClose,previewCancel}=active;
+ active=null;if(previewCancel)previewCancel();root.remove();
  document.documentElement.classList.remove('worm-skin-workshop-open');
  if(typeof onClose==='function')onClose();
 }
@@ -59,13 +59,15 @@ function open({onChange,onClose}={}){
  const root=document.createElement('div');
  root.className='ws-overlay';root.setAttribute('role','dialog');root.setAttribute('aria-modal','true');root.setAttribute('aria-label',t.title);
  root.innerHTML='<section class="ws-dialog"><header class="ws-header"><div><span class="ws-eyebrow">INFINITY SPACE / COSMIC WORMS</span><h2 class="ws-title"></h2><p class="ws-desc"></p></div><button class="ws-x" type="button" aria-label=""></button></header>'+
- '<div class="ws-body"><h3 class="ws-presets-title"></h3><div class="ws-presets"></div>'+
+ '<div class="ws-body"><div class="ws-live-preview"><div class="ws-live-caption"><strong class="ws-preview-title"></strong><span class="ws-preview-hint"></span></div><canvas class="ws-preview-canvas" width="920" height="220" aria-label="Animated worm appearance preview"></canvas></div><h3 class="ws-presets-title"></h3><div class="ws-presets"></div>'+
  '<div class="ws-section"><h3 class="ws-head-heading"></h3><div class="ws-head-options"></div></div>'+
  '<div class="ws-section"><div class="ws-part-head"><h3 class="ws-segments-title"></h3><span class="ws-indicator"></span></div><p class="ws-tip"></p><div class="ws-segments" role="group"></div></div>'+
  '<div class="ws-section"><h3 class="ws-palette-title"></h3><div class="ws-palette"></div><label class="ws-custom-label"><span class="ws-custom-title"></span><input type="color" class="ws-custom" value="#ff1744"></label></div>'+
  '</div><footer class="ws-footer"><button class="ws-reset" type="button"></button><button class="ws-stripes" type="button"></button><button class="ws-fill" type="button"></button><button class="ws-done" type="button"></button></footer></section>';
  const $=s=>root.querySelector(s);
  $('.ws-title').textContent=t.title;$('.ws-desc').textContent=t.desc;
+ $('.ws-preview-title').textContent=lang==='ru'?'ЖИВОЙ ПРЕДПРОСМОТР':lang==='es'?'VISTA PREVIA ANIMADA':'LIVE IN-GAME PREVIEW';
+ $('.ws-preview-hint').textContent=lang==='ru'?'Скин, голова и светящиеся частицы на движущемся черве':lang==='es'?'Diseño y partículas en movimiento':'Animated body, head and cosmic particles';
  $('.ws-x').textContent='×';$('.ws-x').setAttribute('aria-label',t.close);
  $('.ws-presets-title').textContent=t.templates;$('.ws-segments-title').textContent=t.segment;
  $('.ws-tip').textContent=t.tip;$('.ws-palette-title').textContent=t.palette;
@@ -144,8 +146,96 @@ function open({onChange,onClose}={}){
  window.addEventListener('keydown',esc,true);
  const oldClose=onClose;onClose=()=>{window.removeEventListener('keydown',esc,true);if(typeof oldClose==='function')oldClose()};
  document.body.append(root);document.documentElement.classList.add('worm-skin-workshop-open');
- active={root,onClose};
+
+ // Show the actual selected worm as a moving, fully-rendered body rather than
+ // asking players to infer its appearance from 64 static colored buttons.
+ const preview=$('.ws-preview-canvas'),pc=preview.getContext('2d');
+ let previewFrame=0;
+ function paintPreview(now){
+  if(!root.isConnected)return;
+  const w=preview.width,h=preview.height,t=now*.001;
+  pc.clearRect(0,0,w,h);
+  pc.fillStyle='#090719';pc.fillRect(0,0,w,h);
+  for(let i=0;i<135;i++){
+   const x=(i*397.71)%w,y=(i*181.39)%h;
+   const a=.25+.5*(.5+.5*Math.sin(t*1.8+i*1.76));
+   pc.fillStyle='rgba(227,220,255,'+a.toFixed(3)+')';
+   pc.fillRect(x,y,i%11===0?2:1,i%11===0?2:1);
+  }
+  const colors=colorsForView(),count=59,body=[];
+  for(let i=0;i<count;i++){
+   const x=80+i*11.9;
+   const y=111+Math.sin(i*.145-t*1.9)*21+Math.sin(i*.057+t*.55)*11;
+   body.push({x,y});
+  }
+  pc.save();
+  for(let i=0;i<count;i++){
+   const node=body[i],radius=23*(.56+.44*Math.min(1,i/15));
+   const color=colors[(count-1-i)%colors.length];
+   pc.shadowColor=color;pc.shadowBlur=11;
+   pc.fillStyle='#09091f';pc.beginPath();pc.arc(node.x,node.y,radius*1.07,0,Math.PI*2);pc.fill();
+   const g=pc.createRadialGradient(node.x-radius*.3,node.y-radius*.42,1,node.x,node.y,radius*1.02);
+   g.addColorStop(0,'#ffffff');g.addColorStop(.22,color);g.addColorStop(1,'#09091f');
+   pc.fillStyle=g;pc.beginPath();pc.arc(node.x,node.y,radius*.9,0,Math.PI*2);pc.fill();
+   pc.shadowBlur=0;
+   if(i%3===0){
+    const sx=node.x+Math.sin(t*.9+i*4.1)*radius*.43;
+    const sy=node.y+Math.cos(t*.7+i*1.3)*radius*.43;
+    pc.fillStyle='#fff9ee';pc.beginPath();pc.arc(sx,sy,i%9===0?2.5:1.4,0,Math.PI*2);pc.fill();
+   }
+   if(i%14===0){
+    pc.strokeStyle='#ffe8ffb5';pc.lineWidth=1.2;
+    const comet=node.x+Math.sin(t*1.8+i)*radius*.4;
+    pc.beginPath();pc.moveTo(comet-13,node.y+6);pc.lineTo(comet+6,node.y-3);pc.stroke();
+   }
+  }
+  const head=body[count-1],next=body[count-2],angle=Math.atan2(head.y-next.y,head.x-next.x);
+  pc.translate(head.x,head.y);pc.rotate(angle);
+  const radius=25,accent=data.customEnabled?colors[0]:presetColors(data.skin)[0];
+  pc.shadowColor=accent;pc.shadowBlur=17;
+  if(data.head==='blackhole'){
+   const g=pc.createRadialGradient(0,0,3,0,0,48);
+   g.addColorStop(0,'#000008');g.addColorStop(.38,'#080515');
+   g.addColorStop(.52,'#ffd25e');g.addColorStop(.64,'#ee3c9c');
+   g.addColorStop(.86,'#7737ff99');g.addColorStop(1,'#7737ff00');
+   pc.fillStyle=g;pc.beginPath();pc.arc(0,0,48,0,Math.PI*2);pc.fill();
+   pc.fillStyle='#000006';pc.beginPath();pc.arc(0,0,18,0,Math.PI*2);pc.fill();
+   pc.strokeStyle='#ffe5b0';pc.lineWidth=3;pc.beginPath();pc.ellipse(0,0,35,12,-.28,0,Math.PI*2);pc.stroke();
+   pc.shadowBlur=0;
+   for(let i=0;i<8;i++){
+    const a=t*3+i*Math.PI/4;
+    pc.fillStyle=i%2?'#ffe599':'#fc7de6';pc.beginPath();
+    pc.arc(Math.cos(a)*30,Math.sin(a)*12,2.2,0,Math.PI*2);pc.fill();
+   }
+  }else{
+   pc.fillStyle=data.head==='eclipse'?'#03030b':data.head==='crystal'?'#9e8aff':data.head==='comet'?'#ffec9d':accent;
+   pc.strokeStyle='#f5dfff';pc.lineWidth=3;
+   pc.beginPath();
+   if(data.head==='crystal'||data.head==='comet'){
+    for(let j=0;j<6;j++){
+     const a=j*Math.PI/3,rad=data.head==='comet'&&j===3?37:radius;
+     j?pc.lineTo(Math.cos(a)*rad,Math.sin(a)*rad):pc.moveTo(Math.cos(a)*rad,Math.sin(a)*rad);
+    }
+    pc.closePath();
+   }else pc.arc(0,0,radius,0,Math.PI*2);
+   pc.fill();pc.stroke();pc.shadowBlur=0;
+   if(data.head==='pulsar'||data.head==='eclipse'){
+    pc.strokeStyle=data.head==='pulsar'?'#ffe500':'#ff5b98';pc.lineWidth=5;
+    pc.beginPath();pc.ellipse(0,0,36,11,-.35,0,Math.PI*2);pc.stroke();
+   }else if(data.head==='classic'){
+    for(const side of [-1,1]){
+     pc.fillStyle='#fff';pc.beginPath();pc.arc(10,side*10,6,0,Math.PI*2);pc.fill();
+     pc.fillStyle='#0a1023';pc.beginPath();pc.arc(12,side*10,2.5,0,Math.PI*2);pc.fill();
+    }
+   }
+  }
+  pc.restore();
+  previewFrame=requestAnimationFrame(paintPreview);
+ }
+
+ active={root,onClose,previewCancel:()=>cancelAnimationFrame(previewFrame)};
  renderPresets();renderPalette();renderSegments();
+ previewFrame=requestAnimationFrame(paintPreview);
  return close;
 }
 window.WormSkinStudio={open,close,read:load,presets:PRESETS};
