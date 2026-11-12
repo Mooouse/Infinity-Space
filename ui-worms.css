@@ -732,6 +732,14 @@ body.worm-death-replay #worm-hud{transition:opacity .85s ease}
 .worm-settings-panel :is(input[type=range],input[type=checkbox]){accent-color:#b357ff!important;}
 .worm-shade .worm-panel :is(button,input):focus-visible,.ws-overlay :is(button,input):focus-visible{outline:2px solid #ffd04b!important;outline-offset:3px;box-shadow:0 0 0 5px #ffba3828!important;}
 .worm-shade .worm-actions button:hover{border-color:#ffbc48!important;box-shadow:0 0 22px #f77b4266!important;}
+/* Override legacy high-specificity purple hover on the save-and-exit control. */
+.worm-shade .worm-settings-panel .worm-actions button#worm-settings-back{--worm-accent:#ffbc48!important;}
+@media(hover:hover) and (pointer:fine){
+ .worm-shade .worm-settings-panel .worm-actions button#worm-settings-back:not(:disabled):hover{
+  border-color:#ffbc48!important;border-top-color:#ffbc48!important;
+  box-shadow:0 0 22px #f77b4266,0 6px 14px #0009!important;
+ }
+}
 .ws-head-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0;}
 .ws-head-choice{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:12px 6px;color:#fff;border:1px solid #71548f;border-radius:10px;background:#20152f;cursor:pointer;font:700 12px system-ui;}
 .ws-head-choice.selected{border-color:#ffca51;background:#382349;box-shadow:0 0 16px #fa8d4645;}
