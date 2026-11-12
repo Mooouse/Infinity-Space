@@ -18,7 +18,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for file in game.js menu-hub.js cosmic-worms.js cosmic-arena.js platform.js space-meta.js; do
+          test -s index.html
+          test -s cosmic-worms.html
+          test -s cosmic-arena.html
+          test -s ui-app.css
+          # Check ALL root JavaScript, not a hard-coded list of file names.
+          for file in ./*.js; do
             test -s "$file"
             node --check "$file"
           done
