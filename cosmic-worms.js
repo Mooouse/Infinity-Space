@@ -906,7 +906,7 @@ function drawSkinHead(w,r){
  if(head!=='classic'){
   ctx.save();ctx.translate(w.x,w.y);ctx.rotate(w.angle);
   ctx.shadowColor=w.accent;ctx.shadowBlur=options.glow?r*.8:0;
-  ctx.fillStyle=head==='eclipse'?'#05030b':head==='crystal'?'#a3e9ff':head==='comet'?'#fff3bb':'#fefcff';
+  ctx.fillStyle=head==='eclipse'?'#05030b':head==='crystal'?'#8680ff':head==='comet'?'#fff3bb':'#fefcff';
   ctx.strokeStyle=w.accent;ctx.lineWidth=r*.13;ctx.beginPath();
   if(head==='crystal'){for(let i=0;i<6;i++){const a=i*TAU/6,px=Math.cos(a)*r*1.15,py=Math.sin(a)*r*1.15;i?ctx.lineTo(px,py):ctx.moveTo(px,py)}ctx.closePath()}
   else ctx.arc(0,0,r*1.05,0,TAU);
