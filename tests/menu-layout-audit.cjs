@@ -60,7 +60,9 @@ const inspect=()=>{
   shortcuts:[...dock.querySelectorAll('.hub-story-shortcut')]
     .filter(el=>!el.hidden&&getComputedStyle(el).display!=='none')
     .map(el=>el.dataset.shortcut),
-  rewardsVisible:!!$('.hub-story-quick')&&!$('.hub-story-quick').hidden,
+  rewardsVisible:!!dock.querySelector('[data-shortcut="daily"]')&&
+    !dock.querySelector('[data-shortcut="daily"]').hidden,
+  topRightButtonsPresent:!!document.querySelector('.hub-mode-story-top [data-reward-page],.hub-mode-story-top .hub-profile-chip'),
   heroBrandSize:parseFloat(getComputedStyle($('.hub-reference-brand')).fontSize),
   brandRect:rect($('.hub-reference-brand')),
   brandInHero:!!document.querySelector('.hub-mode-story-copy .hub-reference-brand'),
@@ -120,11 +122,12 @@ const inspect=()=>{
       issues.push('competitive-nickname-not-persistent-and-centered');
      if(Math.abs(m.dock.cx-w/2)>5)issues.push('context-dock-not-centered');
      const allowed=n===0
-      ? ['map','evolution','achievements','music','bestiary','settings']
+      ? ['map','evolution','achievements','music','bestiary','settings','daily','roulette','profile']
       : ['achievements','statistics','settings'];
      if(m.shortcuts.join(',')!==allowed.join(','))
       issues.push('unrelated-shortcuts-'+m.shortcuts.join(','));
      if(m.rewardsVisible!==(n===0))issues.push('rewards-on-wrong-mode');
+     if(m.topRightButtonsPresent)issues.push('right-header-buttons-must-be-in-bottom-dock');
      if(w===2560&&h===1440&&(m.heroBrandSize<37||m.heroBrandSize>64||
          m.titleFontSize<68||m.actionHeight<70||m.shortcutFontSize<15))
       issues.push('2k-menu-too-small-'+JSON.stringify({

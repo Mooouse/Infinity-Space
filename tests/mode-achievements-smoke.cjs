@@ -30,6 +30,10 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
    await popup.waitFor({state:'visible',timeout:6000});
    assert.ok((await popup.locator('.infinity-mode-achievement').count())>=18,mode+' must have expanded achievements');
    assert.equal(await popup.locator('.infinity-mode-achievements-filters .br-filter').count(),7,'Every mode must share the same seven-rarity achievement UI');
+   assert.equal(await popup.locator('#screen-mode-achievements.br-full .br-head').count(),1,
+    'All modes must render the SAME V15 full-screen achievement page as Endless Space');
+   for(const selector of ['.br-ach-layout','.br-ach-summary','.br-ach-content','.br-ach-filters','.br-ach-list'])
+    assert.equal(await popup.locator(selector).count(),1,'Missing native V15 achievement structure: '+selector);
    await popup.locator('.infinity-mode-achievements-filters [data-ach-filter="rare"]').click();
    assert.ok(await popup.locator('.infinity-mode-achievement:visible').count()>=1,'Filtering shows matching rarity achievements');
    await popup.locator('.infinity-mode-achievements-filters [data-ach-filter="all"]').click();
@@ -38,7 +42,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
    assert.ok(snap.items.length>=18);
    firstTitles.add(snap.items[0].title);
    assert.ok(snap.items.every(a=>a.percent===0),'New achievements begin at zero');
-   const heading=await popup.locator('.infinity-panel-top small').textContent();
+   const heading=await popup.locator('.br-head .br-serial').textContent();
    assert.ok(heading.length>14,'Achievements must identify the selected mode');
    await popup.locator('.infinity-overlay-close').click();
    assert.equal(await popup.count(),0,'Achievements should close without changing mode');
@@ -68,6 +72,18 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   await page.locator('.hub-story-shortcut[data-shortcut="achievements"]').click();
   assert.ok((await page.locator('.infinity-mode-achievement.unlocked').count())>=3);
   await page.locator('.infinity-overlay-close').click();
+  await page.locator('.hub-story-shortcut[data-shortcut="statistics"]').click();
+  const stats=page.locator('.infinity-stats-panel');
+  await stats.waitFor({state:'visible',timeout:7000});
+  assert.equal(await stats.locator('.infinity-stats-change-name').count(),0,
+   'Statistics must be read-only; no nickname editing button');
+  assert.equal(await stats.locator('.infinity-stats-highlight').count(),3,
+   'Statistics needs three clear headline metrics');
+  assert.ok(await stats.locator('.infinity-stats-section').count()>=2,
+   'Statistics must group related results instead of a wall of metric cards');
+  assert.equal(await stats.locator('.infinity-stats-card').count(),0,
+   'Legacy unstructured statistic card wall must be removed');
+  await stats.locator('.infinity-overlay-close').click();
   assert.equal(errors.length,0,errors.join('\n'));
   console.log('PASS: six original achievements per mode, isolated progress, match-based unlocks and persistence');
  }finally{await browser.close();}

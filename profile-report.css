@@ -228,3 +228,26 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-story-reward:hove
   height:32px!important;min-height:32px!important;
  }
 }
+
+/* The shared V15 Back button needs full text width (a former overlay close
+   control was fixed to a 40px square). */
+body.ui-v15 #screen-mode-achievements .infinity-overlay-close.br-head-back{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ min-width:94px!important;width:auto!important;height:43px!important;
+ padding:0 14px!important;white-space:nowrap!important;
+ font-size:12px!important;font-weight:950!important;
+ letter-spacing:.05em!important;
+ border:1px solid #73559b!important;border-bottom:4px solid #493071!important;
+ background:#211432!important;color:#f5ecff!important;
+ border-radius:5px!important;
+}
+@media(hover:hover) and (pointer:fine){
+ body.ui-v15 #screen-mode-achievements .infinity-overlay-close.br-head-back:hover{
+  border-color:#d1b8ff!important;box-shadow:0 0 18px #9560ee8a!important;
+ }
+}
+@media(max-width:420px){
+ body.ui-v15 #screen-mode-achievements .infinity-overlay-close.br-head-back{
+  min-width:72px!important;height:36px!important;padding:0 8px!important;font-size:10px!important;
+ }
+}
