@@ -62,7 +62,12 @@ const inspect=()=>{
     .map(el=>el.dataset.shortcut),
   rewardsVisible:!!$('.hub-story-quick')&&!$('.hub-story-quick').hidden,
   heroBrandSize:parseFloat(getComputedStyle($('.hub-reference-brand')).fontSize),
+  brandRect:rect($('.hub-reference-brand')),
+  brandInHero:!!document.querySelector('.hub-mode-story-copy .hub-reference-brand'),
   titleFontSize:parseFloat(getComputedStyle(title).fontSize),
+  nicknameVisible:!$('.hub-mode-nickname').hidden,
+  nicknameValue:$('.hub-mode-nickname input').value,
+  nicknameCenter:rect($('.hub-mode-nickname')).cx,
   actionHeight:rect(button).height,
   shortcutFontSize:parseFloat(getComputedStyle(dock.querySelector('.hub-story-shortcut-label')).fontSize)
  
@@ -97,19 +102,34 @@ const inspect=()=>{
      if(!m.playSvg)issues.push('legacy-cta-arrow');
      if(!m.prevHit||!m.nextHit||!m.playHit)issues.push('button-not-hittable');
      if(Math.abs(m.heroCenter-w/2)>5)issues.push('main-hero-not-centered');
+     if(Math.abs(m.titleRect.cx-w/2)>5)issues.push('mode-title-not-centered');
+     if(m.brandInHero||m.brandRect.left>w*.16||m.brandRect.right>=w*.5)
+      issues.push('product-brand-not-in-left-corner');
+     if(m.nicknameVisible!==(n>0))issues.push('nickname-visible-in-wrong-mode');
+     if(n>0&&(m.nicknameValue!=='UI Tester'||Math.abs(m.nicknameCenter-w/2)>5))
+      issues.push('competitive-nickname-not-persistent-and-centered');
      if(Math.abs(m.dock.cx-w/2)>5)issues.push('context-dock-not-centered');
      const allowed=n===0
       ? ['map','evolution','achievements','music','bestiary','settings']
-      : ['statistics','settings'];
+      : ['achievements','statistics','settings'];
      if(m.shortcuts.join(',')!==allowed.join(','))
       issues.push('unrelated-shortcuts-'+m.shortcuts.join(','));
      if(m.rewardsVisible!==(n===0))issues.push('rewards-on-wrong-mode');
-     if(w===2560&&h===1440&&(m.heroBrandSize<108||m.titleFontSize<39||
-         m.actionHeight<70||m.shortcutFontSize<15))
+     if(w===2560&&h===1440&&(m.heroBrandSize<37||m.heroBrandSize>64||
+         m.titleFontSize<68||m.actionHeight<70||m.shortcutFontSize<15))
       issues.push('2k-menu-too-small-'+JSON.stringify({
        brand:m.heroBrandSize,title:m.titleFontSize,
        button:m.actionHeight,shortcut:m.shortcutFontSize
       }));
+     if(w===1920&&h===1080&&n>0){
+      const trigger=page.locator('.hub-story-shortcut[data-shortcut="achievements"]');
+      await trigger.click();
+      const popup=page.locator('.infinity-mode-achievements-overlay');
+      await popup.waitFor({state:'visible',timeout:5000});
+      if(await popup.locator('.infinity-mode-achievement').count()!==6)
+       issues.push('mode-achievements-not-six');
+      await popup.locator('.infinity-overlay-close').click();
+     }
      // The supplied original design uses one violet control language;
      // test a visible hover glow and consistent palette, not a rainbow hue.
      if(w===1920&&h===1080){
