@@ -358,3 +358,46 @@ body:has(#worm-field) .worm-shade .worm-settings-panel .worm-actions button#worm
   transition-duration:.001s!important;animation-duration:.001s!important;
  }
 }
+
+/* Daily rewards and roulette tab bar are part of the unified navigation. */
+body.ui-v15 #modal .rewards-tabs{
+ gap:8px!important;min-width:0!important;
+}
+body.ui-v15 #modal .rewards-tabs button{
+ min-width:0!important;border:2px solid #7656a7!important;
+ border-bottom:4px solid #43296f!important;
+ border-radius:6px!important;
+ background:linear-gradient(165deg,#2c1c48,#160e28)!important;
+ box-shadow:var(--space-ui-raised)!important;
+ color:#f4eaff!important;
+ transition:box-shadow .17s ease,border-color .17s ease,transform .17s ease!important;
+}
+body.ui-v15 #modal .rewards-tabs button.selected{
+ border-color:#c5a5ff!important;
+ box-shadow:inset 0 3px #bb92ff,0 0 13px #8959df61!important;
+ background:linear-gradient(165deg,#443068,#27173e)!important;
+}
+@media (hover:hover) and (pointer:fine){
+ body.ui-v15 #modal .rewards-tabs button:not(:disabled):hover{
+  border-color:#d1b8ff!important;
+  box-shadow:0 0 21px #9558efa1,0 6px 16px #050110ba!important;
+  transform:translateY(-2px)!important;
+ }
+}
+/* Avoid color leaks from older button rules into compact utility popups. */
+body.ui-v15 #modal :is(.atlas-pin-menu,.language-popup,.br-option) :is(input,select,textarea){
+ border:1px solid #7959aa!important;border-bottom:3px solid #43296f!important;
+ border-radius:5px!important;background:#1a102d!important;color:#f6efff!important;
+}
+body.ui-v15 #modal :is(.rewards-screen,.daily-roulette-body,.br-settings-main,.br-ach-content,.music-layout){
+ scrollbar-color:#7957ad #130b27;
+}
+body.ui-v15 #modal .br-ach-row[data-rarity]{
+ border-left-color:var(--rarity, #946bd1)!important;
+}
+body.ui-v15 #modal .music-track-grid{gap:clamp(10px,1vw,18px)!important;}
+@media(max-width:560px){
+ body.ui-v15 #modal .rewards-tabs{gap:5px!important}
+ body.ui-v15 #modal .rewards-tabs button{padding:10px 6px!important}
+ body.ui-v15 #modal .music-track-grid{gap:8px!important}
+}
