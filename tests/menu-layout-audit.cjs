@@ -90,7 +90,17 @@ const inspect=()=>{
    await page.locator('#screen-menu .hub-mode-story-play').waitFor({state:'visible',timeout:40000});
    for(let n=0;n<6;n++){
     try{
-     await page.locator('.hub-mode-dots button').nth(n).click({timeout:7000});
+     // Playwright's high-level click can time out *after* an effective click
+     // while the 2K animated universe renderer is busy. Verify real pointer
+     // hit testing first, then invoke the exact same native click handler
+     // without Playwright waiting for an unrelated navigation or animation.
+     await page.locator('.hub-mode-dots button').nth(n).evaluate(el=>{
+      const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
+      const top=document.elementFromPoint(x,y);
+      if(top!==el&&!el.contains(top))throw Error('Carousel dot is blocked by '+(top?.className||top?.tagName));
+      el.click();
+      if(!el.classList.contains('current'))throw Error('Carousel did not select clicked mode');
+     });
      await page.waitForTimeout(350);
      const m=await page.evaluate(inspect),issues=[];
      if(m.doc>w+2)issues.push('horizontal-document-overflow');
