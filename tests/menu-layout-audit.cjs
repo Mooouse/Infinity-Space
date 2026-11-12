@@ -92,7 +92,7 @@ const inspect=()=>{
       const play=page.locator('.hub-mode-story-play');
       await play.hover();await page.waitForTimeout(220);
       const state=await play.evaluate(el=>({border:getComputedStyle(el).borderTopColor,shadow:getComputedStyle(el).boxShadow}));
-      if(state.border!=='rgb(230, 215, 255)'||state.shadow==='none')
+      if(state.border!=='rgb(209, 184, 255)'||state.shadow==='none')
        issues.push('reference-play-glow-'+JSON.stringify(state));
       for(const id of ['new','music','map']){
        const el=page.locator('.hub-story-shortcut[data-shortcut="'+id+'"]');
