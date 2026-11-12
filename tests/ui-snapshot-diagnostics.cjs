@@ -61,5 +61,59 @@ try{
   await p.locator('#pause').click();
   await p.locator('#paused').waitFor({state:'visible'});
  });
+ // Full visual coverage, not just DOM scroll widths. Each frame is sampled in
+ // a fresh browser context so hidden overlays cannot leak between pages.
+ await visit('/index.html?tester=1',2560,1440,'home-2k',p=>
+  p.locator('#screen-menu .hub-mode-story-play').waitFor({state:'visible',timeout:25000}));
+ await visit('/index.html?tester=1',1366,768,'home-worms-desktop',async p=>{
+  await p.locator('.hub-mode-dots [data-mode="worms"]').click();
+ });
+ await visit('/index.html?tester=1',1366,768,'evolution-desktop',async p=>{
+  await p.locator('.hub-story-shortcut[data-shortcut="evolution"]').click();
+  await p.locator('#screen-evolution').waitFor({state:'visible'});
+ });
+ await visit('/index.html?tester=1',1366,768,'bestiary-desktop',async p=>{
+  await p.locator('.hub-story-shortcut[data-shortcut="bestiary"]').click();
+  await p.locator('#screen-bestiary').waitFor({state:'visible'});
+ });
+ await visit('/index.html?tester=1',1366,768,'music-desktop',async p=>{
+  await p.locator('.hub-story-shortcut[data-shortcut="music"]').click();
+  await p.locator('#screen-music').waitFor({state:'visible'});
+ });
+ await visit('/index.html?tester=1',1366,768,'map-desktop',async p=>{
+  await p.locator('.hub-story-shortcut[data-shortcut="map"]').click();
+  await p.locator('#screen-map').waitFor({state:'visible'});
+ });
+ await visit('/index.html?tester=1',390,844,'settings-phone',async p=>{
+  await p.locator('.hub-story-shortcut[data-shortcut="settings"]').click();
+  await p.locator('#screen-settings').waitFor({state:'visible'});
+ });
+ await visit('/index.html?tester=1',390,844,'achievements-phone',async p=>{
+  await p.locator('.hub-story-shortcut[data-shortcut="achievements"]').click();
+  await p.locator('#screen-achievements').waitFor({state:'visible'});
+ });
+ await visit('/index.html?tester=1',390,844,'statistics-phone',async p=>{
+  await p.locator('.hub-mode-dots [data-mode="worms"]').click();
+  await p.locator('.hub-story-shortcut[data-shortcut="statistics"]').click();
+  await p.locator('.infinity-stats-panel').waitFor({state:'visible'});
+ });
+ await visit('/cosmic-worms.html?tester=1',390,844,'worms-settings-phone',async p=>{
+  await openWorm(p);await p.locator('#worm-settings-open').click();
+ });
+ await visit('/cosmic-worms.html?tester=1',390,844,'worms-skins-phone',async p=>{
+  await openWorm(p);await p.locator('#worm-skins-open').click();
+ });
+ await visit('/cosmic-arena.html?mode=arena&tester=1',390,844,'arena-pause-phone',async p=>{
+  await p.locator('#hud:not([hidden])').waitFor({state:'visible',timeout:15000});
+  await p.locator('#pause').click();
+  await p.locator('#paused').waitFor({state:'visible'});
+ });
+ await visit('/cosmic-arena.html?mode=arena&tester=1',1366,768,'arena-guide-desktop',async p=>{
+  await p.locator('#hud:not([hidden])').waitFor({state:'visible',timeout:15000});
+  await p.locator('#pause').click();
+  await p.locator('#guide-open').click();
+  await p.locator('#guide').waitFor({state:'visible'});
+ });
+ 
 }finally{await browser.close();}
 })().catch(e=>{console.error('UI_SNAPSHOT_FATAL',String(e.stack||e));process.exitCode=1;});
