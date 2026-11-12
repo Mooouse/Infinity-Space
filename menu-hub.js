@@ -126,6 +126,7 @@
     '<button class="hub-profile-chip" type="button" aria-label="Profile"><span aria-hidden="true">✧</span><span class="hub-profile-name">PLAYER</span></button>'+
     '<span class="hub-mode-story-counter"></span></header>'+
     '<div class="hub-mode-story-copy" aria-live="polite">'+
+      '<div class="hub-reference-brand" aria-label="Infinity Space">INFINITY <em>SPACE</em></div>'+
       '<p class="hub-mode-story-kicker"></p>'+
       '<h2 class="hub-mode-story-title"></h2>'+
       '<p class="hub-mode-story-goal"></p>'+

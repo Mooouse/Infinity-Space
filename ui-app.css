@@ -7419,628 +7419,7 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-home{
  }
 }
 
-/* ===== cosmic-spectrum.css · consolidated section 17/19 ===== */
-/* Infinity Space — spectral accents v6.
-   Deliberate hierarchy: quiet graphite/navy surfaces, violet for primary actions,
-   electric blue for navigation, gold for rewards, green for success, red for reset.
-   All accents stay saturated; only the INTERACTIVE element gets its hue. */
-:root{
- --space-ink:#090c1b;--space-panel:#11162b;--space-line:#414866;
- --space-quiet:#c0c7e0;--space-white:#f7f8ff;
- --ui-purple:#7425d8;--ui-purple-bright:#9922ff;
-}
-/* Fallback interaction accent is neutral, not purple. */
-body.ui-v15 #modal,
-body.ui-v15 #hud{--interaction-accent:#4867db}
-body.ui-v15 #modal .br-foot-primary,
-body.ui-v15 #modal .br-inline-cta,
-body.ui-v15 #modal .music-control-play,
-body.ui-v15 #hud .primary,
-body.ui-v15 #hud .v15-hud .ability-btn{
- --interaction-accent:var(--space-purple);
-}
-body.ui-v15 #modal .br-foot-secondary,
-body.ui-v15 #modal .br-small-action,
-body.ui-v15 #modal .br-head-back,
-body.ui-v15 #modal .game-select-trigger,
-body.ui-v15 #modal .game-select-item,
-body.ui-v15 #hud .camera-buttons button,
-body.ui-v15 #hud .v15-camera-toggle{
- --interaction-accent:var(--space-blue);
-}
-body.ui-v15 #modal [data-reward-page],
-body.ui-v15 #modal [data-reward-action],
-body.ui-v15 #modal .daily-claim,
-body.ui-v15 #modal .reward-claim,
-body.ui-v15 #modal button[data-daily-action],
-body.ui-v15 #modal button[data-roulette-action]{
- --interaction-accent:var(--space-yellow);
-}
-body.ui-v15 #modal button[data-music-action],
-body.ui-v15 #modal .music-track-preview,
-body.ui-v15 #modal .music-control{--interaction-accent:var(--space-purple)}
-body.ui-v15 #modal button[data-action="reset"],
-body.ui-v15 #modal button[data-action="delete"],
-body.ui-v15 #hud button[data-action="reset"]{
- --interaction-accent:var(--space-red);
-}
-body.ui-v15 #modal .br-tab.active,
-body.ui-v15 #modal .br-switch.active,
-body.ui-v15 #modal .br-filter.active,
-body.ui-v15 #modal .music-track-preview[aria-pressed="true"]{
- --interaction-accent:var(--space-purple);
-}
-body.ui-v15 #modal .br-small-action.warn{
- --interaction-accent:var(--space-red);
-}
-body.ui-v15 #modal .br-filter:not(.active),
-body.ui-v15 #modal .br-tab:not(.active){
- --interaction-accent:var(--space-blue);
-}
-/* Clean up static leftover halos so an unrelated tint never leaks into a
-   navigation button or a camera control. */
-body.ui-v15 #hud .camera-buttons button:hover,
-body.ui-v15 #hud .v15-camera-toggle:hover{
- border-color:var(--space-blue)!important;
- background:linear-gradient(160deg,#222657,#14172e)!important;
-}
-body.ui-v15 #hud .camera-buttons button:hover .zoom-glyph,
-body.ui-v15 #modal #screen-map .map-corner.right button:hover .zoom-glyph{
- background:linear-gradient(150deg,#2a4bd4,#20245c)!important;
- border-color:var(--space-blue)!important;
- box-shadow:0 0 12px #2860ff55,inset 0 1px #ffffff2a!important;
-}
-/* MENU — colors are reserved for decisions, not assigned to random rows. */
-body.ui-v15 #screen-menu{--interaction-accent:var(--space-blue);--mode-accent:var(--space-purple)}
-body.ui-v15 #screen-menu .hub-mode-story::before{
- background:
-  radial-gradient(ellipse at 80% 45%,#2d2e8818,transparent 54%),
-  linear-gradient(90deg,#080b1dfb 0%,#080c1df5 24%,#0a0d20ca 44%,
-   #0c0d1c62 67%,transparent 94%),
-  linear-gradient(0deg,#070918a0,transparent 28%,transparent 75%,#070918a0)!important;
-}
-body.ui-v15 #screen-menu .hub-mode-story-title{
- color:var(--space-white)!important;
- text-shadow:0 8px 29px #000c!important;
-}
-body.ui-v15 #screen-menu .hub-mode-story-kicker{
- color:var(--mode-accent)!important;
- text-shadow:0 0 11px color-mix(in srgb,var(--mode-accent) 33%,transparent)!important;
-}
-body.ui-v15 #screen-menu .hub-mode-story-counter{
- color:var(--space-quiet)!important;
-}
-body.ui-v15 #screen-menu .hub-mode-story-goal{
- color:#eeeefb!important;
-}
-body.ui-v15 #screen-menu .hub-mode-story-description{
- color:var(--space-quiet)!important;
-}
-body.ui-v15 #screen-menu .hub-mode-story-tags>span,
-body.ui-v15 #screen-menu .hub-mode-story-tags>span:nth-child(n){
- border:1px solid #414a72!important;border-bottom:3px solid #2b304f!important;
- background:#10162bdb!important;color:#cbd1e7!important;
-}
-body.ui-v15 #screen-menu .hub-mode-story-tags>span:first-child{
- border-color:var(--mode-accent)!important;
- color:var(--space-white)!important;
-}
-body.ui-v15 #screen-menu .hub-mode-story-play{
- background:linear-gradient(140deg,
-  color-mix(in srgb,var(--mode-accent) 47%,#0c102b),
-  color-mix(in srgb,var(--mode-accent) 59%,#16102c))!important;
- border:2px solid var(--mode-accent)!important;
- border-bottom:5px solid color-mix(in srgb,var(--mode-accent) 45%,#060b1b)!important;
- box-shadow:0 6px 20px color-mix(in srgb,var(--mode-accent) 20%,transparent),
- inset 0 1px #ffffff24!important;
- color:#fff!important;
- transition:filter .16s,box-shadow .16s,border-color .16s,transform .16s!important;
-}
-@media(hover:hover) and (pointer:fine){
- body.ui-v15 #screen-menu .hub-mode-story-play:hover{
-  border-color:var(--mode-accent)!important;
-  box-shadow:0 0 0 1px color-mix(in srgb,var(--mode-accent) 55%,transparent),
-   0 0 19px color-mix(in srgb,var(--mode-accent) 43%,transparent),
-   0 6px 19px #0006!important;
-  filter:brightness(1.08)!important;
- }
-}
-body.ui-v15 #screen-menu .hub-mode-story-play:focus-visible{
- outline:2px solid var(--mode-accent)!important;outline-offset:3px!important;
-}
-/* Modes Back and step arrows are blue navigation actions throughout. */
-body.ui-v15 #screen-menu .hub-mode-story-back,
-body.ui-v15 #screen-menu .hub-mode-step{
- --interaction-accent:var(--space-blue);
- background:linear-gradient(150deg,#202c57,#11172f)!important;
- border-color:#4c619d!important;
- border-bottom-color:#263365!important;
- box-shadow:0 4px 15px #0005!important;color:#f1f3ff!important;
-}
-body.ui-v15 #screen-menu .hub-mode-story-back:hover,
-body.ui-v15 #screen-menu .hub-mode-step:not(:disabled):hover{
- border-color:var(--space-blue)!important;
- box-shadow:0 0 14px #2860ff55!important;
- filter:brightness(1.1)!important;
-}
-body.ui-v15 #screen-menu .hub-mode-dots button{
- background:#343a57!important;border-color:#48506c!important;
- box-shadow:none!important;
-}
-body.ui-v15 #screen-menu .hub-mode-story-brand,
-body.ui-v15 #screen-menu .hub-mode-gesture{color:#b6bdd9!important}
-body.ui-v15 #screen-menu .hub-mode-story-brand span{color:#626d91!important}
-/* Small navigation cards all share ONE surface; their icon and hover use a
-   semantic accent, rather than each whole card becoming a bright tile. */
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut{
- --interaction-accent:var(--space-blue);
- color:#e7ebfa!important;
- background:linear-gradient(175deg,#1a2037f2,#101528f2)!important;
- border:1px solid #465073!important;border-bottom:4px solid #293250!important;
- box-shadow:inset 0 1px #ffffff0d,0 3px 10px #0004!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut[data-shortcut="evolution"],
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut[data-shortcut="music"],
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut[data-shortcut="settings"]{
- --interaction-accent:var(--space-purple);
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut[data-shortcut="achievements"]{
- --interaction-accent:var(--space-yellow);
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut[data-shortcut="new"]{
- --interaction-accent:var(--space-red);
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut-icon{
- color:var(--interaction-accent)!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut[data-shortcut="new"]{
- border-color:#765262!important;background:linear-gradient(160deg,#281825,#151324)!important;
-}
-@media(hover:hover) and (pointer:fine){
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut[data-shortcut="new"]:hover{
-  border-color:var(--space-red)!important;
-  background:linear-gradient(160deg,#442132,#191629)!important;
-  box-shadow:0 0 13px #ff174455,0 4px 12px #0005!important;
- }
-}
-@media(hover:hover) and (pointer:fine){
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut:hover{
-  border-color:var(--interaction-accent)!important;
-  background:linear-gradient(175deg,
-   color-mix(in srgb,var(--interaction-accent) 15%,#1b2034),
-   #12182b)!important;
-  box-shadow:0 0 13px color-mix(in srgb,var(--interaction-accent) 32%,transparent),
-   0 4px 12px #0005!important;
-  filter:brightness(1.07)!important;
- }
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut:focus-visible{
- outline:2px solid var(--interaction-accent)!important;outline-offset:3px!important;
- box-shadow:0 0 0 3px color-mix(in srgb,var(--interaction-accent) 23%,transparent)!important;
-}
-/* Menu quick rewards: gold is the sole accent for prizes. */
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward{
- --interaction-accent:var(--space-yellow);
- color:#ffeb75!important;
- box-shadow:none!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward>span:first-child{
- color:var(--space-yellow)!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward.reward-available::after{
- background:var(--space-green)!important;
- box-shadow:0 0 7px #27ff4066!important;
-}
-@media(hover:hover) and (pointer:fine){
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward:hover{
-  border-color:var(--space-yellow)!important;
-  background:linear-gradient(160deg,#40351c,#231e25)!important;
-  box-shadow:0 0 13px #ffe50055!important;
-  filter:brightness(1.06)!important;
- }
-}
-/* Options drawer: one coherent system. */
-body.ui-v15 #screen-menu .hub-menu::before{
- color:#e5e9fc!important;
-}
-body.ui-v15 #screen-menu .hub-menu .eyeline{
- color:var(--space-yellow)!important;
-}
-body.ui-v15 #screen-menu .hub-actions .hub-continue{
- --interaction-accent:var(--space-purple);
- background:linear-gradient(145deg,#56219c,#7b27d7)!important;
- border-color:var(--space-purple)!important;border-bottom-color:#3f1b68!important;
- box-shadow:0 5px 18px #9922ff29!important;color:#fff!important;
-}
-body.ui-v15 #screen-menu .hub-actions .hub-modes{
- --interaction-accent:var(--space-blue);
- background:linear-gradient(145deg,#1b2f76,#2043a0)!important;
- border-color:var(--space-blue)!important;border-bottom-color:#13285c!important;
- box-shadow:0 4px 15px #2860ff20!important;color:#fff!important;
-}
-body.ui-v15 #screen-menu .hub-actions .hub-modes>span:first-child{
- border-color:#5372c9!important;background:#203d85!important;color:#fff!important;
-}
-body.ui-v15 #screen-menu .hub-actions .hub-new-world{
- --interaction-accent:var(--space-red);
- background:linear-gradient(145deg,#502034,#7e2440)!important;
- border-color:#b63855!important;border-bottom-color:#50182b!important;
- box-shadow:0 4px 12px #ff174418!important;color:#fff!important;
-}
-@media(hover:hover) and (pointer:fine){
- body.ui-v15 #screen-menu .hub-actions .hub-continue:hover,
- body.ui-v15 #screen-menu .hub-actions .hub-modes:hover,
- body.ui-v15 #screen-menu .hub-actions .hub-new-world:hover{
-  border-color:var(--interaction-accent)!important;
-  box-shadow:0 0 17px color-mix(in srgb,var(--interaction-accent) 40%,transparent),
-   0 5px 14px #0006!important;
-  filter:brightness(1.08)!important;
- }
-}
-/* Gameplay HUD: use violet progress and blue information; yellow for star dust.
-   Avoid rainbow-striped progress bars and rainbow borders on every card. */
-body.ui-v15 #screen-play .hud-bottom .mass-block{
- border-color:#465882!important;border-bottom-color:#303d6b!important;
- background:linear-gradient(155deg,#1b213cff,#111427f8)!important;
-}
-body.ui-v15 #screen-play .hud-bottom .mass-block::before{
- background:linear-gradient(90deg,var(--space-blue),var(--space-purple))!important;
- box-shadow:0 0 12px #2860ff32!important;
-}
-body.ui-v15 #screen-play .mass-heading{
- color:#d6ddfa!important;
-}
-body.ui-v15 #screen-statistics .br-stat-grid>div{
- border-color:#474a70!important;
-}
-body.ui-v15 #screen-music .music-track-card{
- border-color:#4a466f!important;
-}
-body.ui-v15 #screen-music .music-track-card:has(.playing),
-body.ui-v15 #screen-music .music-track-card:has(.active){
- border-color:var(--space-purple)!important;
-}
-body.ui-v15 #screen-music .music-control-play{
- --interaction-accent:var(--space-purple);
- background:linear-gradient(145deg,#44207a,#7133bb)!important;
- border-color:var(--space-purple)!important;
-}
-/* Keep the game's existing achievement rarity colors unchanged. */
-body.ui-v15 #screen-bestiary .br-best-row{
- border-color:#474a70!important;
-}
-body.ui-v15 #screen-settings .br-slider input[type=range]{
- accent-color:var(--space-blue);
-}
-@media(prefers-reduced-motion:reduce){
- body.ui-v15 #screen-menu .hub-mode-story-play,
- body.ui-v15 #screen-menu .hub-story-shortcut{transition:none!important}
-}
-
-/* ===== ui-color-consistency.css · consolidated section 18/19 ===== */
-/* Infinity Space v8: semantic control colors, no cross-colored hover halos.
-   Core surfaces are graphite/navy. Strong colors are reserved for actions. */
-:root{
- --space-red:#ff1744;--space-green:#27ff40;--space-yellow:#ffe500;
- --space-purple:#9922ff;--space-blue:#2860ff;
- --ui-neutral:#121a30;--ui-neutral-2:#1a2641;
-}
-body.ui-v15 #modal .screen{--interaction-accent:var(--space-blue)}
-body.ui-v15 #screen-menu[data-preview-mode="endless"]{--mode-accent:var(--space-blue)}
-body.ui-v15 #screen-menu[data-preview-mode="arena"]{--mode-accent:var(--space-red)}
-body.ui-v15 #screen-menu[data-preview-mode="royale"]{--mode-accent:var(--space-purple)}
-body.ui-v15 #screen-menu[data-preview-mode="core"]{--mode-accent:var(--space-green)}
-body.ui-v15 #screen-menu[data-preview-mode="race"]{--mode-accent:var(--space-yellow)}
-body.ui-v15 #screen-menu[data-preview-mode="worms"]{--mode-accent:var(--space-purple)}
-/* Navigation is consistently blue; primary CTAs are purple and warnings red. */
-body.ui-v15 #modal :is(.br-head-back,.br-foot-secondary,.br-small-action,
- .br-tab,.br-filter,.page-nav .back,.map-header .back,.pill-button,
- .game-select-trigger,.game-select-item,.icon-btn,
- .map-corner.right button,.hub-mode-step,.hub-mode-story-back){
- --interaction-accent:var(--space-blue);
-}
-body.ui-v15 #modal :is(.br-foot-primary,.br-inline-cta,.music-control-play),
-body.ui-v15 #screen-menu .hub-actions .hub-continue{
- --interaction-accent:var(--space-purple);
-}
-body.ui-v15 #modal :is(.daily-claim,.reward-claim,[data-reward-action],
- [data-roulette-action],.hub-story-reward){--interaction-accent:var(--space-yellow)}
-body.ui-v15 #modal :is(button[data-action="reset"],button[data-action="delete"],
- .br-small-action.warn){--interaction-accent:var(--space-red)}
-body.ui-v15 #modal :is(.br-switch.active,.reward-claim.claimed){--interaction-accent:var(--space-green)}
-body.ui-v15 #screen-menu .hub-mode-story-play{--interaction-accent:var(--mode-accent,var(--space-blue))}
-body.ui-v15 #screen-menu .hub-mode-dots button.current{
- --interaction-accent:var(--mode-accent,var(--space-blue));
- background:var(--mode-accent,var(--space-blue))!important;
- border-color:var(--mode-accent,var(--space-blue))!important;
- box-shadow:0 0 10px color-mix(in srgb,var(--mode-accent) 36%,transparent)!important;
-}
-body.ui-v15 #screen-menu .hub-mode-dots button:not(.current){
- background:#243452!important;border-color:#476080!important;
- box-shadow:none!important;
-}
-/* Previous styles applied bright purple backgrounds to every back/tab button.
-   Replace with a uniform dark surface and the relevant blue outline. */
-body.ui-v15 #modal :is(.br-head-back,.br-foot-secondary,.br-small-action,
- .br-tab:not(.active),.br-filter:not(.active),
- .page-nav .back,.map-header .back,.pill-button:not(.active),
- .icon-btn,.map-corner.right button,.game-select-trigger){
- background:linear-gradient(155deg,#1b2848,#11182d)!important;
- border-color:#465b8b!important;border-bottom-color:#26395e!important;
- color:#eef3ff!important;
- box-shadow:inset 0 1px #ffffff11,0 3px 10px #0006!important;
-}
-body.ui-v15 #modal :is(.br-tab.active,.br-filter.active,.pill-button.active){
- --interaction-accent:var(--space-blue);
- background:linear-gradient(155deg,#274fba,#182e75)!important;
- border-color:var(--space-blue)!important;border-bottom-color:#162c70!important;
- color:#fff!important;
- box-shadow:0 0 11px #2860ff26,inset 0 1px #ffffff25!important;
-}
-body.ui-v15 #modal :is(.br-head-back,.br-foot-secondary,.br-small-action,
- .br-tab,.br-filter,.page-nav .back,.map-header .back,.pill-button,
- .icon-btn,.map-corner.right button,.game-select-trigger) :is(svg,.ui-icon,.ui-symbol){
- color:inherit!important;filter:none;
-}
-body.ui-v15 #modal :is(.br-head-back,.br-foot-secondary,.br-small-action,
- .br-tab,.br-filter,.page-nav .back,.map-header .back,.pill-button,
- .icon-btn,.map-corner.right button,.game-select-trigger) :is(span:first-child,i){
- border-color:color-mix(in srgb,var(--interaction-accent) 25%,#2a3455);
-}
-/* Hover must use the exact local action color, including inner decoration. */
-@media(hover:hover) and (pointer:fine){
- body.ui-v15 #modal :is(.br-head-back,.br-foot-secondary,.br-small-action,
-  .br-tab,.br-filter,.page-nav .back,.map-header .back,.pill-button,
-  .icon-btn,.map-corner.right button,.game-select-trigger,
-  .game-select-item,.hub-mode-step,.hub-mode-story-back):not(:disabled):hover{
-  border-color:var(--interaction-accent)!important;
-  background:linear-gradient(155deg,
-    color-mix(in srgb,var(--interaction-accent) 19%,#18213c),#121a30)!important;
-  color:#fff!important;
-  box-shadow:0 0 0 1px color-mix(in srgb,var(--interaction-accent) 30%,transparent),
-    0 0 13px color-mix(in srgb,var(--interaction-accent) 34%,transparent),
-    0 4px 12px #0007!important;
-  filter:brightness(1.08)!important;
- }
- body.ui-v15 #modal :is(.br-head-back,.br-foot-secondary,.br-small-action,
-  .br-tab,.br-filter,.page-nav .back,.map-header .back,.pill-button,
-  .icon-btn,.map-corner.right button,.game-select-trigger,
-  .game-select-item,.hub-mode-step,.hub-mode-story-back):not(:disabled):hover :is(svg,.ui-icon,.ui-symbol){
-  color:var(--interaction-accent)!important;
-  filter:drop-shadow(0 0 4px color-mix(in srgb,var(--interaction-accent) 38%,transparent))!important;
- }
-}
-body.ui-v15 #modal :is(.br-head-back,.br-foot-secondary,.br-small-action,
- .br-tab,.br-filter,.page-nav .back,.map-header .back,.pill-button,
- .icon-btn,.map-corner.right button,.game-select-trigger):focus-visible{
- outline:2px solid var(--interaction-accent)!important;outline-offset:3px!important;
- box-shadow:0 0 0 3px color-mix(in srgb,var(--interaction-accent) 25%,transparent)!important;
-}
-/* Zoom controls: blue border AND blue internal icon. */
-body.ui-v15 #modal #screen-map .map-corner.right button,
-body.ui-v15 #hud .camera-buttons button{
- --interaction-accent:var(--space-blue);
- background:linear-gradient(155deg,#1b2848,#101a30)!important;
- border-color:#465b8b!important;color:#f5f7ff!important;
-}
-body.ui-v15 #modal #screen-map .map-corner.right button:hover .zoom-glyph,
-body.ui-v15 #hud .camera-buttons button:hover .zoom-glyph{
- background:linear-gradient(145deg,#2a4bcb,#182b6d)!important;
- border-color:var(--space-blue)!important;
- box-shadow:0 0 12px #2860ff5a,inset 0 1px #ffffff25!important;
-}
-body.ui-v15 #screen-map .v15-map-details summary:hover{
- text-shadow:0 0 8px #2860ff65!important;
-}
-/* Menu: secondary dock icons use their own colors and no purple base plates. */
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut-icon,
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut-icon :is(svg,.ui-symbol){
- color:var(--interaction-accent)!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut-icon{
- background:color-mix(in srgb,var(--interaction-accent) 9%,#131d34)!important;
- border-color:color-mix(in srgb,var(--interaction-accent) 32%,#1b2945)!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward,
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward>span:first-child{
- color:var(--space-yellow)!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward{
- background:linear-gradient(155deg,#302919,#1b1a23)!important;
- border-color:#756122!important;border-bottom-color:#4c401e!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward:hover{
- background:linear-gradient(155deg,#40351c,#211f25)!important;
- border-color:var(--space-yellow)!important;
- box-shadow:0 0 14px #ffe50050!important;
-}
-body.ui-v15 #screen-menu .hub-mode-story-play,
-body.ui-v15 #screen-menu .hub-mode-story-play:hover{
- border-color:var(--mode-accent,var(--space-blue))!important;
- border-bottom-color:color-mix(in srgb,var(--mode-accent) 40%,#091121)!important;
-}
-body.ui-v15 #screen-menu .hub-mode-story-play b,
-body.ui-v15 #screen-menu .hub-mode-story-play b svg{
- color:#fff!important;
-}
-body.ui-v15 #screen-menu .hub-mode-step:hover{
- border-color:var(--space-blue)!important;box-shadow:0 0 12px #2860ff50!important;
-}
-body.ui-v15 #hud .v15-hud .abilities .ability-btn{
- --interaction-accent:var(--space-blue);
-}
-body.ui-v15 #hud .v15-hud .abilities .ability-btn[data-cooling="false"]{
- border-color:#2860ff!important;box-shadow:0 0 13px #2860ff35,0 3px 0 #0b1024!important;
-}
-body.ui-v15 #hud .v15-hud .abilities .ability-btn .ability-cooldown-label{
- background:#182c63!important;border-color:#2860ff!important;color:#f1f5ff!important;
-}
-body.ui-v15 #hud .v15-hud .abilities .ability-btn::after{
- background:linear-gradient(90deg,#2860ff 0 var(--ability-ready,100%),#29324c var(--ability-ready,100%))!important;
-}
-/* Responsive flow: preserve usable tap targets and guard against label clipping. */
-@media(max-width:700px){
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
-  grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;
-  grid-template-rows:repeat(2,minmax(42px,auto));max-width:100%;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut{
-  min-width:0;min-height:44px;height:auto;padding:5px 3px;gap:4px;
-  flex-direction:column;justify-content:center;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut-label{
-  max-width:100%;white-space:normal;overflow-wrap:anywhere;
-  font-size:clamp(8px,2.25vw,10px);line-height:1.16;
-  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut-icon{
-  min-height:20px;flex:0 0 20px;
- }
- body.ui-v15 #modal .screen :is(button,input,select){max-width:100%}
- body.ui-v15 #modal .screen :is(.br-head,.page-nav,.hub-mode-story-top){
-  min-width:0;
- }
- body.ui-v15 #modal .screen :is(.br-head h2,.hub-mode-story-title,.hub-mode-story-description){
-  overflow-wrap:anywhere;min-width:0;
- }
-}
-@media(max-width:380px){
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{gap:4px}
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut{padding:4px 2px}
-}
-@media(prefers-reduced-motion:reduce){
- body.ui-v15 #modal .screen button{transition:none!important}
-}
-
-
-/* v9 — saturated per-category surfaces for the eight main menu tiles.
-   No generic navy overlay, no purple inherited hover or icon box. */
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
- --dock-accent:#2860ff;--dock-top:#225ad4;--dock-bottom:#0e2865;
- isolation:isolate;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut="map"]{
- --dock-accent:#2860ff;--dock-top:#235ccf;--dock-bottom:#102b70;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut="evolution"]{
- --dock-accent:#a828ff;--dock-top:#8428d5;--dock-bottom:#3d147d;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut="achievements"]{
- --dock-accent:#ffe500;--dock-top:#d5ad05;--dock-bottom:#765108;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut="music"]{
- --dock-accent:#9922ff;--dock-top:#6f17c3;--dock-bottom:#31106c;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut="bestiary"]{
- --dock-accent:#ff1744;--dock-top:#b32248;--dock-bottom:#551329;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut="statistics"]{
- --dock-accent:#27ff40;--dock-top:#1ba842;--dock-bottom:#105328;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut="settings"]{
- --dock-accent:#2860ff;--dock-top:#325fc0;--dock-bottom:#172f75;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut="new"]{
- --dock-accent:#ff1744;--dock-top:#b51c40;--dock-bottom:#5a112b;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-icon :is(svg,.ui-symbol,.hub-fallback-icon){
- color:var(--dock-accent)!important;
- stroke:currentColor;
- filter:none!important;
-}
-@media(hover:hover) and (pointer:fine){
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]:not(:disabled):hover{
-  --interaction-accent:var(--dock-accent);
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]:not(:disabled):hover .hub-story-shortcut-icon{
-  border-color:var(--dock-accent)!important;
- }
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]:focus-visible{
- outline:2px solid var(--dock-accent)!important;
- outline-offset:3px!important;
- box-shadow:0 0 0 3px color-mix(in srgb,var(--dock-accent) 32%,transparent)!important;
-}
-
-
-/* v10 — single coherent family of controls, with a subtle colored tint,
-   rather than seven unrelated solid-filled gradients. */
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
- --interaction-accent:var(--dock-accent);
- background:linear-gradient(140deg,
-  color-mix(in srgb,var(--dock-accent) 15%,#192235) 0%,
-  color-mix(in srgb,var(--dock-accent) 5%,#101827) 100%)!important;
- border:1px solid #36425a!important;
- border-top:2px solid var(--dock-accent)!important;
- border-bottom:2px solid #212b40!important;
- border-radius:9px!important;
- box-shadow:inset 0 1px #ffffff1a,0 4px 12px #0004!important;
- color:#e8eefd!important;
- transform:none;
- font-weight:790!important;
- letter-spacing:0!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-label{
- color:#e8eefd!important;font-size:clamp(10px,.82vw,13px)!important;
- text-shadow:none!important;font-weight:780!important;line-height:1.2;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-icon{
- color:var(--dock-accent)!important;
- background:transparent!important;border:0!important;
- box-shadow:none!important;border-radius:0!important;
- width:24px;height:24px;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-icon svg{
- color:var(--dock-accent)!important;
- stroke:currentColor!important;filter:drop-shadow(0 0 5px color-mix(in srgb,var(--dock-accent) 26%,transparent))!important;
-}
-@media(hover:hover) and (pointer:fine){
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]:not(:disabled):hover{
-  background:linear-gradient(140deg,
-   color-mix(in srgb,var(--dock-accent) 26%,#1b263a),
-   color-mix(in srgb,var(--dock-accent) 9%,#111b2a))!important;
-  border-color:color-mix(in srgb,var(--dock-accent) 48%,#354159)!important;
-  border-top-color:var(--dock-accent)!important;
-  border-bottom-color:#263348!important;
-  box-shadow:0 0 14px color-mix(in srgb,var(--dock-accent) 20%,transparent),
-             inset 0 1px #ffffff24,0 6px 14px #0006!important;
-  transform:translateY(-2px)!important;
-  filter:none!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]:not(:disabled):hover .hub-story-shortcut-icon{
-  background:transparent!important;border:0!important;box-shadow:none!important;
- }
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins:not([hidden]){
- display:inline-flex!important;align-items:center;justify-content:space-between;gap:13px;
- min-height:45px;padding:9px 16px;margin-top:10px;
- background:linear-gradient(140deg,#202a3e,#121c2d)!important;
- border:1px solid #425776!important;border-left:3px solid #648bff!important;
- border-bottom:2px solid #283752!important;border-radius:9px!important;
- color:#eef3ff!important;box-shadow:inset 0 1px #ffffff1a!important;
- font-size:11px!important;font-weight:850!important;letter-spacing:.04em;
- width:min(335px,100%);cursor:pointer;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins:not([hidden]):hover{
- border-color:#6285e8!important;
- border-left-color:#648bff!important;
- background:linear-gradient(140deg,#253550,#182336)!important;
- box-shadow:0 0 13px #2860ff30!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins b{
- font-size:19px;line-height:1;color:#648bff;
-}
-@media(max-width:800px){
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins:not([hidden]){
-  min-height:39px;padding:7px 11px;margin-top:7px;
-  font-size:10px!important;width:100%;max-width:280px;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-icon{width:20px;height:20px}
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-label{
-  font-size:clamp(9px,2.3vw,11px)!important;
- }
-}
-
+/* The supplied reference's V15.3 design is retained above verbatim.\n   Additional features retain their gameplay/layout rules without the two\n   later, conflicting rainbow/graphite overrides. */
 /* ===== worm-skin-studio.css · consolidated section 19/19 ===== */
 /* Infinity Space / Cosmic Worms: shared neutral visual system and segmented skin studio */
 .ws-overlay,.ws-overlay *{box-sizing:border-box}
@@ -8125,1199 +7504,474 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins b{
 }
 @media(prefers-reduced-motion:reduce){.ws-overlay *, .ws-overlay *::before,.ws-overlay *::after{transition:none!important;animation:none!important}}
 
-/* UNIFIED COMPONENT SKIN — Main app. No additional override files needed. */
-body.ui-v15 #modal :is(#screen-settings,#screen-music,#screen-statistics,#screen-achievements,#screen-bestiary,#screen-evolution,#screen-upgrades,#screen-tutorial){
- --ui-surface:var(--is-panel);--ui-surface-raised:var(--is-panel-raised);
- --ui-line:var(--is-line);--ui-text:var(--is-text);
-}
-body.ui-v15 :is(#screen-settings,#screen-music,#screen-statistics,#screen-achievements,#screen-bestiary,#screen-evolution)
- :is(.br-head,.br-settings-nav,.br-settings-main,.br-settings-aside,.br-ach-row,.br-best-row,.music-player,.br-stat-grid>.br-stat-card){
- border-radius:var(--is-radius);
-}
-body.ui-v15 :is(#screen-settings,#screen-music,#screen-statistics,#screen-achievements,#screen-bestiary,#screen-evolution)
- :is(.br-head-back,.br-foot-secondary,.br-foot-primary,.br-small-action,.music-control,.br-filter,.br-tab){
- transition:border-color .16s,background-color .16s,box-shadow .16s,transform .16s;
-}
-@media(prefers-reduced-motion:reduce){
- body.ui-v15 :is(#screen-settings,#screen-music,#screen-statistics,#screen-achievements,#screen-bestiary,#screen-evolution) button{transition:none!important}
-}
 
-
-/* CANONICAL VISUAL LANGUAGE — same graphite/navy surfaces across every
-   management screen; achievements keep their rarity stripe colors. */
+/* =====================================================================
+   INFINITY SPACE / ORIGINAL ART DIRECTION RESTORED
+   Derived from the supplied legacy index.html, UI V14–V15.3:
+   #4D22C6 violet, deep violet-black surfaces, beveled game controls,
+   crisp square radii, strong white headings, luminous violet hover.
+   Consolidated edition: no graphite-spectrum, no teal recoloring,
+   no overlapping 3.7x/3.8x menu patch cascade.
+   ===================================================================== */
 :root{
- --bg:var(--is-bg);--card:var(--is-panel);--text:var(--is-text);
- --muted:var(--is-muted);--blue:var(--is-blue);--purple:var(--is-purple);
- --gold:var(--is-yellow);--cyan:var(--is-blue);
+ --classic-base:#080613;--classic-panel:#171029;--classic-raised:#24183c;
+ --classic-border:#60468f;--classic-glow:#b293ff;
+ --classic-violet:#4d22c6;--classic-violet-light:#8d65f3;
+ --classic-white:#f6f1ff;--classic-muted:#b3a8ca;--classic-gold:#f2cd84;
+ --classic-surface:linear-gradient(155deg,#24183cfa,#100c21fb);
+ --classic-button:linear-gradient(180deg,#2d204b,#19112d);
+ --classic-button-hover:linear-gradient(180deg,#493276,#291a49);
+ --classic-primary:linear-gradient(180deg,#8159f3,#4d22c6 65%,#38158d);
+ --classic-primary-hover:linear-gradient(180deg,#a47bff,#6335da 65%,#4820a5);
+ --space-red:#ff1744;--space-green:#27ff40;--space-yellow:#ffe500;
+ --space-purple:#9922ff;--space-blue:#2860ff;
+ --ui-surface:#171029;--ui-surface-raised:#24183c;--ui-line:#60468f;
+ --ui-text:#f6f1ff;--ui-muted:#b3a8ca;
 }
-body.ui-v15 #modal :is(#screen-settings,#screen-music,#screen-statistics,#screen-achievements,#screen-bestiary,#screen-evolution,#screen-upgrades,#screen-tutorial){
- --card:var(--is-panel);--text:var(--is-text);--muted:var(--is-muted);
- --blue:var(--is-blue);--gold:var(--is-yellow);
+body.ui-v15{--text:var(--classic-white);--sub:var(--classic-muted);
+ --line:#574080;--panel:#130c26;--cyan:#a78bff;--purple:#c0a7ff;
+ color:var(--classic-white);
 }
-body.ui-v15 #modal #screen-settings .br-settings-main,
-body.ui-v15 #modal #screen-settings .br-settings-aside,
-body.ui-v15 #modal #screen-bestiary .br-best-details,
-body.ui-v15 #modal #screen-music .music-player{
- background:linear-gradient(145deg,#162033,#101725 84%)!important;
- border:1px solid #3c4b65!important;
- border-radius:var(--is-radius)!important;
- box-shadow:inset 0 1px #ffffff12,0 10px 26px #0003!important;
+body.ui-v15 .screen{color:var(--classic-white)}
+body.ui-v15 .overlay-screen:before{
+ background:linear-gradient(110deg,rgba(6,4,19,.92),rgba(10,6,28,.87) 53%,rgba(5,4,16,.93));
 }
-body.ui-v15 #modal #screen-settings :is(.br-option,.br-warning,.control-selection-preview,.br-readout-line),
-body.ui-v15 #modal #screen-achievements .br-ach-row,
-body.ui-v15 #modal #screen-bestiary .br-best-row,
-body.ui-v15 #modal #screen-music .music-track-card,
-body.ui-v15 #modal #screen-evolution :is(.recipe,.recipe-row,.evo-panel),
-body.ui-v15 #modal #screen-statistics :is(.br-stat-card,.stat-card){
- background:linear-gradient(135deg,#1a2538,#141d2e)!important;
- border-radius:8px!important;
- box-shadow:inset 0 1px #ffffff0d!important;
+body.ui-v15 .br-full{background:linear-gradient(115deg,rgba(7,5,20,.95),rgba(12,7,28,.93))}
+body.ui-v15 :is(.page-nav,.map-header){background:#100a23ed!important;border-bottom:1px solid #60468f!important}
+body.ui-v15 .br-head{border-bottom:1px solid #60468f!important}
+body.ui-v15 :is(.br-head h2,.map-header .header-title,.br-pane-title h3,.display-heading,.overlay-title){
+ color:#faf7ff!important;text-shadow:0 3px 17px #0005;letter-spacing:-.025em;
 }
-body.ui-v15 #modal #screen-bestiary .br-best-row.selected{
- background:linear-gradient(125deg,#253a5d,#182639)!important;
+body.ui-v15 :is(.br-serial,.overline,.eyeline,.hero-kicker,.muted-caps){color:#ae94f9!important}
+body.ui-v15 :is(.br-head-tag,.page-nav .muted-caps,.overlay-copy){color:#b6aaca!important}
+body.ui-v15 :is(#screen-settings,#screen-statistics,#screen-achievements,#screen-bestiary,#screen-evolution,#screen-upgrades,#screen-music,#screen-map,#screen-tutorial) :is(
+ .br-settings-main,.br-settings-nav,.br-ach-summary,.br-ach-note,.br-best-details,.br-best-row,
+ .br-ach-row,.br-stat-grid>div,.up-list,.up-row,.recipe,.evo-panel,.br-track,.music-player,.music-track-card,
+ .br-warning,.map-corner.left,.map-pin-menu,.br-controls>div,.br-option,.br-tutorial article
+ ){
+ color:#ece6fb;
 }
-body.ui-v15 #modal #screen-settings .br-tab{
- background:linear-gradient(135deg,#182337,#121c2d)!important;
- border:1px solid #40516f!important;color:#e5edfc!important;
- box-shadow:inset 0 1px #ffffff12!important;
- border-radius:8px!important;
+body.ui-v15 :is(#screen-settings,#screen-statistics,#screen-achievements,#screen-bestiary,#screen-evolution,#screen-upgrades,#screen-music,#screen-map,#screen-tutorial) :is(
+ .br-settings-main,.br-ach-note,.br-best-details,.br-best-row,.br-ach-row,.br-stat-grid>div,
+ .up-list,.recipe,.evo-panel,.br-track,.music-player,.music-track-card,
+ .br-warning,.map-corner.left,.map-pin-menu,.br-controls>div,.br-tutorial article
+ ){
+ background:var(--classic-surface)!important;
+ border-color:#5b4385!important;border-bottom-color:#3e2a65!important;
+ border-radius:6px!important;
+ box-shadow:inset 0 1px #d4b7ff0d,0 9px 24px #0005!important;
 }
-body.ui-v15 #modal #screen-settings .br-tab.active{
- background:linear-gradient(145deg,#27416f,#1b2d4d)!important;
- border-color:#426fcd!important;
- box-shadow:inset 0 0 0 1px #2860ff40!important;
-}
-body.ui-v15 #modal #screen-settings .br-tab.active :is(svg,b,small){
- color:#eaf1ff!important;
-}
-body.ui-v15 #modal #screen-settings :is(.br-select,.game-select-trigger){
- background:#19273d!important;border:1px solid #445879!important;
- border-radius:8px!important;color:#f1f5fe!important;
-}
-body.ui-v15 #modal #screen-settings .br-foot-primary{
- background:linear-gradient(145deg,#362856,#221d39)!important;
- border:1px solid #784ac9!important;border-left:3px solid #9922ff!important;
- box-shadow:inset 0 1px #ffffff17!important;
- color:#f6f0ff!important;border-radius:9px!important;
-}
-body.ui-v15 #modal #screen-settings .br-foot-primary:hover{
- background:linear-gradient(145deg,#47316e,#2c2248)!important;
- border-color:#a35df1!important;
-}
-body.ui-v15 #modal #screen-music :is(.music-track-card,.music-player){
- border-color:#42516b!important;
-}
-body.ui-v15 #modal #screen-music .music-track-card:has(.playing),
-body.ui-v15 #modal #screen-music .music-track-card:has(.active){
- border-color:#9922ff!important;
-}
-body.ui-v15 #modal #screen-achievements .br-ach-row:hover,
-body.ui-v15 #modal #screen-bestiary .br-best-row:not(.selected):hover,
-body.ui-v15 #modal #screen-music .music-track-card:hover{
- background:linear-gradient(135deg,#23334e,#182337)!important;
-}
-/* Shared action geometry: Music and Settings use the same neutral
-   surfaces, 9px corners, subtle highlight and semantic left-edge accents. */
-body.ui-v15 #modal #screen-music .music-track-actions button[data-music-action]{
- background:linear-gradient(145deg,#28324a,#182238)!important;
- border:1px solid #485675!important;border-left:3px solid #9922ff!important;
- border-bottom:2px solid #2b3652!important;
- border-radius:8px!important;
- box-shadow:inset 0 1px #ffffff1a!important;
- color:#eef3ff!important;
- font-weight:840!important;
- text-shadow:none!important;
-}
-body.ui-v15 #modal #screen-music .music-track-actions button[data-music-action].chosen{
- background:linear-gradient(145deg,#34294d,#202137)!important;
- border-left-color:#ffe500!important;
-}
-body.ui-v15 #modal #screen-music .music-track-preview,
-body.ui-v15 #modal #screen-music .music-control{
- background:linear-gradient(145deg,#212d42,#182236)!important;
- border:1px solid #465776!important;
- border-radius:9px!important;
- box-shadow:inset 0 1px #ffffff17!important;
- color:#dbe6ff!important;
-}
-body.ui-v15 #modal #screen-music .music-control-play{
- border:1px solid #695393!important;
- border-left:3px solid #9922ff!important;
- background:linear-gradient(145deg,#342b51,#222036)!important;
- color:#fff!important;
-}
-body.ui-v15 #modal #screen-music .music-player-timeline input[type=range],
-body.ui-v15 #modal #screen-music .music-player-volume input[type=range]{
- background:linear-gradient(90deg,#9922ff 0 var(--val,0%),#35425c var(--val,0%))!important;
-}
-body.ui-v15 #modal #screen-settings :is(.br-select,.game-select-trigger) svg,
-body.ui-v15 #modal #screen-settings :is(.br-select,.game-select-trigger) .ui-symbol{
- color:#7d9eff!important;
- stroke:currentColor!important;
+body.ui-v15 :is(#screen-settings,#screen-bestiary,#screen-achievements,#screen-upgrades,#screen-music) :is(
+ .br-option,.br-ach-row,.up-row,.settings-line,.br-readout-line
+ ){border-bottom-color:#4c365f!important}
+body.ui-v15 :is(#screen-settings,#screen-achievements,#screen-statistics,#screen-bestiary,#screen-music,#screen-upgrades,#screen-evolution) :is(
+ .br-option strong,.br-ach-row strong,.br-track strong,.br-best-row strong,.up-desc strong,
+ .br-readout-line b,.recipe-row strong
+ ){color:#f7f2ff!important;font-weight:850!important}
+body.ui-v15 :is(#screen-settings,#screen-achievements,#screen-statistics,#screen-bestiary,#screen-music,#screen-upgrades,#screen-evolution) :is(
+ .br-option small,.br-track small,.br-ach-row small,.br-readout-line,.br-best-row small,.up-desc small
+ ){color:#b0a5c5!important}
+/* Game-button families: raised frame with a bottom bevel, glow on hover. */
+body.ui-v15 :is(
+ .br-head-back,.back,.br-small-action,.br-foot-secondary,.br-tab,
+ .br-filter,.br-inline-cta,.pill-button,.purchase,.up-qty-preset,
+ .up-custom-quantity,.music-control,.music-track-preview,.music-track-actions button,
+ .atlas-control,.map-layer-option,.map-pin-action,.select-shell,
+ .br-select,.br-best-row,.br-tutorial-done,.settings-save
+ ){
+ background:var(--classic-button)!important;
+ color:#e9ddff!important;
+ border:1px solid #7254a6!important;border-bottom:3px solid #422a77!important;
+ border-radius:6px!important;
+ box-shadow:inset 0 1px #ffffff13,0 4px 12px #0006!important;
+ transition:background .19s ease,border-color .19s ease,box-shadow .19s ease,transform .19s ease,color .19s ease!important;
 }
 @media(hover:hover) and (pointer:fine){
- body.ui-v15 #modal #screen-music .music-track-actions button[data-music-action]:hover{
-  background:linear-gradient(145deg,#373351,#202941)!important;
-  border-color:#7461a5!important;border-left-color:#9922ff!important;
-  box-shadow:0 0 11px #9922ff31!important;
-  filter:none!important;
- }
- body.ui-v15 #modal #screen-music .music-control:hover,
- body.ui-v15 #modal #screen-music .music-track-preview:hover{
-  background:linear-gradient(145deg,#2d3e5b,#1e2e46)!important;
-  border-color:#6689ca!important;box-shadow:0 0 11px #2860ff22!important;
-  filter:none!important;
- }
- body.ui-v15 #modal #screen-music .music-control-play:hover{
-  background:linear-gradient(145deg,#43335f,#292340)!important;
-  border-color:#895fc6!important;border-left-color:#9922ff!important;
-  box-shadow:0 0 11px #9922ff32!important;
- }
-}
-
-@media(prefers-reduced-motion:reduce){
- body.ui-v15 #modal :is(#screen-settings,#screen-achievements,#screen-bestiary,#screen-music) *{
-  animation-duration:0.01ms!important;transition-duration:0.01ms!important;
- }
-}
-
-
-/* SETTINGS PILOT — reuse the universe map's approved surfaces and controls.
-   Scoped only to the Settings screen; no other game page is recolored. */
-body.ui-v15 #modal #screen-settings{
- --map-ui-ink:#f6f0ff;
- --map-ui-muted:#a99fc5;
- --map-ui-subtle:#b29acb;
- --map-ui-line:#654897;
- --map-ui-lavender:#b99cff;
- --map-ui-cta:#4d22c6;
- --map-ui-panel:linear-gradient(150deg,rgba(28,19,52,.96),rgba(15,11,33,.96));
- --map-ui-secondary:linear-gradient(155deg,#2f1958,#190f34);
- color:var(--map-ui-ink);
- background:linear-gradient(150deg,#0b091d 0%,#0a0c1e 50%,#090718 100%);
-}
-body.ui-v15 #modal #screen-settings .br-head{
- left:0;right:0;padding:0 4%;height:104px;
- background:linear-gradient(180deg,rgba(18,12,37,.98),rgba(12,10,26,.94))!important;
- border-bottom:1px solid #4a3475!important;
-}
-body.ui-v15 #modal #screen-settings .br-head h2{color:#f7f0ff;font-size:clamp(23px,2.2vw,33px)}
-body.ui-v15 #modal #screen-settings .br-serial,
-body.ui-v15 #modal #screen-settings .br-dot{color:var(--map-ui-lavender)!important}
-body.ui-v15 #modal #screen-settings .br-head-tag{
- color:#c8b8e9!important;background:#1b1233;border:1px solid #59427c;
- border-radius:5px;padding:9px 12px;
-}
-body.ui-v15 #modal #screen-settings .br-head-tag b{color:var(--map-ui-lavender)!important}
-body.ui-v15 #modal #screen-settings .br-head-back,
-body.ui-v15 #modal #screen-settings .br-foot-secondary,
-body.ui-v15 #modal #screen-settings .br-small-action:not(.warn){
- --interaction-accent:#a77cff;
- background:var(--map-ui-secondary)!important;
- border:1px solid #7953bc!important;border-bottom:4px solid #452477!important;
- border-radius:5px!important;color:#f7efff!important;
- box-shadow:inset 0 1px #ffffff11,0 3px 10px #0006!important;
-}
-body.ui-v15 #modal #screen-settings .br-settings-layout{
- top:125px;bottom:102px;width:min(1100px,94vw);
- grid-template-columns:230px minmax(0,1fr);gap:20px;
-}
-body.ui-v15 #modal #screen-settings .br-settings-nav{
- min-width:0;padding:4px 0 0;gap:9px;
-}
-body.ui-v15 #modal #screen-settings .br-side-label{color:#b9a8d3!important;letter-spacing:.16em}
-body.ui-v15 #modal #screen-settings .br-settings-side-note{
- color:var(--map-ui-muted)!important;
- border-top:1px solid #493665;padding-top:16px;
-}
-body.ui-v15 #modal #screen-settings .br-tab{
- --interaction-accent:#a77cff;
- min-width:0;min-height:65px;
- background:var(--map-ui-secondary)!important;
- border:1px solid #7953bc!important;border-bottom:4px solid #452477!important;
- border-radius:5px!important;color:#f0eaff!important;
- box-shadow:inset 0 1px #ffffff11,0 3px 10px #0005!important;
- transition:background .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease!important;
-}
-body.ui-v15 #modal #screen-settings .br-tab :is(svg,.ui-symbol){
- color:#cfb2ff!important;filter:none!important;
-}
-body.ui-v15 #modal #screen-settings .br-tab small,
-body.ui-v15 #modal #screen-settings .br-tab>b{color:#b8aacd!important}
-body.ui-v15 #modal #screen-settings .br-tab.active{
- --interaction-accent:#a77cff;
- background:linear-gradient(180deg,#6940e3,#4d22c6)!important;
- border:1px solid #b99cff!important;border-bottom:4px solid #381481!important;
- box-shadow:inset 0 1px #ffffff27,0 5px 18px #190b4573!important;
- color:#fff!important;
-}
-body.ui-v15 #modal #screen-settings .br-tab.active :is(svg,.ui-symbol,b,small){color:#fff!important}
-body.ui-v15 #modal #screen-settings .br-settings-main{
- min-width:0;overflow-x:hidden;
- padding:clamp(16px,2vw,27px)!important;
- background:var(--map-ui-panel)!important;
- border:2px solid var(--map-ui-line)!important;
- border-bottom:5px solid #40236c!important;
- border-radius:10px!important;
- box-shadow:0 20px 45px #0008!important;
- scrollbar-color:#60438d #160f2a;
-}
-body.ui-v15 #modal #screen-settings .br-pane-title{
- padding:0 0 18px;border-bottom:1px solid #503971!important;
-}
-body.ui-v15 #modal #screen-settings .br-pane-title>span{color:var(--map-ui-lavender)!important}
-body.ui-v15 #modal #screen-settings .br-pane-title h3{
- font-size:clamp(21px,2.1vw,30px);color:#f7f0ff!important;
- line-height:1.15;overflow-wrap:anywhere;
-}
-body.ui-v15 #modal #screen-settings .br-pane-title p,
-body.ui-v15 #modal #screen-settings .br-option small{color:var(--map-ui-muted)!important}
-body.ui-v15 #modal #screen-settings .br-option{
- grid-template-columns:minmax(0,1fr) minmax(170px,250px)!important;
- gap:14px!important;min-width:0;padding:17px 2px!important;
- background:transparent!important;
- border:0!important;border-bottom:1px solid #503971!important;
- box-shadow:none!important;border-radius:0!important;
-}
-body.ui-v15 #modal #screen-settings .br-option>*{min-width:0}
-body.ui-v15 #modal #screen-settings .br-option strong{color:#f5efff!important}
-body.ui-v15 #modal #screen-settings :is(.br-select,.game-select-trigger){
- color:#f6f0ff!important;background:#0f0c21!important;
- border:1px solid #7551bd!important;border-bottom:3px solid #40236c!important;
- border-radius:5px!important;
- box-shadow:inset 0 1px #ffffff0e!important;
-}
-body.ui-v15 #modal #screen-settings :is(.br-select,.game-select-trigger):focus-visible{
- outline:2px solid var(--map-ui-lavender)!important;outline-offset:2px;
-}
-body.ui-v15 #modal #screen-settings .br-select option{
- color:#f6f0ff;background:#160f2a;
-}
-body.ui-v15 #modal #screen-settings .br-switch{
- --interaction-accent:#956eff;
- width:54px!important;min-width:54px!important;height:31px!important;min-height:31px!important;
- padding:0!important;border:2px solid #6b528e!important;border-radius:5px!important;
- background:#241a39!important;box-shadow:inset 0 2px 5px #0904159e!important;
-}
-body.ui-v15 #modal #screen-settings .br-switch.active{
- border-color:#b99cff!important;background:#4d22c6!important;
-}
-body.ui-v15 #modal #screen-settings .br-switch::before{
- width:19px!important;height:19px!important;top:4px!important;left:4px!important;
- background:linear-gradient(#c6b6e9,#8c75b7)!important;border:1px solid #d1c0f8!important;
- border-radius:3px!important;box-shadow:0 1px 4px #0007!important;
-}
-body.ui-v15 #modal #screen-settings .br-switch.active::before{
- transform:translateX(23px)!important;
- background:linear-gradient(#f4ecff,#aa87ff)!important;
-}
-body.ui-v15 #modal #screen-settings .br-switch i{display:none!important}
-body.ui-v15 #modal #screen-settings .br-slider{
- min-width:0;width:100%;max-width:260px;gap:11px;justify-self:start;
-}
-body.ui-v15 #modal #screen-settings .br-slider input[type=range]{
- appearance:none!important;-webkit-appearance:none!important;min-width:0;width:100%;
- height:14px!important;margin:6px 0!important;
- border:1px solid #7958bb!important;border-radius:4px!important;
- background:linear-gradient(90deg,#7246e0 0 var(--val,50%),#302347 var(--val,50%) 100%)!important;
- box-shadow:inset 0 1px 3px #0007!important;
-}
-body.ui-v15 #modal #screen-settings .br-slider input[type=range]::-webkit-slider-thumb{
- appearance:none!important;-webkit-appearance:none!important;
- width:19px!important;height:19px!important;margin-top:0!important;
- border:2px solid #ede2ff!important;border-radius:3px!important;
- background:linear-gradient(160deg,#c6affd,#8259eb)!important;
- box-shadow:0 2px 0 #39217a,0 2px 7px #0007!important;
-}
-body.ui-v15 #modal #screen-settings .br-slider input[type=range]::-moz-range-thumb{
- width:19px!important;height:19px!important;
- border:2px solid #ede2ff!important;border-radius:3px!important;
- background:#9670ef!important;
-}
-body.ui-v15 #modal #screen-settings .br-slider output{
- color:#d8c6ff!important;min-width:44px;font-variant-numeric:tabular-nums;
-}
-body.ui-v15 #modal #screen-settings .br-controls{gap:9px;margin-top:22px}
-body.ui-v15 #modal #screen-settings .br-controls>div{
- background:var(--map-ui-panel)!important;
- border:1px solid #654897!important;border-bottom:3px solid #40236c!important;
- border-radius:5px!important;
-}
-body.ui-v15 #modal #screen-settings .br-controls kbd{
- background:#412579!important;border:1px solid #8560d8!important;color:#f4ebff!important;
-}
-body.ui-v15 #modal #screen-settings .br-controls span{color:#b5a6cc!important}
-body.ui-v15 #modal #screen-settings .br-warning{
- background:linear-gradient(145deg,#251a3a,#140f29)!important;
- border:1px solid #654b90!important;border-left:3px solid #9a79e7!important;
- border-radius:6px!important;color:#e6dbff!important;
- box-shadow:none!important;
-}
-body.ui-v15 #modal #screen-settings .br-warning :is(strong,p){color:#d3c5ea!important}
-body.ui-v15 #modal #screen-settings .br-warning svg{color:#b99cff!important}
-body.ui-v15 #modal #screen-settings .br-inline-cta,
-body.ui-v15 #modal #screen-settings .br-foot-primary{
- --interaction-accent:#a77cff;
- background:linear-gradient(180deg,#6940e3,#4d22c6)!important;
- border:1px solid #b99cff!important;border-bottom:4px solid #381481!important;
- border-radius:6px!important;color:#fff!important;font-weight:950!important;
- box-shadow:0 8px 22px #190b4573!important;
-}
-body.ui-v15 #modal #screen-settings .br-small-action.warn{
- --interaction-accent:#ff1744;
- background:linear-gradient(155deg,#392029,#1b101e)!important;
- border:1px solid #91587e!important;border-bottom:3px solid #6a3045!important;
- border-radius:5px!important;color:#ffc5d1!important;
-}
-body.ui-v15 #modal #screen-settings .br-settings-foot{
- left:0;right:0;padding:0 5%;height:83px;
- background:rgba(15,10,30,.97)!important;
- border-top:1px solid #5a4385!important;
- color:#a69bc1!important;
-}
-body.ui-v15 #modal #screen-settings .br-foot-secondary,
-body.ui-v15 #modal #screen-settings .br-foot-primary{
- min-height:42px;padding:9px 15px;justify-content:center;
-}
-@media(hover:hover) and (pointer:fine){
- body.ui-v15 #modal #screen-settings :is(.br-head-back,.br-foot-secondary,.br-small-action:not(.warn),.br-tab:not(.active)):hover{
-  --interaction-accent:#a77cff;
-  border-color:#b48aff!important;
-  background:linear-gradient(155deg,#442577,#271447)!important;
-  box-shadow:0 0 14px #9764ff55,0 4px 12px #0007!important;
-  filter:brightness(1.08)!important;
- }
- body.ui-v15 #modal #screen-settings :is(.br-tab.active,.br-inline-cta,.br-foot-primary):hover{
-  --interaction-accent:#a77cff;
-  border-color:#cbb3ff!important;
-  background:linear-gradient(180deg,#7a54f2,#572bd4)!important;
-  box-shadow:0 0 15px #986eff50,0 7px 18px #0007!important;
-  filter:brightness(1.07)!important;
- }
- body.ui-v15 #modal #screen-settings .br-small-action.warn:hover{
-  border-color:#ff1744!important;
-  box-shadow:0 0 12px #ff174436!important;
- }
-}
-body.ui-v15 #modal #screen-settings button:focus-visible{
- outline:2px solid var(--interaction-accent,#b99cff)!important;outline-offset:3px!important;
-}
-@media(max-width:980px){
- body.ui-v15 #modal #screen-settings .br-settings-layout{
-  grid-template-columns:190px minmax(0,1fr);gap:13px;
- }
-}
-@media(max-width:800px){
- body.ui-v15 #modal #screen-settings .br-head{height:86px;padding:0 3%}
- body.ui-v15 #modal #screen-settings .br-settings-layout{
-  top:94px;bottom:87px;width:94vw;display:flex;flex-direction:column;gap:10px;
- }
- body.ui-v15 #modal #screen-settings .br-settings-nav{
-  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;flex:none;padding:0;
- }
- body.ui-v15 #modal #screen-settings .br-side-label,
- body.ui-v15 #modal #screen-settings .br-settings-side-note{display:none}
- body.ui-v15 #modal #screen-settings .br-tab{min-height:58px;padding:8px 5px!important}
- body.ui-v15 #modal #screen-settings .br-settings-main{
-  flex:1;min-height:0;padding:14px!important;
- }
- body.ui-v15 #modal #screen-settings .br-settings-foot{
-  height:78px;padding:0 3%;gap:8px;
- }
-}
-@media(max-width:540px){
- body.ui-v15 #modal #screen-settings .br-option{
-  grid-template-columns:minmax(0,1fr)!important;gap:9px!important;
-  padding:12px 1px!important;
- }
- body.ui-v15 #modal #screen-settings .br-select,
- body.ui-v15 #modal #screen-settings .game-select,
- body.ui-v15 #modal #screen-settings .game-select-trigger{width:100%!important;max-width:100%!important}
- body.ui-v15 #modal #screen-settings .br-slider{width:100%;max-width:300px}
- body.ui-v15 #modal #screen-settings .br-settings-foot>span{display:none}
- body.ui-v15 #modal #screen-settings .br-settings-foot>div{
-  width:100%;display:flex;gap:8px;justify-content:stretch;
- }
- body.ui-v15 #modal #screen-settings .br-settings-foot button{
-  flex:1;min-width:0;padding:8px!important;min-height:43px;font-size:10px!important;
- }
- body.ui-v15 #modal #screen-settings .br-controls{grid-template-columns:repeat(2,minmax(0,1fr))}
- body.ui-v15 #modal #screen-settings .br-tab>span:nth-child(2){font-size:9px!important}
-}
-@media(max-height:520px){
- body.ui-v15 #modal #screen-settings .br-head{height:72px!important}
- body.ui-v15 #modal #screen-settings .br-settings-layout{top:78px!important;bottom:66px!important}
- body.ui-v15 #modal #screen-settings .br-settings-foot{height:60px!important}
-}
-
-
-/* Settings-only color audit: the map's vibrant violet replaces the stale
-   blue/teal used by inactive controls and their hover/focus states. */
-body.ui-v15 #modal #screen-settings{
- --interaction-accent:#a77cff;
- --cyan:#a77cff;
- --blue:#a77cff;
-}
-body.ui-v15 #modal #screen-settings :is(
- .br-head-back,.br-foot-secondary,.br-small-action:not(.warn),
- .br-tab:not(.active),.br-select,.game-select-trigger
-){
- --interaction-accent:#a77cff!important;
- color:#f5edff!important;
- background:linear-gradient(160deg,#34205c,#1c1037)!important;
- border-color:#7852bf!important;
- border-bottom-color:#49287b!important;
- box-shadow:inset 0 1px #ffffff15,0 3px 10px #0007!important;
-}
-body.ui-v15 #modal #screen-settings .br-tab:not(.active)
- :is(svg,.ui-icon,.ui-symbol,small,b){
- color:#c9aaff!important;filter:none!important;
-}
-body.ui-v15 #modal #screen-settings :is(.br-inline-cta,.br-foot-primary,.br-tab.active){
- --interaction-accent:#a77cff!important;
- background:linear-gradient(180deg,#774bea,#4d22c6)!important;
- border-color:#c4a7ff!important;
- border-bottom-color:#381481!important;
- color:#fff!important;
-}
-body.ui-v15 #modal #screen-settings :is(.br-select,.game-select-trigger){
- background:#21143e!important;border-color:#865bcc!important;
- border-bottom-color:#4d2b87!important;
-}
-body.ui-v15 #modal #screen-settings :is(.br-head-back,.br-foot-secondary,.br-small-action,.br-tab,.br-inline-cta,.br-foot-primary)
- :is(svg,.ui-icon,.ui-symbol){color:inherit!important;filter:none!important}
-@media(hover:hover) and (pointer:fine){
- body.ui-v15 #modal #screen-settings :is(
-  .br-head-back,.br-foot-secondary,.br-small-action:not(.warn),
-  .br-tab:not(.active),.br-select,.game-select-trigger
+ body.ui-v15 :is(
+  .br-head-back,.back,.br-small-action,.br-foot-secondary,.br-tab,.br-filter,
+  .br-inline-cta,.pill-button:not(.disabled),.purchase,.up-qty-preset,.music-control,
+  .music-track-preview,.music-track-actions button,.atlas-control,.map-layer-option,
+  .map-pin-action,.br-best-row,.br-tutorial-done
  ):not(:disabled):hover{
-  --interaction-accent:#b48aff!important;
-  color:#fff!important;
-  border-color:#b48aff!important;
-  background:linear-gradient(160deg,#56318a,#2f1959)!important;
-  box-shadow:0 0 15px #9865ff55,0 5px 13px #0008!important;
-  filter:brightness(1.09)!important;
+  background:var(--classic-button-hover)!important;border-color:#c3a6ff!important;
+  color:#fff!important;transform:translateY(-2px);
+  box-shadow:inset 0 1px #ffffff28,0 0 18px #9766f988,0 6px 15px #0008!important;
  }
- body.ui-v15 #modal #screen-settings :is(.br-tab.active,.br-inline-cta,.br-foot-primary):not(:disabled):hover{
-  --interaction-accent:#b48aff!important;
-  background:linear-gradient(180deg,#9567ff,#5a2add)!important;
-  border-color:#e0ceff!important;
-  box-shadow:0 0 17px #996aff66,0 6px 15px #0007!important;
- }
- body.ui-v15 #modal #screen-settings :is(.br-head-back,.br-foot-secondary,.br-small-action,.br-tab,.br-inline-cta,.br-foot-primary):hover
-  :is(svg,.ui-icon,.ui-symbol){color:inherit!important;filter:none!important}
 }
-body.ui-v15 #modal #screen-settings :is(button,.game-select-trigger,.br-select):focus-visible{
- outline:2px solid #c4a7ff!important;outline-offset:3px!important;
- box-shadow:0 0 0 3px #9c6fff40!important;
-}
-/* Dropdown menus are portaled outside the settings panel by the custom-select
-   helper. Only recolor them while Settings is the visible modal screen. */
-body.ui-v15:has(#modal[data-screen="settings"]) .game-select-pop{
- background:linear-gradient(160deg,#261641,#130c28)!important;
- border-color:#865bcc!important;border-bottom-color:#462574!important;
-}
-body.ui-v15:has(#modal[data-screen="settings"]) .game-select-item{
- --interaction-accent:#a77cff!important;color:#f2e7ff!important;
-}
-body.ui-v15:has(#modal[data-screen="settings"]) .game-select-item:is(:hover,:focus-visible,.is-selected){
- color:#fff!important;background:#513080!important;
- box-shadow:none!important;
-}
-
-
-/* SETTINGS PILOT — restore the luminous map-era hover treatment.
-   Only interactive desktop hover targets glow; no teal and no purple
-   spillover onto red destructive actions. */
-body.ui-v15 #modal #screen-settings :is(
- .br-head-back,.br-foot-secondary,.br-foot-primary,.br-inline-cta,
- .br-small-action,.br-tab,.br-switch,.br-select,.game-select-trigger
-){
- transition:transform .18s ease,background .18s ease,border-color .18s ease,
-            box-shadow .18s ease,filter .18s ease!important;
+body.ui-v15 :is(.primary,.big-play,.br-foot-primary,.map-accent-action,.daily-claim,.daily-spin){
+ background:var(--classic-primary)!important;
+ color:white!important;border:2px solid #b29aff!important;
+ border-bottom:5px solid #301174!important;border-radius:7px!important;
+ box-shadow:inset 0 1px #ffffff48,0 6px 0 #1c0c46,0 10px 24px #2b0c7270!important;
+ text-shadow:0 1px 2px #13072c9f!important;font-weight:950!important;
 }
 @media(hover:hover) and (pointer:fine){
- body.ui-v15 #modal #screen-settings :is(
-  .br-head-back,.br-foot-secondary,.br-foot-primary,.br-inline-cta,
-  .br-small-action:not(.warn),.br-tab,.br-switch,.br-select,.game-select-trigger
- ):not(:disabled):hover{
-  --interaction-accent:#ad82ff!important;
+ body.ui-v15 :is(.primary,.big-play,.br-foot-primary,.map-accent-action,.daily-claim,.daily-spin):not(:disabled):hover{
+  background:var(--classic-primary-hover)!important;
+  border-color:#decfff!important;
+  box-shadow:inset 0 1px #ffffff55,0 6px 0 #26105d,0 0 22px #a373ff88,0 13px 25px #0008!important;
   transform:translateY(-2px)!important;
-  border-color:#d2b5ff!important;
-  box-shadow:
-   0 0 0 1px #b78bff9a,
-   0 0 10px #9a63ffb3,
-   0 0 25px #8b47ff80,
-   0 7px 18px #03010fa3,
-   inset 0 1px #ffffff35!important;
-  filter:brightness(1.16) saturate(1.12)!important;
- }
- body.ui-v15 #modal #screen-settings :is(
-  .br-head-back,.br-foot-secondary,.br-foot-primary,.br-inline-cta,
-  .br-small-action:not(.warn),.br-tab,.br-switch
- ):not(:disabled):hover :is(svg,.ui-icon,.ui-symbol){
-  color:#f4e9ff!important;
-  filter:drop-shadow(0 0 5px #ba91ffbb)!important;
- }
- body.ui-v15 #modal #screen-settings .br-small-action.warn:not(:disabled):hover{
-  --interaction-accent:#ff1744!important;
-  transform:translateY(-2px)!important;
-  background:linear-gradient(160deg,#592235,#30121f)!important;
-  border-color:#ff4567!important;
-  box-shadow:0 0 0 1px #ff456788,0 0 15px #ff174488,
-             0 0 24px #ff17444d,0 6px 16px #0009!important;
-  filter:brightness(1.09)!important;
- }
- body.ui-v15:has(#modal[data-screen="settings"]) .game-select-item:not(:disabled):hover{
-  --interaction-accent:#ad82ff!important;
-  background:linear-gradient(130deg,#6537a6,#3a205f)!important;
-  color:#fff!important;
-  box-shadow:inset 0 0 0 1px #ba92ff8a,0 0 13px #945aff48!important;
- }
- body.ui-v15 #modal #screen-settings :is(
-  .br-head-back,.br-foot-secondary,.br-foot-primary,.br-inline-cta,
-  .br-small-action,.br-tab,.br-switch,.br-select,.game-select-trigger
- ):not(:disabled):active{
-  transform:translateY(1px)!important;
-  filter:brightness(.97)!important;
  }
 }
-@media(prefers-reduced-motion:reduce){
- body.ui-v15 #modal #screen-settings :is(
-  .br-head-back,.br-foot-secondary,.br-foot-primary,.br-inline-cta,
-  .br-small-action,.br-tab,.br-switch,.br-select,.game-select-trigger
- ){transition:none!important}
+body.ui-v15 :is(.br-head-back,.back,.br-foot-primary,.br-foot-secondary,.br-tab,.br-small-action):active:not(:disabled){
+ transform:translateY(2px)!important;
+ box-shadow:inset 0 2px 8px #0008!important;
 }
-
-
-/* SETTINGS PILOT — control preview uses the same luminous violet design as
-   the Universe Map. The old global graphite/teal component skin must never
-   override this one (including responsive variants). */
-body.ui-v15 #modal #screen-settings .br-option .control-selection-preview{
- grid-column:1 / -1!important;grid-row:auto!important;
- display:flex!important;align-items:center!important;
- gap:14px!important;width:100%!important;max-width:100%!important;
- min-height:94px!important;padding:14px 16px!important;margin:5px 0 2px!important;
- background:linear-gradient(145deg,#281846 0%,#1a1034 58%,#100c26 100%)!important;
- border:2px solid #8056c6!important;border-bottom:4px solid #4d22c6!important;
- border-radius:7px!important;
- box-shadow:inset 0 1px 0 #d8beff1b,0 10px 22px #0007!important;
- color:#f8f0ff!important;
- overflow:hidden!important;
+body.ui-v15 button:focus-visible{
+ outline:2px solid #d1beff!important;outline-offset:3px!important;
 }
-body.ui-v15 #modal #screen-settings .control-selection-preview .control-selection-desc{
- display:flex!important;flex-direction:column!important;justify-content:center!important;
- gap:6px!important;min-width:0!important;flex:1 1 auto!important;
+body.ui-v15 .br-head :is(.br-head-back,.br-head-tag){flex:0 0 auto}
+body.ui-v15 .br-head h2{min-width:0;overflow-wrap:anywhere}
+body.ui-v15 .br-settings-layout,.br-ach-layout,.br-best-layout{gap:clamp(12px,2.5vw,30px)}
+body.ui-v15 #screen-settings .br-settings-main{
+ background:transparent!important;border:0!important;box-shadow:none!important;
 }
-body.ui-v15 #modal #screen-settings .control-selection-preview .control-selection-desc strong{
- display:block!important;margin:0!important;
- color:#f4e9ff!important;font-size:12px!important;font-weight:950!important;
- line-height:1.25!important;letter-spacing:.075em!important;
- text-wrap:balance!important;overflow-wrap:normal!important;
+body.ui-v15 #screen-settings .br-settings-nav{background:transparent;border:0;border-right:1px solid #4b376e!important}
+body.ui-v15 #screen-settings .br-tab{min-height:55px!important;text-align:left!important}
+body.ui-v15 #screen-settings .br-tab.active{
+ background:linear-gradient(150deg,#573398,#2b174f)!important;
+ border-color:#bc94ff!important;border-bottom-color:#5a30a9!important;
+ box-shadow:0 4px 0 #170b32,0 0 14px #7748c65b!important;
 }
-body.ui-v15 #modal #screen-settings .control-selection-preview .control-selection-desc small{
- display:block!important;margin:0!important;
- color:#c9b5e7!important;font-size:12px!important;line-height:1.48!important;
- font-weight:550!important;letter-spacing:0!important;overflow-wrap:break-word!important;
+body.ui-v15 #screen-settings .br-option{min-height:74px!important}
+body.ui-v15 #screen-settings :is(.br-select,.br-slider input[type=range],.br-switch){flex-shrink:0}
+body.ui-v15 #screen-settings .br-slider output{color:#bba0ff!important}
+body.ui-v15 #screen-settings .br-switch{background:#211538!important;border:2px solid #6c53a5!important;box-shadow:inset 0 2px 4px #0008!important}
+body.ui-v15 #screen-settings .br-switch.active{background:#48248c!important;border-color:#c19aff!important}
+body.ui-v15 #screen-settings .br-slider input[type=range]{
+ height:16px!important;background:linear-gradient(90deg,#8059e7 0 var(--val,50%),#302449 var(--val,50%) 100%)!important;
+ border:1px solid #6b4eaa!important;border-radius:4px!important;
 }
-body.ui-v15 #modal #screen-settings .control-selection-preview .control-mini,
-body.ui-v15 #modal #screen-settings .phone-mode-grid .control-mini{
- flex:0 0 94px!important;width:94px!important;height:62px!important;
- position:relative!important;
- background:radial-gradient(ellipse at 54% 50%,#4d287f 0%,#261548 61%,#100a24 100%)!important;
- border:1px solid #9665e5!important;border-radius:6px!important;
- box-shadow:inset 0 0 18px #090417,0 0 16px #8041e651!important;
- overflow:hidden!important;pointer-events:none!important;
+body.ui-v15 #screen-settings .br-slider input[type=range]::-webkit-slider-thumb{
+ -webkit-appearance:none!important;appearance:none!important;width:20px!important;height:20px!important;
+ margin-top:0!important;border-radius:3px!important;border:2px solid #f2eaff!important;
+ background:linear-gradient(180deg,#dacbff,#8760ee)!important;box-shadow:0 2px 6px #0009!important;
 }
-body.ui-v15 #modal #screen-settings .control-mini-orbit{
- border-color:#b891ff99!important;
+body.ui-v15 #screen-settings .br-slider input[type=range]::-moz-range-thumb{
+ width:20px!important;height:20px!important;border-radius:3px!important;border:2px solid #f2eaff!important;
+ background:linear-gradient(180deg,#dacbff,#8760ee)!important;box-shadow:0 2px 6px #0009!important;
 }
-body.ui-v15 #modal #screen-settings .control-mini-path{
- background:linear-gradient(90deg,transparent,#e0bcff,transparent)!important;
- box-shadow:0 0 8px #a66aff80!important;
+body.ui-v15 #screen-settings .br-settings-foot{
+ border-top:1px solid #533c7d!important;
+ background:linear-gradient(0deg,rgba(8,6,20,.97),rgba(8,6,20,.4) 90%,transparent)!important;
 }
-body.ui-v15 #modal #screen-settings .control-mini-ship{
- background:#a566ff!important;border-color:#fff1ff!important;
- box-shadow:0 0 9px #c58cff,0 0 20px #9a42ffbb!important;
+body.ui-v15 :is(.br-ach-rarity,.rarity-label){background:transparent!important;font-weight:850}
+body.ui-v15 .br-ach-row:is(.uncommon,.rare,.epic,.legendary,.mythic){
+ border-left:3px solid var(--rarity,#8266b5)!important;
 }
-body.ui-v15 #modal #screen-settings .control-mini-arrow{
- border-color:#eacfff!important;
+body.ui-v15 :is(.br-ach-prog,.achievement-progress){height:5px!important;background:#281c42!important;overflow:hidden}
+body.ui-v15 :is(.br-ach-prog i,.achievement-progress i){height:100%;display:block;border-radius:0}
+body.ui-v15 :is(.br-ach-rarity.uncommon,.achievement.earned){color:var(--rarity,#b1a2d8)}
+body.ui-v15 :is(.br-stat-grid strong,.br-readout-big){color:#f2ecff!important}
+body.ui-v15 .br-stat-grid{gap:10px}
+body.ui-v15 .br-stat-grid>div{border-bottom-width:3px!important;padding:clamp(12px,1.5vw,20px)!important}
+body.ui-v15 #screen-map :is(.map-corner.left,.map-pin-menu){
+ border-color:#7155a5!important;background:linear-gradient(155deg,#22153def,#100c24f5)!important;
 }
-body.ui-v15 #modal #screen-settings .control-mini-touch{
- background:#af6bff88!important;border-color:#f1d9ff!important;
- box-shadow:0 0 0 3px #ad7bff32,0 0 12px #a76affbb!important;
+body.ui-v15 #screen-map .map-corner.right button{
+ background:var(--classic-button)!important;
+ border:1px solid #7357a9!important;border-bottom:3px solid #443175!important;
+ border-radius:6px!important;color:#e9dcff!important;
 }
-@media(max-width:800px){
- body.ui-v15 #modal #screen-settings .br-option .control-selection-preview{
-  grid-column:1 / -1!important;grid-row:auto!important;
-  min-height:78px!important;padding:10px!important;
-  gap:10px!important;
- }
- body.ui-v15 #modal #screen-settings .control-selection-preview .control-mini{
-  flex:0 0 78px!important;width:78px!important;height:54px!important;
- }
- body.ui-v15 #modal #screen-settings .control-selection-preview .control-selection-desc strong{
-  font-size:10px!important;letter-spacing:.045em!important;
- }
- body.ui-v15 #modal #screen-settings .control-selection-preview .control-selection-desc small{
-  font-size:11px!important;
- }
+body.ui-v15 #screen-music :is(.br-track,.music-track-card){border-bottom-width:3px!important}
+body.ui-v15 #screen-music :is(.music-control,.music-track-preview){
+ min-width:35px;min-height:35px;display:inline-grid;place-items:center;
 }
-@media(max-width:390px){
- body.ui-v15 #modal #screen-settings .control-selection-preview .control-mini{
-  flex-basis:65px!important;width:65px!important;height:50px!important;
- }
- body.ui-v15 #modal #screen-settings .br-option .control-selection-preview{gap:8px!important;padding:8px!important}
+body.ui-v15 #screen-bestiary .br-best-row.selected{
+ background:linear-gradient(150deg,#513290,#25143f)!important;border-color:#bb96ff!important;
 }
-
-
-
-
-/* ================================================================
-   MAIN MENU — cinematic map-language redesign v3.81
-   Minimal chrome; one readable title and live gameplay remain primary.
-   Avoid framed mega-containers, duplicated brands and teal/navy plates.
-   Scoped to the actual six-mode carousel.
-   ================================================================ */
+body.ui-v15 .ws-dialog{background:var(--classic-surface);border-color:#795ba8}
+body.ui-v15 .ws-dialog button:not(.ws-segment):hover{box-shadow:0 0 15px #9165fb55}
+body.ui-v15 #modal[data-screen="death"] :is(.revive-results,.revive-stats span){
+ background:var(--classic-surface)!important;border:1px solid #795ba8!important;
+ border-bottom:3px solid #442778!important;border-radius:6px!important;
+}
+body.ui-v15 #modal[data-screen="death"] .revive-ad{
+ background:var(--classic-primary)!important;border-color:#bea4ff!important;color:white!important;
+}
+/* MAIN MENU: original cinematic title, readable mode subtitle, 2-column
+   arcade navigation from the reference — no bottom rainbow app dock. */
 body.ui-v15 #screen-menu.hub-main-carousel{
- --menu-ink:#f1f1f8;--menu-muted:#c2bfce;
- --menu-surface:linear-gradient(160deg,rgba(28,17,49,.95),rgba(13,9,28,.96));
- --menu-line:#525061;--menu-strong:#aaa4c7;--menu-purple:#4d22c6;
- color:var(--menu-ink)!important;
+ --menu-ink:#f7f2ff;--menu-muted:#c5b9d6;--mode-accent:#9c78f1;
+ --dock-accent:#a68bdf;color:var(--menu-ink)!important;
 }
+body.ui-v15 #screen-menu.hub-main-carousel[data-preview-mode="endless"]{--mode-accent:#a783ff}
+body.ui-v15 #screen-menu.hub-main-carousel[data-preview-mode="worms"]{--mode-accent:#a783ff}
+body.ui-v15 #screen-menu.hub-main-carousel[data-preview-mode="arena"]{--mode-accent:#a783ff}
+body.ui-v15 #screen-menu.hub-main-carousel[data-preview-mode="royale"]{--mode-accent:#a783ff}
+body.ui-v15 #screen-menu.hub-main-carousel[data-preview-mode="core"]{--mode-accent:#a783ff}
+body.ui-v15 #screen-menu.hub-main-carousel[data-preview-mode="race"]{--mode-accent:#a783ff}
+body.ui-v15 #screen-menu.hub-main-carousel>.menu-main.hub-menu{display:none!important}
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story{
- justify-content:flex-start!important;
- padding-top:clamp(67px,8vh,92px)!important;
- padding-bottom:max(18px,env(safe-area-inset-bottom))!important;
+ display:grid!important;grid-template-areas:"mast mast" "hero empty" "shortcuts chooser"!important;
+ grid-template-columns:minmax(0,590px) minmax(0,1fr)!important;
+ grid-template-rows:auto minmax(0,1fr) auto!important;gap:4px 28px!important;
+ align-content:stretch!important;align-items:start!important;
+ padding:clamp(28px,3vw,48px) clamp(28px,5vw,88px) clamp(22px,3vh,32px)!important;
+ background:transparent!important;isolation:isolate;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story::before{
- background:linear-gradient(90deg,rgba(4,3,16,.9) 0%,rgba(6,4,20,.72) 23%,
- rgba(6,4,20,.12) 59%,transparent 84%),
- linear-gradient(0deg,rgba(5,3,17,.7) 0%,transparent 28%)!important;
+ background:linear-gradient(90deg,rgba(3,3,13,.92),rgba(6,4,19,.76) 27%,rgba(6,4,19,.19) 59%,transparent 88%),
+ linear-gradient(0deg,#05031292,transparent 38%)!important;
+ pointer-events:none!important;
 }
-/* Compact masthead: the old full-width outlined header was the main visual
-   defect. The working rewards, profile and language controls remain. */
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top{
- display:flex!important;align-items:center!important;gap:13px!important;
- width:fit-content!important;max-width:calc(100% - 255px)!important;
- min-height:44px!important;padding:0!important;margin:0!important;
- align-self:flex-start!important;
- background:transparent!important;border:0!important;border-radius:0!important;
- box-shadow:none!important;
- color:var(--menu-ink)!important;
+ grid-area:mast!important;align-self:start!important;
+ display:flex!important;align-items:center!important;gap:12px!important;
+ width:fit-content!important;max-width:calc(100% - 245px)!important;
+ margin:0!important;padding:0!important;min-height:44px!important;
+ background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;
 }
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-home{
- display:inline-flex;align-items:center;gap:9px;
- font-size:14px!important;font-weight:950!important;letter-spacing:.1em!important;
- color:#f5eaff!important;white-space:nowrap;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-home::before{
- content:"";display:inline-block;width:9px;height:9px;flex:none;
- background:#9a62ff;border:2px solid #d2b7ff;transform:rotate(45deg);
- box-shadow:0 0 12px #9a62ff9a;
-}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-home{display:none!important}
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-brand{display:none!important}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-profile-chip{
- --interaction-accent:#ada2d7!important;min-height:37px!important;padding:6px 11px!important;max-width:152px!important;border:1px solid #535063!important;border-bottom:2px solid #282838!important;border-radius:8px 3px 8px 3px!important;background:linear-gradient(160deg,#272735,#131421)!important;color:#e6e8f2!important;box-shadow:inset 0 1px #ffffff0b,0 4px 10px #0007!important;
+body.ui-v15 #screen-menu.hub-main-carousel .hub-profile-chip,
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward,
+body.ui-v15 #screen-menu.hub-main-carousel>.menu-top :is(.language-trigger,.icon-btn){
+ background:var(--classic-button)!important;border:1px solid #6d519d!important;
+ border-bottom:3px solid #45296f!important;border-radius:6px!important;
+ box-shadow:inset 0 1px #ffffff12,0 5px 11px #0008!important;
+ color:#f0e7ff!important;
 }
-body.ui-v15 #screen-menu.hub-main-carousel .hub-profile-name{color:#f5edff!important}
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-counter{
- font-size:11px!important;color:#a999c8!important;
- font-weight:950!important;letter-spacing:.14em!important;
- margin:0!important;white-space:nowrap;
+ color:#bcaadd!important;font-size:11px!important;font-weight:950!important;letter-spacing:.14em!important;
 }
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick{
- display:flex!important;gap:7px!important;margin:0!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward{
- width:38px!important;height:38px!important;min-height:38px!important;min-width:38px!important;flex-basis:38px!important;padding:0!important;background:linear-gradient(160deg,#282733,#14141f)!important;border:1px solid #555067!important;border-bottom:2px solid #302c3c!important;border-radius:8px 3px 8px 3px!important;color:#ffe500!important;box-shadow:0 3px 9px #0006!important;
-}
-/* The top right controls float independently instead of sitting inside a
-   second outlined bar. No blue/cyan remains on their surfaces. */
-body.ui-v15 #screen-menu.hub-main-carousel>.menu-top{
- z-index:205!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel>.menu-top .language-trigger,
-body.ui-v15 #screen-menu.hub-main-carousel>.menu-top .menu-actions .icon-btn{
- --interaction-accent:#a77cff!important;
- background:linear-gradient(155deg,#30204c,#170e2c)!important;
- border:1px solid #75539e!important;border-bottom:3px solid #402468!important;
- border-radius:6px!important;color:#f6edff!important;
- box-shadow:0 5px 11px #0006!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel>.menu-top .language-popup{
- background:linear-gradient(160deg,#291943,#120c25)!important;
- border:1px solid #7854af!important;border-bottom:4px solid #422367!important;
- border-radius:8px!important;box-shadow:0 16px 36px #000b!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel>.menu-top .language-popup button{
- color:#eadaff!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel>.menu-top .language-popup button:is(:hover,[aria-selected="true"]){
- background:#58338d!important;color:white!important;
-}
-/* Title + copy: NO rectangular panel. Soft contrast gradient is painted
-   by the screen behind the text, leaving the live game fully visible. */
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
- position:relative!important;align-self:flex-start!important;
- flex:0 1 auto!important;width:min(680px,53vw)!important;
- max-width:100%!important;max-height:none!important;min-height:0!important;
- margin:clamp(28px,6.2vh,72px) 0 0!important;
- padding:0 10px 8px 4px!important;
- border:0!important;border-radius:0!important;
- background:transparent!important;box-shadow:none!important;
- backdrop-filter:none!important;
- overflow:visible!important;
+ grid-area:hero!important;align-self:center!important;
+ width:100%!important;max-width:590px!important;min-width:0!important;
+ max-height:100%!important;min-height:0!important;
+ margin:4px 0 4px!important;padding:4px 7px 10px 0!important;
+ background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;
+ backdrop-filter:none!important;overflow-y:auto!important;overflow-x:hidden!important;
+ scrollbar-color:#62438e transparent;scrollbar-width:thin;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-reference-brand{
+ font:1000 clamp(50px,5.6vw,87px)/.88 'Inter Display','Inter',system-ui,sans-serif;
+ letter-spacing:-.073em;color:#f7f3ff;margin:0 0 clamp(15px,3vh,27px);
+ text-shadow:0 6px 25px #000b;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-reference-brand>em{
+ display:block;font-style:normal;color:#ad8bff;text-shadow:0 0 22px #7646e75b;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-kicker{
- display:block!important;width:fit-content!important;padding:3px 0 3px 11px!important;border-left:3px solid #a9a1c8!important;font-size:11px!important;color:#c9c3d9!important;font-weight:850!important;letter-spacing:.13em!important;margin:0 0 15px!important;text-shadow:none!important;
+ color:#bca6e9!important;letter-spacing:.15em!important;
+ font-size:11px!important;margin:0 0 8px!important;font-weight:900!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
- font-size:clamp(44px,5.5vw,80px)!important;line-height:1.02!important;letter-spacing:-.045em!important;max-width:100%!important;color:#f7f7fb!important;font-weight:900!important;text-shadow:0 5px 21px #000b!important;margin:0 0 17px!important;text-wrap:balance!important;overflow-wrap:normal!important;
+ font:900 clamp(25px,2.2vw,36px)/1.13 'Inter Display','Inter',system-ui,sans-serif!important;
+ letter-spacing:-.04em!important;color:#f9f6ff!important;
+ margin:0 0 9px!important;max-width:100%!important;
+ text-shadow:0 3px 13px #000a!important;overflow-wrap:normal!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-goal{
- font-size:clamp(15px,1.35vw,19px)!important;line-height:1.28!important;color:#f0eef7!important;font-weight:800!important;margin:0 0 11px!important;
+ font-size:clamp(13px,1.1vw,16px)!important;color:#ebe2ff!important;
+ margin:0 0 6px!important;font-weight:850!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-description{
- font-size:clamp(12px,1vw,15px)!important;line-height:1.6!important;font-weight:520!important;color:#c2c0d0!important;max-width:540px!important;margin:0 0 19px!important;text-shadow:0 2px 12px #02010acc!important;
+ color:#bbb0ca!important;font-size:clamp(11px,.85vw,13px)!important;
+ line-height:1.47!important;margin:0 0 10px!important;max-width:515px!important;
 }
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags{
- display:flex!important;gap:8px!important;max-width:580px!important;
- margin-bottom:23px!important;
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags{margin:0 0 14px!important;gap:6px!important}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags>span{
+ background:rgba(26,17,48,.87)!important;border:1px solid #634a86!important;
+ border-bottom:2px solid #3b295f!important;border-radius:4px!important;
+ color:#d1c3e7!important;padding:5px 7px!important;font-size:9px!important;box-shadow:none!important;
 }
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags>span:nth-child(n){
- background:transparent!important;color:#c8c6d3!important;border:0!important;border-left:2px solid #646174!important;border-radius:0!important;box-shadow:none!important;padding:4px 7px 4px 10px!important;font-size:10px!important;line-height:1.3!important;letter-spacing:.055em!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags>span:first-child{
- border-left:2px solid #ada4ca!important;color:#eae6f3!important;
-}
-/* Primary mode CTA is the ONE strong block of color. Keep each mode's
-   established saturated accent, which the browser tests also assert. */
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play{
- --interaction-accent:var(--mode-accent)!important;position:relative!important;display:flex!important;align-items:center!important;width:min(345px,100%)!important;min-height:56px!important;padding:11px 18px!important;gap:14px!important;background:linear-gradient(145deg,#242433f2,#0e101dec)!important;border:1px solid #585567!important;border-top:2px solid var(--mode-accent)!important;border-left:3px solid var(--mode-accent)!important;border-bottom:3px solid #282738!important;border-radius:8px 3px 8px 3px!important;color:#f6f5fd!important;box-shadow:inset 0 1px #ffffff16,0 8px 21px #0009!important;font-size:14px!important;letter-spacing:.05em!important;font-weight:950!important;transition:transform .18s ease,filter .18s ease,box-shadow .18s ease!important;
+ background:var(--classic-primary)!important;color:white!important;
+ border:2px solid #b59cff!important;border-bottom:5px solid #301478!important;
+ border-radius:7px!important;box-shadow:inset 0 1px #ffffff3c,0 5px 0 #190a43,0 11px 26px #0008!important;
+ font-size:14px!important;font-weight:950!important;min-height:57px!important;
+ width:min(355px,100%)!important;padding:12px 19px!important;gap:15px!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play b,
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play svg{
- color:#fff!important;filter:none!important;
-}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play svg{color:white!important;filter:none!important}
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins:not([hidden]){
- --interaction-accent:#aaa4c3!important;width:min(345px,100%)!important;min-height:44px!important;padding:9px 14px!important;margin-top:10px!important;background:linear-gradient(160deg,#292938,#161621)!important;border:1px solid #555368!important;border-bottom:2px solid #302f40!important;border-radius:8px 3px 8px 3px!important;color:#e6e4ee!important;font-size:12px!important;font-weight:850!important;box-shadow:0 5px 11px #0007!important;
+ background:var(--classic-button)!important;border:1px solid #7860a2!important;
+ border-bottom:3px solid #443070!important;border-radius:6px!important;
+ color:#f1e7ff!important;box-shadow:0 5px 13px #0007!important;
+ min-height:43px!important;width:min(355px,100%)!important;margin-top:10px!important;
 }
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins b{
- color:#cec5e1!important;
-}
-/* Foot navigation stays centered in the reserved space below the hero. */
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-footer{
- position:relative!important;flex:0 0 auto!important;
- margin-top:auto!important;padding-top:12px!important;
- min-height:54px!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-step{
- --interaction-accent:#b0a6c9!important;width:42px!important;height:42px!important;flex-basis:42px!important;background:linear-gradient(160deg,#272633,#131420)!important;border:1px solid #525167!important;border-bottom:2px solid #2f2d3d!important;border-radius:8px 3px 8px 3px!important;color:#e5e4f0!important;box-shadow:0 4px 10px #0006!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-step:disabled{
- opacity:.32!important;box-shadow:none!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-dots button{
- background:#3d3a4c!important;border:1px solid #5a546d!important;border-radius:4px!important;box-shadow:none!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-dots button.current{
- background:#ad9fdb!important;border-color:#e2d6ff!important;box-shadow:0 0 9px #9c8acb70!important;
+ grid-area:chooser!important;align-self:end!important;justify-self:end!important;
+ display:flex!important;flex-direction:column!important;align-items:center!important;
+ width:max-content!important;min-width:0!important;max-width:100%!important;
+ margin:0!important;padding:4px 0!important;min-height:53px!important;
+ background:none!important;border:0!important;box-shadow:none!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-gesture{
- color:#a899c2!important;text-shadow:0 2px 10px #000d!important;
- font-size:10px!important;
+ color:#c4b5d5!important;letter-spacing:.08em!important;font-size:10px!important;
 }
-/* Bottom dock: NO enclosing 1700px-wide slab or double outlines.
-   Individual compact map-family buttons sit over the scene. */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-step{
+ background:var(--classic-button)!important;border:1px solid #785ca5!important;
+ border-bottom:3px solid #3f276d!important;border-radius:5px!important;
+ color:#f4ebff!important;box-shadow:0 5px 12px #0006!important;
+ width:40px!important;height:40px!important;flex-basis:40px!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-dots button{
+ background:#322548!important;border:1px solid #644b88!important;
+ border-radius:3px!important;box-shadow:none!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-dots button.current{
+ background:#a585f7!important;border-color:#dfc9ff!important;
+ box-shadow:0 0 13px #9062fc99!important;
+}
 body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
- align-self:center!important;
- width:min(1240px,100%)!important;max-width:100%!important;
- display:flex!important;flex-wrap:nowrap!important;
- align-items:stretch!important;justify-content:center!important;
- gap:8px!important;
- margin:9px auto 0!important;padding:0!important;
- background:transparent!important;
- border:0!important;border-radius:0!important;
- box-shadow:none!important;
- min-height:49px!important;flex:0 0 auto!important;
+ grid-area:shortcuts!important;align-self:end!important;
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ grid-auto-rows:minmax(42px,auto)!important;gap:7px 10px!important;
+ width:min(570px,100%)!important;max-width:100%!important;
+ margin:8px 0 0!important;padding:11px 0 0!important;
+ border:0!important;border-top:1px solid #654a8857!important;border-radius:0!important;
+ background:none!important;box-shadow:none!important;
 }
 body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
- --interaction-accent:var(--dock-accent)!important;position:relative!important;flex:1 1 0!important;min-width:0!important;max-width:164px!important;min-height:49px!important;height:auto!important;padding:10px 7px!important;gap:8px!important;display:flex!important;align-items:center!important;justify-content:center!important;flex-direction:row!important;background:linear-gradient(160deg,#20202fef,#10111eef)!important;border:1px solid #474558!important;border-bottom:2px solid #242434!important;border-top:1px solid #464556!important;border-radius:8px 3px 8px 3px!important;box-shadow:inset 0 1px #ffffff09,0 4px 11px #0007!important;color:#e5e6ed!important;transform:none;transition:transform .18s,box-shadow .18s,border-color .18s,background .18s!important;
+ --interaction-accent:#b99aff!important;
+ flex:none!important;min-height:43px!important;max-width:none!important;
+ padding:9px 12px!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;
+ flex-direction:row!important;gap:10px!important;
+ background:var(--classic-button)!important;border:1px solid #5a447e!important;
+ border-bottom:3px solid #332456!important;border-radius:6px!important;
+ color:#e5dbf7!important;box-shadow:inset 0 1px #ffffff0a,0 3px 8px #0008!important;
 }
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-label{
- font-size:clamp(10px,.85vw,13px)!important;line-height:1.2!important;font-weight:780!important;color:#dedde9!important;min-width:0!important;white-space:normal!important;overflow-wrap:normal!important;
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut-label{
+ color:#e5dbf7!important;font-size:clamp(10px,.78vw,12px)!important;
+ font-weight:850!important;text-align:left!important;line-height:1.25!important;
+ white-space:normal!important;overflow-wrap:anywhere!important;
+ display:block!important;
 }
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-icon{
- width:22px!important;height:22px!important;flex:0 0 22px!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;color:#b6b6c9!important;
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut-icon{
+ width:20px!important;height:20px!important;flex:0 0 20px!important;
+ border:0!important;background:none!important;box-shadow:none!important;
+ color:#ad8bfd!important;
 }
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-icon svg{
- width:21px!important;height:21px!important;color:#b6b6c9!important;filter:none!important;
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut-icon svg{
+ width:20px!important;height:20px!important;color:#ad8bfd!important;
+ filter:drop-shadow(0 0 4px #8154e744)!important;
 }
-/* Restore correct semantic colors: blue map, violet music, red reset,
-   yellow achievements, green statistics; none is teal. */
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut[data-shortcut="map"],
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut[data-shortcut="settings"]{
- --dock-accent:#2860ff!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut[data-shortcut="music"]{
- --dock-accent:#9922ff!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut[data-shortcut="new"]{
- border-color:#765064!important;
-}
-/* The inactive native drawer stays hidden, but preserve its working
-   source buttons and the map-like panel styling when shown. */
-body.ui-v15 #screen-menu.hub-main-carousel>.menu-main.hub-menu{
- background:linear-gradient(160deg,#1c1233fa,#0b0a1dfa)!important;
- border:1px solid #8663af!important;border-bottom:4px solid #49307b!important;
- border-radius:8px!important;
-}
-/* Strong but restrained glow; colors belong only to the actual button. */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut::before{display:none!important}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play::before{display:none!important}
 @media(hover:hover) and (pointer:fine){
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play:not(:disabled):hover{
-  --interaction-accent:var(--mode-accent)!important;
-  transform:translateY(-2px)!important;filter:brightness(1.12)!important;
-  border:1px solid var(--mode-accent)!important;
-  border-top:2px solid var(--mode-accent)!important;
-  border-left:3px solid var(--mode-accent)!important;
-  border-bottom:3px solid #282737!important;
-  box-shadow:0 0 0 1px color-mix(in srgb,var(--mode-accent) 38%,transparent),
-   0 0 24px color-mix(in srgb,var(--mode-accent) 60%,transparent),
-   0 8px 21px #0009!important;
- }
  body.ui-v15 #screen-menu.hub-main-carousel :is(
-  .hub-mode-step,.hub-profile-chip,.hub-mode-story-skins:not([hidden])
+  .hub-mode-story-play,.hub-mode-story-skins:not([hidden]),.hub-mode-step,
+  .hub-profile-chip,.hub-story-reward
  ):not(:disabled):hover,
  body.ui-v15 #screen-menu.hub-main-carousel>.menu-top :is(.icon-btn,.language-trigger):not(:disabled):hover{
-  transform:translateY(-2px)!important;
-  background:linear-gradient(160deg,#363444,#1b1a29)!important;
-  border-color:#c5a3ff!important;
-  box-shadow:0 0 0 1px #b58fff70,0 0 15px #9362ff8c,0 6px 13px #0008!important;
-  filter:brightness(1.12)!important;
+  background:var(--classic-button-hover)!important;color:#fff!important;
+  border-color:#d1b8ff!important;transform:translateY(-2px)!important;
+  box-shadow:0 0 20px #9164f488,0 7px 15px #000a!important;filter:brightness(1.1)!important;
  }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]:not(:disabled):hover{
-  background:linear-gradient(160deg,
-   color-mix(in srgb,var(--dock-accent) 12%,#363442),#181925)!important;
-  border-color:var(--dock-accent)!important;
-  border-top-color:var(--dock-accent)!important;
-  box-shadow:0 0 0 1px color-mix(in srgb,var(--dock-accent) 40%,transparent),
-    0 0 15px color-mix(in srgb,var(--dock-accent) 47%,transparent),
-    0 6px 14px #0009!important;
-  transform:translateY(-2px)!important;filter:brightness(1.1)!important;
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play:not(:disabled):hover{
+  background:var(--classic-primary-hover)!important;border-color:#e6d7ff!important;
+  box-shadow:inset 0 1px #ffffff6b,0 5px 0 #200b55,0 0 27px #9c70ff9c,0 13px 25px #0009!important;
  }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward:not(:disabled):hover{
-  border-color:#ffe500!important;
-  background:linear-gradient(160deg,#46341e,#271a31)!important;
-  box-shadow:0 0 14px #ffe50077,0 5px 12px #0008!important;
-  transform:translateY(-2px)!important;
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut:not(:disabled):hover{
+  background:var(--classic-button-hover)!important;border-color:#b996ff!important;
+  box-shadow:0 0 17px #8757ed8a,0 6px 15px #0009!important;
+  color:white!important;transform:translateY(-2px)!important;
  }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-profile-chip:not(:disabled):hover{
-  border-color:#c5a3ff!important;
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut:hover .hub-story-shortcut-icon svg{
+  color:#e5d5ff!important;filter:drop-shadow(0 0 8px #aa7bff)!important;
  }
 }
-body.ui-v15 #screen-menu.hub-main-carousel button:focus-visible{
- outline:2px solid var(--interaction-accent,#ad83ff)!important;outline-offset:3px!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel button:active:not(:disabled){
- transform:translateY(1px)!important;
-}
-/* Mid widths and short viewports: the hero stays above the carousel.
-   Do not let a padded wrapper cover button hit targets. */
+body.ui-v15 #screen-menu.hub-main-carousel button:focus-visible{outline:2px solid #d5c2ff!important;outline-offset:3px}
+body.ui-v15 #screen-menu.hub-main-carousel button:disabled{opacity:.38!important}
 @media(max-width:1100px){
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top{
-  gap:8px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
-  width:min(610px,65vw)!important;margin-top:clamp(16px,3.5vh,32px)!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
-  font-size:clamp(36px,5vw,62px)!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-description{
-  max-width:470px!important;font-size:12px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
-  gap:5px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
-  gap:5px!important;padding:7px 4px!important;
- }
-}
-@media(min-width:701px) and (max-width:850px){
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top{
-  max-width:calc(100% - 180px)!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
-  width:min(480px,70vw)!important;margin-top:14px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
-  font-size:clamp(35px,4.2vw,45px)!important;
-  margin-bottom:9px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-kicker{
-  margin-bottom:7px!important;font-size:10px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-description{
-  margin-bottom:10px!important;line-height:1.37!important;
-  display:-webkit-box!important;-webkit-box-orient:vertical!important;
-  -webkit-line-clamp:3!important;overflow:hidden!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags{
-  margin-bottom:10px!important;gap:5px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags>span:nth-child(n){
-  font-size:8px!important;padding:5px 6px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play{
-  min-height:45px!important;padding:8px 12px!important;font-size:11px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins:not([hidden]){
-  min-height:38px!important;padding:7px 12px!important;
- }
-}
-@media(max-width:700px){
  body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story{
-  padding-top:max(68px,calc(env(safe-area-inset-top) + 65px))!important;
-  padding-inline:13px!important;
-  padding-bottom:max(8px,env(safe-area-inset-bottom))!important;
+  padding:clamp(19px,3vw,35px)!important;
+  grid-template-columns:minmax(0,500px) minmax(0,1fr)!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-reference-brand{font-size:clamp(43px,6vw,68px)!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{align-self:center!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{font-size:clamp(25px,3vw,34px)!important}
+}
+@media(max-width:800px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story{
+  grid-template-areas:"mast" "hero" "chooser" "shortcuts"!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:auto minmax(0,1fr) auto auto!important;
+  align-items:start!important;gap:3px!important;
+  padding:clamp(14px,2vw,25px)!important;
+  padding-top:max(65px,calc(env(safe-area-inset-top) + 60px))!important;
+  padding-bottom:max(10px,env(safe-area-inset-bottom))!important;
  }
  body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top{
-  width:100%!important;max-width:100%!important;min-height:38px!important;
-  justify-content:space-between!important;gap:6px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-home{
-  font-size:10px!important;letter-spacing:.04em!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-home::before{
-  width:6px;height:6px;border-width:1px;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-profile-chip{
-  max-width:100px!important;padding:4px 6px!important;
-  min-height:30px!important;font-size:9px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward{
-  width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important;
-  flex-basis:32px!important;border-bottom-width:2px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-counter{
-  font-size:9px!important;
+  grid-area:mast!important;max-width:100%!important;width:100%!important;
+  justify-content:space-between!important;min-height:32px!important;
  }
  body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
-  width:100%!important;margin:clamp(10px,2.5vh,19px) 0 0!important;
-  padding:0 2px 0 0!important;max-height:none!important;
+  margin:8px 0!important;padding:0!important;
+  max-height:100%!important;align-self:start!important;
  }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-reference-brand{
+  font-size:clamp(37px,10.8vw,58px)!important;line-height:.82!important;margin:7px 0 11px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-kicker{font-size:9px!important;margin-bottom:5px!important}
  body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
-  font-size:clamp(32px,9vw,52px)!important;margin-bottom:8px!important;
+  font-size:clamp(22px,6.8vw,33px)!important;margin:0 0 6px!important;
  }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-kicker{
-  font-size:9px!important;margin-bottom:8px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-goal{
-  font-size:12px!important;margin-bottom:6px!important;
- }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-goal{font-size:12px!important;margin-bottom:6px!important}
  body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-description{
-  font-size:10px!important;line-height:1.35!important;
-  margin-bottom:8px!important;
-  display:-webkit-box!important;-webkit-line-clamp:2!important;
-  -webkit-box-orient:vertical!important;overflow:hidden!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags{
-  margin-bottom:9px!important;gap:4px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags>span:nth-child(n){
-  font-size:8px!important;padding:4px 5px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play{
-  min-height:44px!important;font-size:11px!important;padding:9px 12px!important;
-  width:min(320px,100%)!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins:not([hidden]){
-  min-height:38px!important;padding:7px 12px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-footer{
-  margin-top:auto!important;padding-top:6px!important;
-  min-height:40px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-gesture{display:none!important}
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
-  display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
-  grid-template-rows:repeat(2,auto)!important;
-  width:100%!important;gap:5px!important;margin-top:7px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
-  max-width:none!important;min-height:44px!important;
-  flex-direction:column!important;gap:3px!important;
-  padding:5px 3px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-label{
-  font-size:clamp(8px,2.5vw,10px)!important;
-  display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;
-  text-align:center!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-icon{
-  width:19px!important;height:19px!important;flex-basis:19px!important;
- }
-}
-@media(max-width:390px) and (max-height:610px){
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story{
-  padding-top:64px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
-  margin-top:6px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-kicker,
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-description,
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags{
-  display:none!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
-  font-size:clamp(30px,8.5vw,39px)!important;margin-bottom:9px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-footer{
-  min-height:36px!important;padding-top:3px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
-  min-height:40px!important;padding:3px!important;
- }
-}
-@media(max-height:600px) and (min-width:701px){
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story{
-  padding-top:56px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
-  margin-top:7px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-description{
-  -webkit-line-clamp:2!important;
-  display:-webkit-box!important;-webkit-box-orient:vertical!important;overflow:hidden!important;
+  font-size:10px!important;line-height:1.3!important;margin-bottom:8px!important;
+  display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:2!important;overflow:hidden!important;
  }
  body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags{margin-bottom:8px!important}
-}
-@media(prefers-reduced-motion:reduce){
- body.ui-v15 #screen-menu.hub-main-carousel :is(.hub-story-shortcut,.hub-mode-step,.hub-mode-story-play){
-  transition:none!important;
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags>span{font-size:8px!important;padding:4px 6px!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play{min-height:43px!important;width:100%!important;font-size:12px!important;padding:8px 12px!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins:not([hidden]){min-height:36px!important;width:100%!important;margin-top:6px!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-footer{
+  grid-area:chooser!important;width:100%!important;justify-self:center!important;
+  align-self:center!important;min-height:39px!important;padding:1px!important;
  }
-}
-
-
-
-/* Arcade HUD affordances: muted resting state, action-aware glow on interaction. */
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]::before{
- content:"";position:absolute;top:0;left:13px;width:25px;height:2px;
- background:var(--dock-accent);opacity:.16;transition:opacity .18s,box-shadow .18s;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]:is(:hover,:focus-visible)::before{
- opacity:1;box-shadow:0 0 11px var(--dock-accent);
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]:is(:hover,:focus-visible) .hub-story-shortcut-icon svg{
- color:var(--dock-accent)!important;
- filter:drop-shadow(0 0 6px color-mix(in srgb,var(--dock-accent) 45%,transparent))!important;
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play::before{
- content:"";position:absolute;top:7px;left:0;width:2px;height:calc(100% - 14px);
- background:var(--mode-accent);box-shadow:0 0 8px color-mix(in srgb,var(--mode-accent) 43%,transparent);
-}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-home{flex:0 0 auto!important;}
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-home::before{background:#c5b7df!important;border-color:#e4ddf8!important;box-shadow:0 0 8px #a098ca4f!important;}
-body.ui-v15 #screen-menu.hub-main-carousel>.menu-top :is(.language-trigger,.icon-btn){
- background:linear-gradient(160deg,#272634,#151622)!important;
- border:1px solid #575467!important;border-bottom:2px solid #2c2b3a!important;
- border-radius:8px 3px 8px 3px!important;color:#ebeaf4!important;
- box-shadow:0 4px 10px #0007!important;
-}
-@media(max-width:700px){
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-home{display:none!important}
-}
-@media(min-width:701px) and (max-width:960px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-gesture{display:none!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-step{
+  width:35px!important;height:35px!important;flex-basis:35px!important;
+ }
  body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
-  display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
-  grid-template-rows:repeat(2,minmax(45px,auto))!important;
-  width:100%!important;gap:6px!important;
+  grid-area:shortcuts!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:5px!important;padding-top:8px!important;margin-top:2px!important;
  }
  body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
-  max-width:none!important;min-height:45px!important;
+  min-height:43px!important;padding:6px 4px!important;gap:3px!important;
+  justify-content:center!important;flex-direction:column!important;border-bottom-width:2px!important;
  }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut] .hub-story-shortcut-label{
-  overflow-wrap:anywhere!important;white-space:normal!important;
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut-icon{
+  width:16px!important;height:16px!important;flex-basis:16px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut-icon svg{width:16px!important;height:16px!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut-label{
+  display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:2!important;
+  text-align:center!important;font-size:9px!important;line-height:1.1!important;
  }
 }
-/* MAIN MENU / v3.81.1 — layout regression fixes from real Chromium audits.
-   Keep all interaction targets inside their own flex slots and let the
-   description scroll when a short desktop viewport cannot display it all. */
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
- min-height:0!important;
- overflow-x:hidden!important;
- overflow-y:auto!important;
- overscroll-behavior:contain!important;
- scrollbar-width:thin;
- scrollbar-color:#7853a5 transparent;
+@media(max-width:380px) and (max-height:660px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story{
+  padding-top:62px!important;padding-bottom:5px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-reference-brand{font-size:clamp(31px,9.1vw,40px)!important;margin-bottom:5px!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{font-size:22px!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-description,
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags{display:none!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{margin:3px 0!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut{min-height:38px!important}
 }
-/* The long Russian title "Последняя сингулярность" must not overflow
-   on 1920px/2560px screens. Prefer a balanced title to clipping. */
-body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
- font-size:clamp(44px,5.2vw,80px)!important;
- max-width:100%!important;
- overflow-wrap:normal!important;
- word-break:normal!important;
- hyphens:none!important;
-}
-/* On 701–1400px screens the worm customization action used to extend
-   beneath the fixed mode-switch footer and became unclickable. */
-@media(min-width:701px) and (max-height:820px){
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
-  flex:0 1 auto!important;
-  margin-top:clamp(6px,2vh,18px)!important;
-  max-height:calc(100dvh - 300px)!important;
-  min-height:0!important;
-  overflow-x:hidden!important;
-  overflow-y:auto!important;
-  padding-right:12px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
-  font-size:clamp(36px,4.8vw,64px)!important;
-  line-height:1!important;
-  margin-bottom:11px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-kicker{
-  margin-bottom:8px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-goal{
-  margin-bottom:7px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-description{
-  line-height:1.4!important;
-  margin-bottom:9px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags{
-  margin-bottom:11px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play{
-  min-height:46px!important;
- }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-footer{
-  flex:0 0 auto!important;
-  position:relative!important;
-  z-index:3!important;
- }
+@media(max-height:710px) and (min-width:801px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story{grid-template-rows:auto minmax(0,1fr) auto!important;padding-top:21px!important;padding-bottom:16px!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-reference-brand{font-size:clamp(41px,4.8vw,67px)!important;margin-bottom:9px!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-kicker{margin-bottom:6px!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-description{line-height:1.32!important;margin-bottom:7px!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags{margin-bottom:8px!important}
  body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
-  flex:0 0 auto!important;
-  position:relative!important;
-  z-index:3!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-auto-rows:minmax(42px,auto)!important;
  }
 }
-/* Phone carousel: conserve vertical space; keep the original responsive
-   title sizing and avoid clipping the compact touch navigation. */
-@media(max-width:700px){
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
-  overflow-y:auto!important;
+/* Layout and game-mode UI stay usable on narrow desktop browser windows. */
+@media(min-width:801px) and (max-width:1140px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story{
+  grid-template-columns:minmax(0,58%) minmax(0,1fr)!important;
  }
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
-  font-size:clamp(32px,9vw,52px)!important;
- }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top{max-width:calc(100% - 120px)!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-reference-brand{font-size:clamp(38px,5.4vw,64px)!important}
 }
-@media(max-width:390px) and (max-height:610px){
- body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
-  font-size:clamp(30px,8.5vw,39px)!important;
- }
+@media(prefers-reduced-motion:reduce){
+ body.ui-v15 #screen-menu.hub-main-carousel button{transition:none!important}
 }
