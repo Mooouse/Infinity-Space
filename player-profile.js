@@ -223,6 +223,35 @@ const MODE_ACHIEVEMENTS={
   ['eternal',5,['Endless Tail','Бесконечный хвост','Cola infinita'],['Spend 60 minutes surviving','Проведи в игре 60 минут','Juega durante 60 minutos'],'time',3600]
  ]
 };
+// Extra long-term milestones per mode; appended without changing existing unlock IDs.
+const EXTRA_MILESTONES=[
+ ['matches',5,0,['Getting Started','Первый опыт','Primeros pasos']],
+ ['matches',15,1,['Regular Visitor','Завсегдатай','Habitual']],
+ ['matches',50,3,['Space Veteran','Ветеран космоса','Veterano espacial']],
+ ['matches',150,5,['Eternal Explorer','Вечный исследователь','Explorador eterno']],
+ ['kills',1,0,['First Elimination','Первое устранение','Primera eliminación']],
+ ['kills',30,3,['Dangerous Rival','Опасный соперник','Rival peligroso']],
+ ['kills',100,5,['Galaxy Terror','Гроза галактики','Terror galáctico']],
+ ['wins',1,1,['First Victory','Первая победа','Primera victoria']],
+ ['wins',15,4,['Born Champion','Прирождённый чемпион','Campeón nato']],
+ ['wins',50,5,['Unstoppable','Неостановимый','Imparable']],
+ ['time',600,0,['Ten Minutes','Десять минут','Diez minutos']],
+ ['time',7200,4,['Two-Hour Voyage','Двухчасовой полёт','Viaje de dos horas']]
+];
+for(const [mode,defs] of Object.entries(MODE_ACHIEVEMENTS)){
+ for(const [field,target,rarity,title] of EXTRA_MILESTONES){
+  defs.push(['extra-'+field+'-'+target,rarity,title,
+   [field+' · '+target,field+' · '+target,field+' · '+target],field,target]);
+ }
+ if(mode==='worms')for(const target of [100,250,750,1500,3000,7500])
+  defs.push(['mass-'+target,target>=3000?5:target>=750?3:1,
+   ['Cosmic Giant '+target,'Космический гигант '+target,'Gigante cósmico '+target],
+   ['Reach '+target+' mass','Достигни массы '+target,'Alcanza masa '+target],'maxMass',target]);
+ if(mode==='core')for(const target of [500,1000,2500])
+  defs.push(['control-'+target,target===2500?5:3,
+   ['Core Dominion '+target,'Власть над ядром '+target,'Dominio del núcleo '+target],
+   ['Earn '+target+' points','Набери '+target+' очков','Consigue '+target+' puntos'],'points',target]);
+}
 const localeTriple=triple=>triple[({en:0,ru:1,es:2})[language()]||0];
 function achievementStats(mode,stats){
  if(!MODE_ACHIEVEMENTS[mode])return null;
