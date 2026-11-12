@@ -3,8 +3,6 @@ on:
   workflow_run:
     workflows: ['Test and publish game']
     types: [completed]
-  schedule:
-    - cron: '*/15 * * * *'
   workflow_dispatch:
 permissions:
   actions: write
@@ -65,8 +63,16 @@ jobs:
             exit 0
           fi
 
-          # Retry failed jobs rather than rerun the full workflow. Concurrency
-          # and the attempt limit prevent repeated, wasteful restarts.
-          echo "Retrying failed jobs from ${url}, next attempt $((attempt + 1))/3"
+          # A deterministic test failure cannot be fixed by re-running the
+          # same revision. Retry only Pages infrastructure failures.
+          failed_steps="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/jobs?per_page=100" \
+            --jq '[.jobs[].steps[] | select(.conclusion == "failure") | .name] | unique | join("|")')"
+          if [[ "$failed_steps" != "Configure Pages" && "$failed_steps" != "Upload game for Pages" && "$failed_steps" != "Deploy to Pages" ]]; then
+            echo "::notice::Build or test failure, no pointless retry: ${failed_steps}"
+            echo "The failed step is a code/test issue and must be fixed, not retried." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          echo "Retrying Pages infrastructure failure from ${url}, next attempt $((attempt + 1))/3"
           gh api --method POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/rerun-failed-jobs"
-          echo "Retry requested (attempt $((attempt + 1))/3)." >> "$GITHUB_STEP_SUMMARY"
+          echo "Infrastructure retry requested (attempt $((attempt + 1))/3)." >> "$GITHUB_STEP_SUMMARY"
