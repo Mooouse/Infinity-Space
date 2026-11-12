@@ -165,20 +165,47 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top>.hub-story-quick{
 }
 /* Desktop shortcut dock: nine readable actions, no 77px stacked letters.
    Mobile intentionally retains its three-column grid. */
+/* Keep bottom navigation inside the same centered grid track as the
+   carousel. A viewport-fixed bar was not pointer-hittable when an animated
+   mode view established a stacking context. */
 @media(min-width:801px){
  body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
-  position:fixed!important;left:50%!important;right:auto!important;
-  bottom:max(10px,env(safe-area-inset-bottom))!important;top:auto!important;
-  transform:translateX(-50%)!important;z-index:9!important;
-  grid-area:auto!important;justify-self:auto!important;align-self:auto!important;
+  position:relative!important;top:auto!important;left:auto!important;right:auto!important;
+  bottom:auto!important;transform:none!important;z-index:5!important;
+  grid-area:shortcuts!important;justify-self:center!important;align-self:end!important;
   display:flex!important;flex-wrap:nowrap!important;
   justify-content:center!important;align-items:stretch!important;
-  width:min(1200px,calc(100vw - 54px))!important;
-  max-width:calc(100vw - 54px)!important;
-  gap:clamp(5px,.62vw,12px)!important;
+  width:100%!important;max-width:100%!important;
+  gap:clamp(3px,.5vw,8px)!important;
+  padding:9px 0 0!important;margin:0!important;
  }
  body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-story-shortcut[data-shortcut],
  body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-profile-chip{
+  flex:1 1 0!important;box-sizing:border-box!important;
+  width:0!important;max-width:none!important;min-width:0!important;
+  height:64px!important;min-height:64px!important;
+  padding:7px 3px!important;gap:3px!important;
+  display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:center!important;
+  border-bottom-width:3px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut-label{
+  width:100%!important;max-width:100%!important;
+  white-space:normal!important;word-break:normal!important;overflow-wrap:break-word!important;
+  font-size:clamp(9px,.71vw,12px)!important;line-height:1.12!important;
+  text-align:center!important;overflow:hidden!important;max-height:2.35em!important;
+ }
+}
+@media(min-width:2000px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-story-shortcut[data-shortcut],
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-profile-chip{
+  height:76px!important;min-height:76px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut-label{
+  font-size:15px!important;
+ }
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-profile-chip{
   flex:0 1 clamp(105px,10vw,170px)!important;box-sizing:border-box!important;
   width:auto!important;max-width:170px!important;min-width:0!important;
   height:64px!important;min-height:64px!important;
