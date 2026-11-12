@@ -461,6 +461,13 @@ function kill(w,killer,reason){
   // the wreckage. The results only fade in after the replay window.
   game.state='death-replay';
   game.deathElapsed=0;
+  game.deathStartedAt=performance.now();
+  // Real-world deadline: a slow graphics renderer must not freeze the death
+  // sequence for minutes. Ignore stale timers after a restart/new match.
+  const replayGame=game;
+  setTimeout(()=>{
+   if(game===replayGame&&game.state==='death-replay')revealDeathResult();
+  },DEATH_REPLAY_SECONDS*1000);
   game.deathPosition={x:w.x,y:w.y};
   game.deathGhost={
    x:w.x,y:w.y,r:wormRadius(w),color:w.color[0],accent:w.accent,
@@ -1334,7 +1341,10 @@ function frame(now){
   if(!qaManualPhysics)simulate(dt);
   if(DEMO&&(!game.player.alive||game.time>80))init();
   if(game.state==='death-replay'){
-   game.deathElapsed+=dt;
+   // Render cadence can be much slower than wall time (software WebGL,
+   // high-DPI screens). Keep cinematic progress tied to a monotonic clock.
+   game.deathElapsed=Math.max(game.deathElapsed+dt,
+    Math.max(0,(now-game.deathStartedAt)/1000));
    if(game.deathElapsed>=DEATH_REPLAY_SECONDS)revealDeathResult();
   }
   uiClock+=dt;

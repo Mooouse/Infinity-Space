@@ -138,8 +138,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     const completed=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
     assert.ok(distanceToTarget(completed)<.16,'Worm must finish its turn instead of drifting endlessly');
     assert.ok(a.length>=18,'Worm begins with an actual segmented body');
-    await page.evaluate(()=>window.InfinityWormsQA.giveFood(60));
-    await page.waitForTimeout(160);
+    await page.evaluate(()=>{window.InfinityWormsQA.giveFood(60);window.InfinityWormsQA.advancePhysics(.2);});
     const growth=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
     assert.ok(growth.mass>a.mass+50&&growth.length>a.length,'Mass pickup must grow tail');
     const narrowRadius=(await page.evaluate(()=>window.InfinityWormsQA.snapshot())).radius;
@@ -219,7 +218,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
      return old&&old.alive&&bot.alive&&bot.persona!=='afk'&&
       Math.hypot(bot.x-old.x,bot.y-old.y)>12;
     }),'Rivals must continue moving and collecting food during death replay');
-    await page.locator('#worm-result').waitFor({state:'visible',timeout:6000});
+    await page.locator('#worm-result').waitFor({state:'visible',timeout:8500});
     assert.equal(await page.evaluate(()=>window.InfinityWormsQA.snapshot().state),'finished');
     assert.equal(await page.locator('#worm-result').evaluate(
      el=>getComputedStyle(el).animationName.includes('worm-cinematic-curtain')),true,
