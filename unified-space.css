@@ -401,3 +401,29 @@ body.ui-v15 #modal .music-track-grid{gap:clamp(10px,1vw,18px)!important;}
  body.ui-v15 #modal .rewards-tabs button{padding:10px 6px!important}
  body.ui-v15 #modal .music-track-grid{gap:8px!important}
 }
+
+/* The skin studio can be opened from the MAIN MENU as well as from Worms;
+   it must not depend on the presence of the gameplay canvas. */
+.ws-overlay .ws-dialog{
+ border:2px solid #8663b6!important;
+ border-bottom:6px solid #45286f!important;
+ border-radius:8px!important;
+ background:linear-gradient(150deg,#27183f,#120c24)!important;
+ box-shadow:0 25px 75px #03010fe3,inset 0 1px #ffffff18!important;
+}
+.ws-overlay :is(.ws-header,.ws-footer){
+ background:#18102a!important;
+ border-color:#61438c!important;
+}
+.ws-overlay :is(.ws-preset,.ws-head-choice,.ws-footer button,.ws-color,.ws-reset,.ws-done){
+ border-radius:6px!important;border-bottom-width:3px!important;
+}
+.ws-overlay :is(.ws-section,.ws-preset,.ws-head-choice){
+ border-color:#75569f!important;
+}
+@media (hover:hover) and (pointer:fine){
+ .ws-overlay :is(.ws-x,.ws-preset,.ws-head-choice,.ws-bead,.ws-color,.ws-footer button):not(:disabled):hover{
+  border-color:#d1b8ff!important;
+  box-shadow:0 0 19px #9558ef99,0 6px 13px #07020f9c!important;
+ }
+}
