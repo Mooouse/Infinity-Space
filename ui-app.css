@@ -7975,3 +7975,358 @@ body.ui-v15 #screen-menu.hub-main-carousel button:disabled{opacity:.38!important
 @media(prefers-reduced-motion:reduce){
  body.ui-v15 #screen-menu.hub-main-carousel button{transition:none!important}
 }
+
+
+/* ================================================================
+   CENTERED GAME MENU / CONTEXTUAL NAVIGATION / 2K SCALE
+   Move the visual focal point to the center. Only display actions relevant
+   to the selected mode; preserve the classic V15.3 purple bevel and glow.
+   ================================================================ */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story{
+ display:grid!important;
+ grid-template-areas:"mast" "hero" "chooser" "shortcuts"!important;
+ grid-template-columns:minmax(0,min(850px,100%))!important;
+ grid-template-rows:auto minmax(0,1fr) auto auto!important;
+ justify-content:center!important;justify-items:center!important;
+ align-content:stretch!important;
+ align-items:stretch!important;
+ row-gap:clamp(5px,1vh,14px)!important;
+ column-gap:0!important;
+ padding:clamp(76px,8vh,110px) clamp(16px,3vw,64px)
+         max(20px,env(safe-area-inset-bottom))!important;
+ box-sizing:border-box!important;
+}
+/* Gentle central contrast lets the live demo occupy the entire scene. */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story::before{
+ background:radial-gradient(ellipse 48% 67% at 50% 43%,
+  #07051fca 0%,#07051d93 48%,#07061d31 77%,transparent 100%),
+  linear-gradient(0deg,#050414a8,transparent 27%)!important;
+ pointer-events:none!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top{
+ grid-area:mast!important;
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ justify-self:center!important;align-self:start!important;
+ flex-wrap:nowrap!important;gap:clamp(8px,1.2vw,18px)!important;
+ min-height:44px!important;width:fit-content!important;
+ max-width:min(100%,700px)!important;
+ padding:0!important;margin:0!important;
+ border:0!important;background:transparent!important;box-shadow:none!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick[hidden]{
+ display:none!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-counter{
+ margin-left:0!important;font-size:clamp(11px,.85vw,17px)!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-profile-chip{
+ margin:0!important;max-width:180px!important;
+ min-height:41px!important;padding:8px 13px!important;
+ font-size:clamp(11px,.76vw,16px)!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
+ grid-area:hero!important;
+ align-self:center!important;justify-self:center!important;
+ width:min(740px,100%)!important;max-width:100%!important;
+ min-width:0!important;min-height:0!important;max-height:100%!important;
+ margin:0 auto!important;padding:6px 13px 12px!important;
+ overflow-x:hidden!important;overflow-y:auto!important;
+ text-align:center!important;
+ background:none!important;border:0!important;box-shadow:none!important;
+ scrollbar-width:thin;scrollbar-color:#7953a6 transparent;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-reference-brand{
+ font-size:clamp(62px,5.2vw,114px)!important;
+ line-height:.87!important;
+ letter-spacing:-.075em!important;
+ margin:0 auto clamp(13px,2.5vh,29px)!important;
+ max-width:100%;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-kicker{
+ font-size:clamp(11px,.75vw,17px)!important;
+ margin:0 0 clamp(5px,.75vh,12px)!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
+ font-size:clamp(28px,2.25vw,46px)!important;
+ line-height:1.1!important;margin:0 auto 11px!important;
+ max-width:100%!important;text-wrap:balance!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-goal{
+ font-size:clamp(15px,1vw,22px)!important;line-height:1.3!important;
+ margin:0 auto 8px!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-description{
+ font-size:clamp(13px,.9vw,19px)!important;
+ line-height:1.5!important;max-width:660px!important;
+ margin:0 auto clamp(9px,1.3vh,18px)!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ flex-wrap:wrap!important;gap:7px!important;
+ margin:0 auto clamp(14px,2vh,25px)!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags>span{
+ font-size:clamp(10px,.67vw,15px)!important;
+ padding:6px 10px!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel:not([data-preview-mode="endless"]) .hub-mode-story-tags{
+ display:none!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ width:min(400px,100%)!important;min-height:clamp(55px,4vw,74px)!important;
+ font-size:clamp(14px,.92vw,21px)!important;
+ padding:11px 20px!important;margin:0 auto!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins:not([hidden]){
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ width:min(400px,100%)!important;min-height:clamp(42px,3vw,55px)!important;
+ font-size:clamp(12px,.76vw,17px)!important;
+ margin:clamp(9px,1vh,14px) auto 0!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins[hidden]{
+ display:none!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-footer{
+ grid-area:chooser!important;align-self:center!important;justify-self:center!important;
+ display:flex!important;flex-direction:column!important;justify-content:center!important;
+ align-items:center!important;width:100%!important;max-width:100%!important;
+ min-height:52px!important;padding:0!important;margin:0 auto!important;
+ background:transparent!important;border:0!important;box-shadow:none!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nav-controls{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ margin:0 auto!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-step{
+ width:clamp(40px,2.6vw,54px)!important;
+ height:clamp(40px,2.6vw,54px)!important;
+ flex-basis:clamp(40px,2.6vw,54px)!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-gesture{
+ font-size:clamp(10px,.7vw,14px)!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
+ grid-area:shortcuts!important;
+ align-self:end!important;justify-self:center!important;
+ display:flex!important;flex-wrap:nowrap!important;
+ justify-content:center!important;align-items:stretch!important;
+ gap:clamp(7px,.6vw,14px)!important;
+ width:min(820px,100%)!important;max-width:100%!important;
+ min-height:0!important;padding:9px 0 0!important;margin:0 auto!important;
+ background:transparent!important;border:0!important;
+ border-top:1px solid #72569a60!important;box-shadow:none!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
+ flex:0 1 154px!important;min-width:0!important;max-width:190px!important;
+ min-height:clamp(47px,3vw,65px)!important;
+ padding:10px 12px!important;
+ justify-content:center!important;
+ gap:9px!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[hidden]{
+ display:none!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut-label{
+ font-size:clamp(11px,.78vw,17px)!important;
+ text-align:center!important;line-height:1.25!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut-icon{
+ width:clamp(20px,1.4vw,29px)!important;
+ height:clamp(20px,1.4vw,29px)!important;
+ flex-basis:clamp(20px,1.4vw,29px)!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut-icon svg{
+ width:100%!important;height:100%!important;
+}
+/* 2K / ultrawide: larger typography and controls, not tiny 1080p UI on 1440p. */
+@media(min-width:2000px) and (min-height:1000px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story{
+  grid-template-columns:minmax(0,min(1080px,100%))!important;
+  padding-top:clamp(92px,8vh,150px)!important;
+  padding-bottom:clamp(30px,3vh,56px)!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
+  width:min(980px,100%)!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-reference-brand{
+  font-size:clamp(110px,5.2vw,140px)!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
+  font-size:clamp(39px,2.2vw,57px)!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-description{
+  font-size:clamp(18px,.94vw,24px)!important;max-width:850px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play{
+  width:min(490px,100%)!important;min-height:77px!important;
+  font-size:clamp(19px,1vw,25px)!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins:not([hidden]){
+  width:min(490px,100%)!important;min-height:57px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
+  width:min(1060px,100%)!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
+  flex-basis:205px!important;max-width:225px!important;
+  min-height:68px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut-label{
+  font-size:17px!important;
+ }
+ body.ui-v15 #modal :is(.br-head h2,.br-pane-title h3){
+  font-size:clamp(28px,1.6vw,43px)!important;
+ }
+ body.ui-v15 #modal :is(.br-option strong,.br-ach-row strong,.br-track strong,.br-best-row strong){
+  font-size:clamp(16px,.9vw,22px)!important;
+ }
+ body.ui-v15 #modal :is(.br-option small,.br-ach-row small,.br-track small,.br-best-row small){
+  font-size:clamp(13px,.68vw,18px)!important;
+ }
+ body.ui-v15 #modal :is(.br-tab,.br-foot-primary,.br-foot-secondary,.br-head-back){
+  font-size:clamp(14px,.82vw,20px)!important;
+  min-height:48px!important;
+ }
+ body.ui-v15 #screen-settings .br-settings-layout{
+  width:min(1450px,92vw)!important;
+ }
+}
+/* Narrow desktops: keep the main call to action above the mode nav. */
+@media(min-width:801px) and (max-height:740px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story{
+  padding-top:65px!important;padding-bottom:14px!important;row-gap:5px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-reference-brand{
+  font-size:clamp(47px,4.8vw,72px)!important;margin-bottom:7px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
+  font-size:clamp(25px,2vw,35px)!important;margin-bottom:5px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-kicker{
+  margin-bottom:4px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-description{
+  line-height:1.28!important;margin-bottom:7px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags{
+  margin-bottom:9px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play{
+  min-height:50px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-footer{
+  min-height:42px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
+  min-height:45px!important;padding:6px 9px!important;
+ }
+}
+@media(max-width:800px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story{
+  grid-template-areas:"mast" "hero" "chooser" "shortcuts"!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:auto minmax(0,1fr) auto auto!important;
+  justify-content:center!important;justify-items:center!important;
+  padding:max(73px,calc(env(safe-area-inset-top) + 69px)) 12px
+          max(10px,env(safe-area-inset-bottom))!important;
+  row-gap:5px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top{
+  justify-self:center!important;width:fit-content!important;max-width:100%!important;
+  min-height:33px!important;gap:6px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-profile-chip{
+  min-height:32px!important;padding:4px 8px!important;
+  max-width:115px!important;font-size:10px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-quick>.hub-story-reward{
+  width:34px!important;height:34px!important;min-width:34px!important;
+  min-height:34px!important;flex-basis:34px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
+  width:min(490px,100%)!important;align-self:center!important;
+  padding:0 5px 4px!important;max-height:100%!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-reference-brand{
+  font-size:clamp(40px,9.5vw,74px)!important;margin:0 auto 11px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-kicker{
+  font-size:10px!important;margin-bottom:6px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
+  font-size:clamp(22px,5.7vw,32px)!important;margin-bottom:6px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-goal{
+  font-size:12px!important;margin-bottom:5px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-description{
+  font-size:11px!important;line-height:1.35!important;
+  margin-bottom:9px!important;
+  display:-webkit-box!important;-webkit-box-orient:vertical!important;
+  -webkit-line-clamp:2!important;overflow:hidden!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags{
+  margin-bottom:10px!important;gap:5px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags>span{
+  font-size:9px!important;padding:4px 5px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play{
+  min-height:47px!important;width:min(340px,100%)!important;
+  font-size:12px!important;padding:9px 13px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins:not([hidden]){
+  min-height:40px!important;width:min(340px,100%)!important;
+  font-size:11px!important;margin-top:7px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-footer{
+  grid-area:chooser!important;width:100%!important;min-height:40px!important;
+  align-self:center!important;justify-self:center!important;padding:0!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
+  display:grid!important;
+  grid-template-columns:repeat(var(--mode-nav-mobile-cols,3),minmax(0,1fr))!important;
+  gap:6px!important;width:min(500px,100%)!important;min-height:0!important;
+  padding:7px 0 0!important;margin:0 auto!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
+  max-width:none!important;min-height:44px!important;
+  padding:6px 5px!important;gap:4px!important;
+  flex-direction:column!important;justify-content:center!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut-label{
+  font-size:clamp(9px,2.2vw,11px)!important;text-align:center!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut-icon{
+  width:18px!important;height:18px!important;flex-basis:18px!important;
+ }
+}
+@media(max-width:390px) and (max-height:650px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story{
+  padding-top:66px!important;row-gap:3px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-reference-brand{
+  font-size:clamp(33px,8.6vw,42px)!important;margin-bottom:5px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-goal,
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-tags{
+  display:none!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
+  font-size:21px!important;margin-bottom:5px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-description{
+  font-size:10px!important;margin-bottom:7px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{
+  min-height:40px!important;padding:4px 3px!important;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play,
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins,
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav button{
+  transition:none!important;
+ }
+}

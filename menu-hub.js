@@ -191,7 +191,23 @@
    q(overlay,'.hub-mode-story-tags').replaceChildren(...entry.tags.map(tags=>{
     const node=document.createElement('span');node.textContent=t(tags);return node;
    }));
-   q(overlay,'.hub-mode-story-skins').hidden=entry.id!=='worms';
+   // Context-sensitive menu: only Endless Space owns its map, evolution,
+   // bestiary and universe management. Competitive modes are not burdened
+   // with unrelated persistent-universe actions.
+   const allowed=entry.id==='endless'
+    ? new Set(['map','evolution','achievements','music','settings'])
+    : new Set(['statistics','settings']);
+   const dock=q(overlay,'.hub-story-nav');
+   let visible=0;
+   for(const item of dock.querySelectorAll('.hub-story-shortcut')){
+    item.hidden=!allowed.has(item.dataset.shortcut);
+    if(!item.hidden)visible++;
+   }
+   dock.style.setProperty('--mode-nav-count',String(visible));
+   dock.style.setProperty('--mode-nav-mobile-cols',String(Math.min(visible,3)));
+   const quickActions=q(overlay,'.hub-story-quick');
+   if(quickActions)quickActions.hidden=entry.id!=='endless';
+      q(overlay,'.hub-mode-story-skins').hidden=entry.id!=='worms';
     q(overlay,'.hub-mode-story-play span').textContent=entry.id==='endless'?
     t(['CONTINUE EXPLORING','ПРОДОЛЖИТЬ ПОЛЁТ','CONTINUAR EXPLORANDO']):
     t(['PLAY THIS MODE','ИГРАТЬ В РЕЖИМ','JUGAR ESTE MODO']);
