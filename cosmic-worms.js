@@ -10,7 +10,7 @@ const storedLang=(()=>{try{return localStorage.getItem('infiniti-space-language'
 const language=/^(ru|en|es)$/.test(storedLang)?storedLang:(/^ru/i.test(navigator.language)?'ru':/^es/i.test(navigator.language)?'es':'en');
 document.documentElement.lang=language;
 const WORDS={
- en:{settings:'SETTINGS',skins:'COSMIC SKINS',skinDesc:'Choose a space-inspired appearance. All skins are free.',visuals:'VISUALS',glow:'Enhanced glow and boost trails',names:'Show rival names',zoom:'Camera distance',backPause:'BACK TO PAUSE',length:'LENGTH',rank:'RANK',time:'TIME',leaders:'LEADERBOARD',radar:'GALAXY RADAR',pause:'PAUSE',
+ en:{settings:'SETTINGS',skins:'COSMIC SKINS',skinDesc:'Choose a space-inspired appearance. All skins are free.',visuals:'VISUALS',glow:'Enhanced glow and boost trails',names:'Show rival names',zoom:'Camera distance',backPause:'SAVE AND EXIT',length:'LENGTH',rank:'RANK',time:'TIME',leaders:'LEADERBOARD',radar:'GALAXY RADAR',pause:'PAUSE',
  boost:'BOOST',paused:'PAUSED',pauseDesc:'Resume the flight, review the controls or return to mode selection.',
  resume:'CONTINUE',help:'HOW TO PLAY',menu:'EXIT TO MENU',guideTitle:'COSMIC WORMS',skip:'SKIP',next:'NEXT',start:'START',
  runOver:'FLIGHT COMPLETE',destroyed:'WORM DESTROYED',kills:'ELIMINATIONS',again:'PLAY AGAIN',
@@ -21,7 +21,7 @@ const WORDS={
  ['OUTMANEUVER RIVALS','Your head must not touch another worm’s body. Cut opponents off with your own tail; defeated worms drop valuable matter.','◌'],
  ['BOOST WHEN NEEDED','Hold Space or the mouse button to accelerate. Boosting slowly burns mass and drops energy behind you. On phones, steer with the joystick and hold BOOST.','➤']
  ]},
- ru:{settings:'НАСТРОЙКИ',skins:'КОСМИЧЕСКИЕ СКИНЫ',skinDesc:'Выбери космический облик червя. Все скины бесплатны.',visuals:'ГРАФИКА',glow:'Усиленное свечение и след рывка',names:'Показывать имена соперников',zoom:'Дистанция камеры',backPause:'НАЗАД К ПАУЗЕ',length:'ДЛИНА',rank:'МЕСТО',time:'ВРЕМЯ',leaders:'ТАБЛИЦА ЛИДЕРОВ',radar:'РАДАР ГАЛАКТИКИ',pause:'ПАУЗА',
+ ru:{settings:'НАСТРОЙКИ',skins:'КОСМИЧЕСКИЕ СКИНЫ',skinDesc:'Выбери космический облик червя. Все скины бесплатны.',visuals:'ГРАФИКА',glow:'Усиленное свечение и след рывка',names:'Показывать имена соперников',zoom:'Дистанция камеры',backPause:'СОХРАНИТЬ И ВЫЙТИ',length:'ДЛИНА',rank:'МЕСТО',time:'ВРЕМЯ',leaders:'ТАБЛИЦА ЛИДЕРОВ',radar:'РАДАР ГАЛАКТИКИ',pause:'ПАУЗА',
  boost:'РЫВОК',paused:'ПАУЗА',pauseDesc:'Продолжи полёт, посмотри обучение или вернись к выбору режима.',
  resume:'ПРОДОЛЖИТЬ',help:'КАК ИГРАТЬ',menu:'ВЫХОД В МЕНЮ',guideTitle:'КОСМИЧЕСКИЕ ЧЕРВИ',skip:'ПРОПУСТИТЬ',next:'ДАЛЕЕ',start:'ИГРАТЬ',
  runOver:'ПОЛЁТ ЗАВЕРШЁН',destroyed:'ЧЕРВЬ ПОГИБ',kills:'ПОГЛОЩЕНО',again:'СЫГРАТЬ СНОВА',
@@ -32,7 +32,7 @@ const WORDS={
  ['ПЕРЕХИТРИ СОПЕРНИКОВ','Не касайся головой тела другого червя. Перекрывай противникам путь собственным хвостом. После их гибели остаётся ценная материя.','◌'],
  ['ИСПОЛЬЗУЙ РЫВОК','Удерживай Пробел или левую кнопку мыши для ускорения. Рывок расходует массу. На телефоне управляй стиком и удерживай кнопку «Рывок».','➤']
  ]},
- es:{settings:'AJUSTES',skins:'ASPECTOS CÓSMICOS',skinDesc:'Elige un aspecto cósmico. Todos son gratuitos.',visuals:'GRÁFICOS',glow:'Brillo y estelas mejorados',names:'Mostrar nombres de rivales',zoom:'Distancia de cámara',backPause:'VOLVER A PAUSA',length:'LONGITUD',rank:'PUESTO',time:'TIEMPO',leaders:'CLASIFICACIÓN',radar:'RADAR GALÁCTICO',pause:'PAUSA',
+ es:{settings:'AJUSTES',skins:'ASPECTOS CÓSMICOS',skinDesc:'Elige un aspecto cósmico. Todos son gratuitos.',visuals:'GRÁFICOS',glow:'Brillo y estelas mejorados',names:'Mostrar nombres de rivales',zoom:'Distancia de cámara',backPause:'GUARDAR Y SALIR',length:'LONGITUD',rank:'PUESTO',time:'TIEMPO',leaders:'CLASIFICACIÓN',radar:'RADAR GALÁCTICO',pause:'PAUSA',
  boost:'IMPULSO',paused:'PAUSA',pauseDesc:'Continúa, revisa los controles o elige otro modo.',
  resume:'CONTINUAR',help:'CÓMO JUGAR',menu:'SALIR AL MENÚ',guideTitle:'GUSANOS CÓSMICOS',skip:'SALTAR',next:'SIGUIENTE',start:'JUGAR',
  runOver:'VUELO TERMINADO',destroyed:'GUSANO DESTRUIDO',kills:'ELIMINACIONES',again:'JUGAR DE NUEVO',
@@ -75,8 +75,8 @@ const SKINS=[
 const SETTINGS_KEY='infinity-space-worms-settings-v2';
 function loadSettings(){
  try{const s=JSON.parse(localStorage.getItem(SETTINGS_KEY));if(s&&typeof s==='object')
-  return {skin:SKINS.some(v=>v.id===s.skin)?s.skin:'nebula',glow:s.glow!==false,names:s.names!==false,zoom:clamp(Number(s.zoom)||100,75,140),customEnabled:s.customEnabled===true,customSegments:Array.isArray(s.customSegments)?s.customSegments.filter(c=>/^#[0-9a-f]{6}$/i.test(c)).slice(0,64):[]};}catch(_){}
- return {skin:'nebula',glow:true,names:true,zoom:100,customEnabled:false,customSegments:[]};
+  return {skin:SKINS.some(v=>v.id===s.skin)?s.skin:'nebula',glow:s.glow!==false,names:s.names!==false,zoom:clamp(Number(s.zoom)||100,75,140),head:['classic','blackhole','pulsar','comet','crystal','eclipse'].includes(s.head)?s.head:'classic',customEnabled:s.customEnabled===true,customSegments:Array.isArray(s.customSegments)?s.customSegments.filter(c=>/^#[0-9a-f]{6}$/i.test(c)).slice(0,64):[]};}catch(_){}
+ return {skin:'nebula',glow:true,names:true,zoom:100,head:'classic',customEnabled:false,customSegments:[]};
 }
 const options=loadSettings();
 function saveOptions(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(options));}catch(_){}}
@@ -126,7 +126,7 @@ function randomPos(radius=.88){
  return {x:WORLD.cx+Math.cos(a)*r*WORLD.rx,y:WORLD.cy+Math.sin(a)*r*WORLD.ry};
 }
 // Radius changes mildly. Every food reward feeds an uncapped number of body segments.
-function wormRadius(w){return clamp(10.5+Math.log1p(Math.max(1,w.mass))*1.72,14,28)}
+function wormRadius(w){return clamp(8+Math.pow(Math.max(1,w.mass)/60,.27)*12,13,64)}
 function segmentCount(w){const mass=Math.max(1,w.mass);return Math.max(19,Math.floor(12+2.5*Math.sqrt(mass)+.02*mass))}
 // Spawn clearance is checked along the entire proposed body — not just the head.
 // Also reserve space in front of the new head so it cannot appear on someone's path.
@@ -669,7 +669,7 @@ function drawRadar(){
 }
 function backdrop(t){
  ctx.fillStyle='#03050d';ctx.fillRect(0,0,vw,vh);
- for(const n of nebula){
+ for(const n of []){
   const x=((n.x*vw-camera.x*.013)%vw+vw)%vw,y=((n.y*vh-camera.y*.009)%vh+vh)%vh;
   const r=Math.max(vw,vh)*n.r;
   const gr=ctx.createRadialGradient(x,y,1,x,y,r);gr.addColorStop(0,n.c+'42');gr.addColorStop(1,n.c+'00');
@@ -884,7 +884,38 @@ function drawSkinGeometry(w,t,r){
  ctx.restore();
 }
 function drawSkinHead(w,r){
- const p=w.pattern;ctx.save();ctx.translate(w.x,w.y);ctx.rotate(w.angle);
+ const p=w.pattern,head=w.human?options.head:'classic';
+ if(head==='blackhole'){
+  ctx.save();ctx.translate(w.x,w.y);ctx.rotate(w.angle);
+  const pulse=performance.now()*.0015;
+  ctx.shadowColor='#a54bff';ctx.shadowBlur=options.glow?r*1.2:0;
+  const halo=ctx.createRadialGradient(0,0,r*.18,0,0,r*1.72);
+  halo.addColorStop(0,'#03020a');halo.addColorStop(.39,'#080513');
+  halo.addColorStop(.5,'#ffca42');halo.addColorStop(.59,'#f23b7d');
+  halo.addColorStop(.73,'#7d37ff88');halo.addColorStop(1,'#7d37ff00');
+  ctx.fillStyle=halo;ctx.beginPath();ctx.arc(0,0,r*1.72,0,TAU);ctx.fill();
+  ctx.shadowBlur=0;
+  for(let i=0;i<10;i++){
+   const a=pulse*2.5+i*TAU/10,rr=r*(.77+Math.sin(pulse*2+i)*.17);
+   ctx.fillStyle=i%2?'#ffc75e':'#e76bff';ctx.beginPath();ctx.arc(Math.cos(a)*rr,Math.sin(a)*rr*.55,r*.048,0,TAU);ctx.fill();
+  }
+  ctx.fillStyle='#000005';ctx.beginPath();ctx.arc(0,0,r*.71,0,TAU);ctx.fill();
+  ctx.strokeStyle='#ffe4a3';ctx.lineWidth=r*.10;ctx.beginPath();ctx.ellipse(0,0,r*1.19,r*.44,-.28,0,TAU);ctx.stroke();
+  ctx.restore();return;
+ }
+ if(head!=='classic'){
+  ctx.save();ctx.translate(w.x,w.y);ctx.rotate(w.angle);
+  ctx.shadowColor=w.accent;ctx.shadowBlur=options.glow?r*.8:0;
+  ctx.fillStyle=head==='eclipse'?'#05030b':head==='crystal'?'#a3e9ff':head==='comet'?'#fff3bb':'#fefcff';
+  ctx.strokeStyle=w.accent;ctx.lineWidth=r*.13;ctx.beginPath();
+  if(head==='crystal'){for(let i=0;i<6;i++){const a=i*TAU/6,px=Math.cos(a)*r*1.15,py=Math.sin(a)*r*1.15;i?ctx.lineTo(px,py):ctx.moveTo(px,py)}ctx.closePath()}
+  else ctx.arc(0,0,r*1.05,0,TAU);
+  ctx.fill();ctx.stroke();ctx.shadowBlur=0;
+  if(head==='pulsar'||head==='eclipse'){ctx.strokeStyle=head==='pulsar'?'#ffe500':'#ff4a7a';ctx.lineWidth=r*.2;ctx.beginPath();ctx.ellipse(0,0,r*1.45,r*.48,-.35,0,TAU);ctx.stroke()}
+  if(head==='comet'){ctx.fillStyle='#ff8b38';ctx.beginPath();ctx.moveTo(-r*.7,-r*.55);ctx.lineTo(-r*2.3,-r*.15);ctx.lineTo(-r*.7,r*.55);ctx.fill()}
+  ctx.restore();return;
+ }
+ctx.save();ctx.translate(w.x,w.y);ctx.rotate(w.angle);
  ctx.fillStyle=p==='eclipse'||p==='horizon'?'#05050d':w.color[0];
  ctx.strokeStyle=w.accent;ctx.lineWidth=r*.14;
  ctx.shadowColor=w.color[0];ctx.shadowBlur=options.glow?16:0;
@@ -930,8 +961,7 @@ function drawWorm(w,t){
  const left=camera.x-vw/z*.6-r*3,right=camera.x+vw/z*.6+r*3;
  const top=camera.y-vh/z*.6-r*3,bottom=camera.y+vh/z*.6+r*3;
  ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
- // Actual Slither-style discrete, overlapping round segments. The whole
- // body does not get resized when mass changes: new food extends the tail.
+ // Cosmic worm segments grow in radius as mass increases, as well as in length.
  const step=z<.47&&n>520?2:1;
  for(let i=n-1;i>=0;i-=step){
   const p=nodes[i];
