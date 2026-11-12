@@ -158,13 +158,16 @@ function open({onChange,onClose}={}){
  // Show the actual selected worm as a moving, fully-rendered body rather than
  // asking players to infer its appearance from 64 static colored buttons.
  const preview=$('.ws-preview-canvas'),pc=preview.getContext('2d');
- let previewFrame=0;
+ let previewFrame=0,lastPreviewPaint=0;
  function paintPreview(now){
   if(!root.isConnected)return;
+  // 25fps is smooth for the worm while avoiding saturation of software canvas.
+  if(now-lastPreviewPaint<39){previewFrame=requestAnimationFrame(paintPreview);return;}
+  lastPreviewPaint=now;
   const w=preview.width,h=preview.height,t=now*.001;
   pc.clearRect(0,0,w,h);
   pc.fillStyle='#090719';pc.fillRect(0,0,w,h);
-  for(let i=0;i<135;i++){
+  for(let i=0;i<85;i++){
    const x=(i*397.71)%w,y=(i*181.39)%h;
    const a=.25+.5*(.5+.5*Math.sin(t*1.8+i*1.76));
    pc.fillStyle='rgba(227,220,255,'+a.toFixed(3)+')';
@@ -180,12 +183,11 @@ function open({onChange,onClose}={}){
   for(let i=0;i<count;i++){
    const node=body[i],radius=23*(.56+.44*Math.min(1,i/15));
    const color=colors[(count-1-i)%colors.length];
-   pc.shadowColor=color;pc.shadowBlur=11;
+   // Solid satin segments are GPU-friendly; stars/comets supply motion.
    pc.fillStyle='#09091f';pc.beginPath();pc.arc(node.x,node.y,radius*1.07,0,Math.PI*2);pc.fill();
-   const g=pc.createRadialGradient(node.x-radius*.3,node.y-radius*.42,1,node.x,node.y,radius*1.02);
-   g.addColorStop(0,'#ffffff');g.addColorStop(.22,color);g.addColorStop(1,'#09091f');
-   pc.fillStyle=g;pc.beginPath();pc.arc(node.x,node.y,radius*.9,0,Math.PI*2);pc.fill();
-   pc.shadowBlur=0;
+   pc.fillStyle=color;pc.beginPath();pc.arc(node.x,node.y,radius*.91,0,Math.PI*2);pc.fill();
+   pc.fillStyle='#ffffff68';pc.beginPath();
+   pc.arc(node.x-radius*.28,node.y-radius*.34,radius*.27,0,Math.PI*2);pc.fill();
    if(i%3===0){
     const sx=node.x+Math.sin(t*.9+i*4.1)*radius*.43;
     const sy=node.y+Math.cos(t*.7+i*1.3)*radius*.43;

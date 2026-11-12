@@ -115,6 +115,7 @@ const DEATH_REPLAY_SECONDS=3.25;
 let vw=0,vh=0,dpr=1,last=0,uiClock=0,starTime=0,foodTimer=0,toastTimer=0,guideStep=0,guideReturn='playing';
 let game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),worms:[],fx:[],player:null,reported:false,deathElapsed:0,deathPosition:null,deathGhost:null};
 let qaManualPhysics=false; // tester-only: stop rAF simulation while deterministic QA advances physics
+let lastIdlePaint=0;
 const input={mx:0,my:0,mouseMoved:false,mouseDown:false,boostKey:false,boostTouch:false,keys:new Set(),stickAngle:0,stickPower:0,stickPointer:-1,touchAngle:null};
 const camera={x:WORLD.cx,y:WORLD.cy,zoom:1};
 const stars=Array.from({length:680},(_,i)=>({x:Math.random(),y:Math.random(),r:i%8===0?1.6:rand(.35,1.05),a:rand(.42,1),phase:rand(0,TAU),depth:rand(.04,.17),c:['#ff1744','#27ff40','#ffe500','#ffffff','#9922ff','#2860ff'][i%6]}));
@@ -1340,6 +1341,12 @@ function frame(now){
   if(uiClock>.15){uiClock=0;if(!DEMO)updateUI();}
  }
  if(toastTimer>0){toastTimer-=dt;if(toastTimer<=0)$('worm-toast').classList.remove('show');}
+ // While paused or designing skins, the frozen game world does not need
+ // 60 expensive paints per second. The workshop preview animates separately.
+ if(qaManualPhysics||['paused','settings','skins','guide','finished'].includes(game.state)){
+  if(now-lastIdlePaint<120)return;
+  lastIdlePaint=now;
+ }
  paint(starTime);
 }
 init();requestAnimationFrame(frame);
