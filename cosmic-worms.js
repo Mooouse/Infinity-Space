@@ -1227,7 +1227,7 @@ init();requestAnimationFrame(frame);
 if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
  window.InfinityWormsQA={
   snapshot:()=>({state:game.state,mode:'worms',demo:DEMO,time:game.time,mass:game.player.mass,
-    bestMass:game.player.bestMass,length:game.player.segments.length,angle:game.player.angle,
+    bestMass:game.player.bestMass,length:game.player.segments.length,radius:wormRadius(game.player),head:options.head,angle:game.player.angle,
     targetAngle:game.player.target,x:game.player.x,y:game.player.y,zoom:camera.zoom,
     rank:ranking(game.player),worms:game.worms.length,
     alive:game.worms.filter(w=>w.alive).length,food:game.food.length,
