@@ -11,6 +11,7 @@ on:
       - 'cosmic-worms.js'
       - 'ui-worms.css'
       - 'unified-space.css'
+      - 'secondary-design.css'
       - 'ui-app.css'
       - 'ui-v15*.js'
       - 'ui-arena.css'
