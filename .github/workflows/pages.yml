@@ -54,6 +54,7 @@ jobs:
           timeout 150 node tests/worms-browser-smoke.cjs
           timeout 500 node tests/full-ui-audit.cjs
           timeout 180 node tests/profile-live-demo-smoke.cjs
+          timeout 150 node tests/mode-achievements-smoke.cjs
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Prepare lean website payload

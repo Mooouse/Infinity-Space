@@ -48,6 +48,7 @@ function recordMatch(mode,result){
  for(let stage=0;stage<5;stage++)if(safeCount(r.stage)>=stage)b.forms[stage]=(b.forms[stage]||0)+1;
  b.deaths+=r.win?0:1;
  saveStats(s);
+ achievementStats(mode,s);
 }
 function syncEndless(snapshot){
  if(!snapshot||typeof snapshot!=='object')return;
@@ -170,5 +171,133 @@ function promptName(required=true,onSave){
  input.focus();
  return node;
 }
-window.InfinityProfile={getName,setName,promptName,showStats,getStats,recordMatch,syncEndless,total,language,text};
+
+/* Independent competitive-mode achievements. Unlike the sandbox's original
+   evolution achievements, these derive from actual persisted match statistics.
+   Never overwrite the existing g.achievements or restart-universe progress. */
+const ACHIEVEMENT_KEY='infinity-space-mode-achievements-v1';
+const ACHIEVEMENT_RARITY=[
+ ['common','#b6a7d9'],['uncommon','#47df86'],['rare','#4a9eff'],
+ ['epic','#bb83ff'],['legendary','#ffc76f'],['mythic','#f58ac8']
+];
+// [id, rarity, title EN/RU/ES, milestone hint EN/RU/ES, stat, target]
+const MODE_ACHIEVEMENTS={
+ arena:[
+  ['first',0,['First Encounter','Первая встреча','Primer encuentro'],['Finish one Arena match','Заверши один матч арены','Termina una partida'],'matches',1],
+  ['harvester',1,['Cosmic Harvester','Космический сборщик','Recolector cósmico'],['Absorb 250 objects','Поглоти 250 объектов','Absorbe 250 objetos'],'objects',250],
+  ['predator',2,['Gravity Predator','Гравитационный хищник','Depredador gravitacional'],['Defeat 10 opponents','Победи 10 соперников','Derrota a 10 rivales'],'kills',10],
+  ['podium',3,['Arena Master','Мастер арены','Maestro de la arena'],['Finish in the top 3 three times','Трижды войди в топ-3','Termina tres veces entre los 3 primeros'],'top3',3],
+  ['champion',4,['Cosmic Champion','Космический чемпион','Campeón cósmico'],['Win 5 Arena matches','Победи в пяти матчах арены','Gana cinco partidas'],'wins',5],
+  ['veteran',5,['Living Legend','Живая легенда','Leyenda viviente'],['Complete 30 Arena matches','Заверши 30 матчей арены','Completa 30 partidas'],'matches',30]
+ ],
+ royale:[
+  ['first',0,['Into the Storm','Навстречу шторму','Hacia la tormenta'],['Survive your first Royale match','Сыграй первый матч на выживание','Juega tu primera partida'],'matches',1],
+  ['podium',1,['Storm Survivor','Выживший в шторме','Superviviente'],['Reach the top 3','Войди в топ-3','Llega entre los 3 mejores'],'top3',1],
+  ['hunter',2,['Shadow Hunter','Охотник из тени','Cazador de sombras'],['Defeat 15 rivals','Уничтожь 15 соперников','Derrota a 15 rivales'],'kills',15],
+  ['winner',3,['Last Singularity','Последняя сингулярность','Última singularidad'],['Win your first match','Одержи первую победу','Consigue tu primera victoria'],'wins',1],
+  ['marathon',4,['Against the Void','Вопреки пустоте','Contra el vacío'],['Play for 60 minutes total','Продержись суммарно 60 минут','Juega durante 60 minutos'],'time',3600],
+  ['legend',5,['The Last One','Последний','El último'],['Win 10 Royale matches','Выиграй 10 матчей на выживание','Gana 10 partidas'],'wins',10]
+ ],
+ core:[
+  ['first',0,['First Capture','Первый захват','Primera captura'],['Complete a Core match','Заверши матч за ядро','Completa una partida'],'matches',1],
+  ['guardian',1,['Core Guardian','Хранитель ядра','Guardián del núcleo'],['Earn 100 control points','Набери 100 очков контроля','Gana 100 puntos de control'],'points',100],
+  ['defender',2,['Hold the Line','Держать оборону','Mantén la línea'],['Earn 300 control points','Набери 300 очков контроля','Gana 300 puntos de control'],'points',300],
+  ['warrior',3,['Team Vanguard','Авангард команды','Vanguardia del equipo'],['Defeat 12 rivals','Победи 12 соперников','Derrota a 12 rivales'],'kills',12],
+  ['captain',4,['Core Commander','Командир ядра','Comandante del núcleo'],['Win 5 team matches','Выиграй 5 командных матчей','Gana 5 partidas por equipos'],'wins',5],
+  ['veteran',5,['Unbreakable Team','Несокрушимая команда','Equipo invencible'],['Complete 25 Core matches','Заверши 25 матчей за ядро','Completa 25 partidas'],'matches',25]
+ ],
+ race:[
+  ['first',0,['Starting Line','Стартовая линия','Línea de salida'],['Complete your first race','Заверши первую гонку','Completa tu primera carrera'],'matches',1],
+  ['asteroid',1,['Evolution Engine','Двигатель эволюции','Motor evolutivo'],['Reach evolution stage 3','Достигни третьей стадии','Alcanza la tercera fase'],'maxStage',3],
+  ['singularity',2,['Final Form','Финальная форма','Forma final'],['Reach evolution stage 4','Достигни четвёртой стадии','Alcanza la cuarta fase'],'maxStage',4],
+  ['podium',3,['Rising Star','Восходящая звезда','Estrella naciente'],['Finish in the top 3','Финишируй в топ-3','Termina entre los 3 primeros'],'top3',1],
+  ['winner',4,['Evolution Champion','Чемпион эволюции','Campeón evolutivo'],['Win 3 evolution races','Победи в трёх гонках','Gana tres carreras'],'wins',3],
+  ['speed',5,['Faster than Light','Быстрее света','Más rápido que la luz'],['Win a race in under 3 minutes','Победи быстрее чем за 3 минуты','Gana en menos de tres minutos'],'bestFinish',180]
+ ],
+ worms:[
+  ['first',0,['First Orbit','Первый виток','Primera órbita'],['Finish your first worm run','Заверши первую игру за червя','Completa tu primera partida'],'matches',1],
+  ['stardust',1,['Stardust Collector','Собиратель звёзд','Recolector estelar'],['Collect 200 glowing orbs','Собери 200 светящихся сфер','Recoge 200 orbes brillantes'],'objects',200],
+  ['hunter',2,['Serpent Hunter','Охотник на червей','Cazador de gusanos'],['Defeat 15 enemy worms','Уничтожь 15 червей','Derrota a 15 gusanos'],'kills',15],
+  ['top3',3,['Cosmic Serpent','Космический змей','Serpiente cósmica'],['Reach the top 3 three times','Трижды войди в топ-3','Termina tres veces entre los 3 primeros'],'top3',3],
+  ['mass',4,['Stellar Colossus','Звёздный колосс','Coloso estelar'],['Reach 500 maximum mass','Достигни массы 500','Alcanza una masa de 500'],'maxMass',500],
+  ['eternal',5,['Endless Tail','Бесконечный хвост','Cola infinita'],['Spend 60 minutes surviving','Проведи в игре 60 минут','Juega durante 60 minutos'],'time',3600]
+ ]
+};
+const localeTriple=triple=>triple[({en:0,ru:1,es:2})[language()]||0];
+function achievementStats(mode,stats){
+ if(!MODE_ACHIEVEMENTS[mode])return null;
+ const s=stats||getStats(),b=s[mode]||basic(),defs=MODE_ACHIEVEMENTS[mode];
+ const saved=read(ACHIEVEMENT_KEY,{version:1}),had=saved[mode]||{};
+ let changed=false;
+ const items=defs.map(([key,rarity,title,hint,field,target])=>{
+  const raw=field==='bestFinish'?(b.bestFinish===null?0:safeCount(b.bestFinish)):safeCount(b[field]);
+  const progress=field==='bestFinish'
+    ?raw>0?Math.min(100,target/raw*100):0
+    :Math.min(100,raw/target*100);
+  const reached=field==='bestFinish'?raw>0&&raw<=target:raw>=target;
+  if(reached&&!had[key]){had[key]=true;changed=true;}
+  const unlocked=!!had[key];
+  return {id:key,rarity,color:ACHIEVEMENT_RARITY[rarity][1],
+   title:localeTriple(title),hint:localeTriple(hint),field,target,value:raw,
+   percent:unlocked?100:Math.max(0,progress),unlocked};
+ });
+ if(changed){
+  saved.version=1;saved[mode]=had;write(ACHIEVEMENT_KEY,saved);
+  window.dispatchEvent(new CustomEvent('infinity-achievements-updated',{detail:{mode}}));
+ }
+ return {mode,earned:items.filter(a=>a.unlocked).length,total:items.length,items};
+}
+function showModeAchievements(mode){
+ const state=achievementStats(mode);
+ if(!state)return null; // The original sandbox has its own evolution system.
+ document.querySelector('.infinity-mode-achievements-overlay')?.remove();
+ const node=document.createElement('div');node.className='infinity-profile-overlay infinity-mode-achievements-overlay';
+ node.setAttribute('role','dialog');node.setAttribute('aria-modal','true');
+ const panel=document.createElement('section');panel.className='infinity-profile-panel infinity-mode-achievements-panel';
+ const top=document.createElement('div');top.className='infinity-panel-top';
+ const heading=document.createElement('div');
+ const subtitle=document.createElement('small');
+ subtitle.textContent='INFINITY SPACE / '+NAMES[language()][MODE_IDS.indexOf(mode)+1];
+ const title=document.createElement('h2');title.textContent=localeTriple(['ACHIEVEMENTS','ДОСТИЖЕНИЯ','LOGROS']);
+ heading.append(subtitle,title);
+ const closeBtn=document.createElement('button');closeBtn.type='button';closeBtn.className='infinity-overlay-close';
+ closeBtn.setAttribute('aria-label',text('close'));closeBtn.textContent='×';
+ top.append(heading,closeBtn);
+ const summary=document.createElement('div');summary.className='infinity-mode-achievements-summary';
+ const total=document.createElement('strong');total.textContent=state.earned+' / '+state.total;
+ const explanation=document.createElement('span');
+ explanation.textContent=localeTriple(['Unlocked in this mode','Открыто в этом режиме','Desbloqueados en este modo']);
+ summary.append(total,explanation);
+ const list=document.createElement('div');list.className='infinity-mode-achievements-list';
+ for(const a of state.items){
+  const card=document.createElement('article');card.className='infinity-mode-achievement'+(a.unlocked?' unlocked':'');
+  card.style.setProperty('--rarity',a.color);
+  const insignia=document.createElement('span');insignia.className='infinity-mode-achievement-insignia';
+  insignia.textContent=a.unlocked?'✦':'✧';
+  const content=document.createElement('div');content.className='infinity-mode-achievement-copy';
+  const name=document.createElement('strong');name.textContent=a.title;
+  const description=document.createElement('small');description.textContent=a.hint;
+  const track=document.createElement('div');track.className='infinity-mode-achievement-track';
+  track.setAttribute('role','progressbar');track.setAttribute('aria-label',a.title);
+  track.setAttribute('aria-valuemin','0');track.setAttribute('aria-valuemax','100');
+  track.setAttribute('aria-valuenow',String(Math.round(a.percent)));
+  const fill=document.createElement('i');fill.style.width=a.percent+'%';track.append(fill);
+  content.append(name,description,track);
+  const percent=document.createElement('b');percent.textContent=Math.round(a.percent)+'%';
+  card.append(insignia,content,percent);list.append(card);
+ }
+ panel.append(top,summary,list);node.append(panel);document.body.append(node);
+ const onKey=e=>{
+  if(e.key==='Escape'){
+   e.preventDefault();e.stopImmediatePropagation();close();
+  }
+ };
+ const close=()=>{document.removeEventListener('keydown',onKey,true);node.remove();};
+ document.addEventListener('keydown',onKey,true);
+ closeBtn.addEventListener('click',close);
+ node.addEventListener('pointerdown',e=>{if(e.target===node)close();});
+ return node;
+}
+
+window.InfinityProfile={getName,setName,promptName,showStats,getStats,recordMatch,syncEndless,total,language,text,showModeAchievements,achievementStats};
 })();

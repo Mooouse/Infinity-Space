@@ -120,17 +120,22 @@
   overlay.className='hub-mode-story';
   overlay.hidden=false;
   overlay.setAttribute('aria-label',t(['Game mode selection','Выбор режима игры','Elegir modo de juego']));
-  overlay.innerHTML='<header class="hub-mode-story-top">'+
+  overlay.innerHTML='<div class="hub-reference-brand" aria-label="Infinity Space">INFINITY <em>SPACE</em></div>'+
+    '<header class="hub-mode-story-top">'+
     '<span class="hub-mode-story-home">INFINITY SPACE</span>'+
     '<div class="hub-story-quick" aria-label="Daily rewards"></div>'+
     '<button class="hub-profile-chip" type="button" aria-label="Profile"><span aria-hidden="true">✧</span><span class="hub-profile-name">PLAYER</span></button>'+
     '<span class="hub-mode-story-counter"></span></header>'+
     '<div class="hub-mode-story-copy" aria-live="polite">'+
-      '<div class="hub-reference-brand" aria-label="Infinity Space">INFINITY <em>SPACE</em></div>'+
       '<p class="hub-mode-story-kicker"></p>'+
       '<h2 class="hub-mode-story-title"></h2>'+
       '<p class="hub-mode-story-goal"></p>'+
       '<p class="hub-mode-story-description"></p>'+
+      '<div class="hub-mode-nickname" hidden>'+
+        '<label for="hub-mode-nickname-input">'+esc(t(['YOUR NICKNAME','ТВОЙ НИКНЕЙМ','TU APODO']))+'</label>'+
+        '<input id="hub-mode-nickname-input" name="nickname" type="text" maxlength="18" minlength="2" spellcheck="false" autocomplete="nickname" placeholder="'+esc(t(['Enter nickname','Введи никнейм','Escribe tu apodo']))+'">'+
+        '<small class="hub-mode-nickname-status" role="status" aria-live="polite"></small>'+
+      '</div>'+
       '<div class="hub-mode-story-tags"></div>'+
       '<button class="hub-mode-story-play" type="button"><span></span><b aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="square" stroke-linejoin="miter"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></b></button>'+
        '<button class="hub-mode-story-skins" type="button" hidden><span>'+t(['CUSTOMIZE YOUR WORM','НАСТРОИТЬ ЧЕРВЯ','PERSONALIZAR GUSANO'])+'</span><b aria-hidden="true">◉</b></button>'+
@@ -145,10 +150,31 @@
   const demoBackground=createLiveModeBackdrop(overlay);
   const profile=window.InfinityProfile;
   const chip=q(overlay,'.hub-profile-chip');
+  const nicknameField=q(overlay,'.hub-mode-nickname');
+  const nicknameInput=q(nicknameField,'input');
+  const nicknameStatus=q(nicknameField,'.hub-mode-nickname-status');
   const syncNickname=()=>{
-   q(chip,'.hub-profile-name').textContent=profile?.getName()||'PLAYER';
-   chip.title=(profile?.getName()||'PLAYER')+' · '+(profile?.text?.('edit')||'Change nickname');
+   const name=profile?.getName()||'';
+   q(chip,'.hub-profile-name').textContent=name||'PLAYER';
+   chip.title=(name||'PLAYER')+' · '+(profile?.text?.('edit')||'Change nickname');
+   if(document.activeElement!==nicknameInput)nicknameInput.value=name;
   };
+  const saveNickname=()=>{
+   if(!profile)return;
+   if(profile.setName(nicknameInput.value)){
+    nicknameInput.value=profile.getName();
+    nicknameStatus.textContent=t(['Saved','Сохранено','Guardado']);
+   }else{
+    nicknameStatus.textContent=t(['Use 2–18 characters','От 2 до 18 символов','Entre 2 y 18 caracteres']);
+   }
+  };
+  nicknameInput.addEventListener('change',saveNickname);
+  nicknameInput.addEventListener('input',()=>nicknameStatus.textContent='');
+  nicknameInput.addEventListener('pointerdown',event=>event.stopPropagation());
+  nicknameInput.addEventListener('keydown',event=>{
+   event.stopPropagation();
+   if(event.key==='Enter'){event.preventDefault();nicknameInput.blur();}
+  });
   syncNickname();
   chip.onclick=()=>profile?.promptName(false,syncNickname);
   window.addEventListener('infinity-profile-updated',syncNickname);
@@ -196,7 +222,11 @@
    // with unrelated persistent-universe actions.
    const allowed=entry.id==='endless'
     ? new Set(['map','evolution','achievements','music','bestiary','settings'])
-    : new Set(['statistics','settings']);
+    : new Set(['achievements','statistics','settings']);
+   nicknameField.hidden=entry.id==='endless';
+   chip.hidden=entry.id!=='endless';
+   nicknameStatus.textContent='';
+   if(document.activeElement!==nicknameInput)nicknameInput.value=profile?.getName()||'';
    const dock=q(overlay,'.hub-story-nav');
    let visible=0;
    for(const item of dock.querySelectorAll('.hub-story-shortcut')){
@@ -254,7 +284,14 @@
    item.innerHTML='<span class="hub-story-shortcut-icon" aria-hidden="true">'+iconMarkup+'</span>'+
     '<span class="hub-story-shortcut-label">'+esc(t(labels))+'</span>';
    item.setAttribute('aria-label',t(labels));
-   item.onclick=()=>source.click();
+   item.onclick=()=>{
+    const selected=modeStories[current].id;
+    if(name==='achievements'&&selected!=='endless'){
+     profile?.showModeAchievements?.(selected);
+     return;
+    }
+    source.click();
+   };
    nav.append(item);
   }
   const dots=q(overlay,'.hub-mode-dots');

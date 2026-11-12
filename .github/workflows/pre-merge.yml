@@ -51,3 +51,4 @@ jobs:
           timeout 300 node tests/menu-layout-audit.cjs
           timeout 150 node tests/worms-browser-smoke.cjs
           timeout 180 node tests/profile-live-demo-smoke.cjs
+          timeout 150 node tests/mode-achievements-smoke.cjs

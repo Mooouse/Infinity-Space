@@ -48,11 +48,19 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   await page.waitForFunction(()=>document.querySelector('.hub-demo-frame.ready iframe[src*="demo=royale"]')?.contentWindow?.InfinityDemoQA?.snapshot()?.actors>=8,null,{timeout:22000});
   assert.equal(await page.locator('.hub-demo-frame.ready iframe[src*="demo=royale"]').count(),1);
   assert.ok(await page.locator('.hub-demo-frame').count()<=2,'No accumulation of obsolete simulations');
-  // Profile remains editable directly in the header.
-  await page.locator('.hub-profile-chip').click();
-  await page.locator('.infinity-nickname-prompt input').fill('Comet Captain');
-  await page.locator('.infinity-nickname-prompt button[type=submit]').click();
+  // In every competitive mode the nickname is permanently editable
+  // in the center. Changing it updates the profile and upcoming matches.
+  const nickname=page.locator('.hub-mode-nickname input');
+  assert.equal(await nickname.isVisible(),true);
+  assert.equal(await nickname.inputValue(),'Nova Pilot');
+  await nickname.fill('Comet Captain');
+  await nickname.press('Enter');
   assert.equal(await page.evaluate(()=>window.InfinityProfile.getName()),'Comet Captain');
+  await page.locator('.hub-mode-dots button').nth(5).click();
+  assert.equal(await page.locator('.hub-mode-nickname input').inputValue(),'Comet Captain');
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.hub-mode-dots button').nth(1).click();
+  assert.equal(await page.locator('.hub-mode-nickname input').inputValue(),'Comet Captain');
   // End-to-end arena record: use the QA-only finish hook to avoid a long match.
   await page.goto(base+'/cosmic-arena.html?mode=arena&tester=1',{waitUntil:'domcontentloaded'});
   await page.locator('#hud:not([hidden])').waitFor({state:'visible',timeout:15000});

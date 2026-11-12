@@ -465,7 +465,8 @@ function kill(w,killer,reason){
   const won=w.leadTime>=20;
   if(!game.reported){
    game.reported=true;
-   window.InfinityProfile?.recordMatch?.('worms',{
+   // Background AI demonstrations must never unlock player achievements.
+   if(!DEMO)window.InfinityProfile?.recordMatch?.('worms',{
     win:won,place:Math.max(1,w.bestRank),kills:w.kills,objects:w.foodEaten,
     mass:w.bestMass,time:game.time
    });
