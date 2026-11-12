@@ -1115,6 +1115,9 @@ function pause(){
  if(game.state==='skins'){window.WormSkinStudio?.close();return;}
  if(game.state==='playing'){
   game.state='paused';$('worm-pause-overlay').hidden=false;
+  $('worm-pause-length').textContent=$('worm-length').textContent;
+  $('worm-pause-rank').textContent=$('worm-place').textContent;
+  $('worm-pause-time').textContent=$('worm-time').textContent;
   window.SpacePlatform?.playing?.(false);
  }else if(game.state==='paused'){
   game.state='playing';$('worm-pause-overlay').hidden=true;
