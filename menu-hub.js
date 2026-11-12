@@ -303,6 +303,7 @@
   modeStories.forEach((entry,i)=>{
    const dot=document.createElement('button');dot.type='button';
    dot.setAttribute('aria-label',t(entry.title));
+   dot.dataset.mode=entry.id;
    dot.onclick=()=>setMode(i);dots.append(dot);
   });
   // The left header button opens the utility/navigation drawer.
