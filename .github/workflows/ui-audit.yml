@@ -19,6 +19,7 @@ on:
       - 'index.html'
       - 'tests/full-ui-audit.cjs'
       - 'tests/menu-layout-audit.cjs'
+      - 'tests/mode-achievements-smoke.cjs'
       - 'tests/worms-browser-smoke.cjs'
       - 'tests/arena-ui-audit.cjs'
       - 'tests/gameplay-navigation-audit.cjs'
@@ -41,6 +42,7 @@ jobs:
           python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/infinity-ui-audit-http.log 2>&1 &
           sleep 2
           timeout 300 node tests/menu-layout-audit.cjs
+          timeout 150 node tests/mode-achievements-smoke.cjs
           timeout 150 node tests/worms-browser-smoke.cjs
           timeout 500 node tests/full-ui-audit.cjs
           timeout 400 node tests/arena-ui-audit.cjs
