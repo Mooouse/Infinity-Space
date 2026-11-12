@@ -293,7 +293,7 @@ function showModeAchievements(mode){
  heading.append(subtitle,title);
  const closeBtn=document.createElement('button');
  closeBtn.type='button';closeBtn.className='infinity-overlay-close';
- closeBtn.setAttribute('aria-label',text('close'));closeBtn.textContent='×';
+ closeBtn.setAttribute('aria-label',text('close'));closeBtn.textContent=localeTriple(['← BACK','← НАЗАД','← VOLVER']);
  top.append(heading,closeBtn);
  const summary=document.createElement('div');summary.className='infinity-mode-achievements-summary';
  const total=document.createElement('strong');total.textContent=state.earned+' / '+state.total;

@@ -454,3 +454,60 @@ body:has(#worm-field) #worm-settings :is(.worm-setting-toggle,.worm-setting-rang
  .ws-overlay .ws-advanced-summary{font-size:10px!important}
  .ws-overlay .ws-preset-worm i{flex-basis:10px;width:10px!important;height:10px!important}
 }
+
+/* ACHIEVEMENTS ARE THE SAME PAGE IN ALL MODES.
+   Competitive catalogs use a fullscreen workspace like Endless Space,
+   rather than an unrelated small popup. Saved goals remain mode-specific. */
+.infinity-mode-achievements-overlay{
+ inset:0!important;display:flex!important;align-items:stretch!important;justify-content:stretch!important;
+ padding:0!important;background:linear-gradient(120deg,#0b0618,#070511 72%)!important;
+ backdrop-filter:none!important;
+}
+.infinity-mode-achievements-overlay .infinity-mode-achievements-panel{
+ width:100vw!important;max-width:none!important;height:100dvh!important;max-height:100dvh!important;
+ margin:0!important;padding:clamp(12px,2vw,35px) clamp(14px,4vw,70px) clamp(12px,2vw,35px)!important;
+ border:0!important;border-radius:0!important;
+ background:linear-gradient(120deg,#0c0719,#090514 67%,#110927)!important;
+ box-shadow:none!important;gap:12px!important;
+}
+.infinity-mode-achievements-panel .infinity-panel-top{
+ width:100%!important;max-width:none!important;min-height:clamp(67px,9vh,100px)!important;
+ display:flex!important;align-items:center!important;justify-content:flex-start!important;
+ gap:20px!important;border-bottom:2px solid #674b90!important;
+ padding:0 0 12px!important;margin:0 0 5px!important;
+}
+.infinity-mode-achievements-panel .infinity-panel-top h2{
+ font-size:clamp(22px,2vw,35px)!important;margin:2px 0 0!important;
+}
+.infinity-mode-achievements-panel .infinity-panel-top small{
+ font-size:clamp(9px,.62vw,12px)!important;letter-spacing:.1em!important;
+}
+.infinity-mode-achievements-panel .infinity-overlay-close{
+ order:-1!important;flex:0 0 auto!important;width:auto!important;height:44px!important;
+ min-width:95px!important;padding:0 13px!important;font-size:12px!important;font-weight:950!important;
+ letter-spacing:.06em!important;border-radius:5px!important;
+ border:2px solid #6b4c94!important;border-bottom:4px solid #402860!important;
+ background:linear-gradient(150deg,#271a43,#150e25)!important;color:#f6ecff!important;
+}
+.infinity-mode-achievements-panel :is(.infinity-mode-achievements-summary,
+ .infinity-mode-achievements-filters,.infinity-mode-achievements-list){
+ width:100%!important;max-width:1380px!important;align-self:center!important;
+}
+.infinity-mode-achievements-panel .infinity-mode-achievements-summary{
+ padding-bottom:3px!important;
+}
+.infinity-mode-achievements-panel .infinity-mode-achievements-list{
+ flex:1!important;min-height:0!important;
+}
+@media(max-width:600px){
+ .infinity-mode-achievements-overlay .infinity-mode-achievements-panel{
+  padding:10px 12px max(12px,env(safe-area-inset-bottom))!important;gap:7px!important;
+ }
+ .infinity-mode-achievements-panel .infinity-panel-top{min-height:65px!important;gap:10px!important}
+ .infinity-mode-achievements-panel .infinity-overlay-close{
+  height:38px!important;min-width:78px!important;font-size:10px!important;padding:0 9px!important;
+ }
+ .infinity-mode-achievements-panel .infinity-panel-top h2{font-size:22px!important}
+ .infinity-mode-achievements-panel .infinity-mode-achievements-summary strong{font-size:22px!important}
+ .infinity-mode-achievements-panel .infinity-mode-achievements-filters .br-filter{padding:6px 7px!important;font-size:9px!important}
+}
