@@ -126,8 +126,8 @@ const inspect=()=>{
       await trigger.click();
       const popup=page.locator('.infinity-mode-achievements-overlay');
       await popup.waitFor({state:'visible',timeout:5000});
-      if(await popup.locator('.infinity-mode-achievement').count()!==6)
-       issues.push('mode-achievements-not-six');
+      if((await popup.locator('.infinity-mode-achievement').count())<18)
+       issues.push('mode-achievements-not-expanded');
       await popup.locator('.infinity-overlay-close').click();
      }
      // The supplied original design uses one violet control language;
