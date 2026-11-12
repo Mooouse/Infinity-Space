@@ -739,6 +739,6 @@ body.worm-death-replay #worm-hud{transition:opacity .85s ease}
 .ws-head-choice[data-head=classic] .ws-head-symbol{background:radial-gradient(circle at 35% 30%,#fff,#9944ff 45%,#280c55);}
 .ws-head-choice[data-head=pulsar] .ws-head-symbol{background:radial-gradient(circle,#fff 0 25%,#ffe500 35%,#2860ff 65%,transparent 75%);}
 .ws-head-choice[data-head=comet] .ws-head-symbol{background:radial-gradient(circle at 75% 40%,#fff 0 25%,#ffe569 35%,#e85a38 65%,transparent 75%);}
-.ws-head-choice[data-head=crystal] .ws-head-symbol{border-radius:0;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);background:#7ee4ff;}
+.ws-head-choice[data-head=crystal] .ws-head-symbol{border-radius:0;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);background:#8976ff;}
 .ws-head-choice[data-head=eclipse] .ws-head-symbol{background:radial-gradient(circle,#02010a 0 43%,#ff427e 48% 55%,transparent 64%);}
 @media(max-width:560px){.ws-head-options{grid-template-columns:repeat(2,minmax(0,1fr));}}
