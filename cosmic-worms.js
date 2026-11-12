@@ -948,6 +948,52 @@ ctx.save();ctx.translate(w.x,w.y);ctx.rotate(w.angle);
  ctx.restore();
 }
 
+/* Observable hyperdrive wake: twin luminous jets, curved turbulence and
+   a real accelerating shock-ring. It is visible even with enhanced glow off. */
+function drawBoostWake(w,t,r){
+ if(!w.boost||w.mass<=38)return;
+ const head=w,front=w.segments[0]||w;
+ const dx=Math.cos(w.angle),dy=Math.sin(w.angle);
+ const nx=-dy,ny=dx,spin=t*16+(w.id||0)*.7;
+ ctx.save();ctx.globalCompositeOperation='lighter';ctx.lineCap='round';
+ const tailLen=r*(w.human?7.1:5.4);
+ for(const side of [-1,1]){
+  const x=head.x+nx*r*.67*side-dx*r*.37;
+  const y=head.y+ny*r*.67*side-dy*r*.37;
+  const ex=x-dx*tailLen+nx*side*Math.sin(spin)*r*.38;
+  const ey=y-dy*tailLen+ny*side*Math.sin(spin)*r*.38;
+  const grad=ctx.createLinearGradient(x,y,ex,ey);
+  grad.addColorStop(0,'#fff3c8fa');
+  grad.addColorStop(.17,w.accent+'ee');
+  grad.addColorStop(.55,w.accent+'76');
+  grad.addColorStop(1,w.accent+'00');
+  ctx.strokeStyle=grad;ctx.lineWidth=r*.30;ctx.shadowColor=w.accent;ctx.shadowBlur=r*.65;
+  ctx.beginPath();ctx.moveTo(x,y);
+  ctx.quadraticCurveTo((x+ex)*.5+nx*side*r*.5,(y+ey)*.5+ny*side*r*.5,ex,ey);
+  ctx.stroke();
+  ctx.lineWidth=r*.10;ctx.strokeStyle='#fff6ee';
+  ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(ex,ey);ctx.stroke();
+ }
+ ctx.shadowBlur=0;
+ const count=w.human?17:7;
+ for(let j=0;j<count;j++){
+  const phase=j*2.399+spin*.34;
+  const reach=r*(1.3+(j%5)*.86+.35*Math.sin(t*15+j));
+  const lateral=Math.sin(phase)*r*(.8+j%4*.25);
+  const sx=head.x-dx*reach+nx*lateral;
+  const sy=head.y-dy*reach+ny*lateral;
+  const len=r*(.45+(j%4)*.23);
+  ctx.globalAlpha=.27+.41*(.5+.5*Math.sin(t*12+j));
+  ctx.strokeStyle=j%3===0?'#ffeeb3':w.accent;
+  ctx.lineWidth=j%4===0?2.5:1.2;
+  ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(sx-dx*len,sy-dy*len);ctx.stroke();
+ }
+ ctx.globalAlpha=.72;ctx.strokeStyle='#fff4cc';ctx.lineWidth=Math.max(1.2,r*.075);
+ ctx.beginPath();ctx.ellipse(head.x,head.y,r*(1.6+.12*Math.sin(t*17)),r*(1.23+.08*Math.sin(t*18)),w.angle,0,Math.PI*2);
+ ctx.stroke();
+ ctx.restore();
+}
+
 function drawWorm(w,t){
  if(!w.alive)return;
  const z=camera.zoom;
@@ -961,6 +1007,7 @@ function drawWorm(w,t){
  const left=camera.x-vw/z*.6-r*3,right=camera.x+vw/z*.6+r*3;
  const top=camera.y-vh/z*.6-r*3,bottom=camera.y+vh/z*.6+r*3;
  ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+ drawBoostWake(w,t,r);
  // Cosmic worm segments grow in radius as mass increases, as well as in length.
  const step=z<.47&&n>520?2:1;
  for(let i=n-1;i>=0;i-=step){
@@ -987,13 +1034,19 @@ function drawWorm(w,t){
   }
  }
  ctx.globalAlpha=1;
- if(w.boost&&w.mass>38&&options.glow){
-  ctx.shadowColor=w.accent;ctx.shadowBlur=13;
-  ctx.lineWidth=Math.max(2,r*.20);ctx.strokeStyle=w.accent;ctx.globalAlpha=.35;
-  const tail=nodes[n-1];ctx.beginPath();ctx.moveTo(tail.x,tail.y);
-  const stride=Math.max(1,Math.floor(n/850));
-  for(let i=n-2;i>=0;i-=stride)ctx.lineTo(nodes[i].x,nodes[i].y);
-  ctx.lineTo(w.x,w.y);ctx.stroke();ctx.shadowBlur=0;ctx.globalAlpha=1;
+ // Premade cosmic skins show animated nebulae, stars and comets INSIDE
+ // the live body; custom-colored skins retain their exact selected colors.
+ if(w.human&&!custom&&detail&&n>=20&&n<950)drawCosmicInterior(w,t,r);
+ if(w.boost&&w.mass>38){
+  ctx.save();ctx.globalCompositeOperation='lighter';
+  ctx.shadowColor=w.accent;ctx.shadowBlur=options.glow?19:4;
+  ctx.lineWidth=Math.max(3,r*.27);ctx.strokeStyle=w.accent;ctx.globalAlpha=.66;
+  const tail=nodes[Math.min(n-1,Math.max(28,Math.round(n*.3)))];
+  ctx.beginPath();ctx.moveTo(tail.x,tail.y);
+  const stride=Math.max(1,Math.floor(Math.min(n,1000)/550));
+  for(let i=Math.min(n-1,Math.max(27,Math.round(n*.3)))-1;i>=0;i-=stride)
+   ctx.lineTo(nodes[i].x,nodes[i].y);
+  ctx.lineTo(w.x,w.y);ctx.stroke();ctx.restore();
  }
  // Existing decorative motifs, but only at close zoom and shorter lengths.
  if(!custom&&detail&&n<480)drawSkinGeometry(w,t,r*.63);
@@ -1063,6 +1116,21 @@ function paint(t){
  for(const w of sorted)drawWorm(w,t);
  for(const f of game.fx){ctx.globalAlpha=clamp(f.t/f.max,0,1);ctx.fillStyle=f.c;ctx.fillRect(f.x,f.y,f.r,f.r);}
  ctx.globalAlpha=1;ctx.restore();
+ // Hyperdrive speed lines traverse the camera edge and visibly accelerate.
+ if(p.boost&&p.mass>38){
+  ctx.save();ctx.globalCompositeOperation='lighter';
+  const cx=vw*.5,cy=vh*.5,rad=Math.min(vw,vh);
+  for(let j=0;j<22;j++){
+   const angle=j*2.399963+(t*.12),length=rad*(.12+(j%5)*.031);
+   const dist=rad*(.43+(j%7)*.042),ex=cx+Math.cos(angle)*dist,ey=cy+Math.sin(angle)*dist;
+   const sx=ex-Math.cos(angle)*length,sy=ey-Math.sin(angle)*length;
+   const grad=ctx.createLinearGradient(sx,sy,ex,ey);
+   grad.addColorStop(0,'#a177ff00');grad.addColorStop(.7,j%3===0?'#ffce7444':'#a67dff38');
+   grad.addColorStop(1,j%3===0?'#fff4d3a0':'#dfc5ffa8');
+   ctx.strokeStyle=grad;ctx.lineWidth=(j%5===0?2.4:1.2);ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ex,ey);ctx.stroke();
+  }
+  ctx.restore();
+ }
  // Soft screen-space vignette leaves HUD labels legible over bright worms.
  const vignette=ctx.createRadialGradient(vw/2,vh/2,Math.min(vw,vh)*.3,
   vw/2,vh/2,Math.max(vw,vh)*.81);
