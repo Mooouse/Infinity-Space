@@ -448,3 +448,37 @@ button:focus-visible{outline-color:var(--arena-accent,var(--arena-blue));outline
  .hud .arena-stage-bar{width:100%;margin-top:5px}
  .top .brand{overflow:hidden}
 }
+
+/* CLASSIC V15.3 UI / restored from the supplied legacy build.
+   Competitive mode HUD and entity/ability colors remain meaningful. */
+#paused .arena-pause-panel,#result .panel,#guide .arena-guide-panel,#menu .panel{
+ background:linear-gradient(155deg,#241737fa,#100b21fb)!important;
+ border:1px solid #795bad!important;border-bottom:5px solid #422a77!important;
+ border-radius:8px!important;color:#f8f2ff!important;
+ box-shadow:inset 0 1px #ffffff18,0 24px 80px #000c!important}
+#paused .hero,#result .hero,#guide .hero{color:#faf6ff!important;letter-spacing:-.03em!important}
+#paused .desc,#result .desc,#guide .desc{color:#c1b7d3!important}
+#paused .eyebrow,#result .eyebrow,#guide .eyebrow{color:#bda1ff!important}
+#paused .arena-dialog-actions button,#result .arena-dialog-actions button,
+#guide .arena-guide-actions button{
+ background:linear-gradient(180deg,#30234b,#19112c)!important;
+ border:1px solid #7659a8!important;border-bottom:4px solid #452a75!important;
+ border-radius:6px!important;color:#f0e5ff!important;font-weight:900!important;
+ box-shadow:inset 0 1px #ffffff13,0 5px 12px #0007!important}
+#paused .arena-dialog-actions button.primary,#result .arena-dialog-actions button.primary,
+#guide .arena-guide-actions button.primary{
+ background:linear-gradient(180deg,#865cf4,#4d22c6)!important;
+ border:2px solid #bea6ff!important;border-bottom:5px solid #321479!important;
+ color:#fff!important;box-shadow:inset 0 1px #ffffff3b,0 5px 0 #180b3e!important}
+@media(hover:hover) and (pointer:fine){
+ #paused .arena-dialog-actions button:not(:disabled):hover,
+ #result .arena-dialog-actions button:not(:disabled):hover,
+ #guide .arena-guide-actions button:not(:disabled):hover{
+  background:linear-gradient(180deg,#57378b,#29183f)!important;
+  border-color:#d4baff!important;box-shadow:0 0 19px #9d6ef888,0 7px 14px #0009!important;
+  transform:translateY(-2px)!important}
+ #paused .arena-dialog-actions button.primary:not(:disabled):hover,
+ #result .arena-dialog-actions button.primary:not(:disabled):hover,
+ #guide .arena-guide-actions button.primary:not(:disabled):hover{
+  background:linear-gradient(180deg,#a480ff,#6335da)!important;border-color:#eadbff!important}
+}

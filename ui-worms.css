@@ -687,3 +687,42 @@ body.worm-death-replay #worm-hud{transition:opacity .85s ease}
  .ws-footer button{min-height:33px;padding:6px}
 }
 @media(prefers-reduced-motion:reduce){.ws-overlay *, .ws-overlay *::before,.ws-overlay *::after{transition:none!important;animation:none!important}}
+/* CLASSIC V15.3 UI / restored from the supplied legacy build.
+   Worm skins, arena food and HUD danger colors remain gameplay information. */
+.worm-shade{background:#050313d9!important;backdrop-filter:blur(9px)!important}
+.worm-shade .worm-panel{background:linear-gradient(155deg,#25193afa,#100c22fb)!important;
+ border:1px solid #7655ab!important;border-bottom:5px solid #412a75!important;border-radius:8px!important;
+ box-shadow:inset 0 1px #ffffff18,0 23px 85px #000b!important;color:#f8f3ff!important}
+.worm-shade .worm-eyebrow{color:#bd9eff!important}
+.worm-shade .worm-panel :is(h1,h2){color:#faf6ff!important;letter-spacing:-.03em!important}
+.worm-shade .worm-actions button,
+.worm-shade .worm-settings-panel button:not(.worm-skin-card){
+ background:linear-gradient(180deg,#30234a,#19112c)!important;
+ border:1px solid #7859aa!important;border-bottom:4px solid #442a74!important;
+ border-radius:6px!important;color:#ede3ff!important;
+ box-shadow:inset 0 1px #ffffff17,0 5px 12px #0006!important;font-weight:900!important}
+.worm-shade .worm-actions .primary{
+ background:linear-gradient(180deg,#815af3,#4d22c6)!important;border:2px solid #b8a1ff!important;
+ border-bottom:5px solid #301174!important;color:white!important;
+ box-shadow:inset 0 1px #ffffff31,0 5px 0 #18093b!important}
+.ws-dialog{background:linear-gradient(155deg,#221735,#110c23)!important;
+ border:1px solid #7b5bad!important;border-bottom:5px solid #412a71!important;border-radius:8px!important;
+ box-shadow:0 25px 90px #000c!important}
+.ws-header,.ws-footer{background:#151027!important;border-color:#503a78!important}
+.ws-section{border-color:#4c3873!important}
+.ws-preset{background:linear-gradient(155deg,#281e42,#171127)!important;
+ border:1px solid #68508c!important;border-bottom:3px solid #3c2a60!important;
+ border-radius:6px!important;color:#f0e6ff!important}
+.ws-preset.selected{background:linear-gradient(155deg,#503281,#25143f)!important;border-color:#c2a1ff!important}
+.ws-footer button{background:linear-gradient(180deg,#302048,#19112e)!important;
+ border:1px solid #7656a7!important;border-bottom:3px solid #43296f!important;
+ border-radius:6px!important;color:#f2e9ff!important}
+.ws-footer .ws-done{background:linear-gradient(180deg,#835af3,#4d22c6)!important;
+ border-color:#b69eff!important;border-bottom-color:#351478!important;color:white!important}
+@media(hover:hover) and (pointer:fine){
+ .worm-shade .worm-actions button:not(:disabled):hover,
+ .worm-shade .worm-settings-panel button:not(.worm-skin-card):not(:disabled):hover,
+ .ws-footer button:not(:disabled):hover,.ws-preset:not(:disabled):hover{
+  border-color:#d4bfff!important;box-shadow:0 0 19px #9970f788,0 6px 14px #0009!important;
+  filter:brightness(1.12)!important;transform:translateY(-2px)!important}
+}
