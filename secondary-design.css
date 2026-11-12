@@ -76,7 +76,7 @@ body.ui-v15 #modal #screen-achievements .br-ach-copy strong{
 body.ui-v15 #modal #screen-achievements .br-ach-copy small{
  margin-top:3px!important;font-size:clamp(10px,.72vw,13px)!important;
 }
-body.ui-v15 #modal #screen-achievements .br-ach-row>b{font-size:13px!important;text-align:right!important;}
+body.ui-v15 #modal #screen-achievements .br-ach-row>b{font-size:13px!important;text-align:right!important;min-width:0!important;max-width:100%!important;overflow-wrap:anywhere!important;white-space:normal!important;font-variant-numeric:tabular-nums;}
 body.ui-v15 #modal #screen-achievements .br-ach-prog{
  width:100%!important;height:5px!important;margin-top:7px!important;max-width:none!important;
 }
@@ -192,7 +192,7 @@ body.ui-v15 #modal .screen:not(#screen-menu) :is(button,input,select):focus-visi
 @media(max-width:420px){
  body.ui-v15 #modal #screen-achievements .br-ach-summary{gap:8px!important;padding-bottom:8px!important;}
  body.ui-v15 #modal #screen-achievements .br-ach-summary>.br-serial{display:none!important}
- body.ui-v15 #modal #screen-achievements .br-ach-row{grid-template-columns:30px minmax(0,1fr) 37px!important;min-height:85px!important;padding:9px!important;gap:8px!important;}
+ body.ui-v15 #modal #screen-achievements .br-ach-row{grid-template-columns:30px minmax(0,1fr) 68px!important;min-height:85px!important;padding:9px!important;gap:8px!important;}
  body.ui-v15 #modal #screen-settings .br-settings-layout{top:84px!important;bottom:85px!important;}
  body.ui-v15 #modal #screen-settings .br-tab{min-height:38px!important;}
  body.ui-v15 #modal #screen-settings .br-option{gap:8px!important;padding:10px 2px!important;}
@@ -223,7 +223,7 @@ body.ui-v15 #modal .screen:not(#screen-menu) :is(button,input,select):focus-visi
  overflow-y:auto!important;min-height:0!important;padding:0 7px 4px 0!important;
 }
 .infinity-mode-achievements-panel .infinity-mode-achievement{
- display:grid!important;grid-template-columns:36px minmax(0,1fr) 50px!important;
+ display:grid!important;grid-template-columns:36px minmax(0,1fr) 68px!important;
  gap:11px!important;align-items:center!important;
  min-height:89px!important;padding:10px 12px!important;border-radius:5px!important;
  border:1px solid #594576!important;border-left:3px solid var(--rarity)!important;
@@ -237,7 +237,7 @@ body.ui-v15 #modal .screen:not(#screen-menu) :is(button,input,select):focus-visi
 .infinity-mode-achievements-panel .infinity-mode-achievement-copy strong{font-size:clamp(12px,.95vw,15px)!important;}
 .infinity-mode-achievements-panel .infinity-mode-achievement-copy small{font-size:clamp(10px,.76vw,13px)!important;}
 .infinity-mode-achievements-panel .infinity-mode-achievement-track{width:100%!important;height:5px!important;}
-.infinity-mode-achievements-panel .infinity-mode-achievement>b{font-size:13px!important;}
+.infinity-mode-achievements-panel .infinity-mode-achievement>b{font-size:13px!important;min-width:0!important;overflow-wrap:anywhere!important;white-space:normal!important;text-align:right!important;font-variant-numeric:tabular-nums;}
 @media(max-width:780px){
  .infinity-mode-achievements-panel .infinity-mode-achievements-list{grid-template-columns:minmax(0,1fr)!important;}
 }

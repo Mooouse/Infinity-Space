@@ -244,9 +244,20 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.ok(res.width>0&&res.height>0,'Canvas must render');
     assert.ok(res.doc<=width+2,'Document must not overflow viewport');
     await page.locator('#worm-pause').click();
-    await page.locator('#worm-exit').click();
-    await page.waitForURL(/index\.html\?select=worms/,{timeout:9000});
-    await page.locator('#hub-mode-story').waitFor({state:'visible',timeout:20000});
+    // Observe the navigation before clicking: 2K rendering can let the click
+    // finish after the navigation starts.
+    try{
+     await Promise.all([
+      page.waitForURL(url=>url.pathname.endsWith('/index.html')&&
+       url.searchParams.get('select')==='worms',
+       {waitUntil:'domcontentloaded',timeout:30000}),
+      page.locator('#worm-exit').click({timeout:20000,noWaitAfter:true})
+     ]);
+    }catch(err){
+     throw Error('Worm exit failed to return to selected mode; URL='+page.url()+
+      '; cause='+String(err).slice(0,450));
+    }
+    await page.locator('#hub-mode-story').waitFor({state:'visible',timeout:30000});
     assert.equal(await page.locator('.hub-mode-dots button').count(),6);
     assert.match(await page.locator('.hub-mode-story-title').textContent(),/Космические черви/);
     assert.equal(await page.locator('.hub-mode-story-skins').isVisible(),true,'Main menu should expose worm skins');

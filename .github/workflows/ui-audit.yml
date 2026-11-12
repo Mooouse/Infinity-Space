@@ -49,7 +49,7 @@ jobs:
           timeout 50 node tests/renderer-startup-smoke.cjs
           timeout 300 node tests/menu-layout-audit.cjs
           timeout 150 node tests/mode-achievements-smoke.cjs
-          timeout 600 node tests/worms-browser-smoke.cjs
           timeout 500 node tests/full-ui-audit.cjs
+          timeout 600 node tests/worms-browser-smoke.cjs
           timeout 400 node tests/arena-ui-audit.cjs
           timeout 180 node tests/gameplay-navigation-audit.cjs
