@@ -24,3 +24,16 @@ body.ui-v15 #screen-menu .hub-mode-story-title{letter-spacing:-.035em;filter:dro
   box-shadow:0 0 18px #9558ef99,0 5px 14px #08020fd9!important;
  }
 }
+
+/* Interaction-only fix: keep carousel controls clickable when the optional
+   Worm Skin button expands the hero on 2K displays. No visual/menu restyle. */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-footer{
+ position:relative!important;z-index:24!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nav-controls,
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-dots{
+ position:relative!important;z-index:25!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-dots button{
+ position:relative!important;z-index:26!important;pointer-events:auto!important;
+}
