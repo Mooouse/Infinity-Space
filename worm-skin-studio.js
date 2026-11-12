@@ -3,6 +3,7 @@
 (function(){
 'use strict';
 const KEY='infinity-space-worms-settings-v2';
+const HEADS=['classic','blackhole','pulsar','comet','crystal','eclipse'];
 const COLORS=['#ff1744','#ff6633','#ffe500','#ffb200','#27ff40','#79ff27','#2860ff','#648bff','#9922ff','#d64aff','#ffffff','#15192e','#f7a8ff','#8a3bff'];
 const PRESETS=[
  ['nebula','Nebula','Туманность','Nebulosa',['#9922ff','#ff1744','#2860ff','#39006b']],
@@ -33,14 +34,14 @@ function load(){
  const skin=PRESETS.some(p=>p[0]===raw.skin)?raw.skin:'nebula';
  const backup=presetColors(skin);
  return {
-  ...raw,skin,
+  ...raw,skin,head:HEADS.includes(raw.head)?raw.head:'classic',
   customEnabled:raw.customEnabled===true,
   customSegments:Array.from({length:64},(_,i)=>normalize(raw.customSegments?.[i])||backup[i%backup.length])
  };
 }
 function save(obj){
  try{localStorage.setItem(KEY,JSON.stringify(obj))}catch(_){}
- window.dispatchEvent(new CustomEvent('infinity-worm-skin-changed',{detail:{skin:obj.skin,customEnabled:obj.customEnabled,customSegments:obj.customSegments.slice()}}));
+ window.dispatchEvent(new CustomEvent('infinity-worm-skin-changed',{detail:{skin:obj.skin,customEnabled:obj.customEnabled,customSegments:obj.customSegments.slice(),head:obj.head}}));
 }
 let active=null;
 function close(){
@@ -59,6 +60,7 @@ function open({onChange,onClose}={}){
  root.className='ws-overlay';root.setAttribute('role','dialog');root.setAttribute('aria-modal','true');root.setAttribute('aria-label',t.title);
  root.innerHTML='<section class="ws-dialog"><header class="ws-header"><div><span class="ws-eyebrow">INFINITY SPACE / COSMIC WORMS</span><h2 class="ws-title"></h2><p class="ws-desc"></p></div><button class="ws-x" type="button" aria-label=""></button></header>'+
  '<div class="ws-body"><h3 class="ws-presets-title"></h3><div class="ws-presets"></div>'+
+ '<div class="ws-section"><h3 class="ws-head-heading"></h3><div class="ws-head-options"></div></div>'+
  '<div class="ws-section"><div class="ws-part-head"><h3 class="ws-segments-title"></h3><span class="ws-indicator"></span></div><p class="ws-tip"></p><div class="ws-segments" role="group"></div></div>'+
  '<div class="ws-section"><h3 class="ws-palette-title"></h3><div class="ws-palette"></div><label class="ws-custom-label"><span class="ws-custom-title"></span><input type="color" class="ws-custom" value="#ff1744"></label></div>'+
  '</div><footer class="ws-footer"><button class="ws-reset" type="button"></button><button class="ws-stripes" type="button"></button><button class="ws-fill" type="button"></button><button class="ws-done" type="button"></button></footer></section>';
@@ -68,6 +70,10 @@ function open({onChange,onClose}={}){
  $('.ws-presets-title').textContent=t.templates;$('.ws-segments-title').textContent=t.segment;
  $('.ws-tip').textContent=t.tip;$('.ws-palette-title').textContent=t.palette;
  $('.ws-custom-title').textContent=t.custom;
+ $('.ws-head-heading').textContent=lang==='ru'?'Форма головы':lang==='es'?'Forma de cabeza':'Head shape';
+ const headLabels={classic:['Классическая','Classic','Clásica'],blackhole:['Чёрная дыра','Black Hole','Agujero negro'],pulsar:['Пульсар','Pulsar','Púlsar'],comet:['Комета','Comet','Cometa'],crystal:['Кристалл','Crystal','Cristal'],eclipse:['Затмение','Eclipse','Eclipse']};
+ for(const id of HEADS){const b=document.createElement('button');b.type='button';b.className='ws-head-choice';b.dataset.head=id;b.innerHTML='<span class="ws-head-symbol" aria-hidden="true"></span><span></span>';b.lastChild.textContent=headLabels[id][lang==='ru'?0:lang==='es'?2:1];b.onclick=()=>{data.head=id;persist();root.querySelectorAll('.ws-head-choice').forEach(x=>x.classList.toggle('selected',x.dataset.head===id))};$('.ws-head-options').append(b)}
+ root.querySelectorAll('.ws-head-choice').forEach(x=>x.classList.toggle('selected',x.dataset.head===data.head));
  $('.ws-reset').textContent=t.reset;$('.ws-stripes').textContent=t.stripes;
  $('.ws-fill').textContent=t.all;$('.ws-done').textContent=t.done;
  const persist=()=>{save(data);if(typeof onChange==='function')onChange(data)};
