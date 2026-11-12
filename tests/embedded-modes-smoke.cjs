@@ -21,7 +21,7 @@ const {chromium}=require('playwright');
   await page.locator('#hub-mode-story').waitFor({state:'visible',timeout:30000});
   assert.equal(await page.locator('.hub-mode-dots button').count(),6);
   assert.equal(await page.evaluate(()=>typeof window.SpaceOpenMode),'function','Embedded routing must be present in single HTML');
-  await page.locator('.hub-mode-dots button').nth(1).click();
+  await page.locator('.hub-mode-dots [data-mode="worms"]').click();
   await page.locator('.hub-mode-story-play').click();
   await page.waitForURL(/blob:.*#mode=worms/,{timeout:15000});
   await page.locator('#worm-field').waitFor({state:'visible',timeout:11000});
@@ -34,7 +34,7 @@ const {chromium}=require('playwright');
   await page.locator('#hub-mode-story').waitFor({state:'visible',timeout:20000});
   assert.match(await page.locator('.hub-mode-story-title').textContent(),/Cosmic Worms/);
   // Existing four modes must also launch without missing local HTML files.
-  await page.locator('.hub-mode-dots button').nth(2).click();
+  await page.locator('.hub-mode-dots [data-mode="arena"]').click();
   await page.locator('.hub-mode-story-play').click();
   await page.waitForURL(/blob:.*#mode=arena/,{timeout:15000});
   await page.locator('#hud:not([hidden])').waitFor({state:'visible',timeout:16000});
