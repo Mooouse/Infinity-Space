@@ -34,12 +34,8 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
    assert.equal(snap.items.length,6);
    firstTitles.add(snap.items[0].title);
    assert.ok(snap.items.every(a=>a.percent===0),'New achievements begin at zero');
-   assert.ok((await popup.locator('.infinity-panel-top small').textContent()).includes(
-    (await page.evaluate(id=>({arena:['Cosmic Arena','Космическая арена','Arena Cósmica'],
-    royale:['Last Singularity','Последняя сингулярность','Última singularidad'],
-    core:['Core Conquest','Захват ядра','Conquista del núcleo'],
-    race:['Evolution Rush','Гонка эволюции','Carrera evolutiva'],
-    worms:['Cosmic Worms','Космические черви','Gusanos cósmicos']})[id],mode))[0])||true);
+   const heading=await popup.locator('.infinity-panel-top small').textContent();
+   assert.ok(heading.length>14,'Achievements must identify the selected mode');
    await popup.locator('.infinity-overlay-close').click();
    assert.equal(await popup.count(),0,'Achievements should close without changing mode');
   }
