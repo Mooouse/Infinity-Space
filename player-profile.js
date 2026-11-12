@@ -278,18 +278,21 @@ function achievementStats(mode,stats){
 }
 function showModeAchievements(mode){
  const state=achievementStats(mode);
- if(!state)return null; // The original sandbox has its own evolution system.
+ if(!state)return null;
  document.querySelector('.infinity-mode-achievements-overlay')?.remove();
- const node=document.createElement('div');node.className='infinity-profile-overlay infinity-mode-achievements-overlay';
+ const node=document.createElement('div');
+ node.className='infinity-profile-overlay infinity-mode-achievements-overlay';
  node.setAttribute('role','dialog');node.setAttribute('aria-modal','true');
- const panel=document.createElement('section');panel.className='infinity-profile-panel infinity-mode-achievements-panel';
+ const panel=document.createElement('section');
+ panel.className='infinity-profile-panel infinity-mode-achievements-panel';
  const top=document.createElement('div');top.className='infinity-panel-top';
  const heading=document.createElement('div');
  const subtitle=document.createElement('small');
  subtitle.textContent='INFINITY SPACE / '+NAMES[language()][MODE_IDS.indexOf(mode)+1];
  const title=document.createElement('h2');title.textContent=localeTriple(['ACHIEVEMENTS','ДОСТИЖЕНИЯ','LOGROS']);
  heading.append(subtitle,title);
- const closeBtn=document.createElement('button');closeBtn.type='button';closeBtn.className='infinity-overlay-close';
+ const closeBtn=document.createElement('button');
+ closeBtn.type='button';closeBtn.className='infinity-overlay-close';
  closeBtn.setAttribute('aria-label',text('close'));closeBtn.textContent='×';
  top.append(heading,closeBtn);
  const summary=document.createElement('div');summary.className='infinity-mode-achievements-summary';
@@ -297,30 +300,59 @@ function showModeAchievements(mode){
  const explanation=document.createElement('span');
  explanation.textContent=localeTriple(['Unlocked in this mode','Открыто в этом режиме','Desbloqueados en este modo']);
  summary.append(total,explanation);
- const list=document.createElement('div');list.className='infinity-mode-achievements-list';
+ const filters=document.createElement('nav');filters.className='infinity-mode-achievements-filters br-ach-filters';
+ filters.setAttribute('aria-label',localeTriple(['Achievement rarity','Редкость достижений','Rareza de logros']));
+ const filterDefs=[
+  ['all',['ALL','ВСЕ','TODOS']],
+  ['common',['COMMON','ОБЫЧНЫЕ','COMUNES']],
+  ['uncommon',['UNCOMMON','НЕОБЫЧНЫЕ','POCO COMUNES']],
+  ['rare',['RARE','РЕДКИЕ','RAROS']],
+  ['epic',['EPIC','ЭПИЧЕСКИЕ','ÉPICOS']],
+  ['legendary',['LEGENDARY','ЛЕГЕНДАРНЫЕ','LEGENDARIOS']],
+  ['mythic',['MYTHIC','МИФИЧЕСКИЕ','MÍTICOS']]
+ ];
+ const list=document.createElement('div');list.className='infinity-mode-achievements-list br-ach-list';
+ const cards=[];
  for(const a of state.items){
-  const card=document.createElement('article');card.className='infinity-mode-achievement'+(a.unlocked?' unlocked':'');
+  const rarity=ACHIEVEMENT_RARITY.find(row=>row[1]===a.color)?.[0]||'common';
+  const card=document.createElement('article');
+  card.className='infinity-mode-achievement br-ach-row'+(a.unlocked?' unlocked':'');
+  card.dataset.rarity=rarity;
   card.style.setProperty('--rarity',a.color);
-  const insignia=document.createElement('span');insignia.className='infinity-mode-achievement-insignia';
-  insignia.textContent=a.unlocked?'✦':'✧';
-  const content=document.createElement('div');content.className='infinity-mode-achievement-copy';
+  const insignia=document.createElement('span');insignia.className='infinity-mode-achievement-insignia br-ach-symbol '+rarity;
+  insignia.textContent=a.unlocked?'✓':'✧';
+  const content=document.createElement('div');content.className='infinity-mode-achievement-copy br-ach-copy';
+  const label=document.createElement('span');label.className='br-ach-rarity '+rarity;
+  const rarityRow=filterDefs.find(row=>row[0]===rarity);
+  label.textContent=localeTriple(rarityRow?.[1]||filterDefs[1][1]);
   const name=document.createElement('strong');name.textContent=a.title;
   const description=document.createElement('small');description.textContent=a.hint;
-  const track=document.createElement('div');track.className='infinity-mode-achievement-track';
+  const track=document.createElement('div');track.className='infinity-mode-achievement-track br-ach-prog';
   track.setAttribute('role','progressbar');track.setAttribute('aria-label',a.title);
   track.setAttribute('aria-valuemin','0');track.setAttribute('aria-valuemax','100');
   track.setAttribute('aria-valuenow',String(Math.round(a.percent)));
   const fill=document.createElement('i');fill.style.width=a.percent+'%';track.append(fill);
-  content.append(name,description,track);
+  content.append(label,name,description,track);
   const percent=document.createElement('b');percent.textContent=Math.round(a.percent)+'%';
-  card.append(insignia,content,percent);list.append(card);
+  card.append(insignia,content,percent);
+  cards.push(card);list.append(card);
  }
- panel.append(top,summary,list);node.append(panel);document.body.append(node);
- const onKey=e=>{
-  if(e.key==='Escape'){
-   e.preventDefault();e.stopImmediatePropagation();close();
+ const setFilter=(filter)=>{
+  for(const card of cards)card.hidden=filter!=='all'&&card.dataset.rarity!==filter;
+  for(const button of filters.querySelectorAll('button')){
+   const selected=button.dataset.achFilter===filter;
+   button.classList.toggle('active',selected);
+   button.setAttribute('aria-pressed',String(selected));
   }
  };
+ for(const [key,label] of filterDefs){
+  const button=document.createElement('button');
+  button.type='button';button.className='br-filter'+(key==='all'?' active':'');
+  button.dataset.achFilter=key;button.textContent=localeTriple(label);
+  button.onclick=()=>setFilter(key);filters.append(button);
+ }
+ panel.append(top,summary,filters,list);node.append(panel);document.body.append(node);
+ const onKey=e=>{if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();close();}};
  const close=()=>{document.removeEventListener('keydown',onKey,true);node.remove();};
  document.addEventListener('keydown',onKey,true);
  closeBtn.addEventListener('click',close);
