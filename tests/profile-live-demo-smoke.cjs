@@ -58,10 +58,10 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   await nickname.fill('Comet Captain');
   await nickname.press('Enter');
   assert.equal(await page.evaluate(()=>window.InfinityProfile.getName()),'Comet Captain');
-  await page.locator('.hub-mode-dots button').nth(5).click();
+  await page.locator('.hub-mode-dots [data-mode="race"]').click();
   assert.equal(await page.locator('.hub-mode-nickname input').inputValue(),'Comet Captain');
   await page.reload({waitUntil:'domcontentloaded'});
-  await page.locator('.hub-mode-dots button').nth(2).click();
+  await page.locator('.hub-mode-dots [data-mode="arena"]').click();
   assert.equal(await page.locator('.hub-mode-nickname input').inputValue(),'Comet Captain');
   // End-to-end arena record: use the QA-only finish hook to avoid a long match.
   await page.goto(base+'/cosmic-arena.html?mode=arena&tester=1',{waitUntil:'domcontentloaded'});
@@ -74,7 +74,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   await page.locator('#result').waitFor({state:'visible',timeout:10000});
   await page.goto(base+'/index.html?tester=1',{waitUntil:'domcontentloaded'});
   // The statistics shortcut is intentionally scoped to competitive modes.
-  await page.locator('.hub-mode-dots button').nth(2).click();
+  await page.locator('.hub-mode-dots [data-mode="arena"]').click();
   await page.locator('.hub-story-shortcut[data-shortcut="statistics"]').waitFor({state:'visible',timeout:30000});
   await page.locator('.hub-story-shortcut[data-shortcut="statistics"]').click();
   await page.locator('.infinity-stats-panel').waitFor({state:'visible',timeout:15000});
