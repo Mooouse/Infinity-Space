@@ -105,6 +105,17 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     for(const role of ['afk','newcomer','casual','cautious','hunter','veteran','pro','reckless']){
      assert.ok(styles[role]>=2,'Missing realistic bot behavior: '+role);
     }
+    const roleProbe=await page.evaluate(()=>window.InfinityWormsQA.botReshuffleProbe());
+    assert.ok(roleProbe?.independent,
+      'A respawn must reshuffle role, skin, head and name instead of reusing the same AFK/color: '+JSON.stringify(roleProbe));
+    const uniqueRoster=await page.evaluate(()=>window.InfinityWormsQA.bots());
+    for(const role of ['afk','pro','casual','newcomer']){
+     const roleSkins=uniqueRoster.filter(b=>b.persona===role).map(b=>b.skin);
+     assert.ok(new Set(roleSkins).size>=2,
+       'The '+role+' archetype must not own one fixed worm color across the lobby');
+    }
+    assert.ok(new Set(uniqueRoster.map(b=>b.head)).size>=4,
+      'AI characters should use multiple cosmic head shapes');
     console.log('WORMS_QA_PHYSICS '+width+'x'+height);
     const botsBefore=await page.evaluate(()=>window.InfinityWormsQA.bots());
     await page.evaluate(()=>window.InfinityWormsQA.advancePhysics(.55));
@@ -164,12 +175,19 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.keyboard.up('Space');
     const corpse=await page.evaluate(()=>window.InfinityWormsQA.forceBotDeath());
     assert.ok(corpse&&corpse.dropped>=corpse.segments*2,'Food must drop all along a defeated worm body');
+    const pausePosition=await page.locator('#worm-pause').evaluate(el=>el.getBoundingClientRect().top);
+    assert.ok(pausePosition>height*.58,'Pause should be with bottom gameplay buttons instead of at the top');
     await page.locator('#worm-pause').click();
     assert.equal(await page.locator('#worm-pause-overlay').isVisible(),true);
     assert.equal(await page.locator('#worm-exit').textContent(),'ВЫХОД В МЕНЮ');
     await page.locator('#worm-skins-open').click();
     assert.equal(await page.locator('.ws-overlay').isVisible(),true,'Separate skin editor must open from pause');
     assert.equal(await page.locator('.ws-preset').count(),16);
+    assert.equal(await page.locator('.ws-preset-worm i').count(),0,
+      'Premade cosmic skins must be seamless silhouettes, not circles');
+    assert.ok(await page.locator('.ws-preset-worm').first().evaluate(el=>
+      getComputedStyle(el).backgroundImage.includes('linear-gradient')),
+      'Preset preview must show a continuous skin gradient');
     assert.equal(await page.locator('.ws-bead').count(),64,'All 64 segment colors can be customized');
     assert.equal(await page.locator('.ws-preview-canvas').isVisible(),true,'Live moving worm preview should be visible');
     await page.waitForFunction(()=>{const c=document.querySelector('.ws-preview-canvas');if(!c)return false;const p=c.getContext('2d').getImageData(700,80,80,70).data;return p.some((v,i)=>i%4!==3&&v>150)},null,{timeout:5000});
