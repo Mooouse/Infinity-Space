@@ -251,3 +251,99 @@ body.ui-v15 #screen-mode-achievements .infinity-overlay-close.br-head-back{
   min-width:72px!important;height:36px!important;padding:0 8px!important;font-size:10px!important;
  }
 }
+
+/* Standalone Cosmic Arena/Worms do not load ui-app.css. These base styles
+   keep the SAME statistics and achievement screen fully functional there. */
+.infinity-stats-overlay,.infinity-mode-achievements-overlay{
+ position:fixed!important;inset:0!important;z-index:25000!important;
+ box-sizing:border-box!important;overflow:hidden!important;
+}
+.infinity-stats-overlay .infinity-stats-panel{
+ box-sizing:border-box!important;color:#f3edff!important;
+ font-family:Inter,'Segoe UI',system-ui,sans-serif!important;
+}
+body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-head{
+ position:absolute;top:0;left:0;right:0;z-index:3;
+ display:flex;align-items:center;justify-content:space-between;
+ box-sizing:border-box;padding:clamp(16px,2.2vw,28px) clamp(15px,4vw,60px);
+ min-height:clamp(90px,12vh,125px);gap:clamp(9px,2vw,24px);
+ border-bottom:2px solid #59417e;
+}
+body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-head>div{
+ min-width:0;flex:1;
+}
+body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-head .br-serial{
+ color:#bca5ef;font-size:clamp(9px,.73vw,12px);font-weight:900;letter-spacing:.12em;
+}
+body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-head h2{
+ color:#f8f2ff;font-size:clamp(24px,3.2vw,45px);font-weight:950;
+ line-height:1.1;letter-spacing:-.04em;margin:5px 0 0;
+}
+body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-head-tag{
+ color:#bca8dd;font-size:clamp(9px,.7vw,11px);font-weight:850;
+ white-space:nowrap;
+}
+body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-ach-filters{
+ display:flex;gap:6px;flex-wrap:wrap;
+}
+body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-filter{
+ border:1px solid #76569c;border-bottom:3px solid #3c285c;border-radius:4px;
+ background:#1a112a;color:#d8c9f0;font:850 10px Inter,system-ui;
+ padding:9px 12px;cursor:pointer;
+}
+body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-filter.active{
+ color:#fff;border-color:#bc99fa;background:#37204f;
+}
+body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-ach-row{
+ --rarity-line:#694e8d;
+ color:#f5eeff;
+}
+body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-ach-rarity{
+ display:inline-flex;align-items:center;max-width:max-content;padding:4px 8px;
+ border:1px solid var(--rarity-line);border-radius:4px;
+ background:var(--rarity-soft,#b8c4d516);color:var(--rarity,#dbc6fa);
+ font:850 10px Inter,system-ui;letter-spacing:.045em;
+}
+body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-ach-copy{
+ display:flex;flex-direction:column;min-width:0;align-items:flex-start;
+}
+body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-ach-copy strong{
+ margin:6px 0 0;color:#f4eaff;font-weight:950;
+}
+body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-ach-copy small{
+ margin:3px 0;color:#b5a7c5;
+}
+body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-ach-prog{
+ align-self:stretch;min-height:5px;border-radius:3px;
+ overflow:hidden;background:#342849;
+}
+body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-ach-prog>i{
+ display:block;height:100%;background:var(--rarity,#a582fb);
+}
+body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-ach-row>b{
+ font-weight:900;color:var(--rarity,#a98cf7);
+}
+body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-ach-symbol{
+ display:grid;place-items:center;
+ border:1px solid var(--rarity-line);border-radius:5px;
+ background:var(--rarity-soft,#a985ed22);color:var(--rarity,#a985ed);
+ font-size:23px;font-weight:950;
+}
+body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-ach-summary strong{
+ color:#f2e8ff;font-size:clamp(12px,.85vw,15px);letter-spacing:.03em;
+}
+body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-ach-summary>p{
+ color:#a99cbf;font-size:12px;margin:0;
+}
+@media(max-width:690px){
+ body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-head{
+  min-height:86px;padding:11px 13px;
+ }
+ body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-head-tag{display:none;}
+ body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-ach-filters{
+  flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin;
+ }
+ body.ui-v15:not(:has(#modal)) #screen-mode-achievements .br-filter{
+  flex:0 0 auto;padding:7px 9px;
+ }
+}
