@@ -38,6 +38,18 @@ function rejectTurquoise(){
   assert.ok(palette.includes(color),'Missing vivid palette color '+color);
 }
 rejectTurquoise();
+// Boost is a continuous, whole-body treatment. Detached particles and
+// screen/head streaks must not creep back into the renderer.
+const wormSource=fs.readFileSync(path.resolve(__dirname,'../cosmic-worms.js'),'utf8');
+assert.ok(wormSource.includes('function drawBoostBody(w,t,r,path,overBody=false)'),
+ 'Boost must render on the worm body, not through detached effects');
+assert.ok(wormSource.includes('if(boosting)drawBoostBody(w,t,r,path);'),
+ 'Boost illumination must cover the full worm path before the skin');
+assert.ok(wormSource.includes('if(boosting)drawBoostBody(w,t,r,path,true);'),
+ 'The body must brighten end-to-end immediately, not propagate from the head');
+for(const absent of ['drawBoostWake(', 'game.fx.push(', 'Hyperdrive speed lines']){
+ assert.ok(!wormSource.includes(absent),'Unwanted flying boost streak or particle effect: '+absent);
+}
 const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
 (async()=>{
  const browser=await chromium.launch({headless:true,args:['--no-sandbox','--disable-dev-shm-usage','--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader-webgl']});
