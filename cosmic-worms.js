@@ -499,10 +499,6 @@ function kill(w,killer,reason){
     rand(2.8,6),size));
    dropped++;
   }
-  if(i%5===0&&game.fx.length<550){
-   game.fx.push({x:node.x,y:node.y,vx:rand(-110,110),vy:rand(-110,110),
-    t:rand(.4,.95),max:.95,c:w.color[0],r:rand(1.6,4.5)});
-  }
  }
  game.lastDeath={name:w.name,segments:body.length,dropped,head:{x:body[0].x,y:body[0].y},
   tip:{x:body[body.length-1].x,y:body[body.length-1].y}};
@@ -627,8 +623,6 @@ function collectFood(dt){
    const dx=w.x-f.x,dy=w.y-f.y,ds=dx*dx+dy*dy;
    if(ds<(radius+f.r+5)**2){
     w.mass+=f.value;w.foodEaten++;
-    if(w.human&&game.fx.length<320)
-     game.fx.push({x:f.x,y:f.y,vx:rand(-35,35),vy:rand(-60,-5),t:.32,max:.32,c:f.color,r:3});
     removeFood(f);
    }else if(w.human&&ds<53*53&&ds>5){
     const d=Math.sqrt(ds),speed=(53-d)*dt*5;
@@ -679,10 +673,6 @@ function simulate(dt){
  addBodyGrid();
  collectFood(dt);
  collisions();
- for(let i=game.fx.length-1;i>=0;i--){
-  const p=game.fx[i];p.t-=dt;if(p.t<=0){game.fx.splice(i,1);continue;}
-  p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=.97;p.vy*=.97;
- }
  recycleBots(dt);
  foodTimer+=dt;
  if(foodTimer>.18){
@@ -964,49 +954,38 @@ ctx.save();ctx.translate(w.x,w.y);ctx.rotate(w.angle);
  ctx.restore();
 }
 
-/* Observable hyperdrive wake: twin luminous jets, curved turbulence and
-   a real accelerating shock-ring. It is visible even with enhanced glow off. */
-function drawBoostWake(w,t,r){
+/* Acceleration is communicated only by the worm itself: the ENTIRE
+   continuous body illuminates on the first boosted frame. No detached
+   particles, side jets, shock rings or screen-space speed streaks. */
+function drawBoostBody(w,t,r,path,overBody=false){
  if(!w.boost||w.mass<=38)return;
- const head=w,front=w.segments[0]||w;
- const dx=Math.cos(w.angle),dy=Math.sin(w.angle);
- const nx=-dy,ny=dx,spin=t*16+(w.id||0)*.7;
- ctx.save();ctx.globalCompositeOperation='lighter';ctx.lineCap='round';
- const tailLen=r*(w.human?7.1:5.4);
- for(const side of [-1,1]){
-  const x=head.x+nx*r*.67*side-dx*r*.37;
-  const y=head.y+ny*r*.67*side-dy*r*.37;
-  const ex=x-dx*tailLen+nx*side*Math.sin(spin)*r*.38;
-  const ey=y-dy*tailLen+ny*side*Math.sin(spin)*r*.38;
-  const grad=ctx.createLinearGradient(x,y,ex,ey);
-  grad.addColorStop(0,'#fff3c8fa');
-  grad.addColorStop(.17,w.accent+'ee');
-  grad.addColorStop(.55,w.accent+'76');
-  grad.addColorStop(1,w.accent+'00');
-  ctx.strokeStyle=grad;ctx.lineWidth=r*.30;ctx.shadowColor=w.accent;ctx.shadowBlur=r*.65;
-  ctx.beginPath();ctx.moveTo(x,y);
-  ctx.quadraticCurveTo((x+ex)*.5+nx*side*r*.5,(y+ey)*.5+ny*side*r*.5,ex,ey);
-  ctx.stroke();
-  ctx.lineWidth=r*.10;ctx.strokeStyle='#fff6ee';
-  ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(ex,ey);ctx.stroke();
+ const pulse=.86+.14*Math.sin(t*11);
+ ctx.save();
+ ctx.globalCompositeOperation='lighter';
+ ctx.strokeStyle=w.accent;
+ if(!overBody){
+  // Broad aura behind the skin, visible all the way to the tail.
+  ctx.globalAlpha=.79*pulse;
+  ctx.lineWidth=r*2.72;
+  ctx.shadowColor=w.accent;
+  ctx.shadowBlur=options.glow?Math.min(28,r*.82):0;
+  ctx.stroke(path);
+  ctx.shadowBlur=0;
+  ctx.globalAlpha=.32*pulse;
+  ctx.strokeStyle='#fff8f0';
+  ctx.lineWidth=r*2.47;
+  ctx.stroke(path);
+ }else{
+  // A soft full-width light wash makes every bend react together while
+  // leaving the stars, comets and selected cosmic skin visible beneath it.
+  ctx.globalAlpha=.22*pulse;
+  ctx.lineWidth=r*1.72;
+  ctx.stroke(path);
+  ctx.globalAlpha=.10*pulse;
+  ctx.strokeStyle='#fff';
+  ctx.lineWidth=r*1.50;
+  ctx.stroke(path);
  }
- ctx.shadowBlur=0;
- const count=w.human?17:7;
- for(let j=0;j<count;j++){
-  const phase=j*2.399+spin*.34;
-  const reach=r*(1.3+(j%5)*.86+.35*Math.sin(t*15+j));
-  const lateral=Math.sin(phase)*r*(.8+j%4*.25);
-  const sx=head.x-dx*reach+nx*lateral;
-  const sy=head.y-dy*reach+ny*lateral;
-  const len=r*(.45+(j%4)*.23);
-  ctx.globalAlpha=.27+.41*(.5+.5*Math.sin(t*12+j));
-  ctx.strokeStyle=j%3===0?'#ffeeb3':w.accent;
-  ctx.lineWidth=j%4===0?2.5:1.2;
-  ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(sx-dx*len,sy-dy*len);ctx.stroke();
- }
- ctx.globalAlpha=.72;ctx.strokeStyle='#fff4cc';ctx.lineWidth=Math.max(1.2,r*.075);
- ctx.beginPath();ctx.ellipse(head.x,head.y,r*(1.6+.12*Math.sin(t*17)),r*(1.23+.08*Math.sin(t*18)),w.angle,0,Math.PI*2);
- ctx.stroke();
  ctx.restore();
 }
 
@@ -1023,7 +1002,8 @@ function drawWorm(w,t){
  const head=points[0],tail=points[points.length-1];
  ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
  ctx.globalAlpha=w.invulnerable>0?.78:1;
- drawBoostWake(w,t,r);
+ const boosting=w.boost&&w.mass>38;
+ if(boosting)drawBoostBody(w,t,r,path);
  // One continuous stroke replaces hundreds of separate opaque circles.
  // Rounded edges and soft shadows preserve smooth curves during tight turns.
  ctx.strokeStyle=w.color[1];
@@ -1051,12 +1031,7 @@ function drawWorm(w,t){
   // are no decorative circles, rings, plates, or artificial segment joins.
   drawCosmicInterior(w,t,r,true);
  }else if(z>.26)drawCosmicInterior(w,t,r,false);
- if(w.boost&&w.mass>38){
-  ctx.save();ctx.globalCompositeOperation='lighter';
-  ctx.shadowColor=w.accent;ctx.shadowBlur=options.glow?20:5;
-  ctx.lineWidth=Math.max(3,r*.27);ctx.strokeStyle=w.accent;ctx.globalAlpha=.68;
-  ctx.stroke(path);ctx.restore();
- }
+ if(boosting)drawBoostBody(w,t,r,path,true);
  drawSkinHead(w,r);
  if(options.names||w.human){
   ctx.globalAlpha=1;ctx.font='800 12px Inter,system-ui,sans-serif';
@@ -1127,23 +1102,7 @@ function paint(t){
  paintDeathGhost();
  const sorted=game.worms.filter(w=>w.alive).sort((a,b)=>a===p?1:b===p?-1:a.mass-b.mass);
  for(const w of sorted)drawWorm(w,t);
- for(const f of game.fx){ctx.globalAlpha=clamp(f.t/f.max,0,1);ctx.fillStyle=f.c;ctx.fillRect(f.x,f.y,f.r,f.r);}
  ctx.globalAlpha=1;ctx.restore();
- // Hyperdrive speed lines traverse the camera edge and visibly accelerate.
- if(p.boost&&p.mass>38){
-  ctx.save();ctx.globalCompositeOperation='lighter';
-  const cx=vw*.5,cy=vh*.5,rad=Math.min(vw,vh);
-  for(let j=0;j<22;j++){
-   const angle=j*2.399963+(t*.12),length=rad*(.12+(j%5)*.031);
-   const dist=rad*(.43+(j%7)*.042),ex=cx+Math.cos(angle)*dist,ey=cy+Math.sin(angle)*dist;
-   const sx=ex-Math.cos(angle)*length,sy=ey-Math.sin(angle)*length;
-   const grad=ctx.createLinearGradient(sx,sy,ex,ey);
-   grad.addColorStop(0,'#a177ff00');grad.addColorStop(.7,j%3===0?'#ffce7444':'#a67dff38');
-   grad.addColorStop(1,j%3===0?'#fff4d3a0':'#dfc5ffa8');
-   ctx.strokeStyle=grad;ctx.lineWidth=(j%5===0?2.4:1.2);ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ex,ey);ctx.stroke();
-  }
-  ctx.restore();
- }
  // Soft screen-space vignette leaves HUD labels legible over bright worms.
  const vignette=ctx.createRadialGradient(vw/2,vh/2,Math.min(vw,vh)*.3,
   vw/2,vh/2,Math.max(vw,vh)*.81);
