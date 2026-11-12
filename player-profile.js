@@ -346,6 +346,8 @@ function showModeAchievements(mode){
  // The exact V15.3 Achievements page structure is shared by all game modes.
  // Only the achievement DATA differs; the cards, filters, summary and heading
  // are identical to Endless Space's #screen-achievements.
+ const hadTheme=document.body.classList.contains('ui-v15');
+ if(!hadTheme)document.body.classList.add('ui-v15');
  const panel=document.createElement('section');
  panel.id='screen-mode-achievements';panel.className='screen active overlay-screen br-full';
  const tr=localeTriple;
@@ -433,7 +435,8 @@ function showModeAchievements(mode){
  }
  node.append(panel);document.body.append(node);
  const onKey=e=>{if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();close();}};
- const close=()=>{document.removeEventListener('keydown',onKey,true);node.remove();};
+ const close=()=>{document.removeEventListener('keydown',onKey,true);node.remove();
+  if(!hadTheme)document.body.classList.remove('ui-v15');};
  document.addEventListener('keydown',onKey,true);
  panel.querySelector('.infinity-overlay-close').addEventListener('click',close);
  node.addEventListener('pointerdown',e=>{if(e.target===node)close();});
