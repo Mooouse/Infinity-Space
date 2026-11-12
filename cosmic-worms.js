@@ -1152,9 +1152,8 @@ function paintDeathVignette(){
  ctx.fillStyle=shade;ctx.fillRect(0,0,vw,vh);
  ctx.restore();
 }
-function paint(t){
- ctx.setTransform(dpr,0,0,dpr,0,0);
- backdrop(t);
+// Shared smoothing for the live renderer and deterministic camera tests.
+function updateCamera(){
  const p=game.player;if(!p)return;
  const replay=game.state==='death-replay'||game.state==='finished';
  const targetZoom=clamp(((vw<700?.87:1.04)-Math.log(Math.max(1,p.mass)/60)*.115)/
@@ -1162,6 +1161,12 @@ function paint(t){
  camera.zoom+=(targetZoom-camera.zoom)*.045;
  const focus=replay&&game.deathPosition?game.deathPosition:p;
  camera.x+=(focus.x-camera.x)*.09;camera.y+=(focus.y-camera.y)*.09;
+}
+function paint(t){
+ ctx.setTransform(dpr,0,0,dpr,0,0);
+ backdrop(t);
+ if(!game.player)return;
+ updateCamera();
  ctx.save();ctx.translate(vw*.5,vh*.5);ctx.scale(camera.zoom,camera.zoom);ctx.translate(-camera.x,-camera.y);
  ctx.strokeStyle='#8555d492';ctx.lineWidth=6;ctx.shadowColor='#8a4eea';ctx.shadowBlur=19;
  ctx.beginPath();ctx.arc(WORLD.cx,WORLD.cy,WORLD.rx,0,TAU);ctx.stroke();
@@ -1425,6 +1430,12 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
    return {safe:minimum>=250,minimum,segments:w.segments.length};
   },
   desiredLength:()=>segmentCount(game.player),
+  // Use the SAME smoothing path as paint(), without depending on rAF/CI GPU.
+  advanceCamera:steps=>{
+   const count=Math.max(0,Math.min(150,Math.floor(Number(steps)||0)));
+   for(let i=0;i<count;i++)updateCamera();
+   return camera.zoom;
+  },
   orbitTrailProbe:()=>{
    const cx=1200,cy=1400,r=62,gap=11.8,count=28;
    const test={x:cx+r,y:cy,angle:Math.PI/2,

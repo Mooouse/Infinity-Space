@@ -148,12 +148,14 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.ok(await page.evaluate(()=>window.InfinityWormsQA.desiredLength())>190,'No fixed 190-segment growth limit');
     assert.equal(await page.evaluate(()=>window.InfinityWormsQA.headOnWinner({massA:500,massB:60})),'a');
     assert.equal(await page.evaluate(()=>window.InfinityWormsQA.headOnWinner({massA:60,massB:500})),'b');
-    await page.evaluate(()=>window.InfinityWormsQA.setMass(1000));
-    await page.waitForTimeout(700);
-    const large=await page.evaluate(()=>window.InfinityWormsQA.snapshot().zoom);
-    await page.evaluate(()=>window.InfinityWormsQA.setMass(60));
-    await page.waitForTimeout(700);
-    const small=await page.evaluate(()=>window.InfinityWormsQA.snapshot().zoom);
+    const large=await page.evaluate(()=>{
+     window.InfinityWormsQA.setMass(1000);
+     return window.InfinityWormsQA.advanceCamera(60);
+    });
+    const small=await page.evaluate(()=>{
+     window.InfinityWormsQA.setMass(60);
+     return window.InfinityWormsQA.advanceCamera(60);
+    });
     assert.ok(small>large,'Growing must zoom camera out');
     await page.evaluate(()=>window.InfinityWormsQA.freezeRealtime(false));
     await page.keyboard.down('Space');
