@@ -112,11 +112,10 @@ function open({onChange,onClose}={}){
    item.className='ws-preset'+(data.skin===p[0]&&!data.customEnabled?' selected':'');
    item.dataset.skin=p[0];
    item.setAttribute('aria-pressed',String(data.skin===p[0]&&!data.customEnabled));
-   const beads=document.createElement('span');beads.className='ws-preset-beads ws-preset-worm';
-   for(let bi=0;bi<12;bi++){
-    const color=p[4][bi%p[4].length];
-    const bead=document.createElement('i');bead.style.background=color;bead.style.setProperty('--bead-i',String((bi%7)-3));beads.append(bead);
-   }
+   const beads=document.createElement('span');
+   beads.className='ws-preset-beads ws-preset-worm';
+   beads.style.setProperty('--worm-skin-gradient','linear-gradient(90deg,'+
+    [p[4][3],p[4][0],p[4][2],p[4][1]].join(',')+')');
    const label=document.createElement('span');label.textContent=p[lang==='ru'?2:lang==='es'?3:1];
    item.append(beads,label);
    item.onclick=()=>{
