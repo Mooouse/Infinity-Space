@@ -182,7 +182,7 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top>.hub-story-quick{
  body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-story-shortcut[data-shortcut],
  body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-profile-chip{
   flex:1 1 0!important;box-sizing:border-box!important;
-  width:0!important;max-width:none!important;min-width:0!important;
+  width:0!important;max-width:170px!important;min-width:0!important;
   height:64px!important;min-height:64px!important;
   padding:7px 3px!important;gap:3px!important;
   display:flex!important;flex-direction:column!important;
