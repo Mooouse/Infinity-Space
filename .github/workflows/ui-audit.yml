@@ -27,6 +27,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: ui-audit-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   ui-audit:
     runs-on: ubuntu-latest
