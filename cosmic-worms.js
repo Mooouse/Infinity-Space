@@ -1034,8 +1034,11 @@ function drawWorm(w,t){
  const gradient=ctx.createLinearGradient(tail.x,tail.y,head.x+0.1,head.y+0.1);
  if(custom){
   const colors=options.customSegments;
-  const stops=Math.min(colors.length,16);
-  for(let i=0;i<stops;i++)gradient.addColorStop(i/(stops-1),colors[Math.floor(i*(colors.length-1)/(stops-1))]);
+  const stops=Math.max(2,Math.min(colors.length,16));
+  for(let i=0;i<stops;i++){
+   const index=Math.floor(i*(colors.length-1)/(stops-1));
+   gradient.addColorStop(i/(stops-1),colors[index]||w.color[0]);
+  }
  }else{
   gradient.addColorStop(0,w.color[1]);
   gradient.addColorStop(.44,theme[0]);
