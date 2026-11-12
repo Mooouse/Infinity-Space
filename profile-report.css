@@ -1,0 +1,230 @@
+/* Infiniti Space — one native achievements page, one readable statistics report.
+   Shared achievement selectors originate from ui-app.css and secondary-design.css.
+   No extra solid cards, miscellaneous popups or nickname editor in Statistics. */
+body.ui-v15 .infinity-mode-achievements-overlay{
+ padding:0!important;display:block!important;overflow:hidden!important;
+ background:#0a0618!important;backdrop-filter:none!important;
+}
+body.ui-v15 #screen-mode-achievements{
+ display:block!important;position:relative!important;inset:auto!important;
+ width:100vw!important;height:100dvh!important;max-width:none!important;
+ margin:0!important;box-sizing:border-box!important;
+ background:linear-gradient(130deg,#0d081b,#080613 75%)!important;
+ overflow:hidden!important;color:#f3ecff!important;
+}
+body.ui-v15 #screen-mode-achievements .br-head{
+ width:100%!important;box-sizing:border-box!important;
+}
+body.ui-v15 #screen-mode-achievements .br-head-back{
+ cursor:pointer!important;
+}
+body.ui-v15 #screen-mode-achievements .br-ach-layout,
+body.ui-v15 #screen-mode-achievements .br-ach-content,
+body.ui-v15 #screen-mode-achievements .br-ach-list{
+ min-width:0!important;box-sizing:border-box!important;
+}
+body.ui-v15 #screen-mode-achievements .br-ach-row[hidden]{display:none!important;}
+body.ui-v15 #screen-mode-achievements .br-ach-row{
+ --rarity:#b8c4d5;--rarity-line:#697a9b;--rarity-soft:#b8c4d51a;
+}
+body.ui-v15 #screen-mode-achievements .br-ach-row[data-rarity="uncommon"]{--rarity:#72eeb0;--rarity-line:#37996d;--rarity-soft:#72eeb020;}
+body.ui-v15 #screen-mode-achievements .br-ach-row[data-rarity="rare"]{--rarity:#70cfff;--rarity-line:#3089c1;--rarity-soft:#70cfff20;}
+body.ui-v15 #screen-mode-achievements .br-ach-row[data-rarity="epic"]{--rarity:#c999ff;--rarity-line:#9961de;--rarity-soft:#c999ff24;}
+body.ui-v15 #screen-mode-achievements .br-ach-row[data-rarity="legendary"]{--rarity:#ffd281;--rarity-line:#ca8d30;--rarity-soft:#ffd28124;}
+body.ui-v15 #screen-mode-achievements .br-ach-row[data-rarity="mythic"]{--rarity:#ff8bc7;--rarity-line:#d44892;--rarity-soft:#ff8bc724;}
+/* Statistics is a single reading surface rather than a wall of equal cards. */
+.infinity-stats-overlay{
+ padding:0!important;background:#080514f8!important;
+ backdrop-filter:none!important;overflow:hidden!important;
+}
+.infinity-stats-overlay .infinity-stats-panel{
+ display:flex!important;flex-direction:column!important;gap:0!important;
+ width:100vw!important;max-width:none!important;height:100dvh!important;
+ max-height:100dvh!important;min-height:0!important;
+ padding:clamp(16px,3vw,45px) clamp(16px,5vw,80px)!important;
+ border:0!important;border-radius:0!important;box-shadow:none!important;
+ background:radial-gradient(ellipse at 50% -30%,#26153e8c,transparent 70%),#0a0718!important;
+ overflow:hidden!important;
+}
+.infinity-stats-overlay .infinity-stats-heading{
+ display:flex!important;align-items:center!important;justify-content:flex-start!important;
+ gap:clamp(13px,2.4vw,27px)!important;margin:0!important;
+ padding:0 0 clamp(12px,2vh,22px)!important;border-bottom:2px solid #65458b!important;
+ flex:0 0 auto!important;
+}
+.infinity-stats-overlay .infinity-stats-heading .infinity-overlay-close{
+ order:0!important;flex:0 0 auto!important;
+ min-width:92px!important;width:auto!important;height:43px!important;padding:0 13px!important;
+ border:2px solid #735296!important;border-bottom:4px solid #432963!important;
+ border-radius:5px!important;background:#20142f!important;
+ color:#f4eaff!important;font:900 12px Inter,system-ui!important;letter-spacing:.045em!important;
+ cursor:pointer;
+}
+.infinity-stats-overlay .infinity-stats-heading h2{
+ font:950 clamp(24px,2.9vw,42px)/1.05 Inter,system-ui!important;
+ margin:5px 0 0!important;letter-spacing:-.045em!important;
+}
+.infinity-stats-overlay .infinity-stats-heading small{
+ font-size:clamp(9px,.7vw,11px)!important;letter-spacing:.12em!important;color:#c2a6e5!important;
+}
+.infinity-stats-overlay .infinity-stats-identity{
+ display:flex;align-items:center;gap:10px;flex:0 0 auto;
+ width:min(1160px,100%);align-self:center;min-height:53px;
+ border-bottom:1px solid #392b50;color:#d1c4e4;
+}
+.infinity-stats-identity>span{font-size:19px;color:#ae87ff;}
+.infinity-stats-identity>small{font-size:10px;letter-spacing:.09em;font-weight:850;color:#a89abc;}
+.infinity-stats-identity>.infinity-stats-player-name{
+ font-size:14px!important;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
+ color:#f8f2ff!important;letter-spacing:.02em;
+}
+.infinity-stats-overlay .infinity-stats-tabs{
+ display:flex!important;align-items:center!important;gap:5px!important;
+ flex:0 0 auto!important;align-self:center;width:min(1160px,100%);
+ min-height:0!important;margin:0!important;padding:13px 0 11px!important;
+ overflow-x:auto;scrollbar-width:thin;scrollbar-color:#7651aa transparent;
+}
+.infinity-stats-overlay .infinity-stats-tabs>button{
+ min-height:39px!important;padding:9px clamp(9px,1.1vw,15px)!important;
+ flex:0 0 auto;background:transparent!important;
+ color:#bfadd7!important;border:1px solid transparent!important;
+ border-bottom:3px solid transparent!important;border-radius:4px!important;
+ box-shadow:none!important;font-weight:800!important;font-size:clamp(10px,.75vw,13px)!important;
+ white-space:nowrap;cursor:pointer;
+}
+.infinity-stats-overlay .infinity-stats-tabs>button.active{
+ color:#f9f4ff!important;background:#33204b72!important;
+ border:1px solid #71539c!important;border-bottom:3px solid #a47ae6!important;
+}
+@media(hover:hover) and (pointer:fine){
+ .infinity-stats-overlay .infinity-stats-tabs>button:hover,
+ .infinity-stats-overlay .infinity-stats-heading .infinity-overlay-close:hover{
+  border-color:#cba8ff!important;box-shadow:0 0 17px #9d66ed7c!important;
+  color:#fff!important;
+ }
+}
+.infinity-stats-overlay .infinity-stats-content{
+ flex:1 1 auto!important;min-height:0!important;
+ width:min(1160px,100%);align-self:center;
+ display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;
+ scrollbar-width:thin;scrollbar-color:#67488e transparent;
+ padding:0 7px 22px 0;box-sizing:border-box;
+}
+.infinity-stats-overlay .infinity-stats-context{
+ font-size:11px;font-weight:900;letter-spacing:.13em;
+ color:#bda0e5;padding:13px 0 12px;text-transform:uppercase;
+}
+.infinity-stats-overlay .infinity-stats-hero{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+ border-top:1px solid #604489;border-bottom:1px solid #604489;
+ background:linear-gradient(90deg,#24153655,transparent);
+ margin:0 0 22px;flex:0 0 auto;
+}
+.infinity-stats-overlay .infinity-stats-highlight{
+ display:flex;flex-direction:column;justify-content:center;
+ min-width:0;min-height:115px;gap:12px;padding:18px clamp(12px,2vw,25px);
+ border-right:1px solid #473362;box-shadow:none!important;background:transparent!important;
+}
+.infinity-stats-overlay .infinity-stats-highlight:last-child{border-right:0;}
+.infinity-stats-overlay .infinity-stats-highlight small{
+ font-size:clamp(10px,.75vw,13px);font-weight:800;color:#b3a0ce;
+}
+.infinity-stats-overlay .infinity-stats-highlight strong{
+ font-size:clamp(22px,2.5vw,38px);font-weight:950;color:#f0e3ff;
+ line-height:1.1;letter-spacing:-.045em;overflow-wrap:anywhere;
+ font-variant-numeric:tabular-nums;
+}
+.infinity-stats-overlay .infinity-stats-highlight:first-child strong{color:#bf99ff;}
+.infinity-stats-overlay .infinity-stats-detail{
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ align-content:start!important;gap:clamp(17px,2.8vw,35px)!important;
+ min-height:0!important;overflow:visible!important;padding:0!important;
+}
+.infinity-stats-overlay .infinity-stats-section{min-width:0;}
+.infinity-stats-overlay .infinity-stats-section h3{
+ margin:0 0 8px;padding:0 0 11px;border-bottom:2px solid #644787;
+ font-size:12px;letter-spacing:.075em;font-weight:950;color:#c9b1f0;
+}
+.infinity-stats-overlay .infinity-stats-rows{display:flex;flex-direction:column;min-width:0;}
+.infinity-stats-overlay .infinity-stats-row{
+ display:flex;gap:16px;align-items:center;justify-content:space-between;
+ padding:12px 2px;border-bottom:1px solid #30243f;min-width:0;
+}
+.infinity-stats-overlay .infinity-stats-row>span{
+ min-width:0;font-size:clamp(11px,.8vw,14px);color:#b8acc8;line-height:1.4;
+}
+.infinity-stats-overlay .infinity-stats-row>strong{
+ flex:0 0 auto;text-align:right;color:#f1e8ff;font-weight:900;
+ font-size:clamp(13px,1vw,18px);font-variant-numeric:tabular-nums;
+ max-width:52%;overflow-wrap:anywhere;
+}
+/* Main-menu header stays uncluttered: rewards, roulette and profile are
+   exactly the same live controls, physically moved into the bottom dock. */
+body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top>.hub-story-quick{
+ display:none!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
+ grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ width:min(775px,100%)!important;max-width:100%!important;
+ gap:clamp(4px,.6vw,8px) clamp(5px,.8vw,10px)!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-story-shortcut[data-shortcut]{
+ box-sizing:border-box!important;min-width:0!important;max-width:none!important;
+ border-bottom-width:3px!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-profile-chip{
+ display:flex!important;justify-content:center!important;align-items:center!important;
+ padding:7px 10px!important;width:100%!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-profile-chip[hidden],
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-story-shortcut[hidden]{display:none!important;}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-profile-chip .hub-story-shortcut-label{
+ max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-story-reward{
+ border-color:#72529e!important;border-bottom-color:#392358!important;
+ background:linear-gradient(160deg,#271937,#18102a)!important;
+}
+body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-story-reward:hover{
+ border-color:#c8a6ff!important;box-shadow:0 0 18px #9b64ef85!important;
+}
+@media(max-width:800px){
+ .infinity-stats-overlay .infinity-stats-panel{padding:13px 15px!important;}
+ .infinity-stats-overlay .infinity-stats-hero{margin-bottom:13px;}
+ .infinity-stats-overlay .infinity-stats-highlight{min-height:88px;padding:11px 9px;gap:7px;}
+ .infinity-stats-overlay .infinity-stats-detail{grid-template-columns:minmax(0,1fr)!important;gap:16px!important;}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  width:min(500px,100%)!important;gap:5px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-story-shortcut[data-shortcut]{
+  min-height:37px!important;padding:5px 3px!important;
+ }
+}
+@media(max-width:420px){
+ .infinity-stats-overlay .infinity-stats-panel{padding:11px!important;}
+ .infinity-stats-overlay .infinity-stats-heading{padding-bottom:9px!important;gap:9px!important;}
+ .infinity-stats-overlay .infinity-stats-heading .infinity-overlay-close{
+  min-width:70px!important;height:37px!important;font-size:10px!important;padding:0 8px!important;
+ }
+ .infinity-stats-overlay .infinity-stats-heading h2{font-size:26px!important;}
+ .infinity-stats-overlay .infinity-stats-identity{min-height:40px;}
+ .infinity-stats-overlay .infinity-stats-tabs{padding:8px 0!important;}
+ .infinity-stats-overlay .infinity-stats-hero{grid-template-columns:repeat(3,minmax(0,1fr));}
+ .infinity-stats-overlay .infinity-stats-highlight small{font-size:9px;}
+ .infinity-stats-overlay .infinity-stats-highlight strong{font-size:clamp(15px,4.1vw,22px);}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-story-shortcut[data-shortcut]{
+  min-height:35px!important;height:36px!important;padding:3px 2px!important;gap:1px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut-label{
+  font-size:clamp(8px,2.3vw,10px)!important;
+ }
+}
+@media(max-width:420px) and (max-height:650px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
+  padding-top:3px!important;margin-top:0!important;gap:3px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-story-shortcut[data-shortcut]{
+  height:32px!important;min-height:32px!important;
+ }
+}

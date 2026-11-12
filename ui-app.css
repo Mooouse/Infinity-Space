@@ -870,7 +870,7 @@ button:focus-visible{outline:2px solid #cbbaff;outline-offset:3px}
 #screen-music .music-control-play .media-icon{width:29px;height:29px}
 #screen-music .music-glyph,#screen-music #music-play-glyph{display:grid;place-items:center;line-height:1;min-width:0;min-height:0}
 /* Shared visual language for system cards, lists, buttons. */
-#screen-achievements .br-ach-row,#screen-bestiary .br-best-row,#screen-upgrades .br-up-row,#screen-evolution .evo-panel{border-radius:8px}
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-row,#screen-bestiary .br-best-row,#screen-upgrades .br-up-row,#screen-evolution .evo-panel{border-radius:8px}
 #screen-settings .br-tab{border-radius:8px}
 #screen-settings .game-select-trigger,#screen-settings .game-select-pop{border-radius:8px}
 /* Avoid colliding menu footer on short laptop displays. */
@@ -1026,7 +1026,7 @@ button,select,input{accent-color:#6840DD}
 #screen-bestiary .br-best-detail,
 #screen-evolution .evo-panel,
 #screen-statistics .br-stat-grid>div,
-#screen-achievements .br-ach-row,
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-row,
 #screen-music .music-track-card,
 #screen-music .music-player,
 #screen-map .atlas-pin-menu{
@@ -1041,7 +1041,7 @@ button,select,input{accent-color:#6840DD}
 #screen-upgrades .up-qty-preset,
 #screen-upgrades .purchase,
 #screen-upgrades .up-custom-quantity,
-#screen-achievements .br-filter,
+:is(#screen-achievements,#screen-mode-achievements) .br-filter,
 #screen-map .map-layer-option,
 #screen-map .map-pin-action,
 #screen-music .music-track-actions button,
@@ -1055,8 +1055,8 @@ button,select,input{accent-color:#6840DD}
 }
 #screen-settings .br-tab,
 #screen-bestiary .br-best-row,
-#screen-achievements .br-ach-row,
-#screen-achievements .br-filter,
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-row,
+:is(#screen-achievements,#screen-mode-achievements) .br-filter,
 #screen-music .music-control,
 #screen-music .music-track-preview{
   background:linear-gradient(180deg,#261A42,#151026)!important;
@@ -1065,7 +1065,7 @@ button,select,input{accent-color:#6840DD}
 }
 #screen-bestiary .br-best-row.selected,
 #screen-settings .br-tab.active,
-#screen-achievements .br-filter.active,
+:is(#screen-achievements,#screen-mode-achievements) .br-filter.active,
 #screen-music .music-track-card.selected{
   background:linear-gradient(180deg,#3A236E,#211440)!important;
   border-color:#9873FC!important;
@@ -1542,23 +1542,23 @@ button,select,input{accent-color:#6840DD}
 #screen-map #pin-colors button{border-radius:5px!important}
 #screen-map #pin-menu-close{color:#d6caff}
 /* Achievements: remove the old turquoise notes, borders and card fills. */
-#screen-achievements .br-ach-layout{grid-template-columns:minmax(250px,28%) minmax(0,1fr);gap:28px}
-#screen-achievements .br-ach-summary{border-right:1px solid #654895!important;padding-right:26px}
-#screen-achievements .br-ach-big{color:#a987ff!important;margin:25px 0 20px}
-#screen-achievements .br-ach-big span{color:#7862ab!important}
-#screen-achievements .br-ach-summary p{color:#ada4c4!important}
-#screen-achievements .br-ach-note{background:linear-gradient(140deg,#261942,#170f2d)!important;border:1px solid #7855b0!important;border-left:5px solid #946cfb!important;border-bottom:3px solid #452477!important;color:#d1c3f0!important;border-radius:7px!important}
-#screen-achievements .br-filter{color:#c6b6e9!important;font-size:10px}
-#screen-achievements .br-filter.active{color:white!important}
-#screen-achievements .br-ach-row{background:linear-gradient(140deg,#201732,#130f25)!important;border:1px solid #4b3874!important;border-left:3px solid #7551ba!important;border-bottom:3px solid #382660!important;border-radius:7px!important}
-#screen-achievements .br-ach-row:hover{background:linear-gradient(140deg,#2a1a48,#17112f)!important;border-color:#865ecb!important}
-#screen-achievements .br-ach-symbol{background:#2a1e48!important;border-color:#70559e!important;border-radius:6px}
-#screen-achievements .br-ach-rarity{color:#bca5f4}
-#screen-achievements .br-ach-copy strong{color:#f4edff!important}
-#screen-achievements .br-ach-copy small{color:#aca2bf!important}
-#screen-achievements .br-ach-prog{background:#33284c!important;border-radius:3px}
-#screen-achievements .br-ach-prog i{background:linear-gradient(90deg,#6236d3,#ac89ff)!important}
-#screen-achievements .br-ach-row>b{color:#d8caff!important}
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-layout{grid-template-columns:minmax(250px,28%) minmax(0,1fr);gap:28px}
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-summary{border-right:1px solid #654895!important;padding-right:26px}
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-big{color:#a987ff!important;margin:25px 0 20px}
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-big span{color:#7862ab!important}
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-summary p{color:#ada4c4!important}
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-note{background:linear-gradient(140deg,#261942,#170f2d)!important;border:1px solid #7855b0!important;border-left:5px solid #946cfb!important;border-bottom:3px solid #452477!important;color:#d1c3f0!important;border-radius:7px!important}
+:is(#screen-achievements,#screen-mode-achievements) .br-filter{color:#c6b6e9!important;font-size:10px}
+:is(#screen-achievements,#screen-mode-achievements) .br-filter.active{color:white!important}
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-row{background:linear-gradient(140deg,#201732,#130f25)!important;border:1px solid #4b3874!important;border-left:3px solid #7551ba!important;border-bottom:3px solid #382660!important;border-radius:7px!important}
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-row:hover{background:linear-gradient(140deg,#2a1a48,#17112f)!important;border-color:#865ecb!important}
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-symbol{background:#2a1e48!important;border-color:#70559e!important;border-radius:6px}
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-rarity{color:#bca5f4}
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-copy strong{color:#f4edff!important}
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-copy small{color:#aca2bf!important}
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-prog{background:#33284c!important;border-radius:3px}
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-prog i{background:linear-gradient(90deg,#6236d3,#ac89ff)!important}
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-row>b{color:#d8caff!important}
 /* Bestiary, statistics, tutorial, settings and upgrades share the same dark plum surfaces. */
 #screen-bestiary .br-best-row{background:linear-gradient(130deg,#201632,#151027)!important;border:1px solid #57417e!important;border-bottom:3px solid #352457!important;border-radius:7px!important;color:#eaddff}
 #screen-bestiary .br-best-row:hover{background:#2c1e4c!important;border-color:#9b79eb!important}
@@ -1604,7 +1604,7 @@ button,select,input{accent-color:#6840DD}
 @media(max-width:1100px){
  #screen-evolution .evolution-content{width:90vw!important;grid-template-columns:minmax(0,1fr) minmax(300px,.95fr)!important;gap:28px!important}
  #screen-evolution .display-heading{font-size:clamp(44px,5vw,64px)}
- #screen-achievements .br-ach-layout{gap:20px;grid-template-columns:minmax(210px,28%) minmax(0,1fr)}
+ :is(#screen-achievements,#screen-mode-achievements) .br-ach-layout{gap:20px;grid-template-columns:minmax(210px,28%) minmax(0,1fr)}
  #screen-map .map-corner.left{width:292px}
 }
 @media(max-width:800px){
@@ -1627,14 +1627,14 @@ button,select,input{accent-color:#6840DD}
  #screen-map .map-footer{height:auto!important;min-height:60px!important;align-items:center!important;flex-wrap:wrap!important;gap:8px!important;padding:10px 12px!important}
  #screen-map .legend{gap:7px!important;flex-wrap:wrap}
  #screen-map .legend span{font-size:8px}
- #screen-achievements .br-ach-layout{display:flex!important;flex-direction:column!important;gap:12px!important;top:100px!important;bottom:18px!important;left:4%!important;right:4%!important}
- #screen-achievements .br-ach-summary{border-right:0!important;border-bottom:1px solid #654895!important;padding:0 0 10px!important;flex:none}
- #screen-achievements .br-ach-big{font-size:42px;margin:5px 0!important}
- #screen-achievements .br-ach-summary p{display:none}
- #screen-achievements .br-ach-note{display:none}
- #screen-achievements .br-ach-content{flex:1!important;min-height:0!important}
- #screen-achievements .br-filter{font-size:9px!important;padding:7px!important}
- #screen-achievements .br-ach-row{min-height:80px;padding:9px!important}
+ :is(#screen-achievements,#screen-mode-achievements) .br-ach-layout{display:flex!important;flex-direction:column!important;gap:12px!important;top:100px!important;bottom:18px!important;left:4%!important;right:4%!important}
+ :is(#screen-achievements,#screen-mode-achievements) .br-ach-summary{border-right:0!important;border-bottom:1px solid #654895!important;padding:0 0 10px!important;flex:none}
+ :is(#screen-achievements,#screen-mode-achievements) .br-ach-big{font-size:42px;margin:5px 0!important}
+ :is(#screen-achievements,#screen-mode-achievements) .br-ach-summary p{display:none}
+ :is(#screen-achievements,#screen-mode-achievements) .br-ach-note{display:none}
+ :is(#screen-achievements,#screen-mode-achievements) .br-ach-content{flex:1!important;min-height:0!important}
+ :is(#screen-achievements,#screen-mode-achievements) .br-filter{font-size:9px!important;padding:7px!important}
+ :is(#screen-achievements,#screen-mode-achievements) .br-ach-row{min-height:80px;padding:9px!important}
  #screen-tutorial .br-tutorial{top:110px!important;bottom:115px!important;overflow-y:auto!important;display:flex!important;flex-direction:column!important;gap:10px!important}
  #screen-tutorial .br-tutorial article{flex:none!important;padding:16px!important}
  #screen-tutorial .br-tutorial article>b{font-size:34px!important}
@@ -1644,23 +1644,23 @@ button,select,input{accent-color:#6840DD}
 
 
 /* V15 / rarity identity restored after shared purple skin. */
-#screen-achievements .br-ach-row[data-rarity="common"]    { --rarity:#b8c4d5; --rarity-soft:rgba(164,179,202,.12); --rarity-line:#697a9b; }
-#screen-achievements .br-ach-row[data-rarity="uncommon"]  { --rarity:#72eeb0; --rarity-soft:rgba(57,160,109,.13); --rarity-line:#37996d; }
-#screen-achievements .br-ach-row[data-rarity="rare"]      { --rarity:#70cfff; --rarity-soft:rgba(59,151,218,.14); --rarity-line:#3089c1; }
-#screen-achievements .br-ach-row[data-rarity="epic"]      { --rarity:#c999ff; --rarity-soft:rgba(147,79,225,.15); --rarity-line:#9961de; }
-#screen-achievements .br-ach-row[data-rarity="legendary"] { --rarity:#ffd281; --rarity-soft:rgba(213,152,45,.15); --rarity-line:#ca8d30; }
-#screen-achievements .br-ach-row[data-rarity="mythic"]    { --rarity:#ff8bc7; --rarity-soft:rgba(212,63,136,.15); --rarity-line:#d44892; }
-#screen-achievements .br-ach-row[data-rarity] {
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-row[data-rarity="common"]    { --rarity:#b8c4d5; --rarity-soft:rgba(164,179,202,.12); --rarity-line:#697a9b; }
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-row[data-rarity="uncommon"]  { --rarity:#72eeb0; --rarity-soft:rgba(57,160,109,.13); --rarity-line:#37996d; }
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-row[data-rarity="rare"]      { --rarity:#70cfff; --rarity-soft:rgba(59,151,218,.14); --rarity-line:#3089c1; }
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-row[data-rarity="epic"]      { --rarity:#c999ff; --rarity-soft:rgba(147,79,225,.15); --rarity-line:#9961de; }
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-row[data-rarity="legendary"] { --rarity:#ffd281; --rarity-soft:rgba(213,152,45,.15); --rarity-line:#ca8d30; }
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-row[data-rarity="mythic"]    { --rarity:#ff8bc7; --rarity-soft:rgba(212,63,136,.15); --rarity-line:#d44892; }
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-row[data-rarity] {
   border-left:4px solid var(--rarity-line)!important;
   background:linear-gradient(100deg,var(--rarity-soft),rgba(26,17,44,.97) 54%)!important;
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.015);
 }
-#screen-achievements .br-ach-row[data-rarity]:hover {
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-row[data-rarity]:hover {
   background:linear-gradient(100deg,var(--rarity-soft),rgba(42,28,72,.98) 65%)!important;
   border-top-color:var(--rarity-line)!important;
   border-right-color:var(--rarity-line)!important;
 }
-#screen-achievements .br-ach-row[data-rarity] .br-ach-rarity {
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-row[data-rarity] .br-ach-rarity {
   color:var(--rarity)!important;
   background:var(--rarity-soft)!important;
   border:1px solid var(--rarity-line)!important;
@@ -1670,56 +1670,56 @@ button,select,input{accent-color:#6840DD}
   letter-spacing:.10em;
   font-size:10px;line-height:1.2;
 }
-#screen-achievements .br-ach-row[data-rarity] .br-ach-symbol {
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-row[data-rarity] .br-ach-symbol {
   color:var(--rarity)!important;
   border-color:var(--rarity-line)!important;
   background:var(--rarity-soft)!important;
   box-shadow:inset 0 0 14px var(--rarity-soft);
 }
-#screen-achievements .br-ach-row[data-rarity] .br-ach-prog i {
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-row[data-rarity] .br-ach-prog i {
   background:linear-gradient(90deg,var(--rarity-line),var(--rarity))!important;
 }
-#screen-achievements .br-ach-row[data-rarity]>b { color:var(--rarity)!important; }
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-row[data-rarity]>b { color:var(--rarity)!important; }
 /* Selectable filters share their rarity's identity without introducing new icon styles. */
-#screen-achievements .br-filter[data-ach-filter="common"] {--filter-rarity:#b8c4d5}
-#screen-achievements .br-filter[data-ach-filter="uncommon"] {--filter-rarity:#72eeb0}
-#screen-achievements .br-filter[data-ach-filter="rare"] {--filter-rarity:#70cfff}
-#screen-achievements .br-filter[data-ach-filter="epic"] {--filter-rarity:#c999ff}
-#screen-achievements .br-filter[data-ach-filter="legendary"] {--filter-rarity:#ffd281}
-#screen-achievements .br-filter[data-ach-filter="mythic"] {--filter-rarity:#ff8bc7}
-#screen-achievements .br-filter[data-ach-filter]:not([data-ach-filter="all"]) {border-top-color:var(--filter-rarity)!important}
-#screen-achievements .br-filter[data-ach-filter]:not([data-ach-filter="all"]).active {color:var(--filter-rarity)!important;box-shadow:inset 0 0 0 1px var(--filter-rarity),0 3px 0 rgba(0,0,0,.18)!important}
+:is(#screen-achievements,#screen-mode-achievements) .br-filter[data-ach-filter="common"] {--filter-rarity:#b8c4d5}
+:is(#screen-achievements,#screen-mode-achievements) .br-filter[data-ach-filter="uncommon"] {--filter-rarity:#72eeb0}
+:is(#screen-achievements,#screen-mode-achievements) .br-filter[data-ach-filter="rare"] {--filter-rarity:#70cfff}
+:is(#screen-achievements,#screen-mode-achievements) .br-filter[data-ach-filter="epic"] {--filter-rarity:#c999ff}
+:is(#screen-achievements,#screen-mode-achievements) .br-filter[data-ach-filter="legendary"] {--filter-rarity:#ffd281}
+:is(#screen-achievements,#screen-mode-achievements) .br-filter[data-ach-filter="mythic"] {--filter-rarity:#ff8bc7}
+:is(#screen-achievements,#screen-mode-achievements) .br-filter[data-ach-filter]:not([data-ach-filter="all"]) {border-top-color:var(--filter-rarity)!important}
+:is(#screen-achievements,#screen-mode-achievements) .br-filter[data-ach-filter]:not([data-ach-filter="all"]).active {color:var(--filter-rarity)!important;box-shadow:inset 0 0 0 1px var(--filter-rarity),0 3px 0 rgba(0,0,0,.18)!important}
 /* Shared UI alignment: fixed-size buttons and thumb centerlines. */
 #screen-settings .br-option {align-items:center;}
 #screen-settings .br-option .br-slider {display:flex;align-items:center;}
 #screen-settings .br-slider output {text-align:right;font-variant-numeric:tabular-nums;min-width:42px;}
 #screen-settings .br-switch {align-self:center;}
-#screen-achievements .br-ach-row .br-ach-copy {min-width:0;}
-#screen-achievements .br-ach-row .br-ach-copy strong {line-height:1.28;}
-#screen-achievements .br-ach-row .br-ach-prog {height:7px;border-radius:3px;overflow:hidden;}
-#screen-achievements .br-ach-copy{flex:1 1 0%;min-width:0;}
-#screen-achievements .br-ach-prog{width:100%;max-width:none!important;min-width:0;}
-#screen-achievements .br-ach-prog>i{display:block;height:100%;max-width:100%;}
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-row .br-ach-copy {min-width:0;}
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-row .br-ach-copy strong {line-height:1.28;}
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-row .br-ach-prog {height:7px;border-radius:3px;overflow:hidden;}
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-copy{flex:1 1 0%;min-width:0;}
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-prog{width:100%;max-width:none!important;min-width:0;}
+:is(#screen-achievements,#screen-mode-achievements) .br-ach-prog>i{display:block;height:100%;max-width:100%;}
 #screen-music .music-player-actions {display:flex;align-items:center;justify-content:center;}
 #screen-music .music-control {display:grid;place-items:center;flex:none;}
 @media (max-width:800px) {
- #screen-achievements .br-ach-row[data-rarity] {border-left-width:3px!important;}
- #screen-achievements .br-ach-row .br-ach-copy strong {font-size:12px;}
+ :is(#screen-achievements,#screen-mode-achievements) .br-ach-row[data-rarity] {border-left-width:3px!important;}
+ :is(#screen-achievements,#screen-mode-achievements) .br-ach-row .br-ach-copy strong {font-size:12px;}
 }
 
 
 /* V15.1 / Keep rarity filters usable on narrow screens. */
 @media(max-width:800px){
- #screen-achievements .br-ach-filters{
+ :is(#screen-achievements,#screen-mode-achievements) .br-ach-filters{
    flex:0 0 auto!important;min-height:46px!important;
    flex-wrap:nowrap!important;overflow-x:auto!important;overflow-y:hidden!important;
    padding:3px 2px 8px!important;gap:6px!important;scrollbar-width:thin;
  }
- #screen-achievements .br-ach-filters .br-filter{
+ :is(#screen-achievements,#screen-mode-achievements) .br-ach-filters .br-filter{
    flex:0 0 auto!important;min-height:30px!important;height:30px!important;
    padding:4px 9px!important;white-space:nowrap;
  }
- #screen-achievements .br-ach-list{flex:1 1 auto;min-height:0;}
+ :is(#screen-achievements,#screen-mode-achievements) .br-ach-list{flex:1 1 auto;min-height:0;}
 }
 
 /* V15.3 / Verified range-thumb vertical centering in Chromium.
@@ -1818,8 +1818,8 @@ body.ui-v15 [hidden]{display:none!important}
 @media(max-width:800px){.ui-v15 .v15-tester{top:3px;right:3px;width:25px;height:25px;font-size:10px;opacity:.8}}
 @media(max-height:520px){
  .ui-v15 .br-head{height:72px!important;min-height:0;padding-top:8px;padding-bottom:8px}.ui-v15 .br-head h2{font-size:22px!important}
- .ui-v15 #screen-achievements .br-ach-layout{top:90px!important;bottom:16px!important;grid-template-columns:190px minmax(0,1fr)}
- .ui-v15 #screen-achievements .br-ach-big{font-size:36px;margin:16px 0}.ui-v15 .br-ach-summary>strong{font-size:12px}.ui-v15 .br-ach-summary p{font-size:11px}
+ .ui-v15 :is(#screen-achievements,#screen-mode-achievements) .br-ach-layout{top:90px!important;bottom:16px!important;grid-template-columns:190px minmax(0,1fr)}
+ .ui-v15 :is(#screen-achievements,#screen-mode-achievements) .br-ach-big{font-size:36px;margin:16px 0}.ui-v15 .br-ach-summary>strong{font-size:12px}.ui-v15 .br-ach-summary p{font-size:11px}
  .ui-v15 #screen-settings .br-settings-layout{top:88px!important;bottom:72px!important}.ui-v15 .br-settings-nav{overflow:auto}.ui-v15 .br-settings-foot{height:62px!important}.ui-v15 .br-tab{padding:8px!important}
  .ui-v15 .br-best-layout,.ui-v15 .br-simple{top:88px;bottom:16px;overflow:auto}.ui-v15 .br-best-details{overflow:auto}
  .ui-v15 #screen-tutorial .br-tutorial{top:88px!important;bottom:76px!important;overflow:auto}.ui-v15 .br-tutorial-done{bottom:12px!important}
@@ -7410,7 +7410,7 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-home{
  body.ui-v15 #modal #screen-map .map-header .header-right .icon-btn{
   width:36px;min-width:36px;height:36px;
  }
- body.ui-v15 #modal #screen-achievements .br-serial,
+ body.ui-v15 #modal :is(#screen-achievements,#screen-mode-achievements) .br-serial,
  body.ui-v15 #modal #screen-bestiary .br-serial{
   font-size:7px;
  }
@@ -7544,14 +7544,14 @@ body.ui-v15 :is(.br-head h2,.map-header .header-title,.br-pane-title h3,.display
 }
 body.ui-v15 :is(.br-serial,.overline,.eyeline,.hero-kicker,.muted-caps){color:#ae94f9!important}
 body.ui-v15 :is(.br-head-tag,.page-nav .muted-caps,.overlay-copy){color:#b6aaca!important}
-body.ui-v15 :is(#screen-settings,#screen-statistics,#screen-achievements,#screen-bestiary,#screen-evolution,#screen-upgrades,#screen-music,#screen-map,#screen-tutorial) :is(
+body.ui-v15 :is(#screen-settings,#screen-statistics,:is(#screen-achievements,#screen-mode-achievements),#screen-bestiary,#screen-evolution,#screen-upgrades,#screen-music,#screen-map,#screen-tutorial) :is(
  .br-settings-main,.br-settings-nav,.br-ach-summary,.br-ach-note,.br-best-details,.br-best-row,
  .br-ach-row,.br-stat-grid>div,.up-list,.up-row,.recipe,.evo-panel,.br-track,.music-player,.music-track-card,
  .br-warning,.map-corner.left,.map-pin-menu,.br-controls>div,.br-option,.br-tutorial article
  ){
  color:#ece6fb;
 }
-body.ui-v15 :is(#screen-settings,#screen-statistics,#screen-achievements,#screen-bestiary,#screen-evolution,#screen-upgrades,#screen-music,#screen-map,#screen-tutorial) :is(
+body.ui-v15 :is(#screen-settings,#screen-statistics,:is(#screen-achievements,#screen-mode-achievements),#screen-bestiary,#screen-evolution,#screen-upgrades,#screen-music,#screen-map,#screen-tutorial) :is(
  .br-settings-main,.br-ach-note,.br-best-details,.br-best-row,.br-ach-row,.br-stat-grid>div,
  .up-list,.recipe,.evo-panel,.br-track,.music-player,.music-track-card,
  .br-warning,.map-corner.left,.map-pin-menu,.br-controls>div,.br-tutorial article
@@ -7561,14 +7561,14 @@ body.ui-v15 :is(#screen-settings,#screen-statistics,#screen-achievements,#screen
  border-radius:6px!important;
  box-shadow:inset 0 1px #d4b7ff0d,0 9px 24px #0005!important;
 }
-body.ui-v15 :is(#screen-settings,#screen-bestiary,#screen-achievements,#screen-upgrades,#screen-music) :is(
+body.ui-v15 :is(#screen-settings,#screen-bestiary,:is(#screen-achievements,#screen-mode-achievements),#screen-upgrades,#screen-music) :is(
  .br-option,.br-ach-row,.up-row,.settings-line,.br-readout-line
  ){border-bottom-color:#4c365f!important}
-body.ui-v15 :is(#screen-settings,#screen-achievements,#screen-statistics,#screen-bestiary,#screen-music,#screen-upgrades,#screen-evolution) :is(
+body.ui-v15 :is(#screen-settings,:is(#screen-achievements,#screen-mode-achievements),#screen-statistics,#screen-bestiary,#screen-music,#screen-upgrades,#screen-evolution) :is(
  .br-option strong,.br-ach-row strong,.br-track strong,.br-best-row strong,.up-desc strong,
  .br-readout-line b,.recipe-row strong
  ){color:#f7f2ff!important;font-weight:850!important}
-body.ui-v15 :is(#screen-settings,#screen-achievements,#screen-statistics,#screen-bestiary,#screen-music,#screen-upgrades,#screen-evolution) :is(
+body.ui-v15 :is(#screen-settings,:is(#screen-achievements,#screen-mode-achievements),#screen-statistics,#screen-bestiary,#screen-music,#screen-upgrades,#screen-evolution) :is(
  .br-option small,.br-track small,.br-ach-row small,.br-readout-line,.br-best-row small,.up-desc small
  ){color:#b0a5c5!important}
 /* Game-button families: raised frame with a bottom bevel, glow on hover. */
