@@ -100,7 +100,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
      assert.equal(await page.locator('#worm-boost').evaluate(el=>getComputedStyle(el).borderTopColor),
       'rgb(255, 23, 68)','Red boost button must glow red, not purple');
     }
-    await page.evaluate(()=>window.InfinityWormsQA.testProtection(90));
+    await page.evaluate(()=>{window.InfinityWormsQA.testProtection(90);window.InfinityWormsQA.freezeRealtime(true);});
     const styles=await page.evaluate(()=>window.InfinityWormsQA.botStyles());
     for(const role of ['afk','newcomer','casual','cautious','hunter','veteran','pro','reckless']){
      assert.ok(styles[role]>=2,'Missing realistic bot behavior: '+role);
@@ -128,7 +128,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.evaluate(()=>window.InfinityWormsQA.advancePhysics(.08));
     const turning=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
     const distanceToTarget=v=>Math.abs(Math.atan2(Math.sin(targetAngle-v.angle),Math.cos(targetAngle-v.angle)));
-    assert.ok(distanceToTarget(turning)>2.55,'180-degree turn must follow a real curved path rather than snapping');
+    assert.ok(distanceToTarget(turning)>2.55,'180-degree turn must follow a real curved path rather than snapping: '+JSON.stringify({start:a.angle,turning:turning.angle,targetAngle}));
     assert.ok(distanceToTarget(turning)<Math.PI-.08,'Worm must start following the steering input');
     await page.evaluate(()=>window.InfinityWormsQA.advancePhysics(.47));
     const halfway=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
@@ -155,6 +155,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.waitForTimeout(700);
     const small=await page.evaluate(()=>window.InfinityWormsQA.snapshot().zoom);
     assert.ok(small>large,'Growing must zoom camera out');
+    await page.evaluate(()=>window.InfinityWormsQA.freezeRealtime(false));
     await page.keyboard.down('Space');
     await page.waitForTimeout(170);
     assert.equal(await page.evaluate(()=>window.InfinityWormsQA.snapshot().boosting),true,'Space enables boosting');

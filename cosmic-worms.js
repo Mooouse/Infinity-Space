@@ -114,6 +114,7 @@ const BOT_PERSONAS={
 const DEATH_REPLAY_SECONDS=3.25;
 let vw=0,vh=0,dpr=1,last=0,uiClock=0,starTime=0,foodTimer=0,toastTimer=0,guideStep=0,guideReturn='playing';
 let game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),worms:[],fx:[],player:null,reported:false,deathElapsed:0,deathPosition:null,deathGhost:null};
+let qaManualPhysics=false; // tester-only: stop rAF simulation while deterministic QA advances physics
 const input={mx:0,my:0,mouseMoved:false,mouseDown:false,boostKey:false,boostTouch:false,keys:new Set(),stickAngle:0,stickPower:0,stickPointer:-1,touchAngle:null};
 const camera={x:WORLD.cx,y:WORLD.cy,zoom:1};
 const stars=Array.from({length:680},(_,i)=>({x:Math.random(),y:Math.random(),r:i%8===0?1.6:rand(.35,1.05),a:rand(.42,1),phase:rand(0,TAU),depth:rand(.04,.17),c:['#ff1744','#27ff40','#ffe500','#ffffff','#9922ff','#2860ff'][i%6]}));
@@ -1329,7 +1330,7 @@ function frame(now){
  let dt=last?clamp((now-last)/1000,0,.047):.016;last=now;
  starTime=now*.001;
  if(game.state==='playing'||game.state==='death-replay'){
-  simulate(dt);
+  if(!qaManualPhysics)simulate(dt);
   if(DEMO&&(!game.player.alive||game.time>80))init();
   if(game.state==='death-replay'){
    game.deathElapsed+=dt;
@@ -1373,6 +1374,7 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
     input.stickPower=0;game.player.target=Number(angle);},
   // Fixed-step simulation for deterministic movement assertions in slow CI.
   // This verifies actual bot/player physics independently of paint FPS.
+  freezeRealtime:enabled=>{qaManualPhysics=!!enabled;return qaManualPhysics;},
   advancePhysics:seconds=>{
    const ticks=Math.max(0,Math.min(240,Math.round(Number(seconds)*60)));
    if(game.state!=='playing')return {ticks:0,time:game.time};
