@@ -404,3 +404,53 @@ body:has(#worm-field) #worm-settings :is(.worm-setting-toggle,.worm-setting-rang
  body:has(#arena) .arena-pause-stats>div,
  body:has(#worm-field) .worm-pause-stats>div{min-height:52px}
 }
+
+/* The skin workshop opens at the fun part: live worm, skin presets and heads.
+   Per-segment painting is still available, but does not clutter first use. */
+.ws-overlay .ws-advanced{
+ margin-top:11px;border-top:1px solid #533975;min-width:0;
+}
+.ws-overlay .ws-advanced-summary{
+ display:block;cursor:pointer;list-style:none;user-select:none;
+ margin:8px 0 0;padding:12px 36px 12px 12px;
+ border:1px solid #7759a1;border-bottom:3px solid #42286a;
+ border-radius:5px;background:linear-gradient(150deg,#261638,#180f2d);
+ color:#dac9f4;font:900 11px Inter,system-ui;letter-spacing:.07em;
+ position:relative;
+}
+.ws-overlay .ws-advanced-summary::-webkit-details-marker{display:none}
+.ws-overlay .ws-advanced-summary:after{
+ content:'+';position:absolute;right:13px;top:50%;
+ transform:translateY(-50%);font-size:21px;color:#c5a3ff;
+}
+.ws-overlay .ws-advanced[open] .ws-advanced-summary:after{content:'−'}
+@media(hover:hover) and (pointer:fine){
+ .ws-overlay .ws-advanced-summary:hover{
+  border-color:#c8aaff;box-shadow:0 0 16px #9558ef88;
+ }
+}
+.ws-overlay .ws-preset-worm{
+ display:flex;align-items:center;justify-content:center;
+ width:100%;height:27px!important;min-width:0;overflow:visible;
+}
+.ws-overlay .ws-preset-worm i{
+ width:12px!important;height:12px!important;flex:0 0 12px;
+ margin-left:-5px!important;border:1px solid #080313!important;
+ border-radius:50%;
+ box-shadow:inset 1px 1px #ffffff90,0 0 6px currentColor!important;
+ transform:translateY(calc(var(--bead-i) * 1px));
+}
+.ws-overlay .ws-preset-worm i:last-child{
+ width:17px!important;height:17px!important;flex-basis:17px;
+ border:2px solid #fff5d1!important;
+ box-shadow:0 0 11px #e1acff88!important;
+}
+.ws-overlay .ws-preset.selected{
+ border-color:#c9a5ff!important;
+ background:linear-gradient(155deg,#3b2257,#231234)!important;
+ box-shadow:0 0 12px #945be655!important;
+}
+@media(max-width:560px){
+ .ws-overlay .ws-advanced-summary{font-size:10px!important}
+ .ws-overlay .ws-preset-worm i{flex-basis:10px;width:10px!important;height:10px!important}
+}
