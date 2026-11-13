@@ -1370,7 +1370,10 @@ function drawBoostBody(w,t,r,path,overBody=false){
 }
 
 function cosmicSkinDetail(w,z){
- return z*wormRadius(w)>=9.5;
+ // Keep the original moving stars and comets on ALL visible skins
+ // after the player's camera pulls back for an 8000+ mass body.
+ // Tiny opponents must not downgrade just because somebody else grew.
+ return z*wormRadius(w)>=5.0;
 }
 function drawWorm(w,t){
  if(!w.alive)return;
@@ -1397,7 +1400,20 @@ function drawWorm(w,t){
  ctx.shadowBlur=options.glow&&z>.39?Math.min(r*.46,22):0;
  ctx.shadowColor=w.accent;
  ctx.stroke(path);ctx.shadowBlur=0;
-const gradient=ctx.createLinearGradient(tail.x,tail.y,head.x+0.1,head.y+0.1);
+// If a massive body curls until the tail approaches the head, the
+ // original head-to-tail gradient becomes nearly zero-length and turns
+ // the entire skin into one muddy color. Fall back to the whole body's
+ // bounds only in that case; keep every original palette and color stop.
+ let gx0=tail.x,gy0=tail.y,gx1=head.x+.1,gy1=head.y+.1;
+ if(Math.hypot(head.x-tail.x,head.y-tail.y)<r*5){
+  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  for(const p of points){
+   minX=Math.min(minX,p.x);maxX=Math.max(maxX,p.x);
+   minY=Math.min(minY,p.y);maxY=Math.max(maxY,p.y);
+  }
+  gx0=minX;gy0=minY;gx1=maxX+.1;gy1=maxY+.1;
+ }
+ const gradient=ctx.createLinearGradient(gx0,gy0,gx1,gy1);
  if(custom){
   const colors=options.customSegments;
   const stops=Math.max(2,Math.min(colors.length,16));
