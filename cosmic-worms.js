@@ -320,7 +320,7 @@ function trailPointAt(history,distance,start,end){
 function relaxWormTrail(w,dt){
  const nodes=w.trail,start=w.trailStart+1,end=nodes.length-2,n=end-start+1;
  if(n<10||dt<=0)return;
- const count=Math.min(96,n),phase=w.relaxPhase=(w.relaxPhase||0)+1;
+ const count=Math.min(72,n),phase=w.relaxPhase=(w.relaxPhase||0)+1;
  // Cycle bounded samples through the entire body; long tails stay cheap.
  const offset=(phase%7)/7;
  for(let k=0;k<count;k++){
@@ -333,9 +333,9 @@ function relaxWormTrail(w,dt){
   const first=Math.hypot(ax,ay),second=Math.hypot(bx,by);
   if(first<2||second<2)continue;
   const bend=Math.acos(clamp((ax*bx+ay*by)/(first*second),-1,1));
-  const curvature=clamp((bend-1.07)/1.35,0,1);
+  const curvature=clamp((bend-.57)/.42,0,1);
   if(curvature<=0)continue;
-  const mix=Math.min(.055,dt*.80*curvature);
+  const mix=Math.min(.055,dt*1.6*curvature);
   node.x+=((before.x+after.x)*.5-node.x)*mix;
   node.y+=((before.y+after.y)*.5-node.y)*mix;
  }
@@ -1564,8 +1564,44 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
     resultAnimating:$('worm-result').classList.contains('is-revealing')}),
   bots:()=>game.worms.filter(w=>!w.human).map(w=>({
     id:w.id,name:w.name,persona:w.persona,skin:w.skin,head:w.head,x:w.x,y:w.y,alive:w.alive,
-    speed:w.speed,reaction:w.reaction,afk:w.afkTimer>0,mass:w.mass
+    speed:w.speed,reaction:w.reaction,afk:w.afkTimer>0,mass:w.mass,objective:w.objective,
+    targetWreckId:w.targetWreckId,coilTargetId:w.coil?.id??null
   })),
+  wrecks:()=>game.wrecks.map(w=>({id:w.id,remaining:w.remaining,total:w.items.length,
+    age:game.time-w.created})),
+  salvageProbe:()=>{
+   const active=game.wrecks.find(w=>w.remaining>0&&game.time<w.expires);
+   if(!active)return {available:false,total:0,prioritizing:0};
+   const bots=game.worms.filter(w=>!w.human&&w.alive);
+   for(const b of bots){b.think=0;steerBot(b,1/60);}
+   return {available:true,id:active.id,total:bots.length,
+    prioritizing:bots.filter(b=>b.objective==='salvage'&&b.targetWreckId!==null).length,
+    types:[...new Set(bots.map(b=>b.persona))]};
+  },
+  encircleProbe:()=>{
+   const victim={id:999,alive:true,mass:80,segments:Array.from({length:35},()=>({x:0,y:0})),x:0,y:0};
+   const attacker={id:998,alive:true,mass:900,segments:Array.from({length:150},()=>({x:0,y:0})),x:190,y:0};
+   return {canClose:canEncircle(attacker,victim),radius:encircleRadius(victim),
+    availableLength:attacker.segments.length*11.8,
+    requiredLength:TAU*encircleRadius(victim)*1.08};
+  },
+  relaxationProbe:()=>{
+   const simulateCurve=smoothing=>{
+    const w={x:500,y:500,angle:0,
+     segments:Array.from({length:110},(_,i)=>({x:500-11.8*(i+1),y:500}))};
+    seedWormTrail(w);
+    for(let i=0;i<180;i++){
+     const dt=1/60,heading=i<30?0:Math.min(Math.PI*.75,(i-30)*dt*3.35),advance=172*dt;
+     w.x+=Math.cos(heading)*advance;w.y+=Math.sin(heading)*advance;
+     followWormTrail(w,advance,11.8,smoothing?dt:0);
+    }
+    return w;
+   };
+   const relaxed=simulateCurve(true),rigid=simulateCurve(false);
+   return {maxShift:Math.max(...relaxed.segments.map((p,i)=>
+     Math.hypot(p.x-rigid.segments[i].x,p.y-rigid.segments[i].y))),
+    samples:relaxed.trail.length,segmentCount:relaxed.segments.length};
+  },
   botReshuffleProbe:()=>{
    const b=game.worms.find(w=>!w.human&&w.alive);
    if(!b)return null;
