@@ -1439,6 +1439,8 @@ function pause(){
   window.SpacePlatform?.playing?.(false);
  }else if(game.state==='paused'){
   game.state='playing';$('worm-pause-overlay').hidden=true;playWormSound('resume');
+  // Pause protection ends quickly instead of making the player intangible.
+  game.player.invulnerable=Math.min(game.player.invulnerable,.30);
   window.SpacePlatform?.playing?.(true);
  }
 }
@@ -1628,6 +1630,28 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
     speed:w.speed,reaction:w.reaction,afk:w.afkTimer>0,mass:w.mass,objective:w.objective,
     targetWreckId:w.targetWreckId,coilTargetId:w.coil?.id??null
   })),
+  foodRegenerationProbe:()=>{
+   const sample=game.food.find(f=>f.ambient&&f._index>=0);
+   if(!sample)return {valid:false};
+   const before=game.ambientCount,oldQueue=game.foodRespawnQueue;
+   game.foodRespawnQueue=[];
+   const x=sample.x,y=sample.y,existing=new Set(game.food);
+   try{
+    removeFood(sample);
+    const queued=game.foodRespawnQueue.length;
+    regenerateAmbientFood();
+    const replacement=game.food.find(f=>f.ambient&&!existing.has(f));
+    return {valid:!!replacement,before,after:game.ambientCount,
+     queued,nearby:!!replacement&&Math.hypot(replacement.x-x,replacement.y-y)<=333,
+     oldPosition:{x,y},newPosition:replacement?{x:replacement.x,y:replacement.y}:null};
+   }finally{game.foodRespawnQueue.push(...oldQueue);}
+  },
+  giantRivalsProbe:()=>({
+   massive:game.worms.filter(w=>!w.human&&w.alive&&w.mass>=8000).length,
+   largest:Math.max(0,...game.worms.filter(w=>!w.human&&w.alive).map(w=>w.mass)),
+   player:game.player?.mass||0,
+   lengths:game.worms.filter(w=>!w.human&&w.alive).slice(0,3).map(w=>w.segments.length)
+  }),
   wrecks:()=>game.wrecks.map(w=>({id:w.id,remaining:w.remaining,total:w.items.length,
     age:game.time-w.created})),
   salvageProbe:()=>{
