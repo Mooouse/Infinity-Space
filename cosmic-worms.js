@@ -898,20 +898,28 @@ function headOnWinner(a,b){
   a.speed>b.speed?a:b.speed>a.speed?b:(a.id<b.id?a:b);
 }
 function collisions(){
- // One shared spatial index contains every other worm's full trail. Head-on
- // and body contacts are checked without scanning thousands of distant nodes.
+ // Broadphase includes both huge bodies and head-to-head collisions.
+ // Glancing contact with the glow or outside edge is not a fatal hit.
  for(const w of game.worms){
-  if(!w.alive||w.invulnerable>0)continue;
+  if(!w.alive||w.human&&backgroundFlightActive())continue;
+  const pausedPlayer=backgroundFlightActive()&&game.player?.alive;
+  // Spawn immunity never turns the player into a ghost while menus are open.
+  if(w.invulnerable>0&&!(pausedPlayer&&!w.human))continue;
   const wr=wormRadius(w);
-  bodiesNearby(w.x,w.y,95,entry=>{
+  bodiesNearby(w.x,w.y,Math.max(112,wr+76),entry=>{
    const other=entry.w;
-   if(!w.alive||other===w||!other.alive||other.invulnerable>0)return;
+   const solidPausedPlayer=pausedPlayer&&other===game.player;
+   if(!w.alive||other===w||!other.alive||other.invulnerable>0&&!solidPausedPlayer)return;
    const radius=wormRadius(other),dx=w.x-entry.x,dy=w.y-entry.y;
-   const hit=entry.head?wr+radius*.86:wr+radius*.69;
+   // The head can enter the edge of another body a little before impact.
+   const hit=entry.head?wr*.82+radius*.72:wr*.72+radius*.65;
    if(dx*dx+dy*dy>=hit*hit)return;
+   if(solidPausedPlayer){
+    // Opponents cannot pass through the paused player. Do not award mass.
+    w.invulnerable=0;kill(w,null,'body');return;
+   }
+   if(w.invulnerable>0)return;
    if(entry.head){
-    // Head-on collisions kill ONE rival: larger mass wins;
-    // speed and stable ID break true ties deterministically.
     const winner=headOnWinner(w,other);
     kill(winner===w?other:w,winner,'head');
    }else kill(w,other,'body');
