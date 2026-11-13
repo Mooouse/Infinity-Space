@@ -95,6 +95,12 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.ok(orbit.history<250,'Arc history must stay memory-bounded: '+JSON.stringify(orbit));
     assert.ok(a.worms>=50&&a.food>=27500,'Circular arena must keep rich food density and bots');
     assert.ok(a.food/(Math.PI*a.world.rx*a.world.ry)>720/(Math.PI*2630*1970),'Food density must increase, not fall with map growth');
+    const giants=await page.evaluate(()=>window.InfinityWormsQA.giantRivalsProbe());
+    assert.ok(giants.massive>=2&&giants.largest>10000,
+      'Several heavyweight rivals must be established before the player joins: '+JSON.stringify(giants));
+    const regrowth=await page.evaluate(()=>window.InfinityWormsQA.foodRegenerationProbe());
+    assert.ok(regrowth.valid&&regrowth.nearby&&regrowth.after===regrowth.before&&regrowth.queued===1,
+      'Ordinary food must regenerate near its depleted region: '+JSON.stringify(regrowth));
     const clearance=await page.evaluate(()=>window.InfinityWormsQA.spawnProbe());
     assert.equal(clearance.safe,true,'No bot can appear inside an existing worm body: '+JSON.stringify(clearance));
     assert.equal((await page.evaluate(()=>window.InfinityWormsQA.skins())).length,16,'All 16 distinct skins must be selectable');
@@ -107,10 +113,10 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     if(width>=1280){
      await page.locator('#worm-pause').hover();
      assert.equal(await page.locator('#worm-pause').evaluate(el=>getComputedStyle(el).borderTopColor),
-      'rgb(40, 96, 255)','Blue pause button must glow blue');
+      'rgb(225, 208, 255)','New compact pause button must keep its lavender glow');
      await page.locator('#worm-boost').hover();
      assert.equal(await page.locator('#worm-boost').evaluate(el=>getComputedStyle(el).borderTopColor),
-      'rgb(255, 23, 68)','Red boost button must glow red, not purple');
+      'rgb(255, 212, 224)','Acceleration button must glow red/pink, not purple');
     }
     await page.evaluate(()=>{window.InfinityWormsQA.testProtection(90);window.InfinityWormsQA.freezeRealtime(true);});
     const styles=await page.evaluate(()=>window.InfinityWormsQA.botStyles());
@@ -205,6 +211,8 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.ok(pausePosition>height*.58,'Pause should be with bottom gameplay buttons instead of at the top');
     await page.locator('#worm-pause').click();
     assert.equal(await page.locator('#worm-pause-overlay').isVisible(),true);
+    assert.equal(await page.locator('#worm-pause-preview').count(),0,
+      'Pause must not show a duplicate fake worm preview');
     assert.equal(await page.locator('#worm-exit').textContent(),'ВЫХОД В МЕНЮ');
     // Pause is now a live-world overlay: rival worms and match time keep moving
     // while the player remains protected and the UI is interactive.
@@ -249,19 +257,24 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.equal(await page.locator('#worm-zoom-value').count(),0);
     assert.equal(await page.locator('#worm-settings-sound').count(),1);
     assert.equal(await page.locator('#worm-settings-skins').count(),1);
+    assert.equal(await page.locator('#worm-settings [data-settings-tab]').count(),4,
+      'Worms settings must use the same full category page as the main game');
+    assert.equal(await page.locator('#worm-settings [data-settings-pane].active').count(),1);
     if(width>=1280){
      await page.locator('#worm-settings-back').hover();
      await page.waitForTimeout(220);
      const style=await page.locator('#worm-settings-back').evaluate(el=>{
       const cs=getComputedStyle(el);return {border:cs.borderTopColor,glow:cs.boxShadow};
      });
-     assert.equal(style.border,'rgb(197, 165, 255)',
-      'Settings save button must use the new purple accent, not old amber');
+     assert.equal(style.border,'rgb(236, 223, 255)',
+      'Main-style settings save button must reach bright lavender on hover');
      assert.ok(style.glow!=='none'&&style.glow.includes('rgb('),
       'Settings save button must retain a visible hover glow');
     }
+    await page.locator('#worm-settings [data-settings-tab="graphics"]').click();
     await page.locator('#worm-setting-glow').uncheck({force:true});
     await page.locator('#worm-setting-names').uncheck({force:true});
+    await page.locator('#worm-settings [data-settings-tab="audio"]').click();
     const audioBefore=await page.locator('#worm-settings-sound').getAttribute('aria-pressed');
     await page.locator('#worm-settings-sound').click();
     assert.notEqual(await page.locator('#worm-settings-sound').getAttribute('aria-pressed'),audioBefore,
