@@ -1527,3 +1527,22 @@ body:has(#worm-field) #worm-settings #worm-settings-back{
 /* Screen visibility must win over full-page layout rules. */
 body:has(#worm-field) #worm-settings[hidden],
 body:has(#worm-field) #worm-pause-overlay[hidden]{display:none!important}
+
+/* Consistent purple controls for the full settings page */
+@media(hover:hover) and (pointer:fine){
+ body:has(#worm-field) #worm-settings #worm-settings-back:hover,
+ body:has(#worm-field) #worm-settings #worm-settings-close:hover,
+ body:has(#worm-field) #worm-settings #worm-settings-guide:hover,
+ body:has(#worm-field) #worm-settings #worm-settings-skins:hover,
+ body:has(#worm-field) #worm-settings #worm-settings-sound:hover{
+  transform:translateY(-2px)!important;filter:brightness(1.1)!important;
+  border-color:#ecdfff!important;
+  box-shadow:inset 0 1px #ffffff55,0 4px 0 #220c45,
+   0 0 0 1px #ba91ff5e,0 0 23px #a268fbbb,0 9px 19px #080214b8!important;
+ }
+ body:has(#worm-field) #worm-settings .br-tab:not(.active):hover{
+  background:#5d2a9640!important;color:#f1e2ff!important;
+  border-left-color:#77559d!important;
+  box-shadow:inset 0 1px #ffffff12!important;
+ }
+}
