@@ -694,3 +694,405 @@ body:has(#worm-field) #worm-pause-overlay .worm-pause-panel{
 @media(prefers-reduced-motion:reduce){
  #worm-pause-overlay .worm-pause-panel button{transition:none!important}
 }
+
+
+/* ===== COMPETITIVE UI PASS / 2026-11-13 =====
+   These shared rules affect Cosmic Worms and the four arena modes only.
+   Endless Space and the main carousel are deliberately untouched. */
+body:has(#worm-field),
+body:has(#arena){--competitive-violet:#a87aff;--competitive-line:#705294;--competitive-text:#f6edff;}
+/* Settings: primary options presented as designed controls, not loose legacy labels. */
+body:has(#worm-field) #worm-settings{
+ padding:clamp(10px,2.7vh,25px) 14px!important;
+ background:#070414d9!important;backdrop-filter:blur(9px)!important;
+ overflow:hidden!important;
+}
+body:has(#worm-field) #worm-settings .worm-settings-panel{
+ display:flex!important;flex-direction:column!important;
+ box-sizing:border-box!important;
+ width:min(880px,100%)!important;max-width:880px!important;
+ max-height:calc(100dvh - 28px)!important;
+ min-width:0!important;
+ padding:0!important;
+ border:1px solid #8762b5!important;border-top:2px solid #b38cea!important;
+ border-bottom:5px solid #46236f!important;border-radius:9px!important;
+ background:linear-gradient(160deg,#211335fa,#130c24fb 62%,#10091ffd)!important;
+ box-shadow:inset 0 1px #ffffff23,0 26px 80px #020009d5,0 0 30px #7237ba23!important;
+ overflow-y:auto!important;overflow-x:hidden!important;
+ scrollbar-width:thin;scrollbar-color:#694b8b transparent;
+}
+#worm-settings .worm-settings-header{
+ display:flex;align-items:center;justify-content:space-between;gap:20px;
+ padding:clamp(20px,2.4vw,31px) clamp(18px,3vw,39px) 22px;
+ border-bottom:1px solid #694b86;
+ background:linear-gradient(180deg,#9d6eff11,transparent);
+}
+#worm-settings .worm-settings-header>div{min-width:0}
+#worm-settings .worm-settings-header .worm-eyebrow{
+ color:#c6a7ed!important;letter-spacing:.14em!important;font-size:10px!important;
+}
+#worm-settings .worm-settings-header h1{
+ color:#f9f2ff!important;
+ font:950 clamp(30px,3.25vw,45px)/1.08 Inter,system-ui!important;
+ margin:9px 0 6px!important;letter-spacing:-.048em!important;
+ text-shadow:0 2px 14px #0801119e!important;
+}
+#worm-settings .worm-settings-header p{
+ margin:0!important;color:#bfb0d3!important;
+ font:500 clamp(11px,.78vw,14px)/1.5 Inter,system-ui!important;
+}
+body:has(#worm-field) #worm-settings .worm-settings-close{
+ display:grid!important;place-items:center!important;flex:none!important;
+ width:43px!important;height:43px!important;min-width:43px!important;min-height:43px!important;
+ padding:0!important;
+ border:1px solid #9570c1!important;border-bottom:3px solid #4a2a73!important;
+ border-radius:6px!important;
+ background:linear-gradient(180deg,#37244d,#211631)!important;
+ color:#ede0ff!important;font:400 31px/1 Inter,system-ui!important;
+ box-shadow:inset 0 1px #ffffff2b,0 5px 0 #10081ac9!important;
+}
+#worm-settings .worm-settings-content{
+ display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+ gap:clamp(20px,3.5vw,48px)!important;align-items:start;min-width:0;
+ padding:24px clamp(18px,3vw,39px) 29px!important;
+}
+#worm-settings .worm-settings-section{min-width:0}
+#worm-settings .worm-settings-section-head{
+ display:flex;gap:11px;align-items:center;min-height:31px;
+ margin:0 0 7px!important;padding:0 0 13px!important;
+ border-bottom:2px solid #67498c;
+}
+#worm-settings .worm-settings-index{
+ color:#a985e9;font:950 13px/1 Inter,system-ui;letter-spacing:.05em;
+}
+body:has(#worm-field) #worm-settings .worm-settings-section-head h2{
+ margin:0!important;font:950 clamp(15px,1vw,19px)/1.15 Inter,system-ui!important;
+ letter-spacing:.055em!important;color:#f1e3ff!important;
+}
+body:has(#worm-field) #worm-settings :is(.worm-setting-toggle,.worm-setting-action){
+ position:relative;display:flex!important;justify-content:space-between;align-items:center;
+ gap:13px;min-height:77px!important;
+ padding:13px 1px!important;margin:0!important;
+ border:0!important;border-bottom:1px solid #443059!important;
+ border-radius:0!important;box-shadow:none!important;
+ background:transparent!important;color:#ebe0fb!important;
+ cursor:pointer;
+}
+#worm-settings .worm-setting-text{
+ display:flex;flex-direction:column;justify-content:center;gap:6px;min-width:0;
+}
+#worm-settings .worm-setting-text strong{
+ color:#f4eafa!important;font:850 clamp(12px,.79vw,15px)/1.3 Inter,system-ui!important;
+}
+#worm-settings .worm-setting-text small{
+ color:#a996c3!important;font:550 clamp(10px,.66vw,12px)/1.34 Inter,system-ui!important;
+}
+#worm-settings .worm-setting-toggle input{
+ position:absolute!important;right:2px!important;top:50%!important;
+ width:40px!important;height:25px!important;
+ margin:0!important;opacity:0!important;cursor:pointer!important;
+ transform:translateY(-50%);z-index:3;
+}
+#worm-settings .worm-setting-toggle i{
+ display:block!important;position:relative!important;
+ flex:none!important;width:44px!important;height:27px!important;
+ border:2px solid #8564ae!important;
+ border-radius:4px!important;background:#1c102e!important;
+ box-shadow:inset 0 2px 7px #070310a3!important;
+ transition:background .15s,border-color .15s,box-shadow .15s;
+ pointer-events:none!important;
+}
+#worm-settings .worm-setting-toggle i::after{
+ content:"";position:absolute;left:3px;top:3px;width:17px;height:17px;
+ border-radius:2px!important;background:#d8c5f3!important;
+ box-shadow:0 1px 3px #090413a5;transition:transform .16s,background .16s;
+}
+#worm-settings .worm-setting-toggle input:checked+i{
+ border-color:#bb8aff!important;background:#4d22c6!important;
+ box-shadow:inset 0 0 11px #ac6cfc55,0 0 14px #9a65ed35!important;
+}
+#worm-settings .worm-setting-toggle input:checked+i::after{
+ transform:translateX(17px)!important;background:#fff!important;
+}
+#worm-settings .worm-setting-toggle input:focus-visible+i{
+ outline:2px solid #dbbcff;outline-offset:3px;
+}
+body:has(#worm-field) #worm-settings :is(#worm-settings-skins,#worm-settings-sound){
+ width:auto!important;min-width:93px!important;min-height:39px!important;
+ padding:8px 11px!important;border:1px solid #8a62bf!important;
+ border-bottom:3px solid #4a2b73!important;border-radius:5px!important;
+ background:linear-gradient(160deg,#47266b,#2b1849)!important;
+ color:#f8ecff!important;font:900 11px/1.2 Inter,system-ui!important;
+ box-shadow:inset 0 1px #ffffff22,0 3px 0 #160b28!important;
+ white-space:nowrap!important;
+}
+body:has(#worm-field) #worm-settings #worm-settings-sound[data-muted=true]{
+ background:linear-gradient(160deg,#431f36,#291629)!important;
+ border-color:#a66682!important;border-bottom-color:#57283e!important;
+ color:#ffc3d8!important;
+}
+#worm-settings .worm-settings-controls-info{
+ display:flex;align-items:center;gap:13px;min-height:80px;
+ padding:15px 1px 5px;color:#bba8d4;
+}
+#worm-settings .worm-settings-controls-icon{
+ display:grid;place-items:center;flex:none;width:38px;height:38px;
+ color:#e0c4ff;font-size:25px;line-height:1;
+ border:1px solid #72529a;border-radius:6px;
+ background:#2d1a45;
+}
+#worm-settings .worm-settings-controls-info strong{
+ display:block;font:900 11px/1.3 Inter,system-ui;letter-spacing:.1em;color:#ddc7f8;
+}
+#worm-settings .worm-settings-controls-info p{
+ margin:5px 0 0!important;
+ color:#ab9bc7!important;font:550 clamp(10px,.7vw,13px)/1.45 Inter,system-ui!important;
+}
+#worm-settings .worm-settings-footer{
+ display:flex;justify-content:flex-end;align-items:center;min-height:86px;
+ border-top:1px solid #5d417c;
+ padding:15px clamp(18px,3vw,39px)!important;
+ background:linear-gradient(90deg,#150e25a4,#1c1131a4);
+}
+body:has(#worm-field) #worm-settings #worm-settings-back{
+ display:block!important;max-width:260px!important;width:100%!important;
+ min-height:51px!important;padding:10px 18px!important;
+ border:1px solid #c5a5ff!important;border-bottom:4px solid #43217f!important;
+ border-radius:6px!important;background:linear-gradient(145deg,#7945dc,#4d22b8)!important;
+ color:white!important;font:900 clamp(11px,.85vw,14px)/1.2 Inter,system-ui!important;
+ box-shadow:inset 0 1px #ffffff3b,0 4px 0 #241051,0 0 15px #7e43d43d!important;
+}
+@media(hover:hover) and (pointer:fine){
+ body:has(#worm-field) #worm-settings button:not(:disabled):hover{
+  transform:translateY(-2px)!important;filter:brightness(1.11)!important;
+  border-color:#d7bfff!important;
+  box-shadow:inset 0 1px #ffffff45,0 0 20px #9e63eaa1,0 5px 15px #0b0413bd!important;
+ }
+}
+/* Other modes: shared celestial typography, lean HUD and vivid action identity. */
+body:has(#worm-field) #worm-hud :is(.worm-brand,.worm-metric,.worm-leaders,.worm-radar),
+body:has(#arena) .hud :is(.brand,.stat,.left,#radar){
+ color:#f8efff!important;background:linear-gradient(160deg,#211334e8,#120b23ed)!important;
+ border:1px solid #674b92!important;border-bottom:3px solid #38215d!important;
+ border-radius:6px!important;box-shadow:inset 0 1px #ffffff15,0 6px 20px #02000a8c!important;
+ backdrop-filter:blur(11px);
+}
+body:has(#worm-field) #worm-hud .worm-brand b,
+body:has(#arena) .hud .brand b{
+ color:#fff!important;text-shadow:0 0 14px #9563dd44;
+}
+body:has(#worm-field) #worm-hud .worm-brand small,
+body:has(#arena) .hud .brand small{color:#c3a8e8!important;letter-spacing:.09em!important}
+body:has(#worm-field) #worm-hud .worm-leaders,
+body:has(#arena) .hud .left{padding:13px 16px!important}
+body:has(#worm-field) #worm-hud .worm-leaders :is(.worm-rank),
+body:has(#arena) .hud .left .rank{
+ color:#dfd2ed!important;padding:7px 1px!important;border-bottom:1px solid #4b335e66;
+}
+body:has(#worm-field) #worm-hud .worm-rank.mine,
+body:has(#arena) .hud .rank.mine{
+ color:#f7dc78!important;text-shadow:0 0 13px #dbad464e;
+}
+body:has(#arena) .hud .stat b{color:#f9edff;font-size:clamp(18px,1.25vw,24px)!important}
+body[data-arena-mode=arena]{--arena-identity:#ba8bff}
+body[data-arena-mode=royale]{--arena-identity:#ff6ba7}
+body[data-arena-mode=core]{--arena-identity:#4a89ff}
+body[data-arena-mode=race]{--arena-identity:#ffdb4f}
+body:has(#arena) .hud .brand{border-left:3px solid var(--arena-identity,#ba8bff)!important}
+body:has(#arena) .hud #mode-caption{color:var(--arena-identity,#ba8bff)!important}
+body:has(#arena) .hud .arena-stage-bar{
+ height:7px;border-radius:3px;background:#140e25;
+ border:1px solid #49326a;overflow:hidden;
+}
+body:has(#arena) .hud .arena-stage-bar>span{
+ background:linear-gradient(90deg,#5f30c7,var(--arena-identity,#ba8bff))!important;
+ box-shadow:0 0 14px var(--arena-identity,#ba8bff);
+}
+body:has(#arena) .hud .ability{
+ color:white!important;
+ background:linear-gradient(155deg,#2b1b48,#140d2b)!important;
+ border:2px solid var(--action,#9e68f4)!important;
+ border-bottom:4px solid color-mix(in srgb,var(--action,#9e68f4) 40%,#11091b)!important;
+ border-radius:6px!important;
+ box-shadow:inset 0 1px #ffffff2a,0 5px 0 #0b0614,0 0 14px color-mix(in srgb,var(--action,#9e68f4) 22%,transparent)!important;
+}
+body:has(#arena) .hud .ability.cooling{filter:saturate(.65)!important;opacity:.78!important}
+body:has(#arena) .hud .ability .cool{
+ background:var(--action,#a985ed)!important;box-shadow:0 0 12px var(--action,#a985ed);
+}
+body:has(#worm-field) #worm-hud :is(.worm-pause-button,.worm-boost-button),
+body:has(#arena) .hud #pause{
+ color:#fff!important;text-shadow:0 1px 4px #04010b7d!important;
+ letter-spacing:.05em!important;box-shadow:inset 0 1px #ffffff21,0 5px 0 #0b0616,
+   0 0 13px #5035a850!important;
+}
+body:has(#worm-field) #worm-hud .worm-hint{
+ border:0!important;background:#100b2399!important;
+ box-shadow:none!important;color:#c2b3db!important;
+}
+body:has(#arena) .hud .hint{
+ background:#130b2bae!important;border:1px solid #5138787a!important;
+ border-radius:5px!important;color:#cbbbe0!important;font-size:11px!important;
+}
+/* Panels used by all four arcade modes: one consistent hierarchy. */
+body:has(#arena) :is(#paused,#guide,#result){
+ padding:16px!important;background:#060414cf!important;backdrop-filter:blur(9px)!important;
+}
+body:has(#arena) :is(#paused .arena-pause-panel,#guide .arena-guide-panel,#result .panel){
+ width:min(700px,calc(100vw - 26px))!important;max-width:700px!important;
+ padding:clamp(19px,3vw,34px)!important;
+ border:1px solid #805daa!important;border-top:2px solid #b18ce2!important;
+ border-bottom:5px solid #432568!important;
+ border-radius:8px!important;
+ background:linear-gradient(155deg,#1f1232fa,#10091ffc)!important;
+ box-shadow:inset 0 1px #ffffff22,0 26px 80px #02000ad8,0 0 22px #7842bd25!important;
+ overflow-y:auto!important;
+}
+body:has(#arena) #paused .arena-pause-heading{
+ display:flex;align-items:center;justify-content:space-between;gap:18px;
+ padding:0 0 16px;border-bottom:2px solid #604282;
+}
+body:has(#arena) #paused .arena-pause-heading>div{min-width:0}
+body:has(#arena) #paused .eyebrow,
+body:has(#arena) :is(#guide,#result) .eyebrow{
+ color:#c5a7ed!important;font-size:10px!important;
+}
+body:has(#arena) #paused .hero{
+ margin:9px 0 0!important;font:950 clamp(31px,3vw,42px)/1.08 Inter,system-ui!important;
+ color:#f8f0ff!important;letter-spacing:-.05em!important;text-shadow:0 2px 16px #0009!important;
+}
+body:has(#arena) #paused .desc{display:none!important}
+body:has(#arena) #paused #arena-pause-sound{
+ flex:none;min-width:117px;min-height:44px;padding:9px 11px;
+ border:1px solid #8665b1;border-bottom:3px solid #422469;border-radius:5px;
+ background:linear-gradient(155deg,#36234e,#1f132e);
+ color:#f6e9ff;font:900 11px Inter,system-ui;
+ box-shadow:inset 0 1px #ffffff20,0 4px 0 #0d0817;
+}
+body:has(#arena) #paused #arena-pause-sound[data-muted=true]{
+ background:linear-gradient(155deg,#401e35,#251325);border-color:#a46682;color:#ffd1df;
+}
+body:has(#arena) #paused .arena-pause-stats{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ gap:0!important;padding:0!important;margin:14px 0 18px!important;
+ border-top:1px solid #63468a!important;border-bottom:1px solid #63468a!important;
+ background:linear-gradient(90deg,#25163980,transparent)!important;
+}
+body:has(#arena) #paused .arena-pause-stats>div{
+ min-height:98px!important;padding:15px 18px!important;gap:10px!important;
+ display:flex!important;align-items:flex-start!important;justify-content:center!important;
+ border:0!important;border-right:1px solid #50386a!important;
+ border-radius:0!important;background:transparent!important;box-shadow:none!important;
+}
+body:has(#arena) #paused .arena-pause-stats>div:last-child{border-right:0!important}
+body:has(#arena) #paused .arena-pause-stats strong{
+ font:950 clamp(24px,2.4vw,35px)/1 Inter,system-ui!important;
+ color:#f5eaff!important;
+}
+body:has(#arena) #paused .arena-pause-stats>div:first-child strong{color:var(--arena-identity,#ba8bff)!important}
+body:has(#arena) #paused .arena-dialog-actions,
+body:has(#arena) :is(#result,#guide) :is(.arena-dialog-actions,.arena-guide-actions){
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ gap:10px!important;margin:0!important;
+}
+body:has(#arena) :is(#paused,#guide,#result) :is(.arena-dialog-actions,.arena-guide-actions) button{
+ min-height:54px!important;padding:12px!important;
+ border:1px solid #8160aa!important;border-bottom:4px solid #422565!important;
+ border-radius:6px!important;
+ background:linear-gradient(160deg,#35204e,#1e122f)!important;
+ color:#f4edff!important;font:900 clamp(11px,.83vw,14px)/1.3 Inter,system-ui!important;
+ box-shadow:inset 0 1px #ffffff1e,0 4px 0 #0c0718!important;
+}
+body:has(#arena) :is(#paused,#guide,#result) :is(#resume,#again,#guide-next){
+ grid-column:1/-1!important;background:linear-gradient(160deg,#8550ee,#4d22b8)!important;
+ border-color:#c5a0ff!important;border-bottom-color:#3d1681!important;
+ min-height:58px!important;
+}
+body:has(#arena) :is(#paused,#result) :is(#change2,#change){
+ border-color:#9b5b78!important;border-bottom-color:#532640!important;
+ background:linear-gradient(160deg,#401f36,#291627)!important;
+}
+body:has(#arena) #guide .arena-guide-demo{
+ border:1px solid #70529b!important;border-radius:5px!important;
+ background:radial-gradient(ellipse at 50% 60%,#5b309b4a,transparent 72%),#0e0a1d!important;
+}
+body:has(#arena) #guide .arena-guide-meta{padding:0 0 13px;border-bottom:1px solid #5b407b}
+body:has(#arena) #guide #guide-title{margin-top:18px!important}
+body:has(#arena) #result #result-stat{background:linear-gradient(90deg,#24153678,transparent)!important}
+body:has(#arena) #result .result-cell{background:transparent!important;border:0!important;border-right:1px solid #50386a!important;box-shadow:none!important}
+body:has(#arena) #result .result-cell:last-child{border-right:0!important}
+/* Match the worm guide/results to the same panel/material system. */
+body:has(#worm-field) :is(#worm-result .worm-panel,#worm-guide .worm-guide-panel){
+ width:min(690px,calc(100vw - 26px))!important;max-width:690px!important;
+ border:1px solid #8665ae!important;border-top:2px solid #b18ce2!important;
+ border-bottom:5px solid #422466!important;border-radius:8px!important;
+ background:linear-gradient(155deg,#201333fa,#100b21fa)!important;
+ box-shadow:inset 0 1px #ffffff25,0 26px 82px #020009da!important;
+}
+body:has(#worm-field) :is(#worm-result,#worm-guide){
+ background:#060413d5!important;backdrop-filter:blur(9px)!important;
+}
+body:has(#worm-field) #worm-result .worm-results{
+ border-top:1px solid #69508b!important;border-bottom:1px solid #69508b!important;
+ background:linear-gradient(90deg,#27183b80,transparent)!important;
+}
+body:has(#worm-field) #worm-result .worm-results>div{
+ background:transparent!important;border:0!important;border-right:1px solid #49315f!important;
+ box-shadow:none!important;
+}
+body:has(#worm-field) #worm-result .worm-results>div:last-child{border-right:0!important}
+@media(hover:hover) and (pointer:fine){
+ body:has(#arena) :is(#paused,#guide,#result) button:not(:disabled):hover,
+ body:has(#worm-field) #worm-settings button:not(:disabled):hover{
+  border-color:#d4adff!important;
+  box-shadow:inset 0 1px #ffffff3d,0 0 0 1px #b996ff4e,
+   0 0 21px #a262ffbc,0 7px 17px #08020dd1!important;
+  transform:translateY(-2px)!important;filter:brightness(1.08);
+ }
+ body:has(#arena) :is(#paused,#result) :is(#change2,#change):hover{
+  border-color:#ff91b3!important;box-shadow:0 0 21px #ff567e82!important;
+ }
+}
+@media(max-width:760px){
+ body:has(#worm-field) #worm-settings .worm-settings-panel{max-height:calc(100dvh - 18px)!important}
+ #worm-settings .worm-settings-content{
+  grid-template-columns:1fr!important;padding:17px 19px!important;gap:15px!important;
+ }
+ #worm-settings .worm-settings-header{padding:17px 19px 16px}
+ #worm-settings .worm-settings-header h1{font-size:clamp(27px,7vw,36px)!important}
+ #worm-settings .worm-settings-footer{padding:12px 19px!important}
+ #worm-settings .worm-settings-section-head{margin-bottom:4px!important}
+ body:has(#worm-field) #worm-settings :is(.worm-setting-toggle,.worm-setting-action){
+  min-height:60px!important;padding:8px 0!important;
+ }
+ #worm-settings .worm-settings-controls-info{min-height:58px;padding:10px 0 2px}
+ body:has(#arena) :is(#paused,#guide,#result){padding:8px!important}
+ body:has(#arena) :is(#paused .arena-pause-panel,#guide .arena-guide-panel,#result .panel){
+  width:100%!important;max-height:calc(100dvh - 16px)!important;padding:19px!important;
+ }
+ body:has(#arena) #paused .arena-pause-stats>div{min-height:80px!important;padding:10px!important}
+ body:has(#arena) #paused .arena-pause-stats strong{font-size:clamp(19px,4.7vw,29px)!important}
+ body:has(#arena) #paused #arena-pause-sound{min-width:93px;font-size:10px}
+}
+@media(max-width:440px){
+ #worm-settings .worm-settings-header{padding:13px 15px}
+ #worm-settings .worm-settings-header h1{font-size:29px!important}
+ #worm-settings .worm-settings-header p{font-size:10px!important}
+ #worm-settings .worm-settings-content{padding:11px 15px!important}
+ body:has(#worm-field) #worm-settings :is(.worm-setting-toggle,.worm-setting-action){min-height:57px!important}
+ #worm-settings .worm-settings-footer{padding:10px 15px!important}
+ body:has(#worm-field) #worm-settings #worm-settings-back{max-width:none!important}
+ body:has(#arena) #paused .arena-pause-stats>div{padding:7px!important}
+ body:has(#arena) #paused .arena-pause-stats small{font-size:8px!important}
+ body:has(#arena) :is(#paused,#guide,#result) :is(.arena-dialog-actions,.arena-guide-actions) button{
+  min-height:46px!important;padding:9px!important;
+ }
+}
+@media(max-height:510px) and (orientation:landscape){
+ #worm-settings .worm-settings-header{padding:11px 17px}
+ #worm-settings .worm-settings-header h1{font-size:26px!important}
+ #worm-settings .worm-settings-content{grid-template-columns:1fr 1fr!important;padding:10px 17px!important}
+ body:has(#worm-field) #worm-settings :is(.worm-setting-toggle,.worm-setting-action){min-height:54px!important}
+ #worm-settings .worm-settings-footer{min-height:54px;padding:8px 17px!important}
+ body:has(#arena) #paused .arena-pause-stats>div{min-height:63px!important;padding:7px!important}
+}
