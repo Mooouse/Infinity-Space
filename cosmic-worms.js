@@ -1152,27 +1152,43 @@ function drawCosmicInterior(w,t,r,detail){
  const nodes=[w,...w.segments],n=nodes.length;
  if(n<4)return;
  const theme=SKIN_NEBULAE[w.skin]||SKIN_NEBULAE.nebula;
- const stride=Math.max(1,Math.ceil(n/(w.human?260:145)));
+ // Keep enough path samples for attractive clouds on very long worms.
+ // Visual density is stable as mass increases rather than collapsing to
+ // a few oversized primitive strokes.
+ const stride=Math.max(1,Math.ceil(n/(w.human?340:215)));
  const sampled=[];
  for(let i=0;i<n;i+=stride)sampled.push(nodes[i]);
  if(sampled[sampled.length-1]!==nodes[n-1])sampled.push(nodes[n-1]);
  const count=sampled.length,normal=new Array(count);
+ // Preserve the ORIGINAL nebula/star/comet textures while fixing giant
+ // bodies. The former single left/right offset polygon self-intersected
+ // whenever a long worm folded back on itself, creating ugly dark wedges.
+ // A nonzero-winding union of round capsules never cancels its overlaps.
  const shape=new Path2D(),half=r*.81;
  for(let i=0;i<count;i++){
   const a=sampled[Math.max(0,i-1)],b=sampled[Math.min(count-1,i+1)];
   const dx=a.x-b.x,dy=a.y-b.y,l=Math.hypot(dx,dy)||1;
   normal[i]={x:-dy/l,y:dx/l};
  }
+ for(let i=1;i<count;i++){
+  const a=sampled[i-1],b=sampled[i],dx=b.x-a.x,dy=b.y-a.y;
+  const length=Math.hypot(dx,dy);
+  if(length<.01)continue;
+  const nx=-dy/length*half,ny=dx/length*half;
+  // All quads wind identically; intersections remain filled.
+  shape.moveTo(a.x+nx,a.y+ny);
+  shape.lineTo(b.x+nx,b.y+ny);
+  shape.lineTo(b.x-nx,b.y-ny);
+  shape.lineTo(a.x-nx,a.y-ny);
+  shape.closePath();
+ }
+ // Rounded joins remove pinholes and preserve the original soft ribbon.
  for(let i=0;i<count;i++){
-  const p=sampled[i],q=normal[i];
-  if(i===0)shape.moveTo(p.x+q.x*half,p.y+q.y*half);
-  else shape.lineTo(p.x+q.x*half,p.y+q.y*half);
+  const p=sampled[i];
+  shape.moveTo(p.x+half,p.y);
+  shape.arc(p.x,p.y,half,0,TAU);
+  shape.closePath();
  }
- for(let i=count-1;i>=0;i--){
-  const p=sampled[i],q=normal[i];
-  shape.lineTo(p.x-q.x*half,p.y-q.y*half);
- }
- shape.closePath();
  ctx.save();ctx.clip(shape);
  ctx.globalAlpha=1;
  ctx.fillStyle=w.skin==='horizon'||w.skin==='eclipse'?'#04040e':'#070d23';
@@ -1334,6 +1350,9 @@ function drawBoostBody(w,t,r,path,overBody=false){
  ctx.restore();
 }
 
+function cosmicSkinDetail(w,z){
+ return z*wormRadius(w)>=9.5;
+}
 function drawWorm(w,t){
  if(!w.alive)return;
  const z=camera.zoom;
@@ -1341,7 +1360,10 @@ function drawWorm(w,t){
  const r=wormRadius(w),n=w.segments.length;
  if(!n)return;
  const {path,points}=wormBodyPath(w);
- const detail=z>.56;
+ // Detail budget follows the apparent width of the body on screen,
+ // not raw zoom. At 8000+ mass zoom reaches its minimum, while the
+ // massive worm is still wide enough for nebulae, stars and comets.
+ const detail=cosmicSkinDetail(w,z);
  const custom=!!(w.human&&options.customEnabled&&options.customSegments?.length);
  const theme=SKIN_NEBULAE[w.skin]||SKIN_NEBULAE.nebula;
  const head=points[0],tail=points[points.length-1];
@@ -1375,7 +1397,7 @@ const gradient=ctx.createLinearGradient(tail.x,tail.y,head.x+0.1,head.y+0.1);
   // All cosmic presets are animated for both bots and the player. There
   // are no decorative circles, rings, plates, or artificial segment joins.
   drawCosmicInterior(w,t,r,true);
- }else if(z>.26)drawCosmicInterior(w,t,r,false);
+ }else if(z*r>=5.2)drawCosmicInterior(w,t,r,false);
  if(boosting)drawBoostBody(w,t,r,path,true);
  drawSkinHead(w,r);
  if(options.names||w.human){
