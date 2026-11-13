@@ -213,7 +213,7 @@ const BOT_PERSONAS={
 };
 const DEATH_REPLAY_SECONDS=3.25;
 let vw=0,vh=0,dpr=1,last=0,uiClock=0,starTime=0,foodTimer=0,toastTimer=0,guideStep=0,guideReturn='playing';
-let game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),wrecks:[],nextWreckId:1,worms:[],fx:[],player:null,reported:false,deathElapsed:0,deathPosition:null,deathGhost:null};
+let game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),wrecks:[],nextWreckId:1,ambientCount:0,foodRespawnQueue:[],worms:[],fx:[],player:null,reported:false,deathElapsed:0,deathPosition:null,deathGhost:null};
 let qaManualPhysics=false; // tester-only: stop rAF simulation while deterministic QA advances physics
 let lastIdlePaint=0;
 const input={mx:0,my:0,mouseMoved:false,mouseDown:false,boostKey:false,boostTouch:false,keys:new Set(),stickAngle:0,stickPower:0,stickPointer:-1,touchAngle:null};
@@ -271,7 +271,13 @@ function spawnPosition(angle,count,nearPlayer=false){
 }
 function createWorm(name,human,index,preferEncounter=false,identity=null){
  const angle=human?-.28:rand(0,TAU);
- const mass=human?61:rand(54,171);
+ // Established opponents: several genuinely enormous rivals already exist.
+ const initial=!human&&game.time<.5;
+ const mass=human?61:initial&&index<=3?
+   [0,14500,11200,8600][index]*rand(.91,1.09):
+   initial&&index<=8?rand(3400,6700):
+   initial&&index<=18?rand(1050,3300):
+   rand(54,250);
  const count=segmentCount({mass});
  const pos=human?{x:WORLD.cx,y:WORLD.cy}:spawnPosition(angle,count,preferEncounter);
  if(!pos)return null;
@@ -387,6 +393,7 @@ function addFood(food){
  const k=gridKey(food.x,food.y,FOOD_CELL);
  food._cell=k;food._index=game.food.length;
  game.food.push(food);foodBucket(k).add(food);
+ if(food.ambient)game.ambientCount++;
  return food;
 }
 function removeFood(food){
@@ -394,6 +401,11 @@ function removeFood(food){
  if(index===undefined||index<0||game.food[index]!==food)return;
  const bucket=game.foodGrid.get(food._cell);
  if(bucket){bucket.delete(food);if(!bucket.size)game.foodGrid.delete(food._cell);}
+ if(food.ambient){
+  game.ambientCount=Math.max(0,game.ambientCount-1);
+  if(game.foodRespawnQueue.length<6000)
+   game.foodRespawnQueue.push({x:food.x,y:food.y});
+ }
  if(food.wreckId!==undefined){
   const wreck=game.wrecks.find(item=>item.id===food.wreckId);
   if(wreck)wreck.remaining=Math.max(0,wreck.remaining-1);
@@ -443,8 +455,26 @@ function makeFood(x,y,color,value,r){
  return {x,y,color:color||FOOD_COLORS[Math.floor(Math.random()*FOOD_COLORS.length)],
  value:value??rand(1.5,3.2),r:r??rand(2.6,5.4),phase:rand(0,TAU)};
 }
+function spawnAmbientFood(x,y){
+ const f=makeFood(x,y);f.ambient=true;addFood(f);return f;
+}
 function fillFood(amount){
- for(let i=0;i<amount;i++){const p=randomPos(.975);addFood(makeFood(p.x,p.y));}
+ for(let i=0;i<amount;i++){const p=randomPos(.965);spawnAmbientFood(p.x,p.y);}
+}
+function regenerateAmbientFood(){
+ const missing=FOOD_TARGET-game.ambientCount;
+ if(missing<=0)return;
+ const amount=Math.min(190,missing);
+ for(let i=0;i<amount;i++){
+  const old=game.foodRespawnQueue.length&&i%4!==0?
+   game.foodRespawnQueue.shift():null;
+  let p=old?{x:old.x+rand(-235,235),y:old.y+rand(-235,235)}:
+   randomPos(.94);
+  const dist=((p.x-WORLD.cx)/WORLD.rx)**2+((p.y-WORLD.cy)/WORLD.ry)**2;
+  if(dist>.965*.965)p=randomPos(.93);
+  spawnAmbientFood(p.x,p.y);
+ }
+ if(game.ambientCount>=FOOD_TARGET)game.foodRespawnQueue.length=0;
 }
 
 function notify(text){
@@ -452,7 +482,7 @@ function notify(text){
  const el=$('worm-toast');el.textContent=text;el.classList.add('show');toastTimer=1.8;
 }
 function init(){
- game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),wrecks:[],nextWreckId:1,worms:[],fx:[],player:null,reported:false,deathElapsed:0,deathPosition:null,deathGhost:null};
+ game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),wrecks:[],nextWreckId:1,ambientCount:0,foodRespawnQueue:[],worms:[],fx:[],player:null,reported:false,deathElapsed:0,deathPosition:null,deathGhost:null};
  const human=!DEMO;
  const p=createWorm(DEMO?'Astra':(window.InfinityProfile?.getName()||'PILOT'),human,0);
  game.player=p;game.worms.push(p);
@@ -485,8 +515,11 @@ function ranking(w){return 1+game.worms.reduce((n,b)=>n+(b.alive&&b!==w&&b.mass>
 function collectWreckTarget(w){
  let selected=null,selectedWreck=null,best=Infinity;
  const now=game.time;
- for(const wreck of game.wrecks){
-  if(wreck.remaining<=0||now>=wreck.expires)continue;
+ // Keep harvesting the same fallen body until its last resource is gone.
+ const locked=game.wrecks.find(item=>item.id===w.targetWreckId&&item.remaining>0);
+ const candidates=locked?[locked]:game.wrecks;
+ for(const wreck of candidates){
+  if(wreck.remaining<=0)continue;
   const items=wreck.items,stride=Math.max(1,Math.ceil(items.length/42));
   // Each rival surveys a different set of points along the whole corpse.
   const start=(w.id*7)%stride;
@@ -499,8 +532,8 @@ function collectWreckTarget(w){
  }
  // If the sparse beacons were consumed first, fall back to live remnants
  // anywhere along the corpse rather than abandoning food that's still there.
- if(!selected)for(const wreck of game.wrecks){
-  if(wreck.remaining<=0||now>=wreck.expires)continue;
+ if(!selected)for(const wreck of candidates){
+  if(wreck.remaining<=0)continue;
   for(const f of wreck.items){
    if(f._index<0)continue;
    const score=Math.hypot(f.x-w.x,f.y-w.y)+(now-wreck.created)*2.2-
@@ -513,7 +546,7 @@ function collectWreckTarget(w){
  foodNearby(w.x,w.y,Math.min(750,Math.max(260,BOT_PERSONAS[w.persona]?.sight||440)),f=>{
   if(f._index<0||f.wreckId===undefined)return;
   const wreck=game.wrecks.find(item=>item.id===f.wreckId);
-  if(!wreck||wreck.remaining<=0||now>=wreck.expires)return;
+  if(!wreck||wreck.remaining<=0||(locked&&wreck.id!==locked.id))return;
   const distance=Math.hypot(f.x-w.x,f.y-w.y);
   const score=distance+(now-wreck.created)*2.2-Math.min(160,wreck.remaining*.18)-f.value*5;
   if(score<best){best=score;selected=f;selectedWreck=wreck;}
@@ -598,7 +631,7 @@ function steerBot(w,dt){
  const salvage=collectWreckTarget(w);
  w.targetWreckId=salvage?.wreck.id??null;
  w.objective=salvage?'salvage':'food';
- if(salvage){w.coil=null;w.targetFood=salvage.food;}
+ if(salvage){w.coil=null;w.targetFood=salvage.food;w.boost=false;w.think=Math.min(w.think,.15);}
  let goal=salvage?.food||null,goalScore=salvage?Infinity:-Infinity;
  // A human would keep chasing a worthwhile target instead of picking a
  // completely different nearest dot every frame. Advanced bots hold a plan
@@ -685,7 +718,7 @@ function steerBot(w,dt){
  const safe=bestClearance>(w.persona==='reckless'?25:65);
  const urgent=chasing||goalScore>(w.persona==='pro'?1.6:2.2);
  const bias=w.persona==='reckless'? .65:.19;
- w.boost=!w.coil&&w.mass>78&&edge<.86&&safe&&urgent&&
+ w.boost=!salvage&&!w.coil&&w.mass>78&&edge<.86&&safe&&urgent&&
   Math.random()<Math.min(.98,persona.boost*(chasing?1.3:1)+bias);
 }
 
@@ -695,7 +728,7 @@ function kill(w,killer,reason){
  w.alive=false;w.boost=false;w.deathDelay=DEMO?2.5:rand(4.5,6.5);
  if(killer&&killer!==w){killer.kills++;killer.mass+=Math.min(18,w.mass*.12);}
  // Materialize the ENTIRE corpse before any bot respawns, from head to tip.
- const wreck={id:game.nextWreckId++,created:game.time,expires:game.time+90,remaining:0,items:[]};
+ const wreck={id:game.nextWreckId++,created:game.time,remaining:0,items:[]};
  // Never impose a global food cap here: it previously discarded most of a
  // long worm's remains as soon as the ambient field became dense.
  const body=[{x:w.x,y:w.y},...w.segments];
@@ -715,7 +748,7 @@ function kill(w,killer,reason){
   }
  }
  game.wrecks.unshift(wreck);
- if(game.wrecks.length>20)game.wrecks.length=20;
+ // Keep every active corpse in the objective registry until its last piece is eaten.
  // Every rival hears the salvage signal, including those normally idling.
  for(const other of game.worms)if(!other.human&&other.alive)other.think=Math.min(other.think,.06);
  game.lastDeath={name:w.name,segments:body.length,dropped,head:{x:body[0].x,y:body[0].y},
@@ -768,7 +801,7 @@ function updateWorm(w,dt){
    if(Number.isFinite(w.afkTimer))w.afkTimer=Math.max(0,w.afkTimer-dt);
    // Death salvage interrupts even an idle opponent; its usual behaviour
    // resumes once there is no nearby or announced corpse to scavenge.
-   if(game.wrecks.some(item=>item.remaining>0&&game.time<item.expires))steerBot(w,dt);
+   if(game.wrecks.some(item=>item.remaining>0))steerBot(w,dt);
    else{w.objective='idle';w.targetWreckId=null;w.target=w.angle;w.boost=false;}
   }else{
    const awayRate=w.persona==='newcomer'?.012:w.persona==='casual'?.004:.0008;
@@ -847,14 +880,14 @@ function collectFood(dt){
  for(const w of game.worms){
   if(!w.alive)continue;
   const radius=wormRadius(w);
-  foodNearby(w.x,w.y,66,f=>{
+  foodNearby(w.x,w.y,75,f=>{
    if(f._index<0)return;
    const dx=w.x-f.x,dy=w.y-f.y,ds=dx*dx+dy*dy;
-   if(ds<(radius+f.r+5)**2){
+   if(ds<(radius+f.r+(w.human?5:13))**2){
     w.mass+=f.value;w.foodEaten++;if(w.human)playWormSound('pickup');
     removeFood(f);
-   }else if(w.human&&ds<53*53&&ds>5){
-    const d=Math.sqrt(ds),speed=(53-d)*dt*5;
+   }else if(ds<68*68&&ds>5){
+    const d=Math.sqrt(ds),speed=(68-d)*dt*(w.human?5:10);
     moveFood(f,f.x+dx/d*speed,f.y+dy/d*speed);
    }
   });
@@ -905,11 +938,9 @@ function simulate(dt){
  recycleBots(dt);
  foodTimer+=dt;
  if(foodTimer>.18){
-  if(game.wrecks.length)game.wrecks=game.wrecks.filter(wreck=>
-   wreck.remaining>0&&game.time<wreck.expires);
+  if(game.wrecks.length)game.wrecks=game.wrecks.filter(wreck=>wreck.remaining>0);
   foodTimer=0;
-  if(game.food.length<FOOD_TARGET)
-   fillFood(Math.min(180,FOOD_TARGET-game.food.length));
+  regenerateAmbientFood();
  }
  const p=game.player;
  if(p.alive){
