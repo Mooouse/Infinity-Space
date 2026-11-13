@@ -442,7 +442,7 @@ function addBodyGrid(){
   for(let i=-1;i<count;i+=2){
    const p=i<0?w:w.segments[i],key=gridKey(p.x,p.y,BODY_CELL);
    let bucket=grid.get(key);if(!bucket){bucket=[];grid.set(key,bucket);}
-   bucket.push({w,x:p.x,y:p.y,head:i<0});
+   bucket.push({w,x:p.x,y:p.y,head:i<0,index:i});
   }
  }
 }
@@ -641,51 +641,54 @@ function steerBot(w,dt){
  const persona=BOT_PERSONAS[w.persona]||BOT_PERSONAS.casual;
  w.think-=dt;w.wiggle+=dt*.7;
  if(w.think>0)return;
- w.think=w.reaction*rand(.83,1.18);
- const sight=persona.sight;
+ w.think=Math.max(.06,w.reaction*rand(.86,1.15));
  const salvage=collectWreckTarget(w);
  w.targetWreckId=salvage?.wreck.id??null;
  w.objective=salvage?'salvage':'food';
- if(salvage){w.coil=null;w.targetFood=salvage.food;w.boost=false;w.think=Math.min(w.think,.15);}
- let goal=salvage?.food||null,goalScore=salvage?Infinity:-Infinity;
- // A human would keep chasing a worthwhile target instead of picking a
- // completely different nearest dot every frame. Advanced bots hold a plan
- // longer; newcomers are easily distracted.
- const old=w.targetFood;
- if(!salvage&&old&&old._index>=0){
-  const dx=old.x-w.x,dy=old.y-w.y,d=Math.hypot(dx,dy);
-  if(d>22&&d<sight){
-   goal=old;
-   goalScore=(old.value*145+95)/(d+65)+(.08+.32*persona.awareness);
+ const previousFood=w.targetFood;
+ let goal=salvage?.food||null,goalScore=-Infinity;
+ if(salvage){
+  w.coil=null;w.boost=false;
+  w.think=Math.min(w.think,.13);
+ }else{
+  // Select matter AHEAD of the head. Do not reverse to fetch every orb
+  // just passed; maintain a nearby goal while it remains worth pursuing.
+  const sight=persona.sight||0;
+  const scoreFood=f=>{
+   const dx=f.x-w.x,dy=f.y-w.y,d=Math.hypot(dx,dy);
+   const front=(dx*Math.cos(w.angle)+dy*Math.sin(w.angle))/Math.max(1,d);
+   if(d<20||d>sight)return -Infinity;
+   return 330/(d+110)+Math.max(-.8,front)*.9+
+    Math.min(1,f.value/5)*.45+(f===previousFood&&front>-.28?.55:0);
+  };
+  if(previousFood&&previousFood._index>=0){
+   goalScore=scoreFood(previousFood);
+   if(goalScore>-Infinity)goal=previousFood;
   }
+  if(sight>0)foodNearby(w.x,w.y,sight,f=>{
+   if(f._index<0)return;
+   const score=scoreFood(f);
+   if(score>goalScore){goal=f;goalScore=score;}
+  });
  }
- if(!salvage)foodNearby(w.x,w.y,sight,f=>{
-  if(f._index<0)return;
-  const dx=f.x-w.x,dy=f.y-w.y,d=Math.hypot(dx,dy);
-  if(d<18||d>sight)return;
-  const dot=(dx*Math.cos(w.angle)+dy*Math.sin(w.angle))/(d||1);
-  const score=(f.value*145+95)/(d+65)+(dot>0?.14:0)+(f===old?.2:0);
-  if(score>goalScore){goal=f;goalScore=score;}
- });
  w.targetFood=goal;
  let desired=goal?Math.atan2(goal.y-w.y,goal.x-w.x):
-  w.angle+Math.sin(w.wiggle*.7+w.id)*.32;
+  w.angle+Math.sin(w.wiggle*.35+w.id)*.17;
  let chasing=false;
- // Hunters/experts anticipate where a target will be, not where it is now.
- // Reckless players may even challenge larger opponents and lose.
- if(!salvage&&persona.hunt>0&&w.mass>64&&Math.random()<persona.hunt){
-  let prey=null,range=Math.min(sight*.80,900),closest=range;
+ // Rival hunting remains possible but it should not hijack every normal
+ // collection route into a constant chase and circle.
+ if(!salvage&&persona.hunt>0&&w.mass>90&&Math.random()<persona.hunt*.18){
+  let prey=null,closest=Math.min(persona.sight*.75,740);
   for(const other of game.worms){
-   if(!other.alive||other===w)continue;
-   if(other.mass>w.mass*(w.persona==='reckless'?1.38:.94))continue;
-   const d=Math.hypot(other.x-w.x,other.y-w.y);
-   if(d<closest&&d>125){prey=other;closest=d;}
+   if(!other.alive||other===w||other.mass>w.mass*(w.persona==='reckless'?1.2:.88))continue;
+   const dx=other.x-w.x,dy=other.y-w.y,d=Math.hypot(dx,dy);
+   const front=(dx*Math.cos(w.angle)+dy*Math.sin(w.angle))/Math.max(d,1);
+   if(d<closest&&d>180&&front>.30){prey=other;closest=d;}
   }
   if(prey){
-   const predictive=(w.persona==='pro'||w.persona==='veteran'||w.persona==='hunter');
-   const intercept=predictive?Math.min(310,closest*(w.persona==='pro'?.54:.37)):0;
-   desired=Math.atan2(prey.y+Math.sin(prey.angle)*intercept-w.y,
-    prey.x+Math.cos(prey.angle)*intercept-w.x);
+   const lead=Math.min(145,closest*.25);
+   desired=Math.atan2(prey.y+Math.sin(prey.angle)*lead-w.y,
+    prey.x+Math.cos(prey.angle)*lead-w.x);
    chasing=true;
   }
  }
@@ -694,47 +697,66 @@ function steerBot(w,dt){
   if(coilHeading!==null){desired=coilHeading;chasing=true;w.objective='encircle';}
  }
  const edge=Math.hypot((w.x-WORLD.cx)/WORLD.rx,(w.y-WORLD.cy)/WORLD.ry);
- if(edge>.86)desired=Math.atan2(WORLD.cy-w.y,WORLD.cx-w.x);
- // Imperfect human aiming. Rookie reactions are noisy and delayed; experts
- // compute more trajectories and future rival-head positions.
- desired+=rand(-persona.error,persona.error);
- let best=-Infinity,bestAngle=desired,bestClearance=Infinity;
- for(let k=0;k<persona.samples;k++){
-  const angle=k===0?desired:k===1?w.angle:(k-2)*TAU/Math.max(1,persona.samples-2);
-  const cx=Math.cos(angle),cy=Math.sin(angle);
-  let score=Math.cos(angle-desired)*12+Math.cos(angle-w.angle)*(.4+persona.awareness*.35);
+ if(edge>.86){desired=Math.atan2(WORLD.cy-w.y,WORLD.cx-w.x);w.coil=null;}
+ // Distinguish a real circular trap from accidental aim oscillations.
+ // An accidental loop moves little despite constant forward travel;
+ // give it one outward, steady run before resuming the same goal.
+ if(game.time-w.navSince>3.4){
+  const moved=Math.hypot(w.x-w.navFromX,w.y-w.navFromY);
+  if(!w.coil&&game.time>=w.escapeUntil&&
+     moved<Math.max(105,w.speed*1.0)&&edge<.83){
+   w.escapeUntil=game.time+rand(3.8,5.1);
+   w.escapeHeading=w.angle+(w.id%2?.30:-.30);
+   w.coilCooldown=Math.max(w.coilCooldown,game.time+17);
+  }
+  w.navFromX=w.x;w.navFromY=w.y;w.navSince=game.time;
+ }
+ if(game.time<w.escapeUntil&&edge<.87){
+  desired=w.escapeHeading;
+  chasing=false;
+ }
+ // Candidate paths must be physically reachable: the old planner
+ // sampled arbitrary 360-degree world bearings and changed its mind
+ // at every decision despite the worm's finite turning radius.
+ const approach=w.angle+clamp(normAngle(desired-w.angle),-.56,.56);
+ const choices=[approach,w.angle,approach-.17,approach+.17,
+  approach-.34,approach+.34,approach-.54,approach+.54,
+  w.angle-.26,w.angle+.26];
+ const samples=Math.max(1,Math.min(choices.length,persona.samples||1));
+ let best=-Infinity,bestAngle=approach,bestClearance=Infinity;
+ for(let k=0;k<samples;k++){
+  const heading=choices[k];
+  let score=25*Math.cos(heading-desired)+9*Math.cos(heading-w.angle);
   let clearance=Infinity;
   for(const step of persona.look){
-   const x=w.x+cx*step,y=w.y+cy*step;
+   const swing=clamp(normAngle(heading-w.angle),
+    -3.35*step/Math.max(90,w.speed),3.35*step/Math.max(90,w.speed));
+   const future=w.angle+swing;
+   const x=w.x+Math.cos(future)*step,y=w.y+Math.sin(future)*step;
    const border=((x-WORLD.cx)/WORLD.rx)**2+((y-WORLD.cy)/WORLD.ry)**2;
-   if(border>.95*.95)score-=(border>1?320:65)*Math.max(.4,persona.awareness);
-   bodiesNearby(x,y,130,entry=>{
-    if(entry.w===w||!entry.w.alive)return;
-    let ox=entry.x,oy=entry.y;
-    if(entry.head&&(w.persona==='pro'||w.persona==='veteran'||w.persona==='hunter')){
-     const future=Math.min(.75,step/Math.max(150,w.speed));
-     ox+=Math.cos(entry.w.angle)*entry.w.speed*future*.54;
-     oy+=Math.sin(entry.w.angle)*entry.w.speed*future*.54;
-    }
-    const d=Math.hypot(x-ox,y-oy);
-    const danger=wormRadius(w)+wormRadius(entry.w)+40;
+   if(border>.91*.91)score-=Math.min(170,(border-.91*.91)*650);
+   const importance=Math.max(.26,1-step/850);
+   bodiesNearby(x,y,110,entry=>{
+    if(!entry.w.alive)return;
+    // Only the older tail is an obstacle; immediately connected body
+    // segments must not cause a constant avoidance turn.
+    if(entry.w===w&&(entry.index===undefined||entry.index<24))return;
+    const d=Math.hypot(x-entry.x,y-entry.y);
+    const danger=(wormRadius(w)+wormRadius(entry.w))*.78+11;
     clearance=Math.min(clearance,d-danger);
-    // A committed coil may fly near its prey, but never through it.
-    const orbitPrey=!!(w.coil&&entry.w.id===w.coil.id&&d>=danger+8);
-    if(d<danger+53)score-=(danger+53-d)*(1+(420-step)/500)*persona.awareness*(orbitPrey?.16:1);
-    if(d<danger)score-=(220+(danger-d)*2.8)*persona.awareness;
+    if(d<danger+52)
+     score-=(danger+52-d)*importance*Math.max(.32,persona.awareness)*.62;
+    if(d<danger)
+     score-=(120+(danger-d)*2.2)*importance*Math.max(.38,persona.awareness);
    });
   }
-  if(score>best){best=score;bestAngle=angle;bestClearance=clearance;}
+  if(score>best){best=score;bestAngle=heading;bestClearance=clearance;}
  }
  w.target=bestAngle;
- // Players differ in boost discipline: the pro spends mass only with room
- // ahead, while the reckless sprinter often commits to unsafe speed.
- const safe=bestClearance>(w.persona==='reckless'?25:65);
- const urgent=chasing||goalScore>(w.persona==='pro'?1.6:2.2);
- const bias=w.persona==='reckless'? .65:.19;
- w.boost=!salvage&&!w.coil&&w.mass>78&&edge<.86&&safe&&urgent&&
-  Math.random()<Math.min(.98,persona.boost*(chasing?1.3:1)+bias);
+ const safe=bestClearance>(w.persona==='reckless'?18:65);
+ w.boost=!salvage&&!w.coil&&game.time>=w.escapeUntil&&
+  w.mass>90&&edge<.85&&safe&&(chasing||goalScore>2.8)&&
+  Math.random()<persona.boost*.28;
 }
 
 function kill(w,killer,reason){
