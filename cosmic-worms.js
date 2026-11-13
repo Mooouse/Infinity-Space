@@ -480,25 +480,127 @@ function init(){
 }
 function sortedWorms(){return game.worms.filter(w=>w.alive).sort((a,b)=>b.mass-a.mass)}
 function ranking(w){return 1+game.worms.reduce((n,b)=>n+(b.alive&&b!==w&&b.mass>w.mass?1:0),0)}
+// Recently defeated worms broadcast their entire salvage trail. The corpse
+// is everyone's priority; ordinary ambient food and combat are secondary.
+function collectWreckTarget(w){
+ let selected=null,selectedWreck=null,best=Infinity;
+ const now=game.time;
+ for(const wreck of game.wrecks){
+  if(wreck.remaining<=0||now>=wreck.expires)continue;
+  const items=wreck.items,stride=Math.max(1,Math.ceil(items.length/42));
+  // Each rival surveys a different set of points along the whole corpse.
+  const start=(w.id*7)%stride;
+  for(let i=start;i<items.length;i+=stride){
+   const f=items[i];if(f._index<0)continue;
+   const distance=Math.hypot(f.x-w.x,f.y-w.y);
+   const score=distance+(now-wreck.created)*2.2-Math.min(160,wreck.remaining*.18)-f.value*5;
+   if(score<best){best=score;selected=f;selectedWreck=wreck;}
+  }
+ }
+ if(!selected)return null;
+ // Once close, sweep up actual nearby pieces, not just sampled beacons.
+ foodNearby(w.x,w.y,Math.min(750,Math.max(260,BOT_PERSONAS[w.persona]?.sight||440)),f=>{
+  if(f._index<0||f.wreckId===undefined)return;
+  const wreck=game.wrecks.find(item=>item.id===f.wreckId);
+  if(!wreck||wreck.remaining<=0||now>=wreck.expires)return;
+  const distance=Math.hypot(f.x-w.x,f.y-w.y);
+  const score=distance+(now-wreck.created)*2.2-Math.min(160,wreck.remaining*.18)-f.value*5;
+  if(score<best){best=score;selected=f;selectedWreck=wreck;}
+ });
+ return {food:selected,wreck:selectedWreck,score:best};
+}
+// Advanced opponents sometimes attempt to trap a rival inside a continuous
+// body loop. They need enough length to close it: this is a physical tactic,
+// not an artificial kill outside the game's normal body collisions.
+const COIL_AGGRESSION={afk:0,newcomer:.015,casual:.045,cautious:.035,hunter:.36,veteran:.45,pro:.60,reckless:.22};
+function encircleRadius(victim){
+ return clamp(56+wormRadius(victim)*1.3+Math.min(38,victim.segments.length*.2),100,195);
+}
+function canEncircle(w,victim){
+ if(!w.alive||!victim.alive||victim===w||w.mass<victim.mass*.78)return false;
+ const radius=encircleRadius(victim);
+ return w.segments.length*11.8>=TAU*radius*1.08&&
+  w.segments.length>victim.segments.length*.86;
+}
+function findCoilVictim(w,persona){
+ const range=Math.min(620,persona.sight*.74);
+ let victim=null,closest=range;
+ for(const other of game.worms){
+  if(!canEncircle(w,other))continue;
+  const distance=Math.hypot(other.x-w.x,other.y-w.y);
+  if(distance<closest&&distance>75){victim=other;closest=distance;}
+ }
+ return victim;
+}
+function guideCoil(w,dt,persona){
+ let coil=w.coil;
+ const existing=coil&&game.worms.find(other=>other.id===coil.id&&other.alive);
+ if(coil&&(!existing||!canEncircle(w,existing)||game.time>coil.until)){
+  w.coil=null;w.coilCooldown=game.time+rand(2,5);coil=null;
+ }
+ if(!coil&&game.time>=(w.coilCooldown||0)&&COIL_AGGRESSION[w.persona]>0&&
+    Math.random()<COIL_AGGRESSION[w.persona]){
+  const victim=findCoilVictim(w,persona);
+  if(victim){
+   const radius=encircleRadius(victim);
+   const direction=normAngle(victim.angle-Math.atan2(victim.y-w.y,victim.x-w.x))>=0?1:-1;
+   const lead=Math.min(radius*.54,victim.speed*.33);
+   coil={id:victim.id,x:victim.x+Math.cos(victim.angle)*lead,
+    y:victim.y+Math.sin(victim.angle)*lead,radius,dir:direction,
+    progress:0,lastBearing:null,until:game.time+13,escaped:0};
+   w.coil=coil;
+  }
+ }
+ if(!coil)return null;
+ const victim=game.worms.find(other=>other.id===coil.id&&other.alive);
+ if(!victim){w.coil=null;return null;}
+ const dx=w.x-coil.x,dy=w.y-coil.y;
+ const distance=Math.hypot(dx,dy)||1,bearing=Math.atan2(dy,dx);
+ if(coil.lastBearing!==null)
+  coil.progress+=Math.max(0,normAngle(bearing-coil.lastBearing)*coil.dir);
+ coil.lastBearing=bearing;
+ const preyDistance=Math.hypot(victim.x-coil.x,victim.y-coil.y);
+ if(preyDistance>coil.radius*1.3)coil.escaped+=dt;
+ else coil.escaped=Math.max(0,coil.escaped-dt*.7);
+ if(coil.escaped>1.45||coil.progress>TAU*2.8){
+  w.coil=null;w.coilCooldown=game.time+rand(2,4);return null;
+ }
+ // Follow an orbit around the prey. Radial correction tightens the loop
+ // smoothly while the head still obeys the normal turning-radius limit.
+ const tangent=bearing+coil.dir*Math.PI/2;
+ const radialError=clamp((distance-coil.radius)/coil.radius*1.45,-.82,.82);
+ let desired=tangent+coil.dir*radialError;
+ if(distance>coil.radius*1.75){
+  const a=bearing+coil.dir*.60;
+  desired=Math.atan2(coil.y+Math.sin(a)*coil.radius-w.y,
+   coil.x+Math.cos(a)*coil.radius-w.x);
+ }
+ return desired;
+}
+
 function steerBot(w,dt){
  const persona=BOT_PERSONAS[w.persona]||BOT_PERSONAS.casual;
  w.think-=dt;w.wiggle+=dt*.7;
  if(w.think>0)return;
  w.think=w.reaction*rand(.83,1.18);
  const sight=persona.sight;
- let goal=null,goalScore=-Infinity;
+ const salvage=collectWreckTarget(w);
+ w.targetWreckId=salvage?.wreck.id??null;
+ w.objective=salvage?'salvage':'food';
+ if(salvage){w.coil=null;w.targetFood=salvage.food;}
+ let goal=salvage?.food||null,goalScore=salvage?Infinity:-Infinity;
  // A human would keep chasing a worthwhile target instead of picking a
  // completely different nearest dot every frame. Advanced bots hold a plan
  // longer; newcomers are easily distracted.
  const old=w.targetFood;
- if(old&&old._index>=0){
+ if(!salvage&&old&&old._index>=0){
   const dx=old.x-w.x,dy=old.y-w.y,d=Math.hypot(dx,dy);
   if(d>22&&d<sight){
    goal=old;
    goalScore=(old.value*145+95)/(d+65)+(.08+.32*persona.awareness);
   }
  }
- foodNearby(w.x,w.y,sight,f=>{
+ if(!salvage)foodNearby(w.x,w.y,sight,f=>{
   if(f._index<0)return;
   const dx=f.x-w.x,dy=f.y-w.y,d=Math.hypot(dx,dy);
   if(d<18||d>sight)return;
@@ -512,7 +614,7 @@ function steerBot(w,dt){
  let chasing=false;
  // Hunters/experts anticipate where a target will be, not where it is now.
  // Reckless players may even challenge larger opponents and lose.
- if(persona.hunt>0&&w.mass>64&&Math.random()<persona.hunt){
+ if(!salvage&&persona.hunt>0&&w.mass>64&&Math.random()<persona.hunt){
   let prey=null,range=Math.min(sight*.80,900),closest=range;
   for(const other of game.worms){
    if(!other.alive||other===w)continue;
@@ -527,6 +629,10 @@ function steerBot(w,dt){
     prey.x+Math.cos(prey.angle)*intercept-w.x);
    chasing=true;
   }
+ }
+ if(!salvage){
+  const coilHeading=guideCoil(w,dt,persona);
+  if(coilHeading!==null){desired=coilHeading;chasing=true;w.objective='encircle';}
  }
  const edge=Math.hypot((w.x-WORLD.cx)/WORLD.rx,(w.y-WORLD.cy)/WORLD.ry);
  if(edge>.86)desired=Math.atan2(WORLD.cy-w.y,WORLD.cx-w.x);
@@ -554,7 +660,9 @@ function steerBot(w,dt){
     const d=Math.hypot(x-ox,y-oy);
     const danger=wormRadius(w)+wormRadius(entry.w)+40;
     clearance=Math.min(clearance,d-danger);
-    if(d<danger+53)score-=(danger+53-d)*(1+(420-step)/500)*persona.awareness;
+    // A committed coil may fly near its prey, but never through it.
+    const orbitPrey=!!(w.coil&&entry.w.id===w.coil.id&&d>=danger+8);
+    if(d<danger+53)score-=(danger+53-d)*(1+(420-step)/500)*persona.awareness*(orbitPrey?.16:1);
     if(d<danger)score-=(220+(danger-d)*2.8)*persona.awareness;
    });
   }
@@ -566,7 +674,7 @@ function steerBot(w,dt){
  const safe=bestClearance>(w.persona==='reckless'?25:65);
  const urgent=chasing||goalScore>(w.persona==='pro'?1.6:2.2);
  const bias=w.persona==='reckless'? .65:.19;
- w.boost=w.mass>78&&edge<.86&&safe&&urgent&&
+ w.boost=!w.coil&&w.mass>78&&edge<.86&&safe&&urgent&&
   Math.random()<Math.min(.98,persona.boost*(chasing?1.3:1)+bias);
 }
 
@@ -647,7 +755,10 @@ function updateWorm(w,dt){
   // Worms always glide forward. AFK only disables steering and boosting.
   if(w.afkTimer>0){
    if(Number.isFinite(w.afkTimer))w.afkTimer=Math.max(0,w.afkTimer-dt);
-   w.target=w.angle;w.boost=false;
+   // Death salvage interrupts even an idle opponent; its usual behaviour
+   // resumes once there is no nearby or announced corpse to scavenge.
+   if(game.wrecks.some(item=>item.remaining>0&&game.time<item.expires))steerBot(w,dt);
+   else{w.objective='idle';w.targetWreckId=null;w.target=w.angle;w.boost=false;}
   }else{
    const awayRate=w.persona==='newcomer'?.012:w.persona==='casual'?.004:.0008;
    if(Math.random()<dt*awayRate){
