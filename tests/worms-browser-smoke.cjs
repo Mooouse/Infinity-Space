@@ -201,8 +201,8 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.equal(routes.salvage.remaining,0,'No wreck pieces left after the harvesting route');
     assert.ok(routes.salvage.displacementRatio>.75&&routes.salvage.flips===0,
       'Corpse scavenging should be a moving sweep, not repeated tight U-turns: '+JSON.stringify(routes.salvage));
-    assert.ok(routes.ambient.displacementRatio>.68&&routes.ambient.meanTurn<1.2,
-      'Rivals gathering normal food should travel through the map, not spin on one spot: '+
+    assert.ok(routes.ambient.displacementRatio>.88&&routes.ambient.meanTurn<.55,
+      'Rivals gathering normal food should travel steadily rather than repeatedly circling: '+
       JSON.stringify(routes.ambient));
     assert.ok(routes.empty.displacementRatio>.94&&routes.empty.meanTurn<.35,
       'With no targets a rival must cruise straight, not orbit indefinitely: '+JSON.stringify(routes.empty));
