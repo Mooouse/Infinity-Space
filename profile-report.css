@@ -205,7 +205,8 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top>.hub-story-quick{
   font-size:15px!important;
  }
 }
-body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-profile-chip{
+@media(min-width:801px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav>.hub-profile-chip{
   flex:0 1 clamp(105px,10vw,170px)!important;box-sizing:border-box!important;
   width:auto!important;max-width:170px!important;min-width:0!important;
   height:64px!important;min-height:64px!important;
