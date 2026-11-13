@@ -266,8 +266,16 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
       'The player must continue coasting during pause, not freeze in place: '+
       JSON.stringify({from:pausedStart,to:pausedEnd}));
     assert.equal(await page.locator('#worm-pause-length').count(),0);
-    assert.equal(await page.locator('#worm-pause-mass').textContent(),
-      Math.round(pausedEnd.mass).toLocaleString('ru'));
+    // HUD and pause use the same throttled UI refresh. Physics advances
+    // independently, so a snapshot can be one pickup ahead of both labels.
+    // Assert the two displayed values match, and that both track live mass
+    // within the UI's normal 150 ms refresh interval.
+    const displayedPauseMass=await page.locator('#worm-pause-mass').textContent();
+    const displayedHudMass=await page.locator('#worm-mass').textContent();
+    assert.equal(displayedPauseMass,displayedHudMass,
+      'Pause must display the same mass as the HUD');
+    assert.ok(Math.abs(Number(displayedPauseMass.replace(/[^0-9]/g,''))-Math.round(pausedEnd.mass))<=10,
+      'Mass labels must remain close to the live simulation during pause');
     assert.equal(pausedEnd.resultVisible,false);
     assert.equal(await page.locator('#worm-pause-sound').count(),1);
     await page.locator('#worm-skins-open').click();
