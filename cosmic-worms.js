@@ -796,6 +796,11 @@ function steerBot(w,dt){
   Math.random()<persona.boost*.28;
 }
 
+// The size AND value of a defeated worm's dropped matter scales with
+// its mass. Small worms leave fine dust; giants release large luminous orbs.
+function corpseDropScale(mass){
+ return clamp(Math.pow(Math.max(30,mass)/60,.23),.83,4.4);
+}
 function kill(w,killer,reason){
  if(!w.alive||w.invulnerable>0)return;
  const place=ranking(w);
@@ -806,16 +811,18 @@ function kill(w,killer,reason){
  // Never impose a global food cap here: it previously discarded most of a
  // long worm's remains as soon as the ambient field became dense.
  const body=[{x:w.x,y:w.y},...w.segments];
+ const dropScale=corpseDropScale(w.mass);
  let dropped=0;
  for(let i=0;i<body.length;i++){
   const node=body[i],before=body[Math.max(i-1,0)],after=body[Math.min(i+1,body.length-1)];
   let dx=after.x-before.x,dy=after.y-before.y,d=Math.hypot(dx,dy)||1;
   const sideX=-dy/d,sideY=dx/d;
   for(let side of [-1,1]){
-   const size=rand(3.4,6.3),offset=rand(3,9);
+   const size=rand(3.4,6.3)*dropScale;
+   const offset=rand(3,9)*Math.sqrt(dropScale);
    const resource=makeFood(node.x+sideX*offset+rand(-2,2),
     node.y+sideY*offset+rand(-2,2),i%6===0?w.accent:w.color[0],
-    rand(2.8,6),size);
+    rand(2.8,6)*(1+(dropScale-1)*.65),size);
    resource.wreckId=wreck.id;
    addFood(resource);wreck.items.push(resource);wreck.remaining++;
    dropped++;
@@ -825,7 +832,8 @@ function kill(w,killer,reason){
  // Keep every active corpse in the objective registry until its last piece is eaten.
  // Every rival hears the salvage signal, including those normally idling.
  for(const other of game.worms)if(!other.human&&other.alive)other.think=Math.min(other.think,.06);
- game.lastDeath={name:w.name,segments:body.length,dropped,head:{x:body[0].x,y:body[0].y},
+ game.lastDeath={name:w.name,segments:body.length,dropped,dropScale,
+  head:{x:body[0].x,y:body[0].y},
   tip:{x:body[body.length-1].x,y:body[body.length-1].y}};
  if(w.human){
   // Keep the arena fully alive while the player watches rivals collect
