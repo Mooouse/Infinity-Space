@@ -339,9 +339,9 @@ function relaxWormTrail(w,dt){
   const first=Math.hypot(ax,ay),second=Math.hypot(bx,by);
   if(first<2||second<2)continue;
   const bend=Math.acos(clamp((ax*bx+ay*by)/(first*second),-1,1));
-  const curvature=clamp((bend-.57)/.42,0,1);
+  const curvature=clamp((bend-.36)/.58,0,1);
   if(curvature<=0)continue;
-  const mix=Math.min(.055,dt*1.6*curvature);
+  const mix=Math.min(.055,dt*2.1*curvature);
   node.x+=((before.x+after.x)*.5-node.x)*mix;
   node.y+=((before.y+after.y)*.5-node.y)*mix;
  }
@@ -1073,58 +1073,43 @@ function wormBodyPath(w){
  path.lineTo(points[points.length-1].x,points[points.length-1].y);
  return {path,points};
 }
+// Render all cosmic skins as seamless strokes along the centerline. A filled
+// offset polygon self-intersects on long coiled worms and turns into jagged
+// triangles. Local gradients avoid the head-to-tail zero-length gradient too.
 function drawCosmicInterior(w,t,r,detail){
  const nodes=[w,...w.segments],n=nodes.length;
  if(n<4)return;
  const theme=SKIN_NEBULAE[w.skin]||SKIN_NEBULAE.nebula;
- const stride=Math.max(1,Math.ceil(n/(w.human?260:145)));
- const sampled=[];
- for(let i=0;i<n;i+=stride)sampled.push(nodes[i]);
+ const stride=Math.max(1,Math.ceil(n/(w.human?360:235)));
+ const sampled=[];for(let i=0;i<n;i+=stride)sampled.push(nodes[i]);
  if(sampled[sampled.length-1]!==nodes[n-1])sampled.push(nodes[n-1]);
  const count=sampled.length,normal=new Array(count);
- const shape=new Path2D(),half=r*.81;
  for(let i=0;i<count;i++){
   const a=sampled[Math.max(0,i-1)],b=sampled[Math.min(count-1,i+1)];
   const dx=a.x-b.x,dy=a.y-b.y,l=Math.hypot(dx,dy)||1;
   normal[i]={x:-dy/l,y:dx/l};
  }
- for(let i=0;i<count;i++){
-  const p=sampled[i],q=normal[i];
-  if(i===0)shape.moveTo(p.x+q.x*half,p.y+q.y*half);
-  else shape.lineTo(p.x+q.x*half,p.y+q.y*half);
- }
- for(let i=count-1;i>=0;i--){
-  const p=sampled[i],q=normal[i];
-  shape.lineTo(p.x-q.x*half,p.y-q.y*half);
- }
- shape.closePath();
- ctx.save();ctx.clip(shape);
- ctx.globalAlpha=1;
- ctx.fillStyle=w.skin==='horizon'||w.skin==='eclipse'?'#04040e':'#070d23';
- ctx.fill(shape);
- // Diffuse colored nebula clouds move across the seamless body.
- const cloudStep=Math.max(5,Math.ceil(count/(w.human?28:13)));
- for(let i=3;i<count;i+=cloudStep){
-  const p=sampled[i],q=normal[i];
-  const phase=t*.65+i*.21+w.id*1.7;
-  const off=Math.sin(phase)*half*.39;
-  const size=r*(1.17+.30*Math.sin(i*1.38));
-  const gradient=ctx.createRadialGradient(p.x+off*q.x,p.y+off*q.y,0,
-   p.x+off*q.x,p.y+off*q.y,size);
-  const color=theme[Math.floor(i/cloudStep+w.id)%theme.length];
-  gradient.addColorStop(0,color+'de');
-  gradient.addColorStop(.42,color+'73');
-  gradient.addColorStop(1,color+'00');
-  ctx.globalAlpha=.94;
-  ctx.fillStyle=gradient;
-  ctx.fillRect(p.x-size*1.4,p.y-size*1.4,size*2.8,size*2.8);
+ ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+ // Color is painted continuously *inside* the body. No polygon clipping,
+ // seams, geometric slices, repeated disks or cosmetic ring sections.
+ const chunk=Math.max(5,Math.min(22,Math.ceil(count/23)));
+ for(let i=0;i<count-1;i+=chunk){
+  const end=Math.min(count-1,i+chunk);
+  const p=sampled[i],q=sampled[end],grad=ctx.createLinearGradient(
+   p.x,p.y,q.x+.1,q.y+.1);
+  const c0=theme[Math.floor(i/chunk)%theme.length],
+   c1=theme[(Math.floor(i/chunk)+1)%theme.length];
+  grad.addColorStop(0,c0);grad.addColorStop(.50,c1);grad.addColorStop(1,c1);
+  const trace=new Path2D();trace.moveTo(p.x,p.y);
+  for(let j=i+1;j<=end;j++)trace.lineTo(sampled[j].x,sampled[j].y);
+  ctx.globalAlpha=.85;ctx.lineWidth=r*1.66;ctx.strokeStyle=grad;ctx.stroke(trace);
  }
  ctx.globalAlpha=1;
  if(detail){
-  const starStep=Math.max(2,Math.ceil(count/(w.human?110:50)));
-  for(let i=2;i<count-1;i+=starStep){
+  const starStep=Math.max(1,Math.floor(count/(w.human?200:110)));
+  for(let i=2;i<count-2;i+=starStep){
    const p=sampled[i],q=normal[i],seed=i*13.73+w.id*27.19;
-   const side=Math.sin(seed*1.71+t*(.32+(w.id%3)*.08))*.65*half;
+   const side=Math.sin(seed*1.71+t*(.32+(w.id%3)*.08))*.54*r;
    const x=p.x+side*q.x,y=p.y+side*q.y;
    const twinkle=.55+.45*Math.sin(t*3.1+seed);
    const size=(i%11===0?1.8:.98)+twinkle*.7;
@@ -1141,16 +1126,17 @@ function drawCosmicInterior(w,t,r,detail){
   const cometCount=w.human?4:2;
   for(let j=0;j<cometCount;j++){
    const span=Math.max(2,count-9);
-   const progress=(t*(6.0+j*1.12)+(j*.28)*count+w.id*7.4)%span;
+   const progress=(t*(6+j*1.12)+(j*.28)*count+w.id*7.4)%span;
    const index=Math.max(2,Math.min(count-3,Math.floor(count-2-progress)));
    const head=sampled[index],tail=sampled[Math.min(count-1,index+7)];
-   const gradient=ctx.createLinearGradient(tail.x,tail.y,head.x,head.y);
+   const gradient=ctx.createLinearGradient(tail.x,tail.y,head.x+.1,head.y+.1);
    gradient.addColorStop(0,'#ffffff00');
    gradient.addColorStop(.5,theme[j%3]+'99');
    gradient.addColorStop(1,'#ffffff');
-   ctx.strokeStyle=gradient;ctx.lineWidth=Math.max(1,r*.12);
+   ctx.strokeStyle=gradient;ctx.lineWidth=Math.max(1,r*.11);
    ctx.lineCap='round';ctx.beginPath();ctx.moveTo(tail.x,tail.y);
-   for(let k=Math.min(count-1,index+6);k>=index;k--)ctx.lineTo(sampled[k].x,sampled[k].y);
+   for(let k=Math.min(count-1,index+6);k>=index;k--)
+    ctx.lineTo(sampled[k].x,sampled[k].y);
    ctx.stroke();
    ctx.fillStyle='#fffdf2';ctx.shadowBlur=options.glow?8:0;ctx.shadowColor=theme[j%3];
    ctx.beginPath();ctx.arc(head.x,head.y,Math.max(1.3,r*.115),0,TAU);ctx.fill();
@@ -1281,7 +1267,13 @@ function drawWorm(w,t){
  ctx.shadowBlur=options.glow&&z>.39?Math.min(r*.46,22):0;
  ctx.shadowColor=w.accent;
  ctx.stroke(path);ctx.shadowBlur=0;
- const gradient=ctx.createLinearGradient(tail.x,tail.y,head.x+0.1,head.y+0.1);
+// Use a stable axis when a very long snake curls its head near its tail:
+ // a degenerate head-to-tail gradient used to muddy all cosmic skins.
+ const axisX=head.x-tail.x,axisY=head.y-tail.y;
+ const folded=axisX*axisX+axisY*axisY<(r*6)**2;
+ const gradient=folded?
+  ctx.createLinearGradient(head.x-r*4,head.y-r*2,head.x+r*4,head.y+r*2):
+  ctx.createLinearGradient(tail.x,tail.y,head.x+.1,head.y+.1);
  if(custom){
   const colors=options.customSegments;
   const stops=Math.max(2,Math.min(colors.length,16));
