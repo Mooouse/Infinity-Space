@@ -358,3 +358,172 @@
 @media(prefers-reduced-motion:reduce){
  .worm-actions button,.arena-dialog-actions button,.ws-overlay button{transition:none!important}
 }
+
+
+/* Cosmic Worms pause — cohesive main-menu lighting, production polish. */
+#worm-pause-overlay .worm-pause-panel{
+  position:relative;isolation:isolate;overflow-x:hidden;
+  width:min(730px,calc(100vw - 28px))!important;
+  max-width:730px!important;
+  padding:clamp(23px,3.3vw,39px)!important;
+  border:1px solid #9873d0!important;border-bottom:5px solid #5c329a!important;
+  border-radius:11px!important;
+  background:
+    radial-gradient(ellipse at 94% 6%,#7940ed42 0,transparent 45%),
+    radial-gradient(ellipse at 3% 94%,#4a1b9f27 0,transparent 55%),
+    linear-gradient(145deg,#211338f8 0%,#150c28fc 55%,#10091ffd 100%)!important;
+  box-shadow:inset 0 1px #ddc7ff26,inset 0 0 45px #a76aff0a,
+    0 27px 80px #030009e8,0 0 40px #6d3bc02b!important;
+}
+#worm-pause-overlay .worm-pause-panel::before{
+  content:"";position:absolute;right:-43px;top:-72px;
+  width:210px;height:210px;border:1px solid #aa83ff55;border-radius:50%;
+  box-shadow:0 0 0 23px #8e5cff0b,0 0 0 50px #8e5cff08,
+    inset 0 0 27px #ad84ff0c;
+  pointer-events:none;z-index:0;
+}
+#worm-pause-overlay .worm-pause-panel::after{
+  content:"";position:absolute;inset:auto 0 0;height:4px;
+  background:linear-gradient(90deg,#3c1b74,#a273ff 46%,#ea70e1 70%,#3c1b74);
+  box-shadow:0 0 16px #9966ff8c;pointer-events:none;z-index:0;
+}
+#worm-pause-overlay .worm-pause-panel > *{position:relative;z-index:1}
+#worm-pause-overlay .worm-eyebrow{
+  display:flex;align-items:center;gap:10px;
+  font-size:clamp(10px,.8vw,12px)!important;
+  letter-spacing:.17em!important;color:#cdafff!important;
+  text-shadow:0 0 13px #8b56ea66;
+}
+#worm-pause-overlay .worm-eyebrow::before{
+  content:"";display:block;flex:none;width:8px;height:8px;
+  transform:rotate(45deg);background:#cb8fff;
+  box-shadow:0 0 0 3px #b07aff20,0 0 13px #ac69ffb5;
+}
+#worm-pause-overlay .worm-pause-panel h1{
+  display:flex;align-items:center;gap:16px;
+  margin:16px 0 21px!important;
+  font:950 clamp(37px,3.8vw,57px)/1.08 'Inter Display',Inter,system-ui!important;
+  letter-spacing:-.045em!important;color:#fff6ff!important;
+  text-shadow:0 2px 18px #bd7aff52,0 5px 20px #050109c9!important;
+}
+#worm-pause-overlay .worm-pause-panel h1::before{
+  content:"";display:block;flex:none;width:45px;height:45px;
+  border:1px solid #c09dffbd;border-bottom:3px solid #512c91;
+  border-radius:8px;
+  background:
+   linear-gradient(#eedaff,#a67aff) 15px center/5px 19px no-repeat,
+   linear-gradient(#eedaff,#a67aff) 26px center/5px 19px no-repeat,
+   linear-gradient(145deg,#51318d,#291544);
+  box-shadow:inset 0 1px #fff5,0 5px 0 #1a0a36,0 0 20px #b37cff55;
+}
+#worm-pause-overlay .worm-pause-stats{
+  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:10px!important;padding:13px 0!important;margin:0 0 22px!important;
+  border-top:1px solid #9366ca75!important;border-bottom:1px solid #9366ca75!important;
+  background:transparent!important;
+}
+#worm-pause-overlay .worm-pause-stats>div{
+  display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+  min-width:0!important;min-height:100px!important;
+  gap:8px!important;padding:13px 8px!important;
+  background:linear-gradient(160deg,#352050e8,#211330da)!important;
+  border:1px solid #7d55b375!important;border-bottom:3px solid #45276b!important;
+  border-radius:7px!important;
+  box-shadow:inset 0 1px #ffffff10,0 7px 18px #03010749!important;
+}
+#worm-pause-overlay .worm-pause-stats small{
+  font-size:clamp(9px,.72vw,12px)!important;font-weight:850!important;
+  color:#c7abe9!important;letter-spacing:.12em!important;
+}
+#worm-pause-overlay .worm-pause-stats strong{
+  font-size:clamp(27px,2.35vw,37px)!important;font-weight:950!important;
+  color:#f9efff!important;letter-spacing:-.04em!important;
+  font-variant-numeric:tabular-nums;
+  text-shadow:0 0 16px #a66bff35!important;
+}
+#worm-pause-overlay .worm-pause-panel .worm-actions{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:11px!important;margin:0!important;align-items:stretch!important;
+}
+#worm-pause-overlay .worm-pause-panel .worm-actions button{
+  --pause-light:#a77cff;
+  position:relative;min-width:0!important;min-height:58px!important;
+  padding:12px 16px!important;overflow:hidden!important;
+  border:1px solid #8760b9!important;border-top-color:#a17ed0!important;
+  border-bottom:4px solid #442469!important;border-radius:7px!important;
+  background:linear-gradient(160deg,#382250,#241535)!important;
+  color:#faf3ff!important;font:900 clamp(12px,.91vw,15px)/1.23 Inter,system-ui!important;
+  letter-spacing:.025em!important;
+  box-shadow:inset 0 1px #ffffff26,0 5px 0 #13091e,0 10px 19px #05020ea1!important;
+  transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease,filter .16s ease!important;
+}
+#worm-pause-overlay .worm-pause-panel .worm-actions button::before{
+  content:"";position:absolute;inset:0 0 auto;height:36%;pointer-events:none;
+  background:linear-gradient(180deg,#ffffff11,transparent);
+}
+#worm-pause-overlay .worm-pause-panel .worm-actions #worm-resume{
+  grid-column:1/-1!important;min-height:66px!important;
+  border-color:#c1a2ff!important;border-bottom-color:#42189f!important;
+  background:linear-gradient(155deg,#8650f2,#642ece 58%,#4d22ad)!important;
+  box-shadow:inset 0 1px #ffffff55,0 5px 0 #270c60,0 10px 22px #070310d1,
+    0 0 16px #9155ed42!important;
+  font-size:clamp(14px,1.05vw,17px)!important;
+}
+#worm-pause-overlay .worm-pause-panel .worm-actions #worm-skins-open{
+  --pause-light:#ff8bd4;
+  border-left-color:#f07aca!important;
+}
+#worm-pause-overlay .worm-pause-panel .worm-actions #worm-exit{
+  --pause-light:#ff6288;
+  grid-column:auto!important;
+  border-color:#a55d82!important;border-bottom-color:#5f2442!important;
+  background:linear-gradient(155deg,#452038,#2a152c)!important;
+}
+@media(hover:hover) and (pointer:fine){
+  #worm-pause-overlay .worm-pause-panel .worm-actions button:not(:disabled):hover{
+    border-color:var(--pause-light)!important;
+    filter:brightness(1.1)!important;transform:translateY(-2px)!important;
+    box-shadow:inset 0 1px #ffffff3b,0 5px 0 #230f42,
+      0 0 0 1px color-mix(in srgb,var(--pause-light) 46%,transparent),
+      0 0 18px color-mix(in srgb,var(--pause-light) 62%,transparent),
+      0 7px 18px #07020fd9!important;
+  }
+  #worm-pause-overlay .worm-pause-panel .worm-actions #worm-resume:not(:disabled):hover{
+    border-color:#decaff!important;
+    box-shadow:inset 0 1px #ffffff6b,0 5px 0 #200b55,
+      0 0 0 1px #b996ff85,0 0 27px #a262ffc2,0 11px 24px #090314e0!important;
+  }
+}
+#worm-pause-overlay .worm-pause-panel .worm-actions button:active{
+  transform:translateY(3px)!important;filter:brightness(.98)!important;
+  box-shadow:inset 0 2px 6px #08021096,0 2px 8px #000b!important;
+}
+#worm-pause-overlay .worm-pause-panel .worm-actions button:focus-visible{
+  outline:2px solid #ecd6ff!important;outline-offset:3px!important;
+}
+@media(max-width:520px){
+ #worm-pause-overlay .worm-pause-panel{padding:18px!important;max-height:calc(100dvh - 22px)!important}
+ #worm-pause-overlay .worm-pause-panel h1{font-size:34px!important;gap:12px;margin:12px 0 17px!important}
+ #worm-pause-overlay .worm-pause-panel h1::before{width:36px;height:36px;background:
+   linear-gradient(#eedaff,#a67aff) 11px center/5px 15px no-repeat,
+   linear-gradient(#eedaff,#a67aff) 22px center/5px 15px no-repeat,
+   linear-gradient(145deg,#51318d,#291544)}
+ #worm-pause-overlay .worm-pause-stats{gap:5px!important;padding:10px 0!important;margin-bottom:14px!important}
+ #worm-pause-overlay .worm-pause-stats>div{min-height:73px!important;padding:9px 4px!important;gap:5px!important}
+ #worm-pause-overlay .worm-pause-stats strong{font-size:clamp(19px,6vw,27px)!important}
+ #worm-pause-overlay .worm-pause-panel .worm-actions{grid-template-columns:1fr!important;gap:7px!important}
+ #worm-pause-overlay .worm-pause-panel .worm-actions button{min-height:44px!important;padding:8px 10px!important}
+ #worm-pause-overlay .worm-pause-panel .worm-actions #worm-resume{min-height:52px!important}
+}
+@media(max-height:520px) and (orientation:landscape){
+ #worm-pause-overlay .worm-pause-panel{padding:13px 23px!important}
+ #worm-pause-overlay .worm-pause-panel h1{font-size:30px!important;margin:7px 0 10px!important}
+ #worm-pause-overlay .worm-pause-panel h1::before{width:32px;height:32px}
+ #worm-pause-overlay .worm-pause-stats{margin-bottom:10px!important;padding:7px 0!important}
+ #worm-pause-overlay .worm-pause-stats>div{min-height:55px!important;padding:5px!important}
+ #worm-pause-overlay .worm-pause-panel .worm-actions button{min-height:42px!important}
+ #worm-pause-overlay .worm-pause-panel .worm-actions #worm-resume{min-height:48px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ #worm-pause-overlay .worm-pause-panel .worm-actions button{transition:none!important}
+}
