@@ -466,7 +466,7 @@ function regenerateAmbientFood(){
  if(missing<=0)return;
  const amount=Math.min(190,missing);
  for(let i=0;i<amount;i++){
-  const old=game.foodRespawnQueue.length&&i%4!==0?
+  const old=game.foodRespawnQueue.length&&i%4!==3?
    game.foodRespawnQueue.shift():null;
   let p=old?{x:old.x+rand(-235,235),y:old.y+rand(-235,235)}:
    randomPos(.94);
@@ -487,6 +487,12 @@ function init(){
  const p=createWorm(DEMO?'Astra':(window.InfinityProfile?.getName()||'PILOT'),human,0);
  game.player=p;game.worms.push(p);
  const identities=lobbyBotIdentities(BOT_COUNT);
+ // Assign the established giant sizes to experienced pilots, while keeping
+ // the overall roster and visual identities varied for every match.
+ for(const [slot,persona] of ['pro','veteran','hunter'].entries()){
+  const match=identities.findIndex((id,i)=>i>=slot&&id.persona===persona);
+  if(match>=0)[identities[slot],identities[match]]=[identities[match],identities[slot]];
+ }
  for(let i=1;i<=BOT_COUNT;i++){
   const identity=identities[i-1];
   const b=createWorm(identity.name,false,i,i<=32,identity);
