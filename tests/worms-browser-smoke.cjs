@@ -221,8 +221,15 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.equal(await page.locator('#worm-settings').isVisible(),true);
     if(width>=1280){
      await page.locator('#worm-settings-back').hover();
+     // This border animates. Its computed color on the first frame is an
+     // intermediate RGB value; assert after the transition completes.
+     await page.waitForFunction(()=>{
+      const el=document.querySelector('#worm-settings-back');
+      return el?.matches(':hover')&&
+       getComputedStyle(el).borderTopColor==='rgb(255, 188, 72)';
+     },null,{timeout:4000,polling:100});
      assert.equal(await page.locator('#worm-settings-back').evaluate(el=>getComputedStyle(el).borderTopColor),
-      'rgb(255, 188, 72)','Settings save button uses vivid amber hover');
+      'rgb(255, 188, 72)','Settings save button reaches vivid amber after hover transition');
     }
     await page.locator('#worm-setting-glow').uncheck({force:true});
     await page.locator('#worm-setting-names').uncheck({force:true});
