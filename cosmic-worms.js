@@ -273,7 +273,8 @@ function createWorm(name,human,index,preferEncounter=false,identity=null){
  const angle=human?-.28:rand(0,TAU);
  // Established opponents: several genuinely enormous rivals already exist.
  const initial=!human&&game.time<.5;
- const mass=human?61:initial&&index<=3?
+ const established=!human&&index>0&&index<=3;
+ const mass=human?61:established?
    [0,14500,11200,8600][index]*rand(.91,1.09):
    initial&&index<=8?rand(3400,6700):
    initial&&index<=18?rand(1050,3300):
@@ -349,9 +350,10 @@ function relaxWormTrail(w,dt){
 
 function followWormTrail(w,advance,gap=11.8,dt=advance/Math.max(90,w.speed||172)){
  // The actual distance traveled controls each ring's position on the path.
- w.traveled+=advance;
+ if(advance>=.04)w.traveled+=advance;
  const history=w.trail;
- history.push({x:w.x,y:w.y,s:w.traveled});
+ // Frozen players must not accumulate thousands of duplicate trail nodes.
+ if(advance>=.04)history.push({x:w.x,y:w.y,s:w.traveled});
  let start=w.trailStart;
  const oldestNeeded=w.traveled-gap*(w.segments.length+2);
  // Rapid pickups can extend the tail before there is enough path history.
@@ -471,7 +473,11 @@ function regenerateAmbientFood(){
   let p=old?{x:old.x+rand(-235,235),y:old.y+rand(-235,235)}:
    randomPos(.94);
   const dist=((p.x-WORLD.cx)/WORLD.rx)**2+((p.y-WORLD.cy)/WORLD.ry)**2;
-  if(dist>.965*.965)p=randomPos(.93);
+  if(dist>.965*.965){
+   // Clamp a respawn back inside the arena instead of relocating it far away.
+   const k=.95/Math.sqrt(dist);
+   p={x:WORLD.cx+(p.x-WORLD.cx)*k,y:WORLD.cy+(p.y-WORLD.cy)*k};
+  }
   spawnAmbientFood(p.x,p.y);
  }
  if(game.ambientCount>=FOOD_TARGET)game.foodRespawnQueue.length=0;
@@ -817,9 +823,7 @@ function updateWorm(w,dt){
    }else steerBot(w,dt);
   }
  }else if(backgroundFlightActive()){
-  // Leave the world alive behind menus, but glide safely instead of dying while navigating UI.
-  const rx=(w.x-WORLD.cx)/WORLD.rx,ry=(w.y-WORLD.cy)/WORLD.ry;
-  if(rx*rx+ry*ry>.72)w.target=Math.atan2(WORLD.cy-w.y,WORLD.cx-w.x);
+  // The world continues, but the player itself stops moving during pause.
   w.boost=false;
  }else{
   const keys=input.keys;
@@ -839,7 +843,7 @@ function updateWorm(w,dt){
   w.boost=(input.mouseDown||input.boostKey||input.boostTouch)&&w.mass>38;
  }
  const boosting=w.boost&&w.mass>38;
- const targetSpeed=boosting?375:172;
+ const targetSpeed=w.human&&backgroundFlightActive()?0:boosting?375:172;
  const scaled=targetSpeed*Math.max(.73,1-Math.log(Math.max(1,w.mass)/60)*.05)*
   (w.human?1:BOT_PERSONAS[w.persona].speed);
  w.speed+=(scaled-w.speed)*Math.min(1,dt*12);
@@ -1631,7 +1635,8 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
     targetWreckId:w.targetWreckId,coilTargetId:w.coil?.id??null
   })),
   foodRegenerationProbe:()=>{
-   const sample=game.food.find(f=>f.ambient&&f._index>=0);
+   const sample=game.food.find(f=>f.ambient&&f._index>=0&&
+    ((f.x-WORLD.cx)/WORLD.rx)**2+((f.y-WORLD.cy)/WORLD.ry)**2<.65);
    if(!sample)return {valid:false};
    const before=game.ambientCount,oldQueue=game.foodRespawnQueue;
    game.foodRespawnQueue=[];
