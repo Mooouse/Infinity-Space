@@ -11,7 +11,8 @@ const language=/^(ru|en|es)$/.test(storedLang)?storedLang:(/^ru/i.test(navigator
 document.documentElement.lang=language;
 const WORDS={
  en:{settings:'SETTINGS',skins:'COSMIC SKINS',skinDesc:'Choose a space-inspired appearance. All skins are free.',visuals:'VISUALS',glow:'Enhanced body glow',names:'Show rival names',zoom:'Camera distance',backPause:'SAVE AND EXIT',length:'LENGTH',rank:'RANK',time:'TIME',leaders:'LEADERBOARD',radar:'GALAXY RADAR',pause:'PAUSE',
- boost:'BOOST',paused:'PAUSED',pauseDesc:'Resume the flight, review the controls or return to mode selection.',
+ pauseTagline:'The universe waits. Your journey continues.',pauseRun:'CURRENT FLIGHT',pauseLook:'YOUR COSMIC WORM',pauseSkinLabel:'CURRENT SKIN',pauseActions:'WHAT NEXT',soundOn:'SOUND ON',soundOff:'SOUND OFF',
+  boost:'BOOST',paused:'PAUSED',pauseDesc:'Resume the flight, review the controls or return to mode selection.',
  resume:'CONTINUE',help:'HOW TO PLAY',menu:'EXIT TO MENU',guideTitle:'COSMIC WORMS',skip:'SKIP',next:'NEXT',start:'START',
  runOver:'FLIGHT COMPLETE',destroyed:'WORM DESTROYED',kills:'ELIMINATIONS',again:'PLAY AGAIN',
  hint:'MOUSE / WASD — TURN  ·  SPACE / CLICK — BOOST',bot:'COSMIC WORMS · SURVIVAL',danger:'THE EDGE OF SPACE!',
@@ -22,7 +23,8 @@ const WORDS={
  ['BOOST WHEN NEEDED','Hold Space or the mouse button to accelerate. Boosting slowly burns mass and drops energy behind you. On phones, steer with the joystick and hold BOOST.','➤']
  ]},
  ru:{settings:'НАСТРОЙКИ',skins:'КОСМИЧЕСКИЕ СКИНЫ',skinDesc:'Выбери космический облик червя. Все скины бесплатны.',visuals:'ГРАФИКА',glow:'Усиленное свечение тела',names:'Показывать имена соперников',zoom:'Дистанция камеры',backPause:'СОХРАНИТЬ И ВЫЙТИ',length:'ДЛИНА',rank:'МЕСТО',time:'ВРЕМЯ',leaders:'ТАБЛИЦА ЛИДЕРОВ',radar:'РАДАР ГАЛАКТИКИ',pause:'ПАУЗА',
- boost:'РЫВОК',paused:'ПАУЗА',pauseDesc:'Продолжи полёт, посмотри обучение или вернись к выбору режима.',
+ pauseTagline:'Космос подождёт. Твой полёт ещё не окончен.',pauseRun:'ТЕКУЩИЙ ЗАБЕГ',pauseLook:'ТВОЙ КОСМИЧЕСКИЙ ЧЕРВЬ',pauseSkinLabel:'ВЫБРАННЫЙ СКИН',pauseActions:'ДЕЙСТВИЯ',soundOn:'ЗВУК ВКЛ',soundOff:'ЗВУК ВЫКЛ',
+  boost:'РЫВОК',paused:'ПАУЗА',pauseDesc:'Продолжи полёт, посмотри обучение или вернись к выбору режима.',
  resume:'ПРОДОЛЖИТЬ',help:'КАК ИГРАТЬ',menu:'ВЫХОД В МЕНЮ',guideTitle:'КОСМИЧЕСКИЕ ЧЕРВИ',skip:'ПРОПУСТИТЬ',next:'ДАЛЕЕ',start:'ИГРАТЬ',
  runOver:'ПОЛЁТ ЗАВЕРШЁН',destroyed:'ЧЕРВЬ ПОГИБ',kills:'ПОГЛОЩЕНО',again:'СЫГРАТЬ СНОВА',
  hint:'МЫШЬ / WASD — ПОВОРОТ  ·  ПРОБЕЛ / КЛИК — РЫВОК',bot:'КОСМИЧЕСКИЕ ЧЕРВИ · ВЫЖИВАНИЕ',danger:'КРАЙ КОСМОСА!',
@@ -33,7 +35,8 @@ const WORDS={
  ['ИСПОЛЬЗУЙ РЫВОК','Удерживай Пробел или левую кнопку мыши для ускорения. Рывок расходует массу. На телефоне управляй стиком и удерживай кнопку «Рывок».','➤']
  ]},
  es:{settings:'AJUSTES',skins:'ASPECTOS CÓSMICOS',skinDesc:'Elige un aspecto cósmico. Todos son gratuitos.',visuals:'GRÁFICOS',glow:'Brillo y estelas mejorados',names:'Mostrar nombres de rivales',zoom:'Distancia de cámara',backPause:'GUARDAR Y SALIR',length:'LONGITUD',rank:'PUESTO',time:'TIEMPO',leaders:'CLASIFICACIÓN',radar:'RADAR GALÁCTICO',pause:'PAUSA',
- boost:'IMPULSO',paused:'PAUSA',pauseDesc:'Continúa, revisa los controles o elige otro modo.',
+ pauseTagline:'El universo espera. Tu viaje continúa.',pauseRun:'PARTIDA ACTUAL',pauseLook:'TU GUSANO CÓSMICO',pauseSkinLabel:'ASPECTO ACTUAL',pauseActions:'ACCIONES',soundOn:'SONIDO SÍ',soundOff:'SONIDO NO',
+  boost:'IMPULSO',paused:'PAUSA',pauseDesc:'Continúa, revisa los controles o elige otro modo.',
  resume:'CONTINUAR',help:'CÓMO JUGAR',menu:'SALIR AL MENÚ',guideTitle:'GUSANOS CÓSMICOS',skip:'SALTAR',next:'SIGUIENTE',start:'JUGAR',
  runOver:'VUELO TERMINADO',destroyed:'GUSANO DESTRUIDO',kills:'ELIMINACIONES',again:'JUGAR DE NUEVO',
  hint:'RATÓN / WASD — GIRAR · ESPACIO / CLIC — IMPULSO',bot:'GUSANOS CÓSMICOS · SUPERVIVENCIA',danger:'¡LÍMITE ESPACIAL!',
@@ -79,11 +82,58 @@ const SKINS=[
 const SETTINGS_KEY='infinity-space-worms-settings-v2';
 function loadSettings(){
  try{const s=JSON.parse(localStorage.getItem(SETTINGS_KEY));if(s&&typeof s==='object')
-  return {skin:SKINS.some(v=>v.id===s.skin)?s.skin:'nebula',glow:s.glow!==false,names:s.names!==false,zoom:clamp(Number(s.zoom)||100,75,140),head:['classic','blackhole','pulsar','comet','crystal','eclipse'].includes(s.head)?s.head:'classic',customEnabled:s.customEnabled===true,customSegments:Array.isArray(s.customSegments)?s.customSegments.filter(c=>/^#[0-9a-f]{6}$/i.test(c)).slice(0,64):[]};}catch(_){}
- return {skin:'nebula',glow:true,names:true,zoom:100,head:'classic',customEnabled:false,customSegments:[]};
+  return {skin:SKINS.some(v=>v.id===s.skin)?s.skin:'nebula',glow:s.glow!==false,names:s.names!==false,zoom:clamp(Number(s.zoom)||100,75,140),head:['classic','blackhole','pulsar','comet','crystal','eclipse'].includes(s.head)?s.head:'classic',muted:s.muted===true,customEnabled:s.customEnabled===true,customSegments:Array.isArray(s.customSegments)?s.customSegments.filter(c=>/^#[0-9a-f]{6}$/i.test(c)).slice(0,64):[]};}catch(_){}
+ return {skin:'nebula',glow:true,names:true,zoom:100,head:'classic',muted:false,customEnabled:false,customSegments:[]};
 }
 const options=loadSettings();
 function saveOptions(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(options));}catch(_){}}
+
+let wormAudioContext=null,wormAudioMaster=null,lastWormPickupSound=0;
+// Tiny synthesised feedback uses the same sound switch as the pause screen.
+function playWormSound(kind='ui'){
+ if(DEMO||options.muted||window.SpacePlatform?.muted)return;
+ try{
+  const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;
+  if(!wormAudioContext){
+   wormAudioContext=new Audio();wormAudioMaster=wormAudioContext.createGain();
+   wormAudioMaster.gain.value=1;wormAudioMaster.connect(wormAudioContext.destination);
+  }
+  if(wormAudioContext.state==='suspended')wormAudioContext.resume().catch(()=>{});
+  const t=wormAudioContext.currentTime;
+  if(kind==='pickup'){
+   const now=performance.now();if(now-lastWormPickupSound<265)return;lastWormPickupSound=now;
+  }
+  const [freq,duration,volume,type]=kind==='pickup'?[520,.07,.016,'sine']:
+   kind==='death'?[145,.32,.035,'triangle']:kind==='resume'?[420,.095,.019,'sine']:[345,.075,.012,'sine'];
+  const oscillator=wormAudioContext.createOscillator(),gain=wormAudioContext.createGain();
+  oscillator.type=type;oscillator.frequency.setValueAtTime(freq,t);
+  oscillator.frequency.exponentialRampToValueAtTime(Math.max(40,freq*(kind==='death'?.55:1.22)),t+duration);
+  gain.gain.setValueAtTime(.0001,t);gain.gain.linearRampToValueAtTime(volume,t+.012);
+  gain.gain.exponentialRampToValueAtTime(.0001,t+duration);
+  oscillator.connect(gain);gain.connect(wormAudioMaster);
+  oscillator.start(t);oscillator.stop(t+duration+.015);
+ }catch(_){/* Sound is optional on devices without WebAudio. */}
+}
+function syncPauseSound(){
+ const b=$('worm-pause-sound');if(!b)return;
+ b.dataset.muted=String(options.muted);
+ b.setAttribute('aria-pressed',String(options.muted));
+ const label=T[options.muted?'soundOff':'soundOn'];
+ b.querySelector('.worm-pause-sound-label').textContent=label;
+ b.setAttribute('aria-label',label);b.title=label;
+ if(wormAudioContext&&wormAudioMaster)
+  wormAudioMaster.gain.setTargetAtTime(options.muted?0:1,wormAudioContext.currentTime,.025);
+}
+function syncPauseAppearance(){
+ const preview=$('worm-pause-preview');if(!preview)return;
+ const skin=SKINS.find(item=>item.id===options.skin)||SKINS[0];
+ const colors=options.customEnabled&&options.customSegments?.length?options.customSegments:null;
+ preview.style.setProperty('--pause-skin-dark',skin.dark);
+ preview.style.setProperty('--pause-skin-light',colors?.[0]||skin.light);
+ preview.style.setProperty('--pause-skin-accent',colors?.[1]||skin.accent);
+ $('worm-pause-skin-name').textContent=colors?({ru:'СВОЙ ДИЗАЙН',es:'DISEÑO PROPIO',en:'CUSTOM SKIN'})[language]:skin[language].toUpperCase();
+ $('worm-pause-player').textContent=game.player?.name||'PILOT';
+}
 function applySkin(w,id){
  const skin=SKINS.find(s=>s.id===id)||SKINS[0];
  w.skin=skin.id;w.pattern=skin.pattern;
@@ -506,6 +556,7 @@ function kill(w,killer,reason){
   // Keep the arena fully alive while the player watches rivals collect
   // the wreckage. The results only fade in after the replay window.
   game.state='death-replay';
+  playWormSound('death');
   game.deathElapsed=0;
   game.deathStartedAt=performance.now();
   // Real-world deadline: a slow graphics renderer must not freeze the death
@@ -622,7 +673,7 @@ function collectFood(dt){
    if(f._index<0)return;
    const dx=w.x-f.x,dy=w.y-f.y,ds=dx*dx+dy*dy;
    if(ds<(radius+f.r+5)**2){
-    w.mass+=f.value;w.foodEaten++;
+    w.mass+=f.value;w.foodEaten++;if(w.human)playWormSound('pickup');
     removeFood(f);
    }else if(w.human&&ds<53*53&&ds>5){
     const d=Math.sqrt(ds),speed=(53-d)*dt*5;
@@ -1117,7 +1168,7 @@ function showSkinWorkshop(){
   onChange:()=>{Object.assign(options,loadSettings());applySkin(game.player,options.skin)},
   onClose:()=>{
    Object.assign(options,loadSettings());applySkin(game.player,options.skin);
-   if(game.state==='skins'){game.state='paused';$('worm-pause-overlay').hidden=false}
+   if(game.state==='skins'){game.state='paused';$('worm-pause-overlay').hidden=false;syncPauseAppearance();syncPauseSound()}
   }
  });
 }
@@ -1155,12 +1206,13 @@ function pause(){
  if(game.state==='skins'){window.WormSkinStudio?.close();return;}
  if(game.state==='playing'){
   game.state='paused';$('worm-pause-overlay').hidden=false;
+  syncPauseAppearance();syncPauseSound();playWormSound('ui');
   $('worm-pause-length').textContent=$('worm-length').textContent;
   $('worm-pause-rank').textContent=$('worm-place').textContent;
   $('worm-pause-time').textContent=$('worm-time').textContent;
   window.SpacePlatform?.playing?.(false);
  }else if(game.state==='paused'){
-  game.state='playing';$('worm-pause-overlay').hidden=true;
+  game.state='playing';$('worm-pause-overlay').hidden=true;playWormSound('resume');
   window.SpacePlatform?.playing?.(true);
  }
 }
@@ -1195,6 +1247,8 @@ function exit(){
  location.assign('index.html?select=worms');
 }
 $('worm-pause').onclick=pause;$('worm-resume').onclick=pause;
+$('worm-pause-sound').onclick=()=>{options.muted=!options.muted;saveOptions();syncPauseSound();if(!options.muted)playWormSound('resume');};
+syncPauseSound();
 $('worm-settings-open').onclick=showSettings;
 $('worm-skins-open').onclick=showSkinWorkshop;
 $('worm-settings-back').onclick=closeSettings;
