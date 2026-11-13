@@ -68,12 +68,18 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.waitForFunction(()=>!!window.InfinityWormsQA,{timeout:12000});
     let a=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
     assert.equal(a.mode,'worms');
+    assert.equal(await page.locator('#worm-length').count(),0,
+      'The HUD must not display worm length');
+    assert.equal(await page.locator('#worm-mass').count(),1);
+    assert.equal(await page.locator('#worm-mass').textContent(),Math.round(a.mass).toLocaleString('ru'));
+    assert.equal((await page.locator('#worm-mass').locator('xpath=..').locator('small').textContent()).trim(),
+      'МАССА','Mass must match the leaderboard unit');
     const saturated=await page.evaluate(()=>{
      const rgb=selector=>getComputedStyle(document.querySelector(selector)).color;
      const root=getComputedStyle(document.documentElement);
      return {
       brand:rgb('.worm-brand em'),
-      length:rgb('.worm-metric:nth-child(1) strong'),
+      mass:rgb('.worm-metric:nth-child(1) strong'),
       rank:rgb('.worm-metric:nth-child(2) strong'),
       timer:rgb('.worm-metric:nth-child(3) strong'),
       blue:root.getPropertyValue('--space-blue').trim(),
@@ -81,7 +87,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
      };
     });
     assert.equal(saturated.brand,'rgb(255, 229, 0)','Bright yellow accent required');
-    assert.equal(saturated.length,'rgb(247, 248, 255)','Neutral HUD numbers should not create a rainbow');
+    assert.equal(saturated.mass,'rgb(247, 248, 255)','Neutral HUD numbers should not create a rainbow');
     assert.equal(saturated.rank,'rgb(255, 229, 0)','Leaderboard rank should be highlighted in gold');
     assert.equal(saturated.timer,'rgb(224, 229, 248)');
     assert.equal(saturated.blue,'#2860ff');
@@ -256,6 +262,12 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.equal(pausedEnd.state,'paused');
     assert.ok(pausedEnd.time>pausedStart.time,
       'Opening pause must not freeze the surrounding universe');
+    assert.ok(Math.hypot(pausedEnd.x-pausedStart.x,pausedEnd.y-pausedStart.y)>8,
+      'The player must continue coasting during pause, not freeze in place: '+
+      JSON.stringify({from:pausedStart,to:pausedEnd}));
+    assert.equal(await page.locator('#worm-pause-length').count(),0);
+    assert.equal(await page.locator('#worm-pause-mass').textContent(),
+      Math.round(pausedEnd.mass).toLocaleString('ru'));
     assert.equal(pausedEnd.resultVisible,false);
     assert.equal(await page.locator('#worm-pause-sound').count(),1);
     await page.locator('#worm-skins-open').click();
@@ -358,6 +370,10 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
       Math.hypot(bot.x-old.x,bot.y-old.y)>12;
     }),'Rivals must continue moving and collecting food during death replay');
     await page.locator('#worm-result').waitFor({state:'visible',timeout:8500});
+    assert.equal(await page.locator('#worm-result-length').count(),0,
+      'The results screen must report mass, never length');
+    assert.equal((await page.locator('#worm-result-mass').locator('xpath=..').locator('small').textContent()).trim(),
+      'МАССА');
     assert.equal(await page.evaluate(()=>window.InfinityWormsQA.snapshot().state),'finished');
     assert.equal(await page.locator('#worm-result').evaluate(
      el=>getComputedStyle(el).animationName.includes('worm-cinematic-curtain')),true,
