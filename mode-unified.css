@@ -788,8 +788,8 @@ body:has(#worm-field) #worm-settings :is(.worm-setting-toggle,.worm-setting-acti
  color:#a996c3!important;font:550 clamp(10px,.66vw,12px)/1.34 Inter,system-ui!important;
 }
 #worm-settings .worm-setting-toggle input{
- position:absolute!important;right:2px!important;top:50%!important;
- width:40px!important;height:25px!important;
+ position:absolute!important;left:auto!important;bottom:auto!important;right:2px!important;top:50%!important;
+ width:44px!important;height:27px!important;
  margin:0!important;opacity:0!important;cursor:pointer!important;
  transform:translateY(-50%);z-index:3;
 }
