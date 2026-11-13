@@ -360,296 +360,337 @@
 }
 
 
-/* Cosmic Worms pause v2 — editorial fullscreen layout based on the unified statistics screen.
-   This block replaces the previous small dialog: no duplicate glow/cascade. */
-#worm-pause-overlay{
- padding:0!important;overflow:hidden!important;
- background:radial-gradient(ellipse at 50% -35%,#42205b59,transparent 65%),#080514f4!important;
- backdrop-filter:blur(11px)!important;
-}
-#worm-pause-overlay .worm-pause-panel{
- display:flex!important;align-items:center!important;justify-content:center!important;
- width:100vw!important;max-width:none!important;
- height:100dvh!important;max-height:100dvh!important;
- padding:clamp(18px,3vw,44px) clamp(18px,5vw,78px)!important;
- background:transparent!important;border:0!important;border-radius:0!important;
- box-shadow:none!important;overflow-x:hidden!important;overflow-y:auto!important;
+/* Cosmic Worms pause v3: compact game overlay, NOT a statistics page.
+   Statistics typography and restrained bevels, original gameplay still visible. */
+#worm-pause-overlay.worm-shade{
  box-sizing:border-box!important;
- scrollbar-width:thin;scrollbar-color:#64408a transparent;
+ padding:clamp(12px,3vh,28px) clamp(12px,3vw,30px)!important;
+ background:rgba(7,3,19,.69)!important;
+ backdrop-filter:blur(6px)!important;
+ overflow:hidden!important;
 }
-#worm-pause-overlay .worm-pause-panel::before,
-#worm-pause-overlay .worm-pause-panel::after{content:none!important;display:none!important}
-#worm-pause-overlay .worm-pause-shell{
- width:min(1160px,100%);max-width:1160px;margin:auto!important;min-width:0;
- display:flex;flex-direction:column;gap:0;position:relative;
+body:has(#worm-field) #worm-pause-overlay .worm-pause-panel{
+ display:block!important;
+ box-sizing:border-box!important;position:relative;isolation:isolate;
+ width:min(860px,100%)!important;max-width:860px!important;
+ height:auto!important;min-height:0!important;
+ max-height:calc(100dvh - 24px)!important;
+ padding:0!important;margin:auto!important;
+ overflow:auto!important;
+ background:linear-gradient(150deg,#1c102ff8 0%,#120b23fa 62%,#0e091df9 100%)!important;
+ border:1px solid #8060b6!important;
+ border-top:2px solid #b18de9!important;
+ border-bottom:5px solid #43236f!important;
+ border-radius:9px!important;
+ box-shadow:inset 0 1px #ffeaff22,0 27px 90px #030108e8,0 0 46px #6e3ccb32!important;
+ scrollbar-width:thin;scrollbar-color:#5f4083 transparent;
 }
+#worm-pause-overlay .worm-pause-panel::before{
+ content:"";position:absolute;inset:0 0 auto;display:block!important;height:98px;z-index:0;
+ background:linear-gradient(180deg,#9159d519,transparent);
+ pointer-events:none;
+}
+#worm-pause-overlay .worm-pause-panel::after{
+ content:none!important;display:none!important;
+}
+#worm-pause-overlay .worm-pause-shell{position:relative;z-index:1;min-width:0}
 #worm-pause-overlay .worm-pause-header{
- display:flex;align-items:center;justify-content:space-between;gap:22px;
- padding:0 0 26px;margin:0;border-bottom:2px solid #694792;
+ display:flex;align-items:center;justify-content:space-between;
+ gap:20px;padding:25px clamp(23px,3.5vw,39px) 22px;
+ border-bottom:1px solid #624781!important;
 }
 #worm-pause-overlay .worm-pause-heading-copy{min-width:0}
-#worm-pause-overlay .worm-pause-header .worm-eyebrow{
- display:block!important;max-width:100%;margin:0 0 12px!important;
- font:850 clamp(9px,.71vw,12px)/1.4 Inter,system-ui!important;
- color:#c6a9ed!important;letter-spacing:.14em!important;
+#worm-pause-overlay .worm-eyebrow{
+ display:block!important;margin:0 0 8px!important;
+ font:850 10px/1.4 Inter,system-ui!important;
+ letter-spacing:.17em!important;color:#c3a4ef!important;
+ text-shadow:none!important;
 }
-#worm-pause-overlay .worm-pause-header .worm-eyebrow::before{display:none!important;content:none!important}
+#worm-pause-overlay .worm-eyebrow::before{display:none!important;content:none!important}
 #worm-pause-overlay .worm-pause-header h1{
- display:block!important;margin:0 0 10px!important;
- font:950 clamp(38px,3.7vw,64px)/1.03 'Inter Display',Inter,system-ui!important;
- color:#faf4ff!important;letter-spacing:-.054em!important;
- text-shadow:0 3px 18px #02000888!important;
+ display:block!important;margin:0!important;
+ color:#faf5ff!important;
+ font:950 clamp(30px,3.3vw,45px)/1.05 'Inter Display',Inter,system-ui!important;
+ letter-spacing:-.055em!important;
+ text-shadow:0 2px 16px #955de838!important;
 }
-#worm-pause-overlay .worm-pause-header h1::before{content:none!important;display:none!important}
+#worm-pause-overlay .worm-pause-header h1::before{display:none!important;content:none!important}
 #worm-pause-overlay .worm-pause-tagline{
- display:block!important;margin:0!important;color:#bcabd2!important;
- font:500 clamp(12px,.85vw,15px)/1.5 Inter,system-ui!important;
- max-width:60ch;
+ display:block!important;max-width:55ch!important;
+ margin:8px 0 0!important;
+ color:#b8a8d2!important;
+ font:500 clamp(11px,.8vw,13px)/1.42 Inter,system-ui!important;
 }
 #worm-pause-overlay .worm-pause-sound{
- display:inline-flex;align-items:center;justify-content:center;gap:11px;flex:none;
- min-width:171px;min-height:50px;padding:11px 16px;
- border:1px solid #7953a6;border-bottom:4px solid #442567;border-radius:6px;
- background:linear-gradient(180deg,#312046,#1c122b);
- color:#f2e6ff;font:900 12px/1.2 Inter,system-ui;letter-spacing:.07em;
- box-shadow:inset 0 1px #ffffff1c,0 5px 0 #11081d90;
- cursor:pointer;transition:filter .16s,border-color .16s,box-shadow .16s,transform .16s;
+ display:inline-flex!important;align-items:center;justify-content:center;gap:10px;flex:none;
+ min-width:155px!important;min-height:44px!important;
+ padding:9px 13px!important;
+ color:#ede2ff!important;background:linear-gradient(155deg,#36234f,#211330)!important;
+ border:1px solid #8c6bb7!important;border-bottom:3px solid #4b2a70!important;
+ border-radius:5px!important;
+ box-shadow:inset 0 1px #ffffff1e,0 4px 0 #0c061a!important;
+ font:900 11px/1.2 Inter,system-ui!important;letter-spacing:.06em!important;
+ cursor:pointer!important;transition:transform .16s,border-color .16s,box-shadow .16s,filter .16s!important;
 }
-#worm-pause-overlay .worm-pause-sound svg{width:21px;height:21px;flex:none}
+#worm-pause-overlay .worm-pause-sound svg{width:19px;height:19px;flex:none}
 #worm-pause-overlay .worm-pause-sound .worm-sound-off{display:none}
 #worm-pause-overlay .worm-pause-sound[data-muted=true]{
- color:#e7bad4;background:linear-gradient(180deg,#382036,#231322);
- border-color:#9a5979;border-bottom-color:#572c43;
+ background:linear-gradient(150deg,#391d30,#261525)!important;
+ color:#f0c0d2!important;border-color:#915579!important;
+ border-bottom-color:#522943!important;
 }
 #worm-pause-overlay .worm-pause-sound[data-muted=true] .worm-sound-waves{display:none}
 #worm-pause-overlay .worm-pause-sound[data-muted=true] .worm-sound-off{display:block}
-#worm-pause-overlay .worm-pause-main{width:100%;display:flex;flex-direction:column;min-width:0}
+#worm-pause-overlay .worm-pause-main{
+ display:grid!important;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr)!important;
+ gap:clamp(23px,3.5vw,43px)!important;
+ width:100%!important;min-width:0;
+ padding:25px clamp(23px,3.5vw,39px) 24px!important;
+}
+#worm-pause-overlay .worm-pause-controls,
+#worm-pause-overlay .worm-pause-identity{min-width:0;align-self:start}
 #worm-pause-overlay .worm-pause-section-caption{
- display:flex;align-items:center;gap:12px;justify-content:space-between;
- padding:19px 0 12px;margin:0;
- font:900 clamp(10px,.74vw,13px)/1.3 Inter,system-ui!important;
- color:#c7a9ef;letter-spacing:.14em!important;
-}
-#worm-pause-overlay .worm-pause-status-dot{
- width:7px;height:7px;flex:none;border-radius:50%;background:#a98bf3;
- box-shadow:0 0 12px #a98bf388;
-}
-#worm-pause-overlay .worm-pause-stats{
- display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
- gap:0!important;padding:0!important;margin:0!important;
- border-top:1px solid #624589!important;border-bottom:1px solid #624589!important;
- background:linear-gradient(90deg,#2114338a,#0b071800)!important;
-}
-#worm-pause-overlay .worm-pause-stats>div{
- display:flex!important;align-items:flex-start!important;justify-content:center!important;
- flex-direction:column!important;gap:13px!important;
- min-width:0!important;min-height:142px!important;
- padding:20px clamp(13px,2.6vw,36px)!important;
- border:0!important;border-right:1px solid #45305d!important;
- border-radius:0!important;background:transparent!important;box-shadow:none!important;
-}
-#worm-pause-overlay .worm-pause-stats>div:last-child{border-right:0!important}
-#worm-pause-overlay .worm-pause-stats small{
- font:850 clamp(10px,.75vw,13px)/1.2 Inter,system-ui!important;
- color:#baa7d3!important;letter-spacing:.10em!important;
-}
-#worm-pause-overlay .worm-pause-stats strong{
- font:950 clamp(29px,2.8vw,49px)/1 Inter,system-ui!important;
- color:#f5eaff!important;font-variant-numeric:tabular-nums;
- letter-spacing:-.055em!important;text-shadow:none!important;
-}
-#worm-pause-overlay .worm-pause-stats>div:first-child strong{color:#bf9aff!important}
-#worm-pause-overlay .worm-pause-lower{
- display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);
- gap:clamp(27px,4.2vw,72px);align-items:start;margin-top:19px;min-width:0;
-}
-#worm-pause-overlay .worm-pause-identity,
-#worm-pause-overlay .worm-pause-controls{min-width:0}
-#worm-pause-overlay .worm-pause-identity .worm-pause-section-caption,
-#worm-pause-overlay .worm-pause-controls .worm-pause-section-caption{
- border-bottom:2px solid #65468b;padding:0 0 11px!important;margin:0 0 16px!important;
-}
-#worm-pause-overlay .worm-pause-preview{
- --pause-skin-dark:#39006b;--pause-skin-light:#9922ff;--pause-skin-accent:#ff1744;
- width:100%;height:clamp(150px,17vh,220px);position:relative;overflow:hidden;
- border:1px solid #5c3a8069;border-radius:5px;
- background:
-  radial-gradient(circle at 76% 28%,#d4b0ff6b 0 1px,transparent 2px),
-  radial-gradient(circle at 20% 27%,#e6baffb3 0 1px,transparent 2px),
-  radial-gradient(circle at 48% 73%,#d8abffab 0 1px,transparent 2px),
-  radial-gradient(circle at 59% 18%,#a762ff81 0 2px,transparent 3px),
-  radial-gradient(ellipse at 55% 65%,#50307666,transparent 68%),#110c20;
-}
-#worm-pause-overlay .worm-pause-preview::before{
- content:'';position:absolute;inset:0;opacity:.55;pointer-events:none;
- background-image:radial-gradient(#e7d4ff9c .7px,transparent 1.4px);
- background-size:33px 27px;background-position:13px 8px;
-}
-#worm-pause-overlay .worm-pause-orbit{
- position:absolute;left:50%;top:56%;width:74%;aspect-ratio:2.9;
- border:1px solid #ad76eb36;border-radius:50%;transform:translate(-50%,-50%) rotate(-13deg);
- box-shadow:0 0 26px #8a4cd719;pointer-events:none;
-}
-#worm-pause-overlay .worm-pause-orbit.orbit-two{
- width:94%;transform:translate(-50%,-50%) rotate(13deg);
- border-color:#ad76eb1d;
-}
-#worm-pause-overlay .worm-pause-body{
- position:absolute;left:12%;right:17%;top:53%;
- height:clamp(34px,4vw,57px);border-radius:100px;
- transform:translateY(-50%) rotate(-7deg);
- background:
-  radial-gradient(ellipse at 22% 35%,#ffffff60,transparent 22%),
-  radial-gradient(ellipse at 54% 80%,#ffffff22,transparent 30%),
-  linear-gradient(90deg,var(--pause-skin-dark),var(--pause-skin-light) 33%,var(--pause-skin-accent) 70%,var(--pause-skin-light));
- box-shadow:inset 0 8px 11px #ffffff45,inset 0 -12px 18px #05001296,
-  0 0 20px color-mix(in srgb,var(--pause-skin-light) 38%,transparent);
-}
-#worm-pause-overlay .worm-pause-head{
- position:absolute;left:78%;top:46%;width:clamp(42px,4vw,63px);aspect-ratio:1;
- border-radius:50%;transform:rotate(-7deg);
- background:radial-gradient(circle at 30% 24%,#ffffff8c,transparent 30%),
-  linear-gradient(135deg,var(--pause-skin-accent),var(--pause-skin-light) 60%,var(--pause-skin-dark));
- box-shadow:inset -7px -9px 12px #07021a94,inset 2px 2px 8px #ffffff57,
-  0 0 22px color-mix(in srgb,var(--pause-skin-accent) 50%,transparent);
-}
-#worm-pause-overlay .worm-pause-head i{
- position:absolute;width:8px;height:8px;top:30%;left:49%;
- border-radius:50%;background:#13091e;border:2px solid #f6eeff;box-sizing:border-box;
-}
-#worm-pause-overlay .worm-pause-head i:last-child{top:57%;left:66%;width:6px;height:6px}
-#worm-pause-overlay .worm-pause-identity-footer{
- display:flex;align-items:end;justify-content:space-between;gap:13px;
- padding:14px 1px;border-bottom:1px solid #392846;min-width:0;
-}
-#worm-pause-overlay .worm-pause-identity-footer>div{display:flex;flex-direction:column;gap:6px;min-width:0}
-#worm-pause-overlay .worm-pause-identity-footer small{
- color:#a997c4;font:850 10px/1.3 Inter,system-ui;letter-spacing:.12em;
-}
-#worm-pause-overlay .worm-pause-identity-footer strong{
- color:#f7edff;font:900 clamp(16px,1.16vw,20px)/1.3 Inter,system-ui;overflow-wrap:anywhere;
-}
-#worm-pause-overlay #worm-pause-player{
- min-width:0;max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
- color:#c4a9ed;font:850 12px/1.4 Inter,system-ui;
+ display:flex;align-items:center;justify-content:space-between;
+ padding:0 0 11px!important;margin:0 0 15px!important;
+ border-bottom:1px solid #64488b!important;
+ color:#c4a9ec!important;font:900 10px/1.3 Inter,system-ui!important;
+ letter-spacing:.14em!important;
 }
 #worm-pause-overlay .worm-pause-panel .worm-actions{
  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
- align-items:stretch!important;gap:9px!important;margin:0!important;
+ gap:9px!important;padding:0!important;margin:0!important;
 }
 #worm-pause-overlay .worm-pause-panel .worm-actions button{
- --pause-action:#aa7df2;
- position:relative;min-width:0!important;min-height:62px!important;
- padding:12px 14px!important;
- border:1px solid #765097!important;border-bottom:4px solid #412363!important;
+ box-sizing:border-box!important;position:relative!important;
+ width:100%!important;min-width:0!important;
+ min-height:57px!important;padding:12px 28px 12px 11px!important;
+ text-align:center!important;overflow:hidden!important;
+ border:1px solid #76569f!important;
+ border-top-color:#9a78c6!important;
+ border-bottom:4px solid #42245f!important;
  border-radius:6px!important;
- background:linear-gradient(170deg,#2d1d40,#1a1028)!important;
- color:#f6efff!important;
- font:900 clamp(11px,.86vw,14px)/1.28 Inter,system-ui!important;
- letter-spacing:.04em!important;
- box-shadow:inset 0 1px #ffffff1a,0 5px 0 #11071b,0 8px 14px #08040eb5!important;
- transition:transform .14s,filter .14s,border-color .14s,box-shadow .14s!important;
+ background:linear-gradient(165deg,#342146,#20142e)!important;
+ color:#f2eaff!important;
+ font:900 clamp(10px,.84vw,13px)/1.25 Inter,system-ui!important;
+ letter-spacing:.035em!important;
+ box-shadow:inset 0 1px #ffffff1e,0 4px 0 #10091d,0 7px 15px #08030fa8!important;
+ transform:none!important;
+ transition:transform .15s,border-color .15s,box-shadow .15s,filter .15s!important;
 }
 #worm-pause-overlay .worm-pause-panel .worm-actions button::before{
  content:none!important;display:none!important;
 }
+#worm-pause-overlay .worm-pause-panel .worm-actions button::after{
+ position:absolute;right:10px;top:50%;transform:translateY(-58%);
+ font:900 15px/1 Inter,system-ui;color:#caaff1;opacity:.8;pointer-events:none;
+}
 #worm-pause-overlay .worm-pause-panel .worm-actions #worm-resume{
- grid-column:1/-1!important;min-height:72px!important;
- border-color:#c1a0ff!important;border-bottom-color:#48208a!important;
- background:linear-gradient(150deg,#8654e8,#5829c2)!important;
- box-shadow:inset 0 1px #ffffff49,0 5px 0 #290f5f,
-  0 0 0 1px #a16def24,0 8px 17px #080211a8!important;
- font-size:clamp(14px,1vw,17px)!important;
+ grid-column:1/-1!important;min-height:66px!important;
+ background:linear-gradient(135deg,#8856f6,#6030cd 58%,#5024b1)!important;
+ border-color:#c2a1ff!important;border-bottom-color:#3e187c!important;
+ box-shadow:inset 0 1px #ffffff50,0 5px 0 #240a51,
+  0 0 15px #965bee41,0 9px 20px #07020fc0!important;
+ font-size:clamp(13px,1.05vw,16px)!important;
 }
-#worm-pause-overlay .worm-pause-panel .worm-actions #worm-skins-open{
- --pause-action:#c28bff;
+#worm-pause-overlay .worm-pause-panel .worm-actions #worm-resume::after{
+ content:"▶";color:white;opacity:1;font-size:15px;right:17px;
 }
+#worm-pause-overlay .worm-pause-panel .worm-actions #worm-skins-open::after{content:"✦"}
+#worm-pause-overlay .worm-pause-panel .worm-actions #worm-settings-open::after{content:"⚙";font-size:17px}
+#worm-pause-overlay .worm-pause-panel .worm-actions #worm-open-guide::after{content:"?"}
 #worm-pause-overlay .worm-pause-panel .worm-actions #worm-exit{
- --pause-action:#ff648d;grid-column:auto!important;
- border-color:#91536f!important;border-bottom-color:#52223c!important;
- background:linear-gradient(160deg,#382032,#241322)!important;
+ grid-column:auto!important;background:linear-gradient(155deg,#391c2f,#261424)!important;
+ border-color:#965979!important;border-bottom-color:#53273f!important;
 }
+#worm-pause-overlay .worm-pause-panel .worm-actions #worm-exit::after{content:"↩";color:#ff9bb4;font-size:19px}
+#worm-pause-overlay .worm-pause-preview{
+ --pause-skin-dark:#39006b;--pause-skin-light:#9922ff;--pause-skin-accent:#ff1744;
+ position:relative;overflow:hidden;width:100%;height:170px;
+ border:1px solid #634385;border-radius:6px;
+ background:
+ radial-gradient(circle at 27% 22%,#e9ddffbf 0 1px,transparent 2px),
+ radial-gradient(circle at 74% 24%,#cfa2ffed 0 1px,transparent 2px),
+ radial-gradient(circle at 51% 67%,#ffffffc2 0 1px,transparent 2px),
+ radial-gradient(circle at 84% 79%,#e6cdffbd 0 1px,transparent 2px),
+ radial-gradient(ellipse at 51% 60%,#4d238665,transparent 67%),#0e091c;
+ box-shadow:inset 0 0 30px #03020a5c;
+}
+#worm-pause-overlay .worm-pause-preview::before{
+ content:"";position:absolute;inset:0;pointer-events:none;opacity:.65;
+ background-image:radial-gradient(#eddfffac .8px,transparent 1.5px);
+ background-size:29px 25px;background-position:9px 5px;
+}
+#worm-pause-overlay .worm-pause-orbit{
+ position:absolute;top:55%;left:48%;width:86%;aspect-ratio:2.75;
+ border:1px solid #ae87f03f;border-radius:50%;
+ transform:translate(-50%,-50%) rotate(-12deg);pointer-events:none;
+}
+#worm-pause-overlay .worm-pause-orbit.orbit-two{
+ transform:translate(-50%,-50%) rotate(16deg);
+ width:99%;border-color:#b488ea24;
+}
+#worm-pause-overlay .worm-pause-body{
+ position:absolute;left:10%;right:13%;top:53%;height:clamp(38px,4vw,53px);
+ border-radius:100px;transform:translateY(-50%) rotate(-7deg);
+ background:
+ radial-gradient(ellipse at 22% 35%,#ffffff67,transparent 24%),
+ linear-gradient(90deg,var(--pause-skin-dark),var(--pause-skin-light) 32%,var(--pause-skin-accent) 73%,var(--pause-skin-light));
+ box-shadow:inset 0 7px 11px #ffffff36,inset 0 -13px 15px #04001299,
+  0 0 21px color-mix(in srgb,var(--pause-skin-light) 42%,transparent);
+}
+#worm-pause-overlay .worm-pause-head{
+ position:absolute;top:37%;left:76%;width:55px;aspect-ratio:1;
+ border-radius:50%;transform:rotate(-8deg);
+ background:radial-gradient(circle at 32% 24%,#ffffff76,transparent 28%),
+ linear-gradient(140deg,var(--pause-skin-accent),var(--pause-skin-light) 55%,var(--pause-skin-dark));
+ box-shadow:inset -8px -10px 12px #09031995,inset 2px 2px 8px #ffffff57,
+  0 0 20px color-mix(in srgb,var(--pause-skin-accent) 40%,transparent);
+}
+#worm-pause-overlay .worm-pause-head i{
+ position:absolute;top:29%;left:49%;width:8px;height:8px;border:2px solid white;
+ border-radius:50%;background:#160925;box-sizing:border-box;
+}
+#worm-pause-overlay .worm-pause-head i:last-child{top:57%;left:64%;width:6px;height:6px}
+#worm-pause-overlay .worm-pause-identity-footer{
+ display:flex;align-items:center;justify-content:space-between;gap:12px;
+ margin-top:0;padding:15px 0;border-bottom:1px solid #46315e;
+}
+#worm-pause-overlay .worm-pause-identity-footer>div{
+ display:flex;flex-direction:column;gap:4px;min-width:0;
+}
+#worm-pause-overlay .worm-pause-identity-footer small{
+ color:#ae9acb;font:850 9px/1.3 Inter,system-ui;letter-spacing:.1em;
+}
+#worm-pause-overlay .worm-pause-identity-footer strong{
+ color:#f6efff;font:900 clamp(14px,1.05vw,18px)/1.3 Inter,system-ui;
+ overflow-wrap:anywhere;
+}
+#worm-pause-overlay #worm-pause-player{
+ max-width:49%;color:#ccafea;font:850 12px/1.3 Inter,system-ui;
+ overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+#worm-pause-overlay .worm-pause-footer{
+ display:grid;grid-template-columns:auto 1fr;align-items:center;gap:23px;
+ background:#0d081a88;
+ border-top:1px solid #63488a;
+ padding:12px clamp(23px,3.5vw,39px)!important;
+}
+#worm-pause-overlay .worm-pause-footer .worm-pause-section-caption{
+ display:flex;align-items:center;gap:10px;justify-content:flex-start;
+ margin:0!important;padding:0!important;border:0!important;
+ min-width:116px;color:#a990cb!important;
+}
+#worm-pause-overlay .worm-pause-status-dot{
+ display:block;width:7px;height:7px;border-radius:50%;
+ background:#a977ed;box-shadow:0 0 9px #ac74f2;
+}
+#worm-pause-overlay .worm-pause-stats{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ gap:0!important;padding:0!important;margin:0!important;
+ border:0!important;background:transparent!important;
+}
+#worm-pause-overlay .worm-pause-stats>div{
+ min-width:0;min-height:43px!important;display:flex!important;
+ flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;
+ gap:5px!important;padding:3px 18px!important;
+ background:transparent!important;border:0!important;
+ border-left:1px solid #513a71!important;border-radius:0!important;
+ box-shadow:none!important;
+}
+#worm-pause-overlay .worm-pause-stats small{
+ font:850 9px/1.1 Inter,system-ui!important;color:#af9ac9!important;
+ letter-spacing:.075em!important;
+}
+#worm-pause-overlay .worm-pause-stats strong{
+ font:950 clamp(17px,1.38vw,23px)/1.15 Inter,system-ui!important;
+ color:#f5ecff!important;font-variant-numeric:tabular-nums;
+ text-shadow:none!important;
+}
+#worm-pause-overlay .worm-pause-stats>div:first-child strong{color:#c9a5ff!important}
 @media(hover:hover) and (pointer:fine){
- #worm-pause-overlay .worm-pause-sound:not(:disabled):hover,
+ #worm-pause-overlay .worm-pause-sound:hover,
  #worm-pause-overlay .worm-pause-panel .worm-actions button:not(:disabled):hover{
-  filter:brightness(1.12)!important;transform:translateY(-2px)!important;
-  border-color:#cba7ff!important;
-  box-shadow:inset 0 1px #ffffff36,0 5px 0 #1e0b36,
-    0 0 0 1px #b996ff52,0 0 19px #9d65eed0,0 8px 19px #090314dc!important;
+  transform:translateY(-2px)!important;filter:brightness(1.11)!important;
+  border-color:#cdadff!important;
+  box-shadow:inset 0 1px #ffffff44,0 4px 0 #260e46,
+   0 0 0 1px #b996ff70,0 0 23px #a262ffbd,0 9px 20px #05000ad1!important;
  }
  #worm-pause-overlay .worm-pause-panel .worm-actions #worm-resume:not(:disabled):hover{
-  border-color:#dbc5ff!important;
-  box-shadow:inset 0 1px #ffffff58,0 5px 0 #220951,
-   0 0 0 1px #b996ff85,0 0 27px #a262ffc2,0 9px 22px #090314e0!important;
+  border-color:#e4d4ff!important;
+  box-shadow:inset 0 1px #ffffff62,0 5px 0 #200b55,
+   0 0 0 1px #b996ff91,0 0 27px #a262ffd0,0 11px 23px #090314e0!important;
  }
  #worm-pause-overlay .worm-pause-panel .worm-actions #worm-exit:not(:disabled):hover{
-  border-color:#ff8baa!important;
-  box-shadow:inset 0 1px #ffffff30,0 5px 0 #351022,
-    0 0 19px #ff568a89,0 8px 18px #090314da!important;
- }
- #worm-pause-overlay .worm-pause-sound[data-muted=true]:not(:disabled):hover{
-  border-color:#f18eac!important;
-  box-shadow:0 0 18px #ec66917a,0 5px 0 #28101d!important;
+  border-color:#ffa8c3!important;
+  box-shadow:inset 0 1px #ffffff35,0 4px 0 #351023,
+   0 0 18px #ff578d97,0 9px 20px #05000ad1!important;
  }
 }
-#worm-pause-overlay .worm-pause-panel .worm-actions button:active,
-#worm-pause-overlay .worm-pause-sound:active{
- transform:translateY(2px)!important;
- box-shadow:inset 0 3px 8px #07020c93,0 2px 7px #0008!important;
+#worm-pause-overlay .worm-pause-panel button:active{
+ transform:translateY(2px)!important;filter:brightness(.98)!important;
+ box-shadow:inset 0 2px 7px #0009,0 3px 8px #0009!important;
 }
 #worm-pause-overlay .worm-pause-panel button:focus-visible{
- outline:2px solid #e6d1ff!important;outline-offset:3px!important;
-}
-@media(min-width:2000px) and (min-height:1000px){
- #worm-pause-overlay .worm-pause-shell{max-width:1320px}
- #worm-pause-overlay .worm-pause-stats>div{min-height:166px!important}
- #worm-pause-overlay .worm-pause-preview{height:240px}
- #worm-pause-overlay .worm-pause-panel .worm-actions button{min-height:71px!important;font-size:17px!important}
- #worm-pause-overlay .worm-pause-panel .worm-actions #worm-resume{min-height:85px!important;font-size:20px!important}
+ outline:2px solid #e6d2ff!important;outline-offset:3px!important;
 }
 @media(max-width:760px){
- #worm-pause-overlay .worm-pause-panel{
-  padding:calc(17px + env(safe-area-inset-top)) 15px
-    calc(17px + env(safe-area-inset-bottom))!important;
-  align-items:flex-start!important;
+ body:has(#worm-field) #worm-pause-overlay .worm-pause-panel{
+  max-height:calc(100dvh - 18px)!important;
  }
- #worm-pause-overlay .worm-pause-header{padding-bottom:18px;gap:10px}
- #worm-pause-overlay .worm-pause-header h1{font-size:clamp(30px,7vw,42px)!important}
- #worm-pause-overlay .worm-pause-sound{
-  min-width:43px;width:auto;min-height:42px;padding:9px 10px;font-size:10px;gap:6px;
+ #worm-pause-overlay.worm-shade{padding:9px!important}
+ #worm-pause-overlay .worm-pause-header{
+  padding:17px 18px 14px!important;gap:8px;
  }
- #worm-pause-overlay .worm-pause-stats>div{min-height:91px!important;padding:11px!important;gap:9px!important}
- #worm-pause-overlay .worm-pause-stats strong{font-size:clamp(21px,4.7vw,32px)!important}
- #worm-pause-overlay .worm-pause-stats small{font-size:9px!important}
- #worm-pause-overlay .worm-pause-lower{grid-template-columns:1fr;gap:20px;margin-top:18px}
- #worm-pause-overlay .worm-pause-preview{height:137px}
- #worm-pause-overlay .worm-pause-identity-footer{padding:9px 1px}
- #worm-pause-overlay .worm-pause-panel .worm-actions button{min-height:51px!important}
- #worm-pause-overlay .worm-pause-panel .worm-actions #worm-resume{min-height:58px!important}
-}
-@media(max-width:420px){
- #worm-pause-overlay .worm-pause-header h1{font-size:30px!important}
+ #worm-pause-overlay .worm-pause-header h1{font-size:clamp(28px,6vw,38px)!important}
  #worm-pause-overlay .worm-pause-tagline{font-size:11px!important}
- #worm-pause-overlay .worm-pause-sound .worm-pause-sound-label{font-size:9px}
- #worm-pause-overlay .worm-pause-preview{height:114px}
- #worm-pause-overlay .worm-pause-panel .worm-actions{grid-template-columns:repeat(2,minmax(0,1fr))!important}
- #worm-pause-overlay .worm-pause-panel .worm-actions button{
-  min-height:48px!important;font-size:10px!important;padding:8px 7px!important;
+ #worm-pause-overlay .worm-pause-sound{
+  min-width:43px!important;min-height:42px!important;
+  padding:8px 10px!important;gap:6px!important;font-size:10px!important;
  }
- #worm-pause-overlay .worm-pause-panel .worm-actions #worm-resume{min-height:54px!important}
+ #worm-pause-overlay .worm-pause-sound .worm-pause-sound-label{max-width:64px}
+ #worm-pause-overlay .worm-pause-main{
+  padding:16px 18px!important;gap:15px!important;
+  grid-template-columns:1fr!important;
+ }
+ #worm-pause-overlay .worm-pause-controls{order:0}
+ #worm-pause-overlay .worm-pause-identity{order:1}
+ #worm-pause-overlay .worm-pause-section-caption{margin-bottom:9px!important;padding-bottom:7px!important}
+ #worm-pause-overlay .worm-pause-panel .worm-actions button{min-height:46px!important;padding:9px 23px 9px 8px!important}
+ #worm-pause-overlay .worm-pause-panel .worm-actions #worm-resume{min-height:53px!important}
+ #worm-pause-overlay .worm-pause-preview{height:106px}
+ #worm-pause-overlay .worm-pause-head{width:39px;top:36%}
+ #worm-pause-overlay .worm-pause-identity-footer{padding:10px 0}
+ #worm-pause-overlay .worm-pause-footer{
+  grid-template-columns:1fr!important;gap:8px;padding:10px 18px!important;
+ }
+ #worm-pause-overlay .worm-pause-stats>div{padding:4px 10px!important;min-height:37px!important}
+ #worm-pause-overlay .worm-pause-stats strong{font-size:18px!important}
 }
-@media(max-height:590px) and (orientation:landscape){
- #worm-pause-overlay .worm-pause-panel{align-items:flex-start!important;padding-top:12px!important;padding-bottom:12px!important}
- #worm-pause-overlay .worm-pause-header{padding-bottom:11px}
- #worm-pause-overlay .worm-pause-header h1{font-size:29px!important;margin:0 0 4px!important}
- #worm-pause-overlay .worm-pause-section-caption{padding:9px 0!important}
- #worm-pause-overlay .worm-pause-stats>div{min-height:75px!important;padding:8px 15px!important;gap:7px!important}
- #worm-pause-overlay .worm-pause-lower{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;margin-top:10px}
- #worm-pause-overlay .worm-pause-preview{height:120px}
- #worm-pause-overlay .worm-pause-panel .worm-actions button{min-height:40px!important;padding:8px!important}
- #worm-pause-overlay .worm-pause-panel .worm-actions #worm-resume{min-height:45px!important}
+@media(max-width:430px){
+ #worm-pause-overlay .worm-pause-header{padding:14px!important}
+ #worm-pause-overlay .worm-pause-header h1{font-size:28px!important}
+ #worm-pause-overlay .worm-pause-header .worm-eyebrow{font-size:9px!important}
+ #worm-pause-overlay .worm-pause-tagline{font-size:10px!important}
+ #worm-pause-overlay .worm-pause-sound{padding:7px!important}
+ #worm-pause-overlay .worm-pause-sound svg{width:18px}
+ #worm-pause-overlay .worm-pause-sound .worm-pause-sound-label{font-size:9px}
+ #worm-pause-overlay .worm-pause-panel .worm-actions button{font-size:10px!important}
+ #worm-pause-overlay .worm-pause-main{padding:13px 14px!important}
+ #worm-pause-overlay .worm-pause-footer{padding:9px 14px!important}
+}
+@media(max-height:520px) and (orientation:landscape){
+ #worm-pause-overlay .worm-pause-header{padding:13px 22px!important}
+ #worm-pause-overlay .worm-pause-header h1{font-size:27px!important}
+ #worm-pause-overlay .worm-pause-tagline{display:none!important}
+ #worm-pause-overlay .worm-pause-main{
+  grid-template-columns:1.1fr .9fr!important;
+  padding:12px 22px!important;gap:20px!important;
+ }
+ #worm-pause-overlay .worm-pause-preview{height:102px}
+ #worm-pause-overlay .worm-pause-panel .worm-actions button{min-height:38px!important}
+ #worm-pause-overlay .worm-pause-panel .worm-actions #worm-resume{min-height:43px!important}
+ #worm-pause-overlay .worm-pause-footer{grid-template-columns:auto 1fr!important;padding:8px 22px!important}
 }
 @media(prefers-reduced-motion:reduce){
- #worm-pause-overlay .worm-pause-sound,
- #worm-pause-overlay .worm-pause-panel .worm-actions button{transition:none!important}
+ #worm-pause-overlay .worm-pause-panel button{transition:none!important}
 }
