@@ -1523,3 +1523,7 @@ body:has(#worm-field) #worm-settings #worm-settings-back{
  #worm-settings .br-settings-layout.worm-settings-content{padding-top:5px!important}
  body:has(#worm-field) #worm-settings .br-settings-foot.worm-settings-footer{min-height:52px!important;padding:7px 20px!important}
 }
+
+/* Screen visibility must win over full-page layout rules. */
+body:has(#worm-field) #worm-settings[hidden],
+body:has(#worm-field) #worm-pause-overlay[hidden]{display:none!important}
