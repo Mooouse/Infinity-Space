@@ -1579,11 +1579,26 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
     types:[...new Set(bots.map(b=>b.persona))]};
   },
   encircleProbe:()=>{
-   const victim={id:999,alive:true,mass:80,segments:Array.from({length:35},()=>({x:0,y:0})),x:0,y:0};
-   const attacker={id:998,alive:true,mass:900,segments:Array.from({length:150},()=>({x:0,y:0})),x:190,y:0};
-   return {canClose:canEncircle(attacker,victim),radius:encircleRadius(victim),
-    availableLength:attacker.segments.length*11.8,
-    requiredLength:TAU*encircleRadius(victim)*1.08};
+   const victim={id:-999,alive:true,mass:80,segments:Array.from({length:35},()=>({x:0,y:0})),
+    x:1000,y:1000,angle:0,speed:0};
+   const attacker={id:-998,alive:true,mass:900,segments:Array.from({length:150},()=>({x:0,y:0})),
+    x:1180,y:1000,angle:Math.PI/2,speed:172,persona:'pro',coilCooldown:game.time+100};
+   const radius=encircleRadius(victim),canClose=canEncircle(attacker,victim);
+   attacker.coil={id:victim.id,x:victim.x,y:victim.y,radius,dir:1,
+    progress:0,lastBearing:null,until:game.time+13,escaped:0};
+   game.worms.push(victim);
+   try{
+    for(let tick=0;tick<330;tick++){
+     const heading=guideCoil(attacker,1/60,BOT_PERSONAS.pro);
+     if(heading===null)break;
+     attacker.angle+=clamp(normAngle(heading-attacker.angle),-3.35/60,3.35/60);
+     attacker.x+=Math.cos(attacker.angle)*attacker.speed/60;
+     attacker.y+=Math.sin(attacker.angle)*attacker.speed/60;
+    }
+    return {canClose,radius,availableLength:attacker.segments.length*11.8,
+     requiredLength:TAU*radius*1.08,loop:attacker.coil?.progress||0,
+     radiusError:Math.abs(Math.hypot(attacker.x-victim.x,attacker.y-victim.y)-radius)};
+   }finally{game.worms.pop();}
   },
   relaxationProbe:()=>{
    const simulateCurve=smoothing=>{
