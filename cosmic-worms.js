@@ -213,7 +213,7 @@ const BOT_PERSONAS={
 };
 const DEATH_REPLAY_SECONDS=3.25;
 let vw=0,vh=0,dpr=1,last=0,uiClock=0,starTime=0,foodTimer=0,toastTimer=0,guideStep=0,guideReturn='playing';
-let game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),worms:[],fx:[],player:null,reported:false,deathElapsed:0,deathPosition:null,deathGhost:null};
+let game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),wrecks:[],nextWreckId:1,worms:[],fx:[],player:null,reported:false,deathElapsed:0,deathPosition:null,deathGhost:null};
 let qaManualPhysics=false; // tester-only: stop rAF simulation while deterministic QA advances physics
 let lastIdlePaint=0;
 const input={mx:0,my:0,mouseMoved:false,mouseDown:false,boostKey:false,boostTouch:false,keys:new Set(),stickAngle:0,stickPower:0,stickPointer:-1,touchAngle:null};
@@ -277,7 +277,7 @@ function createWorm(name,human,index,preferEncounter=false,identity=null){
  if(!pos)return null;
  const w={name,human,id:index,x:pos.x,y:pos.y,angle,target:angle,
   mass,bestMass:mass,bestLength:count,alive:true,invulnerable:human?2.3:2.0,
-  segments:[],boost:false,dropClock:0,think:rand(.1,.2),targetFood:null,kills:0,
+  segments:[],boost:false,dropClock:0,think:rand(.1,.2),targetFood:null,targetWreckId:null,coil:null,coilCooldown:0,objective:'food',kills:0,
   foodEaten:0,bestRank:99,leadTime:0,deathDelay:0,
   persona:human?'human':(identity?.persona||chooseBotRole()),
   head:human?options.head:(identity?.head||BOT_HEADS[Math.floor(Math.random()*BOT_HEADS.length)]),
@@ -300,14 +300,48 @@ function createWorm(name,human,index,preferEncounter=false,identity=null){
 
 function seedWormTrail(w){
  const gap=11.8,points=w.segments.length+6;
- w.traveled=0;w.trailStart=0;w.trail=[];
+ w.traveled=0;w.trailStart=0;w.relaxPhase=0;w.trail=[];
  for(let i=points;i>0;i--)w.trail.push({
   x:w.x-Math.cos(w.angle)*i*gap,
   y:w.y-Math.sin(w.angle)*i*gap,s:-i*gap
  });
  w.trail.push({x:w.x,y:w.y,s:0});
 }
-function followWormTrail(w,advance,gap=11.8){
+// Gradual relaxation changes the physical body path, not merely its paint.
+// Straight sections stay straight; sharp corners slowly pull toward the chord.
+function trailPointAt(history,distance,start,end){
+ let low=start,high=end;
+ while(low+1<high){const mid=(low+high)>>1;
+  if(history[mid].s<=distance)low=mid;else high=mid;}
+ const a=history[low],b=history[Math.min(end,low+1)];
+ const t=clamp((distance-a.s)/Math.max(1e-8,b.s-a.s),0,1);
+ return {x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t};
+}
+function relaxWormTrail(w,dt){
+ const nodes=w.trail,start=w.trailStart+1,end=nodes.length-2,n=end-start+1;
+ if(n<10||dt<=0)return;
+ const count=Math.min(96,n),phase=w.relaxPhase=(w.relaxPhase||0)+1;
+ // Cycle bounded samples through the entire body; long tails stay cheap.
+ const offset=(phase%7)/7;
+ for(let k=0;k<count;k++){
+  const idx=start+Math.min(n-1,Math.floor((k+offset)*n/count));
+  const node=nodes[idx],span=36;
+  if(node.s-span<=nodes[w.trailStart].s||node.s+span>=nodes[nodes.length-1].s)continue;
+  const before=trailPointAt(nodes,node.s-span,w.trailStart,nodes.length-1);
+  const after=trailPointAt(nodes,node.s+span,w.trailStart,nodes.length-1);
+  const ax=node.x-before.x,ay=node.y-before.y,bx=after.x-node.x,by=after.y-node.y;
+  const first=Math.hypot(ax,ay),second=Math.hypot(bx,by);
+  if(first<2||second<2)continue;
+  const bend=Math.acos(clamp((ax*bx+ay*by)/(first*second),-1,1));
+  const curvature=clamp((bend-1.07)/1.35,0,1);
+  if(curvature<=0)continue;
+  const mix=Math.min(.055,dt*.80*curvature);
+  node.x+=((before.x+after.x)*.5-node.x)*mix;
+  node.y+=((before.y+after.y)*.5-node.y)*mix;
+ }
+}
+
+function followWormTrail(w,advance,gap=11.8,dt=advance/Math.max(90,w.speed||172)){
  // The actual distance traveled controls each ring's position on the path.
  w.traveled+=advance;
  const history=w.trail;
@@ -325,6 +359,8 @@ function followWormTrail(w,advance,gap=11.8){
   });
   history.splice(start,0,...extension);
  }
+ // Relax already-traveled bends before sampling the real body points.
+ relaxWormTrail(w,dt);
  // Linear sweep interpolates every segment along the curved head trajectory.
  let j=history.length-2;
  for(let i=0;i<w.segments.length;i++){
@@ -358,6 +394,10 @@ function removeFood(food){
  if(index===undefined||index<0||game.food[index]!==food)return;
  const bucket=game.foodGrid.get(food._cell);
  if(bucket){bucket.delete(food);if(!bucket.size)game.foodGrid.delete(food._cell);}
+ if(food.wreckId!==undefined){
+  const wreck=game.wrecks.find(item=>item.id===food.wreckId);
+  if(wreck)wreck.remaining=Math.max(0,wreck.remaining-1);
+ }
  const last=game.food.pop();
  if(last!==food){game.food[index]=last;last._index=index;}
  food._index=-1;
@@ -412,7 +452,7 @@ function notify(text){
  const el=$('worm-toast');el.textContent=text;el.classList.add('show');toastTimer=1.8;
 }
 function init(){
- game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),worms:[],fx:[],player:null,reported:false,deathElapsed:0,deathPosition:null,deathGhost:null};
+ game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),wrecks:[],nextWreckId:1,worms:[],fx:[],player:null,reported:false,deathElapsed:0,deathPosition:null,deathGhost:null};
  const human=!DEMO;
  const p=createWorm(DEMO?'Astra':(window.InfinityProfile?.getName()||'PILOT'),human,0);
  game.player=p;game.worms.push(p);
@@ -536,6 +576,7 @@ function kill(w,killer,reason){
  w.alive=false;w.boost=false;w.deathDelay=DEMO?2.5:rand(4.5,6.5);
  if(killer&&killer!==w){killer.kills++;killer.mass+=Math.min(18,w.mass*.12);}
  // Materialize the ENTIRE corpse before any bot respawns, from head to tip.
+ const wreck={id:game.nextWreckId++,created:game.time,expires:game.time+90,remaining:0,items:[]};
  // Never impose a global food cap here: it previously discarded most of a
  // long worm's remains as soon as the ambient field became dense.
  const body=[{x:w.x,y:w.y},...w.segments];
@@ -546,12 +587,18 @@ function kill(w,killer,reason){
   const sideX=-dy/d,sideY=dx/d;
   for(let side of [-1,1]){
    const size=rand(3.4,6.3),offset=rand(3,9);
-   addFood(makeFood(node.x+sideX*offset+rand(-2,2),
+   const resource=makeFood(node.x+sideX*offset+rand(-2,2),
     node.y+sideY*offset+rand(-2,2),i%6===0?w.accent:w.color[0],
-    rand(2.8,6),size));
+    rand(2.8,6),size);
+   resource.wreckId=wreck.id;
+   addFood(resource);wreck.items.push(resource);wreck.remaining++;
    dropped++;
   }
  }
+ game.wrecks.unshift(wreck);
+ if(game.wrecks.length>20)game.wrecks.length=20;
+ // Every rival hears the salvage signal, including those normally idling.
+ for(const other of game.worms)if(!other.human&&other.alive)other.think=Math.min(other.think,.06);
  game.lastDeath={name:w.name,segments:body.length,dropped,head:{x:body[0].x,y:body[0].y},
   tip:{x:body[body.length-1].x,y:body[body.length-1].y}};
  if(w.human){
@@ -667,7 +714,7 @@ function updateWorm(w,dt){
  }else if(w.segments.length>target){
   w.segments.length=Math.max(target,w.segments.length-Math.max(1,Math.floor(dt*120)));
  }
- followWormTrail(w,advance,gap);
+ followWormTrail(w,advance,gap,dt);
  w.bestLength=Math.max(w.bestLength||0,w.segments.length);
  w.bestMass=Math.max(w.bestMass,w.mass);
  const border=((w.x-WORLD.cx)/WORLD.rx)**2+((w.y-WORLD.cy)/WORLD.ry)**2;
@@ -736,6 +783,8 @@ function simulate(dt){
  recycleBots(dt);
  foodTimer+=dt;
  if(foodTimer>.18){
+  if(game.wrecks.length)game.wrecks=game.wrecks.filter(wreck=>
+   wreck.remaining>0&&game.time<wreck.expires);
   foodTimer=0;
   if(game.food.length<FOOD_TARGET)
    fillFood(Math.min(180,FOOD_TARGET-game.food.length));
