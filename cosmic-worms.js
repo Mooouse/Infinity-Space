@@ -10,38 +10,38 @@ const storedLang=(()=>{try{return localStorage.getItem('infiniti-space-language'
 const language=/^(ru|en|es)$/.test(storedLang)?storedLang:(/^ru/i.test(navigator.language)?'ru':/^es/i.test(navigator.language)?'es':'en');
 document.documentElement.lang=language;
 const WORDS={
- en:{settings:'SETTINGS',config:'CONFIGURATION',back:'BACK',controlTab:'CONTROLS',audioTab:'AUDIO',graphicsTab:'GRAPHICS',generalTab:'GENERAL',controlHeading:'MOVEMENT & CAMERA',controlDetails:'Continuous flight with fluid steering and modest zoom.',controlMouse:'MOUSE / KEYBOARD',controlMouseDesc:'Move the cursor or use WASD and arrows to turn',controlBoost:'ACCELERATION',controlBoostDesc:'Hold Space, mouse click or Boost to accelerate',graphicsDetails:'Adjust the cosmic visual effects in this mode.',generalHeading:'PROFILE & HELP',generalDetails:'Preferences are saved automatically.',guideDescription:'Review movement and survival rules',settingsAutoSave:'SETTINGS SAVED AUTOMATICALLY',settingsIntro:'Customize your flight without leaving the match.',glowDesc:'Brighter cosmic trails and highlights',namesDesc:'Names above other worms',appearance:'Cosmic appearance',appearanceDesc:'Choose a skin with live preview',chooseSkin:'SKINS',settingsSound:'SOUND & CONTROLS',settingsSoundName:'Game audio',settingsSoundDesc:'One switch for all sounds',settingsCameraTitle:'CAMERA',settingsCameraHint:'Mouse wheel or pinch with two fingers. Gentle smooth zoom.',skins:'COSMIC SKINS',skinDesc:'Choose a space-inspired appearance. All skins are free.',visuals:'VISUALS',glow:'Enhanced body glow',names:'Show rival names',zoom:'Camera distance',backPause:'SAVE AND EXIT',length:'LENGTH',rank:'RANK',time:'TIME',leaders:'LEADERBOARD',radar:'GALAXY RADAR',pause:'PAUSE',
+ en:{settings:'SETTINGS',config:'CONFIGURATION',back:'BACK',controlTab:'CONTROLS',audioTab:'AUDIO',graphicsTab:'GRAPHICS',generalTab:'GENERAL',controlHeading:'MOVEMENT & CAMERA',controlDetails:'Continuous flight with fluid steering and modest zoom.',controlMouse:'MOUSE / KEYBOARD',controlMouseDesc:'Move the cursor or use WASD and arrows to turn',controlBoost:'ACCELERATION',controlBoostDesc:'Hold Space, mouse click or Boost to accelerate',graphicsDetails:'Adjust the cosmic visual effects in this mode.',generalHeading:'PROFILE & HELP',generalDetails:'Preferences are saved automatically.',guideDescription:'Review movement and survival rules',settingsAutoSave:'SETTINGS SAVED AUTOMATICALLY',settingsIntro:'Customize your flight without leaving the match.',glowDesc:'Brighter cosmic trails and highlights',namesDesc:'Names above other worms',appearance:'Cosmic appearance',appearanceDesc:'Choose a skin with live preview',chooseSkin:'SKINS',settingsSound:'SOUND & CONTROLS',settingsSoundName:'Game audio',settingsSoundDesc:'One switch for all sounds',settingsCameraTitle:'CAMERA',settingsCameraHint:'Mouse wheel or pinch with two fingers. Gentle smooth zoom.',skins:'COSMIC SKINS',skinDesc:'Choose a space-inspired appearance. All skins are free.',visuals:'VISUALS',glow:'Enhanced body glow',names:'Show rival names',zoom:'Camera distance',backPause:'SAVE AND EXIT',bodyMass:'MASS',rank:'RANK',time:'TIME',leaders:'LEADERBOARD',radar:'GALAXY RADAR',pause:'PAUSE',
  pauseTagline:'The universe waits. Your journey continues.',pauseRun:'CURRENT FLIGHT',pauseLook:'YOUR COSMIC WORM',pauseSkinLabel:'CURRENT SKIN',pauseActions:'WHAT NEXT',soundOn:'SOUND ON',soundOff:'SOUND OFF',
   boost:'BOOST',paused:'PAUSED',pauseDesc:'Resume the flight, review the controls or return to mode selection.',
  resume:'CONTINUE',help:'HOW TO PLAY',menu:'EXIT TO MENU',guideTitle:'COSMIC WORMS',skip:'SKIP',next:'NEXT',start:'START',
  runOver:'FLIGHT COMPLETE',destroyed:'WORM DESTROYED',kills:'ELIMINATIONS',again:'PLAY AGAIN',
  hint:'MOUSE / WASD — TURN  ·  SPACE / CLICK — BOOST',bot:'COSMIC WORMS · SURVIVAL',danger:'THE EDGE OF SPACE!',
  eliminated:'A rival cut off your route.',wall:'You reached the outer boundary.',self:'A head-on collision.',
- lead:'YOU ARE #1',mass:'ORBS COLLECTED',guide:[
+ lead:'YOU ARE #1',mass:'MASS',guide:[
  ['GROW A COSMIC TAIL','Move toward glowing stardust. Each orb adds mass and segments to your cosmic serpent.','✦'],
  ['OUTMANEUVER RIVALS','Your head must not touch another worm’s body. Cut opponents off with your own tail; defeated worms drop valuable matter.','◌'],
  ['BOOST WHEN NEEDED','Hold Space or the mouse button to accelerate. Boosting slowly burns mass and drops energy behind you. On phones, steer with the joystick and hold BOOST.','➤']
  ]},
- ru:{settings:'НАСТРОЙКИ',config:'КОНФИГУРАЦИЯ',back:'НАЗАД',controlTab:'УПРАВЛЕНИЕ',audioTab:'АУДИО',graphicsTab:'ГРАФИКА',generalTab:'ПРОЧЕЕ',controlHeading:'ДВИЖЕНИЕ И КАМЕРА',controlDetails:'Непрерывное движение, плавный поворот и небольшая настройка масштаба.',controlMouse:'МЫШЬ / КЛАВИАТУРА',controlMouseDesc:'Направляй курсор или используй WASD и стрелки',controlBoost:'УСКОРЕНИЕ',controlBoostDesc:'Удерживай пробел, кнопку мыши или «Рывок»',graphicsDetails:'Настрой космические визуальные эффекты режима.',generalHeading:'ПРОФИЛЬ И ПОМОЩЬ',generalDetails:'Настройки сохраняются автоматически.',guideDescription:'Повтори управление и правила выживания',settingsAutoSave:'НАСТРОЙКИ СОХРАНЯЮТСЯ АВТОМАТИЧЕСКИ',settingsIntro:'Измени параметры, не покидая матч.',glowDesc:'Яркость космического свечения и шлейфов',namesDesc:'Имена над другими червями',appearance:'Космический облик',appearanceDesc:'Выбрать скин с живым предпросмотром',chooseSkin:'СКИНЫ',settingsSound:'ЗВУК И УПРАВЛЕНИЕ',settingsSoundName:'Звуки игры',settingsSoundDesc:'Одно отключение для всех звуков',settingsCameraTitle:'КАМЕРА',settingsCameraHint:'Колесо мыши или два пальца на телефоне. Небольшое плавное приближение.',skins:'КОСМИЧЕСКИЕ СКИНЫ',skinDesc:'Выбери космический облик червя. Все скины бесплатны.',visuals:'ГРАФИКА',glow:'Усиленное свечение тела',names:'Показывать имена соперников',zoom:'Дистанция камеры',backPause:'СОХРАНИТЬ И ВЫЙТИ',length:'ДЛИНА',rank:'МЕСТО',time:'ВРЕМЯ',leaders:'ТАБЛИЦА ЛИДЕРОВ',radar:'РАДАР ГАЛАКТИКИ',pause:'ПАУЗА',
+ ru:{settings:'НАСТРОЙКИ',config:'КОНФИГУРАЦИЯ',back:'НАЗАД',controlTab:'УПРАВЛЕНИЕ',audioTab:'АУДИО',graphicsTab:'ГРАФИКА',generalTab:'ПРОЧЕЕ',controlHeading:'ДВИЖЕНИЕ И КАМЕРА',controlDetails:'Непрерывное движение, плавный поворот и небольшая настройка масштаба.',controlMouse:'МЫШЬ / КЛАВИАТУРА',controlMouseDesc:'Направляй курсор или используй WASD и стрелки',controlBoost:'УСКОРЕНИЕ',controlBoostDesc:'Удерживай пробел, кнопку мыши или «Рывок»',graphicsDetails:'Настрой космические визуальные эффекты режима.',generalHeading:'ПРОФИЛЬ И ПОМОЩЬ',generalDetails:'Настройки сохраняются автоматически.',guideDescription:'Повтори управление и правила выживания',settingsAutoSave:'НАСТРОЙКИ СОХРАНЯЮТСЯ АВТОМАТИЧЕСКИ',settingsIntro:'Измени параметры, не покидая матч.',glowDesc:'Яркость космического свечения и шлейфов',namesDesc:'Имена над другими червями',appearance:'Космический облик',appearanceDesc:'Выбрать скин с живым предпросмотром',chooseSkin:'СКИНЫ',settingsSound:'ЗВУК И УПРАВЛЕНИЕ',settingsSoundName:'Звуки игры',settingsSoundDesc:'Одно отключение для всех звуков',settingsCameraTitle:'КАМЕРА',settingsCameraHint:'Колесо мыши или два пальца на телефоне. Небольшое плавное приближение.',skins:'КОСМИЧЕСКИЕ СКИНЫ',skinDesc:'Выбери космический облик червя. Все скины бесплатны.',visuals:'ГРАФИКА',glow:'Усиленное свечение тела',names:'Показывать имена соперников',zoom:'Дистанция камеры',backPause:'СОХРАНИТЬ И ВЫЙТИ',bodyMass:'МАССА',rank:'МЕСТО',time:'ВРЕМЯ',leaders:'ТАБЛИЦА ЛИДЕРОВ',radar:'РАДАР ГАЛАКТИКИ',pause:'ПАУЗА',
  pauseTagline:'Космос подождёт. Твой полёт ещё не окончен.',pauseRun:'ТЕКУЩИЙ ЗАБЕГ',pauseLook:'ТВОЙ КОСМИЧЕСКИЙ ЧЕРВЬ',pauseSkinLabel:'ВЫБРАННЫЙ СКИН',pauseActions:'ДЕЙСТВИЯ',soundOn:'ЗВУК ВКЛ',soundOff:'ЗВУК ВЫКЛ',
   boost:'РЫВОК',paused:'ПАУЗА',pauseDesc:'Продолжи полёт, посмотри обучение или вернись к выбору режима.',
  resume:'ПРОДОЛЖИТЬ',help:'КАК ИГРАТЬ',menu:'ВЫХОД В МЕНЮ',guideTitle:'КОСМИЧЕСКИЕ ЧЕРВИ',skip:'ПРОПУСТИТЬ',next:'ДАЛЕЕ',start:'ИГРАТЬ',
  runOver:'ПОЛЁТ ЗАВЕРШЁН',destroyed:'ЧЕРВЬ ПОГИБ',kills:'ПОГЛОЩЕНО',again:'СЫГРАТЬ СНОВА',
  hint:'МЫШЬ / WASD — ПОВОРОТ  ·  ПРОБЕЛ / КЛИК — РЫВОК',bot:'КОСМИЧЕСКИЕ ЧЕРВИ · ВЫЖИВАНИЕ',danger:'КРАЙ КОСМОСА!',
  eliminated:'Соперник перекрыл тебе путь.',wall:'Ты достиг границы арены.',self:'Столкновение головами.',
- lead:'ТЫ НА ПЕРВОМ МЕСТЕ',mass:'СОБРАНО ЧАСТИЦ',guide:[
+ lead:'ТЫ НА ПЕРВОМ МЕСТЕ',mass:'МАССА',guide:[
  ['РАСТИ И УДЛИНЯЙСЯ','Собирай светящиеся звёздные частицы. От них космический червь растёт и становится длиннее.','✦'],
  ['ПЕРЕХИТРИ СОПЕРНИКОВ','Не касайся головой тела другого червя. Перекрывай противникам путь собственным хвостом. После их гибели остаётся ценная материя.','◌'],
  ['ИСПОЛЬЗУЙ РЫВОК','Удерживай Пробел или левую кнопку мыши для ускорения. Рывок расходует массу. На телефоне управляй стиком и удерживай кнопку «Рывок».','➤']
  ]},
- es:{settings:'AJUSTES',config:'CONFIGURACIÓN',back:'ATRÁS',controlTab:'CONTROLES',audioTab:'AUDIO',graphicsTab:'GRÁFICOS',generalTab:'GENERAL',controlHeading:'MOVIMIENTO Y CÁMARA',controlDetails:'Movimiento continuo, giro fluido y zoom limitado.',controlMouse:'RATÓN / TECLADO',controlMouseDesc:'Dirige el cursor o usa WASD y las flechas',controlBoost:'ACELERACIÓN',controlBoostDesc:'Mantén Espacio, clic o Impulso',graphicsDetails:'Personaliza los efectos cósmicos del modo.',generalHeading:'PERFIL Y AYUDA',generalDetails:'Las preferencias se guardan automáticamente.',guideDescription:'Repasa los controles y las reglas',settingsAutoSave:'AJUSTES GUARDADOS AUTOMÁTICAMENTE',settingsIntro:'Personaliza tu vuelo sin salir de la partida.',glowDesc:'Estelas cósmicas y reflejos más brillantes',namesDesc:'Nombres de otros gusanos',appearance:'Apariencia cósmica',appearanceDesc:'Elige un aspecto con vista previa',chooseSkin:'ASPECTOS',settingsSound:'SONIDO Y CONTROLES',settingsSoundName:'Audio del juego',settingsSoundDesc:'Un botón para todos los sonidos',settingsCameraTitle:'CÁMARA',settingsCameraHint:'Rueda del ratón o gesto de dos dedos. Zoom suave y limitado.',skins:'ASPECTOS CÓSMICOS',skinDesc:'Elige un aspecto cósmico. Todos son gratuitos.',visuals:'GRÁFICOS',glow:'Brillo y estelas mejorados',names:'Mostrar nombres de rivales',zoom:'Distancia de cámara',backPause:'GUARDAR Y SALIR',length:'LONGITUD',rank:'PUESTO',time:'TIEMPO',leaders:'CLASIFICACIÓN',radar:'RADAR GALÁCTICO',pause:'PAUSA',
+ es:{settings:'AJUSTES',config:'CONFIGURACIÓN',back:'ATRÁS',controlTab:'CONTROLES',audioTab:'AUDIO',graphicsTab:'GRÁFICOS',generalTab:'GENERAL',controlHeading:'MOVIMIENTO Y CÁMARA',controlDetails:'Movimiento continuo, giro fluido y zoom limitado.',controlMouse:'RATÓN / TECLADO',controlMouseDesc:'Dirige el cursor o usa WASD y las flechas',controlBoost:'ACELERACIÓN',controlBoostDesc:'Mantén Espacio, clic o Impulso',graphicsDetails:'Personaliza los efectos cósmicos del modo.',generalHeading:'PERFIL Y AYUDA',generalDetails:'Las preferencias se guardan automáticamente.',guideDescription:'Repasa los controles y las reglas',settingsAutoSave:'AJUSTES GUARDADOS AUTOMÁTICAMENTE',settingsIntro:'Personaliza tu vuelo sin salir de la partida.',glowDesc:'Estelas cósmicas y reflejos más brillantes',namesDesc:'Nombres de otros gusanos',appearance:'Apariencia cósmica',appearanceDesc:'Elige un aspecto con vista previa',chooseSkin:'ASPECTOS',settingsSound:'SONIDO Y CONTROLES',settingsSoundName:'Audio del juego',settingsSoundDesc:'Un botón para todos los sonidos',settingsCameraTitle:'CÁMARA',settingsCameraHint:'Rueda del ratón o gesto de dos dedos. Zoom suave y limitado.',skins:'ASPECTOS CÓSMICOS',skinDesc:'Elige un aspecto cósmico. Todos son gratuitos.',visuals:'GRÁFICOS',glow:'Brillo y estelas mejorados',names:'Mostrar nombres de rivales',zoom:'Distancia de cámara',backPause:'GUARDAR Y SALIR',bodyMass:'MASA',rank:'PUESTO',time:'TIEMPO',leaders:'CLASIFICACIÓN',radar:'RADAR GALÁCTICO',pause:'PAUSA',
  pauseTagline:'El universo espera. Tu viaje continúa.',pauseRun:'PARTIDA ACTUAL',pauseLook:'TU GUSANO CÓSMICO',pauseSkinLabel:'ASPECTO ACTUAL',pauseActions:'ACCIONES',soundOn:'SONIDO SÍ',soundOff:'SONIDO NO',
   boost:'IMPULSO',paused:'PAUSA',pauseDesc:'Continúa, revisa los controles o elige otro modo.',
  resume:'CONTINUAR',help:'CÓMO JUGAR',menu:'SALIR AL MENÚ',guideTitle:'GUSANOS CÓSMICOS',skip:'SALTAR',next:'SIGUIENTE',start:'JUGAR',
  runOver:'VUELO TERMINADO',destroyed:'GUSANO DESTRUIDO',kills:'ELIMINACIONES',again:'JUGAR DE NUEVO',
  hint:'RATÓN / WASD — GIRAR · ESPACIO / CLIC — IMPULSO',bot:'GUSANOS CÓSMICOS · SUPERVIVENCIA',danger:'¡LÍMITE ESPACIAL!',
  eliminated:'Un rival bloqueó tu camino.',wall:'Alcanzaste el borde de la arena.',self:'Choque frontal.',
- lead:'¡VAS PRIMERO!',mass:'PARTÍCULAS RECOGIDAS',guide:[
+ lead:'¡VAS PRIMERO!',mass:'МАССА',guide:[
  ['CRECE TU COLA','Recoge partículas luminosas. Cada esfera añade masa y alarga tu gusano cósmico.','✦'],
  ['ESQUIVA A LOS RIVALES','Tu cabeza no debe tocar el cuerpo de otros gusanos. Bloquea su ruta con tu cola; los derrotados sueltan materia.','◌'],
  ['ACELERA CON CUIDADO','Mantén Espacio o el botón del ratón para acelerar. El impulso consume masa. En el móvil usa el joystick y mantén IMPULSO.','➤']
@@ -875,7 +875,7 @@ function kill(w,killer,reason){
     mass:w.bestMass,time:game.time
    });
   }
-  $('worm-result-length').textContent=Math.round(w.bestLength||w.segments.length);
+  $('worm-result-mass').textContent=Math.round(w.bestMass||w.mass).toLocaleString(language);
   $('worm-result-place').textContent='#'+Math.min(place,w.bestRank);
   $('worm-result-kills').textContent=w.kills;
   $('worm-result-info').textContent=reason==='wall'?T.wall:reason==='head'?T.self:T.eliminated;
@@ -904,8 +904,11 @@ function updateWorm(w,dt){
    }else steerBot(w,dt);
   }
  }else if(backgroundFlightActive()){
-  // The world continues, but the player itself stops moving during pause.
+  // The menu blocks controls, not movement. Continue forward automatically;
+  // turn inward before reaching the rim so the unattended player survives.
   w.boost=false;
+  const dist=((w.x-WORLD.cx)/WORLD.rx)**2+((w.y-WORLD.cy)/WORLD.ry)**2;
+  if(dist>.84*.84)w.target=Math.atan2(WORLD.cy-w.y,WORLD.cx-w.x);
  }else{
   const keys=input.keys;
   let dx=(keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')?1:0);
@@ -924,7 +927,7 @@ function updateWorm(w,dt){
   w.boost=(input.mouseDown||input.boostKey||input.boostTouch)&&w.mass>38;
  }
  const boosting=w.boost&&w.mass>38;
- const targetSpeed=w.human&&backgroundFlightActive()?0:boosting?375:172;
+ const targetSpeed=boosting?375:172;
  const scaled=targetSpeed*Math.max(.73,1-Math.log(Math.max(1,w.mass)/60)*.05)*
   (w.human?1:BOT_PERSONAS[w.persona].speed);
  w.speed+=(scaled-w.speed)*Math.min(1,dt*12);
@@ -1052,7 +1055,7 @@ function simulate(dt){
 
 function updateUI(){
  const p=game.player;if(!p)return;
- $('worm-length').textContent=p.segments.length.toLocaleString(language);
+ $('worm-mass').textContent=Math.round(p.mass).toLocaleString(language);
  $('worm-place').textContent=p.alive?('#'+ranking(p)):'—';
  const sec=Math.floor(game.time);$('worm-time').textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');
  $('worm-boost').disabled=p.mass<=38||game.state!=='playing';
@@ -1167,27 +1170,28 @@ function wormBodyPath(w){
 // Render all cosmic skins as seamless strokes along the centerline. A filled
 // offset polygon self-intersects on long coiled worms and turns into jagged
 // triangles. Local gradients avoid the head-to-tail zero-length gradient too.
+// Rounded disk union: all subpaths wind in one direction. Unlike the
+// previous offset QUADS, bends and folded loops cannot produce triangular
+// cutouts or overlays. Interpolated disks keep the outline seamless.
 function cosmicBodyMask(sampled,half){
- // Union of round capsules works on folded, intersecting and 8000+ mass
- // bodies without the self-intersections of an offset-polygon ribbon.
- const shape=new Path2D();
- for(let i=1;i<sampled.length;i++){
-  const a=sampled[i-1],b=sampled[i],dx=b.x-a.x,dy=b.y-a.y;
-  const length=Math.hypot(dx,dy);
-  if(length<.01)continue;
-  const nx=-dy/length*half,ny=dx/length*half;
-  shape.moveTo(a.x+nx,a.y+ny);
-  shape.lineTo(b.x+nx,b.y+ny);
-  shape.lineTo(b.x-nx,b.y-ny);
-  shape.lineTo(a.x-nx,a.y-ny);
-  shape.closePath();
+ const mask=new Path2D();
+ const spacing=Math.max(3,half*.68);
+ if(!sampled.length)return mask;
+ for(let i=0;i<sampled.length;i++){
+  const p=sampled[i];
+  if(i){
+   const a=sampled[i-1],dx=p.x-a.x,dy=p.y-a.y;
+   const pieces=Math.max(1,Math.ceil(Math.hypot(dx,dy)/spacing));
+   for(let k=1;k<pieces;k++){
+    const t=k/pieces,x=a.x+dx*t,y=a.y+dy*t;
+    mask.moveTo(x+half,y);
+    mask.arc(x,y,half,0,TAU);
+   }
+  }
+  mask.moveTo(p.x+half,p.y);
+  mask.arc(p.x,p.y,half,0,TAU);
  }
- for(const p of sampled){
-  shape.moveTo(p.x+half,p.y);
-  shape.arc(p.x,p.y,half,0,TAU);
-  shape.closePath();
- }
- return shape;
+ return mask;
 }
 function drawCosmicInterior(w,t,r,detail){
  const nodes=[w,...w.segments],n=nodes.length;
@@ -1568,8 +1572,9 @@ function pause(){
  if(game.state==='skins'){window.WormSkinStudio?.close();return;}
  if(game.state==='playing'){
   game.state='paused';$('worm-pause-overlay').hidden=false;
+  game.player.target=game.player.angle; // cruise with no menu-input steering
   syncPauseAppearance();syncPauseSound();playWormSound('ui');
-  $('worm-pause-length').textContent=$('worm-length').textContent;
+  $('worm-pause-mass').textContent=$('worm-mass').textContent;
   $('worm-pause-rank').textContent=$('worm-place').textContent;
   $('worm-pause-time').textContent=$('worm-time').textContent;
   window.SpacePlatform?.playing?.(false);
@@ -1734,7 +1739,7 @@ function frame(now){
    if(game.deathElapsed>=DEATH_REPLAY_SECONDS)revealDeathResult();
   }
   uiClock+=dt;
-  if(uiClock>.15){uiClock=0;if(!DEMO){updateUI();if(background){$('worm-pause-length').textContent=$('worm-length').textContent;$('worm-pause-rank').textContent=$('worm-place').textContent;$('worm-pause-time').textContent=$('worm-time').textContent;}}}
+  if(uiClock>.15){uiClock=0;if(!DEMO){updateUI();if(background){$('worm-pause-mass').textContent=$('worm-mass').textContent;$('worm-pause-rank').textContent=$('worm-place').textContent;$('worm-pause-time').textContent=$('worm-time').textContent;}}}
  }
  if(toastTimer>0){toastTimer-=dt;if(toastTimer<=0)$('worm-toast').classList.remove('show');}
  // Menus show the active universe at a moderate frame rate; initial guide/results stay static.
