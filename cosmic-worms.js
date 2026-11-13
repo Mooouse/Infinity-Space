@@ -1727,6 +1727,53 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
   }),
   wrecks:()=>game.wrecks.map(w=>({id:w.id,remaining:w.remaining,total:w.items.length,
     age:game.time-w.created})),
+  // Deterministic browser-accessible regression: measure real steering
+  // with isolated corpses, ambient food and empty space. This must not
+  // mutate the player's live match.
+  navigationProbe:()=>{
+   const activeGame=game;
+   const run=(mode)=>{
+    game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),
+     worms:[],wrecks:[],ambientCount:0,foodRespawnQueue:[]};
+    const w={id:707,persona:'pro',human:false,alive:true,x:5000,y:5000,angle:0,target:0,
+     think:0,reaction:.085,wiggle:0,speed:185,mass:800,boost:false,
+     segments:Array.from({length:140},()=>({x:0,y:0})),
+     targetFood:null,targetWreckId:null,coil:null,coilCooldown:35,objective:'food',
+     navFromX:5000,navFromY:5000,navSince:0,escapeUntil:0,escapeHeading:0,
+     roamHeading:0,roamUntil:9,huntTargetId:null,huntUntil:0,huntCooldown:7};
+    game.worms=[w];
+    if(mode==='salvage'){
+     const wreck={id:1,created:0,remaining:0,items:[]};
+     for(let i=0;i<110;i++){
+      const f=makeFood(5500+i*9,5000+Math.sin(i*.09)*70,'#ff84e7',3,4);
+      f.wreckId=1;addFood(f);wreck.items.push(f);wreck.remaining++;
+     }
+     game.wrecks=[wreck];
+    }else if(mode==='ambient'){
+     for(let i=0;i<1300;i++)
+      addFood(makeFood(4700+(i%55)*30,4650+Math.floor(i/55)*28,'#ffe500',2.5,4));
+    }
+    const originalCount=game.food.length;
+    let rotation=0,flips=0;
+    for(let i=0;i<1080;i++){
+     const dt=1/60;game.time+=dt;steerBot(w,dt);
+     if(Math.abs(normAngle(w.target-w.angle))>2.7)flips++;
+     const previous=w.angle;
+     w.angle+=clamp(normAngle(w.target-w.angle),-3.35*dt,3.35*dt);
+     w.x+=Math.cos(w.angle)*w.speed*dt;
+     w.y+=Math.sin(w.angle)*w.speed*dt;
+     rotation+=Math.abs(normAngle(w.angle-previous));
+     foodNearby(w.x,w.y,49,f=>{
+      if(f._index>=0&&Math.hypot(f.x-w.x,f.y-w.y)<45)removeFood(f);
+     });
+    }
+    return {total:originalCount,collected:originalCount-game.food.length,
+     displacementRatio:Math.hypot(w.x-5000,w.y-5000)/(w.speed*18),
+     meanTurn:rotation/18,flips,remaining:game.wrecks[0]?.remaining??null};
+   };
+   try{return {salvage:run('salvage'),ambient:run('ambient'),empty:run('empty')};}
+   finally{game=activeGame;}
+  },
   salvageProbe:()=>{
    const active=game.wrecks.find(w=>w.remaining>0);
    if(!active)return {available:false,total:0,prioritizing:0};
