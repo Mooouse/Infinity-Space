@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="unified-space.css?v=4">
 <link rel="stylesheet" href="secondary-design.css?v=6">
 <link rel="stylesheet" href="profile-report.css?v=4">
-<link rel="stylesheet" href="mode-unified.css?v=3">
+<link rel="stylesheet" href="mode-unified.css?v=4">
 </head>
 <body>
 <canvas id="worm-field" aria-label="Cosmic Worms playing field"></canvas>
@@ -46,36 +46,36 @@
     </button>
    </header>
    <main class="worm-pause-main">
+    <section class="worm-pause-controls" aria-label="Pause actions">
+     <div class="worm-pause-section-caption"><span data-word="pauseActions">WHAT NEXT</span></div>
+     <div class="worm-actions">
+      <button class="worm-primary" id="worm-resume" data-word="resume">CONTINUE</button>
+      <button id="worm-skins-open" data-word="skins">COSMIC SKINS</button>
+      <button id="worm-settings-open" data-word="settings">SETTINGS</button>
+      <button id="worm-open-guide" data-word="help">HOW TO PLAY</button>
+      <button id="worm-exit" data-word="menu">EXIT TO MENU</button>
+     </div>
+    </section>
+    <section class="worm-pause-identity" aria-label="Current cosmic worm">
+     <div class="worm-pause-section-caption"><span data-word="pauseLook">YOUR COSMIC WORM</span></div>
+     <div id="worm-pause-preview" class="worm-pause-preview" aria-hidden="true">
+      <div class="worm-pause-orbit orbit-one"></div><div class="worm-pause-orbit orbit-two"></div>
+      <div class="worm-pause-body"></div><div class="worm-pause-head"><i></i><i></i></div>
+     </div>
+     <div class="worm-pause-identity-footer">
+      <div><small data-word="pauseSkinLabel">CURRENT SKIN</small><strong id="worm-pause-skin-name">NEBULA</strong></div>
+      <span id="worm-pause-player">PILOT</span>
+     </div>
+    </section>
+   </main>
+   <footer class="worm-pause-footer">
     <div class="worm-pause-section-caption"><span data-word="pauseRun">CURRENT FLIGHT</span><span class="worm-pause-status-dot" aria-hidden="true"></span></div>
     <div class="worm-pause-stats">
      <div><small data-word="length">LENGTH</small><strong id="worm-pause-length">0</strong></div>
      <div><small data-word="rank">RANK</small><strong id="worm-pause-rank">—</strong></div>
      <div><small data-word="time">TIME</small><strong id="worm-pause-time">00:00</strong></div>
     </div>
-    <div class="worm-pause-lower">
-     <section class="worm-pause-identity" aria-label="Current cosmic worm">
-      <div class="worm-pause-section-caption"><span data-word="pauseLook">YOUR COSMIC WORM</span></div>
-      <div id="worm-pause-preview" class="worm-pause-preview" aria-hidden="true">
-       <div class="worm-pause-orbit orbit-one"></div><div class="worm-pause-orbit orbit-two"></div>
-       <div class="worm-pause-body"></div><div class="worm-pause-head"><i></i><i></i></div>
-      </div>
-      <div class="worm-pause-identity-footer">
-       <div><small data-word="pauseSkinLabel">CURRENT SKIN</small><strong id="worm-pause-skin-name">NEBULA</strong></div>
-       <span id="worm-pause-player">PILOT</span>
-      </div>
-     </section>
-     <section class="worm-pause-controls" aria-label="Pause actions">
-      <div class="worm-pause-section-caption"><span data-word="pauseActions">WHAT NEXT</span></div>
-      <div class="worm-actions">
-       <button class="worm-primary" id="worm-resume" data-word="resume">CONTINUE</button>
-       <button id="worm-skins-open" data-word="skins">COSMIC SKINS</button>
-       <button id="worm-settings-open" data-word="settings">SETTINGS</button>
-       <button id="worm-open-guide" data-word="help">HOW TO PLAY</button>
-       <button id="worm-exit" data-word="menu">EXIT TO MENU</button>
-      </div>
-     </section>
-    </div>
-   </main>
+   </footer>
   </div>
  </div>
 </div>
