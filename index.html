@@ -7,6 +7,18 @@
   <meta name="description" content="Infinity Space — 2D космическая игра про гравитацию, рост и эволюцию от пылинки до Вселенной." />
   <title>Infinity Space — From Dust to Infinity</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <!-- Legacy HUD first-paint guard: the V15 HUD is mounted by deferred JS.
+       Never paint the obsolete header while loading or switching views. -->
+  <style>
+    #hud > .topbar,
+    #hud > .sidebar,
+    #hud > .show-sidebar,
+    #hud > .world-label,
+    #hud > .center-abilities,
+    #hud > .bottom-center,
+    #hud > .body-measure,
+    #hud > .zoom-indicator { display: none !important; }
+  </style>
   
   
 
