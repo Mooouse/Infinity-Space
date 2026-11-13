@@ -284,7 +284,8 @@ function createWorm(name,human,index,preferEncounter=false,identity=null){
  if(!pos)return null;
  const w={name,human,id:index,x:pos.x,y:pos.y,angle,target:angle,
   mass,bestMass:mass,bestLength:count,alive:true,invulnerable:human?2.3:2.0,
-  segments:[],boost:false,dropClock:0,think:rand(.1,.2),targetFood:null,targetWreckId:null,coil:null,coilCooldown:0,objective:'food',kills:0,
+  segments:[],boost:false,dropClock:0,think:rand(.1,.2),targetFood:null,targetWreckId:null,coil:null,coilCooldown:game.time+rand(16,35),objective:'food',kills:0,
+  navFromX:pos.x,navFromY:pos.y,navSince:game.time,escapeUntil:0,escapeHeading:angle,
   foodEaten:0,bestRank:99,leadTime:0,deathDelay:0,
   persona:human?'human':(identity?.persona||chooseBotRole()),
   head:human?options.head:(identity?.head||BOT_HEADS[Math.floor(Math.random()*BOT_HEADS.length)]),
@@ -525,50 +526,51 @@ function ranking(w){return 1+game.worms.reduce((n,b)=>n+(b.alive&&b!==w&&b.mass>
 // Recently defeated worms broadcast their entire salvage trail. The corpse
 // is everyone's priority; ordinary ambient food and combat are secondary.
 function collectWreckTarget(w){
- let selected=null,selectedWreck=null,best=Infinity;
- const now=game.time;
- // Keep harvesting the same fallen body until its last resource is gone.
- const locked=game.wrecks.find(item=>item.id===w.targetWreckId&&item.remaining>0);
+ // Remains override normal food, and a chosen corpse stays locked until empty.
+ // Near the pile, collect the pieces AHEAD so steering doesn't reverse for
+ // the orb that was just passed.
+ const locked=game.wrecks.find(v=>v.id===w.targetWreckId&&v.remaining>0);
  const candidates=locked?[locked]:game.wrecks;
+ const cx=Math.cos(w.angle),cy=Math.sin(w.angle),pickup=wormRadius(w)+24;
+ let chosen=null,chosenWreck=null,best=Infinity;
+ const scoreOf=f=>{
+  const dx=f.x-w.x,dy=f.y-w.y,d=Math.hypot(dx,dy);
+  const front=(dx*cx+dy*cy)/Math.max(1,d);
+  const behind=d<260&&front<-.15?105+(1+front)*-45:0;
+  const ahead=d<340&&front>.22?-52:0;
+  const stable=f===w.targetFood&&d>pickup&&front>-.25?-68:0;
+  return d+behind+ahead+stable-Math.min(28,f.value*3);
+ };
  for(const wreck of candidates){
   if(wreck.remaining<=0)continue;
-  const items=wreck.items,stride=Math.max(1,Math.ceil(items.length/42));
-  // Each rival surveys a different set of points along the whole corpse.
-  const start=(w.id*7)%stride;
-  for(let i=start;i<items.length;i+=stride){
-   const f=items[i];if(f._index<0)continue;
-   const distance=Math.hypot(f.x-w.x,f.y-w.y);
-   const score=distance+(now-wreck.created)*2.2-Math.min(160,wreck.remaining*.18)-f.value*5;
-   if(score<best){best=score;selected=f;selectedWreck=wreck;}
+  const items=wreck.items;
+  const near=!!(w.targetWreckId===wreck.id&&
+   w.targetFood&&Math.hypot(w.targetFood.x-w.x,w.targetFood.y-w.y)<380);
+  const stride=near?1:Math.max(1,Math.ceil(items.length/90));
+  for(let k=0;k<items.length;k+=stride){
+   const f=items[k];if(f._index<0)continue;
+   const score=scoreOf(f);
+   if(score<best){best=score;chosen=f;chosenWreck=wreck;}
   }
- }
- // If the sparse beacons were consumed first, fall back to live remnants
- // anywhere along the corpse rather than abandoning food that's still there.
- if(!selected)for(const wreck of candidates){
-  if(wreck.remaining<=0)continue;
-  for(const f of wreck.items){
+  if(!chosen&&stride>1)for(const f of items){
    if(f._index<0)continue;
-   const score=Math.hypot(f.x-w.x,f.y-w.y)+(now-wreck.created)*2.2-
-     Math.min(160,wreck.remaining*.18)-f.value*5;
-   if(score<best){best=score;selected=f;selectedWreck=wreck;}
+   const score=scoreOf(f);
+   if(score<best){best=score;chosen=f;chosenWreck=wreck;}
   }
  }
- if(!selected)return null;
- // Once close, sweep up actual nearby pieces, not just sampled beacons.
- foodNearby(w.x,w.y,Math.min(750,Math.max(260,BOT_PERSONAS[w.persona]?.sight||440)),f=>{
-  if(f._index<0||f.wreckId===undefined)return;
-  const wreck=game.wrecks.find(item=>item.id===f.wreckId);
-  if(!wreck||wreck.remaining<=0||(locked&&wreck.id!==locked.id))return;
-  const distance=Math.hypot(f.x-w.x,f.y-w.y);
-  const score=distance+(now-wreck.created)*2.2-Math.min(160,wreck.remaining*.18)-f.value*5;
-  if(score<best){best=score;selected=f;selectedWreck=wreck;}
+ if(!chosen)return null;
+ const selectedId=chosenWreck.id;
+ foodNearby(w.x,w.y,440,f=>{
+  if(f._index<0||f.wreckId!==selectedId)return;
+  const score=scoreOf(f);
+  if(score<best){best=score;chosen=f;}
  });
- return {food:selected,wreck:selectedWreck,score:best};
+ return {food:chosen,wreck:chosenWreck,score:best};
 }
 // Advanced opponents sometimes attempt to trap a rival inside a continuous
 // body loop. They need enough length to close it: this is a physical tactic,
 // not an artificial kill outside the game's normal body collisions.
-const COIL_AGGRESSION={afk:0,newcomer:.015,casual:.045,cautious:.035,hunter:.36,veteran:.45,pro:.60,reckless:.22};
+const COIL_AGGRESSION={afk:0,newcomer:0,casual:.008,cautious:.003,hunter:.036,veteran:.048,pro:.070,reckless:.018};
 function encircleRadius(victim){
  return clamp(56+wormRadius(victim)*1.3+Math.min(38,victim.segments.length*.2),100,195);
 }
@@ -579,12 +581,13 @@ function canEncircle(w,victim){
   w.segments.length>victim.segments.length*.86;
 }
 function findCoilVictim(w,persona){
- const range=Math.min(620,persona.sight*.74);
+ const range=Math.min(560,persona.sight*.61);
  let victim=null,closest=range;
  for(const other of game.worms){
   if(!canEncircle(w,other))continue;
   const distance=Math.hypot(other.x-w.x,other.y-w.y);
-  if(distance<closest&&distance>75){victim=other;closest=distance;}
+  const ahead=((other.x-w.x)*Math.cos(w.angle)+(other.y-w.y)*Math.sin(w.angle))/Math.max(1,distance);
+  if(distance<closest&&distance>encircleRadius(other)*1.05&&ahead>.38){victim=other;closest=distance;}
  }
  return victim;
 }
@@ -592,10 +595,10 @@ function guideCoil(w,dt,persona){
  let coil=w.coil;
  const existing=coil&&game.worms.find(other=>other.id===coil.id&&other.alive);
  if(coil&&(!existing||!canEncircle(w,existing)||game.time>coil.until)){
-  w.coil=null;w.coilCooldown=game.time+rand(2,5);coil=null;
+  w.coil=null;w.coilCooldown=game.time+rand(18,37);coil=null;
  }
  if(!coil&&game.time>=(w.coilCooldown||0)&&COIL_AGGRESSION[w.persona]>0&&
-    Math.random()<COIL_AGGRESSION[w.persona]){
+    Math.random()<COIL_AGGRESSION[w.persona]*Math.max(.07,w.reaction||.1)){
   const victim=findCoilVictim(w,persona);
   if(victim){
    const radius=encircleRadius(victim);
@@ -619,7 +622,7 @@ function guideCoil(w,dt,persona){
  if(preyDistance>coil.radius*1.3)coil.escaped+=dt;
  else coil.escaped=Math.max(0,coil.escaped-dt*.7);
  if(coil.escaped>1.45||coil.progress>TAU*2.8){
-  w.coil=null;w.coilCooldown=game.time+rand(2,4);return null;
+  w.coil=null;w.coilCooldown=game.time+rand(18,33);return null;
  }
  // Follow an orbit around the prey. Radial correction tightens the loop
  // smoothly while the head still obeys the normal turning-radius limit.
