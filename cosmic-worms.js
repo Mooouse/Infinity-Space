@@ -339,9 +339,9 @@ function relaxWormTrail(w,dt){
   const first=Math.hypot(ax,ay),second=Math.hypot(bx,by);
   if(first<2||second<2)continue;
   const bend=Math.acos(clamp((ax*bx+ay*by)/(first*second),-1,1));
-  const curvature=clamp((bend-.36)/.58,0,1);
+  const curvature=clamp((bend-.57)/.18,0,1);
   if(curvature<=0)continue;
-  const mix=Math.min(.055,dt*2.1*curvature);
+  const mix=Math.min(.055,dt*7.0*curvature);
   node.x+=((before.x+after.x)*.5-node.x)*mix;
   node.y+=((before.y+after.y)*.5-node.y)*mix;
  }
