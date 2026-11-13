@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="unified-space.css?v=4">
 <link rel="stylesheet" href="secondary-design.css?v=6">
 <link rel="stylesheet" href="profile-report.css?v=4">
-<link rel="stylesheet" href="mode-unified.css?v=2">
+<link rel="stylesheet" href="mode-unified.css?v=3">
 </head>
 <body>
 <canvas id="worm-field" aria-label="Cosmic Worms playing field"></canvas>
@@ -31,13 +31,52 @@
  <div id="worm-stick" class="worm-stick" role="group" aria-label="Flight joystick"><div id="worm-thumb" class="worm-thumb"></div></div>
 </section>
 <div id="worm-toast" class="worm-toast" role="status" aria-live="polite"></div>
-<div id="worm-pause-overlay" class="worm-shade" hidden role="dialog" aria-modal="true">
+<div id="worm-pause-overlay" class="worm-shade" hidden role="dialog" aria-modal="true" aria-labelledby="worm-pause-heading">
  <div class="worm-panel worm-pause-panel">
-  <span class="worm-eyebrow">INFINITY SPACE / COSMIC WORMS</span>
-  <h1 data-word="paused">PAUSED</h1>
-  <p data-word="pauseDesc">Resume your flight, review the controls or return to the main menu.</p>
-  <div class="worm-pause-stats"><div><small data-word="length">LENGTH</small><strong id="worm-pause-length">0</strong></div><div><small data-word="rank">RANK</small><strong id="worm-pause-rank">—</strong></div><div><small data-word="time">TIME</small><strong id="worm-pause-time">00:00</strong></div></div>
-  <div class="worm-actions"><button class="worm-primary" id="worm-resume" data-word="resume">CONTINUE</button><button id="worm-skins-open" data-word="skins">COSMIC SKINS</button><button id="worm-settings-open" data-word="settings">SETTINGS</button><button id="worm-open-guide" data-word="help">HOW TO PLAY</button><button id="worm-exit" data-word="menu">EXIT TO MENU</button></div>
+  <div class="worm-pause-shell">
+   <header class="worm-pause-header">
+    <div class="worm-pause-heading-copy">
+     <span class="worm-eyebrow">INFINITY SPACE / COSMIC WORMS</span>
+     <h1 id="worm-pause-heading" data-word="paused">PAUSED</h1>
+     <p class="worm-pause-tagline" data-word="pauseTagline">The universe waits. Your journey continues.</p>
+    </div>
+    <button id="worm-pause-sound" class="worm-pause-sound" type="button" aria-pressed="false" data-muted="false" aria-label="Mute game sound">
+     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path class="worm-sound-waves" d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/><path class="worm-sound-off" d="m17 9 5 6m0-6-5 6"/></svg>
+     <span class="worm-pause-sound-label">SOUND ON</span>
+    </button>
+   </header>
+   <main class="worm-pause-main">
+    <div class="worm-pause-section-caption"><span data-word="pauseRun">CURRENT FLIGHT</span><span class="worm-pause-status-dot" aria-hidden="true"></span></div>
+    <div class="worm-pause-stats">
+     <div><small data-word="length">LENGTH</small><strong id="worm-pause-length">0</strong></div>
+     <div><small data-word="rank">RANK</small><strong id="worm-pause-rank">—</strong></div>
+     <div><small data-word="time">TIME</small><strong id="worm-pause-time">00:00</strong></div>
+    </div>
+    <div class="worm-pause-lower">
+     <section class="worm-pause-identity" aria-label="Current cosmic worm">
+      <div class="worm-pause-section-caption"><span data-word="pauseLook">YOUR COSMIC WORM</span></div>
+      <div id="worm-pause-preview" class="worm-pause-preview" aria-hidden="true">
+       <div class="worm-pause-orbit orbit-one"></div><div class="worm-pause-orbit orbit-two"></div>
+       <div class="worm-pause-body"></div><div class="worm-pause-head"><i></i><i></i></div>
+      </div>
+      <div class="worm-pause-identity-footer">
+       <div><small data-word="pauseSkinLabel">CURRENT SKIN</small><strong id="worm-pause-skin-name">NEBULA</strong></div>
+       <span id="worm-pause-player">PILOT</span>
+      </div>
+     </section>
+     <section class="worm-pause-controls" aria-label="Pause actions">
+      <div class="worm-pause-section-caption"><span data-word="pauseActions">WHAT NEXT</span></div>
+      <div class="worm-actions">
+       <button class="worm-primary" id="worm-resume" data-word="resume">CONTINUE</button>
+       <button id="worm-skins-open" data-word="skins">COSMIC SKINS</button>
+       <button id="worm-settings-open" data-word="settings">SETTINGS</button>
+       <button id="worm-open-guide" data-word="help">HOW TO PLAY</button>
+       <button id="worm-exit" data-word="menu">EXIT TO MENU</button>
+      </div>
+     </section>
+    </div>
+   </main>
+  </div>
  </div>
 </div>
 <div id="worm-settings" class="worm-shade" hidden role="dialog" aria-modal="true" aria-labelledby="worm-settings-heading">
@@ -78,6 +117,6 @@
 <script src="https://bridge.playgama.com/v2/stable/playgama-bridge.js" defer></script>
 <script src="playgama-platform.js" defer></script>
 <script src="worm-skin-studio.js?v=5" defer></script>
-<script src="cosmic-worms.js?v=27" defer></script>
+<script src="cosmic-worms.js?v=28" defer></script>
 </body>
 </html>
