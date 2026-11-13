@@ -50,6 +50,16 @@ const seed=()=>{localStorage.setItem('infinity-space-player-v1',JSON.stringify({
      reports.push({width,height,mode,screen,...data});
     };
     await check('gameplay');
+    // The touch joystick must never sit above clickable HUD controls,
+    // even if a mobile/landscape media query moves them into the same area.
+    const pauseHit=await page.locator('#pause').evaluate(el=>{
+     const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
+     const hit=document.elementFromPoint(x,y);
+     return {ok:hit===el||el.contains(hit),top:hit?.id||hit?.className||hit?.tagName,
+      point:[Math.round(x),Math.round(y)]};
+    });
+    assert.ok(pauseHit.ok,'Pause must be topmost above touch joystick: '+
+     JSON.stringify({width,height,mode,pauseHit}));
     await page.locator('#pause').click({timeout:9000});
     await page.locator('#paused').waitFor({state:'visible',timeout:7000});
     assert.equal(await page.locator('#paused .arena-dialog-actions button').count(),3);
