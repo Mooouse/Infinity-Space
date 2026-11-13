@@ -286,6 +286,7 @@ function createWorm(name,human,index,preferEncounter=false,identity=null){
   mass,bestMass:mass,bestLength:count,alive:true,invulnerable:human?2.3:2.0,
   segments:[],boost:false,dropClock:0,think:rand(.1,.2),targetFood:null,targetWreckId:null,coil:null,coilCooldown:game.time+rand(16,35),objective:'food',kills:0,
   navFromX:pos.x,navFromY:pos.y,navSince:game.time,escapeUntil:0,escapeHeading:angle,
+  roamHeading:angle,roamUntil:game.time+rand(6,12),huntTargetId:null,huntUntil:0,huntCooldown:game.time+rand(7,16),
   foodEaten:0,bestRank:99,leadTime:0,deathDelay:0,
   persona:human?'human':(identity?.persona||chooseBotRole()),
   head:human?options.head:(identity?.head||BOT_HEADS[Math.floor(Math.random()*BOT_HEADS.length)]),
@@ -656,10 +657,16 @@ function steerBot(w,dt){
   const sight=persona.sight||0;
   const scoreFood=f=>{
    const dx=f.x-w.x,dy=f.y-w.y,d=Math.hypot(dx,dy);
-   const front=(dx*Math.cos(w.angle)+dy*Math.sin(w.angle))/Math.max(1,d);
-   if(d<20||d>sight)return -Infinity;
-   return 330/(d+110)+Math.max(-.8,front)*.9+
-    Math.min(1,f.value/5)*.45+(f===previousFood&&front>-.28?.55:0);
+   const forward=dx*Math.cos(w.angle)+dy*Math.sin(w.angle);
+   const lateral=Math.abs(-dx*Math.sin(w.angle)+dy*Math.cos(w.angle));
+   // A snake cannot collect a distant orb to its side without disrupting
+   // its entire path. Sweep the forward corridor, then move on.
+   if(d<20||d>sight||forward<28||
+      lateral>Math.max(74,forward*.58))return -Infinity;
+   if(d<140&&lateral>56)return -Infinity;
+   const front=forward/Math.max(1,d);
+   return 300/(d+110)+front*1.2+
+    Math.min(1,f.value/5)*.4+(f===previousFood?.7:0);
   };
   if(previousFood&&previousFood._index>=0){
    goalScore=scoreFood(previousFood);
@@ -672,24 +679,46 @@ function steerBot(w,dt){
   });
  }
  w.targetFood=goal;
- let desired=goal?Math.atan2(goal.y-w.y,goal.x-w.x):
-  w.angle+Math.sin(w.wiggle*.35+w.id)*.17;
+ // When nothing is worth chasing, cruise toward a fixed bearing for
+ // several seconds. A fresh sine offset every decision caused perpetual
+ // corkscrews even in an empty part of the arena.
+ if(!goal&&game.time>=w.roamUntil){
+  w.roamHeading=w.angle+rand(-.30,.30);
+  w.roamUntil=game.time+rand(8,14);
+ }
+ let desired=goal?Math.atan2(goal.y-w.y,goal.x-w.x):w.roamHeading;
  let chasing=false;
- // Rival hunting remains possible but it should not hijack every normal
- // collection route into a constant chase and circle.
- if(!salvage&&persona.hunt>0&&w.mass>90&&Math.random()<persona.hunt*.18){
-  let prey=null,closest=Math.min(persona.sight*.75,740);
-  for(const other of game.worms){
-   if(!other.alive||other===w||other.mass>w.mass*(w.persona==='reckless'?1.2:.88))continue;
-   const dx=other.x-w.x,dy=other.y-w.y,d=Math.hypot(dx,dy);
-   const front=(dx*Math.cos(w.angle)+dy*Math.sin(w.angle))/Math.max(d,1);
-   if(d<closest&&d>180&&front>.30){prey=other;closest=d;}
+ // Hunting is a short, purposeful tactic with a long cooldown,
+ // never a fresh random order to turn toward a different prey every tick.
+ if(!salvage&&persona.hunt>0&&w.mass>200){
+  let prey=w.huntTargetId&&game.worms.find(v=>v.id===w.huntTargetId&&v.alive);
+  if(prey&&game.time>=w.huntUntil){prey=null;w.huntTargetId=null;}
+  if(!prey&&game.time>=w.huntCooldown&&
+     Math.random()<persona.hunt*Math.max(.08,w.reaction)*.042){
+   let candidate=null,closest=Math.min(persona.sight*.72,700);
+   for(const other of game.worms){
+    if(!other.alive||other===w||
+       other.mass>w.mass*(w.persona==='reckless'?1.2:.88))continue;
+    const dx=other.x-w.x,dy=other.y-w.y,d=Math.hypot(dx,dy);
+    const front=(dx*Math.cos(w.angle)+dy*Math.sin(w.angle))/Math.max(1,d);
+    if(d<closest&&d>180&&front>.45){candidate=other;closest=d;}
+   }
+   if(candidate){
+    prey=candidate;
+    w.huntTargetId=prey.id;
+    w.huntUntil=game.time+rand(2.2,3.7);
+    w.huntCooldown=game.time+rand(15,29);
+   }else w.huntCooldown=game.time+rand(4,8);
   }
   if(prey){
-   const lead=Math.min(145,closest*.25);
-   desired=Math.atan2(prey.y+Math.sin(prey.angle)*lead-w.y,
-    prey.x+Math.cos(prey.angle)*lead-w.x);
-   chasing=true;
+   const dx=prey.x-w.x,dy=prey.y-w.y,d=Math.hypot(dx,dy);
+   if(d>840||d<95){w.huntTargetId=null;w.huntCooldown=game.time+rand(10,19);}
+   else{
+    const lead=Math.min(140,d*.24);
+    desired=Math.atan2(prey.y+Math.sin(prey.angle)*lead-w.y,
+     prey.x+Math.cos(prey.angle)*lead-w.x);
+    chasing=true;
+   }
   }
  }
  if(!salvage){
@@ -697,7 +726,10 @@ function steerBot(w,dt){
   if(coilHeading!==null){desired=coilHeading;chasing=true;w.objective='encircle';}
  }
  const edge=Math.hypot((w.x-WORLD.cx)/WORLD.rx,(w.y-WORLD.cy)/WORLD.ry);
- if(edge>.86){desired=Math.atan2(WORLD.cy-w.y,WORLD.cx-w.x);w.coil=null;}
+ if(edge>.86){
+  desired=Math.atan2(WORLD.cy-w.y,WORLD.cx-w.x);
+  w.coil=null;w.roamHeading=desired;w.roamUntil=game.time+rand(9,16);
+ }
  // Distinguish a real circular trap from accidental aim oscillations.
  // An accidental loop moves little despite constant forward travel;
  // give it one outward, steady run before resuming the same goal.
