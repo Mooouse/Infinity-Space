@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="unified-space.css?v=4">
 <link rel="stylesheet" href="secondary-design.css?v=6">
 <link rel="stylesheet" href="profile-report.css?v=4">
-<link rel="stylesheet" href="mode-unified.css?v=9">
+<link rel="stylesheet" href="mode-unified.css?v=10">
 </head>
 <body>
 <canvas id="worm-field" aria-label="Cosmic Worms playing field"></canvas>
@@ -25,7 +25,7 @@
  </header>
  <aside class="worm-leaders"><h3 data-word="leaders">LEADERBOARD</h3><div id="worm-ranking"></div></aside>
  <aside class="worm-radar"><canvas id="worm-mini" width="150" height="110"></canvas><small data-word="radar">GALAXY RADAR</small></aside>
- <button id="worm-pause" class="worm-pause-button" type="button" data-word="pause">PAUSE</button>
+ <button id="worm-pause" class="worm-pause-button" type="button" aria-label="Pause"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="4.5" width="4.5" height="15" rx="1"/><rect x="13.5" y="4.5" width="4.5" height="15" rx="1"/></svg><span data-word="pause">PAUSE</span></button>
  <div class="worm-hint" id="worm-hint">MOUSE / WASD — TURN · SPACE / CLICK — BOOST</div>
  <button id="worm-boost" class="worm-boost-button" type="button" aria-label="Boost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="square" aria-hidden="true"><path d="M4 12h15m-7-7 7 7-7 7"/></svg><b data-word="boost">BOOST</b></button>
  <div id="worm-stick" class="worm-stick" role="group" aria-label="Flight joystick"><div id="worm-thumb" class="worm-thumb"></div></div>
@@ -56,17 +56,6 @@
       <button id="worm-exit" data-word="menu">EXIT TO MENU</button>
      </div>
     </section>
-    <section class="worm-pause-identity" aria-label="Current cosmic worm">
-     <div class="worm-pause-section-caption"><span data-word="pauseLook">YOUR COSMIC WORM</span></div>
-     <div id="worm-pause-preview" class="worm-pause-preview" aria-hidden="true">
-      <div class="worm-pause-orbit orbit-one"></div><div class="worm-pause-orbit orbit-two"></div>
-      <div class="worm-pause-body"></div><div class="worm-pause-head"><i></i><i></i></div>
-     </div>
-     <div class="worm-pause-identity-footer">
-      <div><small data-word="pauseSkinLabel">CURRENT SKIN</small><strong id="worm-pause-skin-name">NEBULA</strong></div>
-      <span id="worm-pause-player">PILOT</span>
-     </div>
-    </section>
    </main>
    <footer class="worm-pause-footer">
     <div class="worm-pause-section-caption"><span data-word="pauseRun">CURRENT FLIGHT</span><span class="worm-pause-status-dot" aria-hidden="true"></span></div>
@@ -81,37 +70,44 @@
 </div>
 <div id="worm-settings" class="worm-shade" hidden role="dialog" aria-modal="true" aria-labelledby="worm-settings-heading">
  <div class="worm-panel worm-settings-panel">
-  <header class="worm-settings-header">
-   <div>
-    <span class="worm-eyebrow">INFINITY SPACE / COSMIC WORMS</span>
-    <h1 id="worm-settings-heading" data-word="settings">SETTINGS</h1>
-    <p data-word="settingsIntro">Customize your flight without leaving the match.</p>
-   </div>
-   <button class="worm-settings-close" id="worm-settings-close" type="button" aria-label="Back to pause">×</button>
-  </header>
-  <div class="worm-settings-content">
-   <div class="worm-settings-section">
-    <div class="worm-settings-section-head"><span class="worm-settings-index">01</span><h2 data-word="visuals">VISUALS</h2></div>
-    <label class="worm-setting-toggle"><span class="worm-setting-text"><strong data-word="glow">Enhanced body glow</strong><small data-word="glowDesc">Brighter cosmic trails and highlights</small></span><input type="checkbox" id="worm-setting-glow" checked><i aria-hidden="true"></i></label>
-    <label class="worm-setting-toggle"><span class="worm-setting-text"><strong data-word="names">Show rival names</strong><small data-word="namesDesc">Names above other worms</small></span><input type="checkbox" id="worm-setting-names" checked><i aria-hidden="true"></i></label>
-    <div class="worm-setting-action">
-     <span class="worm-setting-text"><strong data-word="appearance">Cosmic appearance</strong><small data-word="appearanceDesc">Choose a skin with live preview</small></span>
-     <button id="worm-settings-skins" type="button" data-word="chooseSkin">SKINS</button>
-    </div>
-   </div>
-   <div class="worm-settings-section">
-    <div class="worm-settings-section-head"><span class="worm-settings-index">02</span><h2 data-word="settingsSound">AUDIO & CONTROL</h2></div>
-    <div class="worm-setting-action worm-setting-audio">
-     <span class="worm-setting-text"><strong data-word="settingsSoundName">Game audio</strong><small data-word="settingsSoundDesc">One switch for all in-game sounds</small></span>
-     <button id="worm-settings-sound" class="worm-settings-sound" type="button" aria-pressed="false" data-muted="false">SOUND ON</button>
-    </div>
-    <div class="worm-settings-controls-info">
-     <div class="worm-settings-controls-icon" aria-hidden="true">⌖</div>
-     <div><strong data-word="settingsCameraTitle">CAMERA</strong><p data-word="settingsCameraHint">Mouse wheel · pinch with two fingers on mobile. Slight, smooth zoom.</p></div>
-    </div>
-   </div>
+  <div class="br-head worm-settings-header">
+   <button id="worm-settings-close" type="button" class="br-head-back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6"/></svg><span data-word="back">BACK</span></button>
+   <div><span class="br-serial">INFINITY SPACE / COSMIC WORMS</span><h1 id="worm-settings-heading" data-word="settings">SETTINGS</h1></div>
+   <span class="worm-settings-version">SYSTEM <b>02</b></span>
   </div>
-  <footer class="worm-settings-footer"><button class="worm-primary" id="worm-settings-back" type="button" data-word="backPause">SAVE AND EXIT</button></footer>
+  <div class="br-settings-layout worm-settings-content">
+   <nav class="br-settings-nav worm-settings-tabs" aria-label="Settings sections">
+    <span class="br-side-label" data-word="config">CONFIGURATION</span>
+    <button class="br-tab active" type="button" data-settings-tab="control"><span class="worm-tab-icon">⌖</span><span data-word="controlTab">CONTROLS</span><b>01</b></button>
+    <button class="br-tab" type="button" data-settings-tab="audio"><span class="worm-tab-icon">♫</span><span data-word="audioTab">AUDIO</span><b>02</b></button>
+    <button class="br-tab" type="button" data-settings-tab="graphics"><span class="worm-tab-icon">✧</span><span data-word="graphicsTab">GRAPHICS</span><b>03</b></button>
+    <button class="br-tab" type="button" data-settings-tab="general"><span class="worm-tab-icon">✦</span><span data-word="generalTab">GENERAL</span><b>04</b></button>
+   </nav>
+   <main class="br-settings-main worm-settings-main">
+    <section class="br-pane active" data-settings-pane="control">
+     <header class="br-pane-title"><span>01 / NAVIGATION</span><h2 data-word="controlHeading">MOVEMENT & CAMERA</h2><p data-word="controlDetails">Continuous flight with fluid steering and a small adjustable camera range.</p></header>
+     <div class="br-option"><div><strong data-word="controlMouse">MOUSE / KEYBOARD</strong><small data-word="controlMouseDesc">Move the cursor or use WASD and arrows to turn</small></div><strong class="worm-settings-indicator">W A S D</strong></div>
+     <div class="br-option"><div><strong data-word="settingsCameraTitle">CAMERA</strong><small data-word="settingsCameraHint">Mouse wheel or pinch with two fingers. Gentle smooth zoom.</small></div><strong class="worm-settings-indicator">±16%</strong></div>
+     <div class="br-option"><div><strong data-word="controlBoost">ACCELERATION</strong><small data-word="controlBoostDesc">Hold Space, left mouse button or the Boost button</small></div><strong class="worm-settings-indicator">SPACE</strong></div>
+    </section>
+    <section class="br-pane" data-settings-pane="audio">
+     <header class="br-pane-title"><span>02 / SOUND</span><h2 data-word="settingsSound">SOUND & CONTROL</h2><p data-word="settingsSoundDesc">One switch for all in-game sounds</p></header>
+     <div class="br-option worm-setting-action"><div class="worm-setting-text"><strong data-word="settingsSoundName">Game audio</strong><small data-word="settingsSoundDesc">One switch for all in-game sounds</small></div><button id="worm-settings-sound" type="button" class="br-small-action" aria-pressed="false" data-muted="false">SOUND ON</button></div>
+    </section>
+    <section class="br-pane" data-settings-pane="graphics">
+     <header class="br-pane-title"><span>03 / VISUAL</span><h2 data-word="visuals">VISUALS</h2><p data-word="graphicsDetails">Manage the cosmic appearance of the arena.</p></header>
+     <label class="br-option worm-setting-toggle"><span class="worm-setting-text"><strong data-word="glow">Enhanced body glow</strong><small data-word="glowDesc">Brighter cosmic trails and highlights</small></span><input type="checkbox" id="worm-setting-glow" checked><i aria-hidden="true"></i></label>
+     <label class="br-option worm-setting-toggle"><span class="worm-setting-text"><strong data-word="names">Show rival names</strong><small data-word="namesDesc">Names above other worms</small></span><input type="checkbox" id="worm-setting-names" checked><i aria-hidden="true"></i></label>
+     <div class="br-option worm-setting-action"><div class="worm-setting-text"><strong data-word="appearance">Cosmic appearance</strong><small data-word="appearanceDesc">Choose a skin with live preview</small></div><button class="br-small-action" id="worm-settings-skins" type="button" data-word="chooseSkin">SKINS</button></div>
+    </section>
+    <section class="br-pane" data-settings-pane="general">
+     <header class="br-pane-title"><span>04 / SYSTEM</span><h2 data-word="generalHeading">PROFILE & HELP</h2><p data-word="generalDetails">Your preferences are saved automatically.</p></header>
+     <div class="br-option"><div><strong data-word="guideTitle">COSMIC WORMS</strong><small data-word="guideDescription">Review the controls and gameplay guide</small></div><button class="br-small-action" id="worm-settings-guide" type="button" data-word="help">HOW TO PLAY</button></div>
+     <div class="br-option"><div><strong data-word="settingsSoundName">Game audio</strong><small data-word="settingsSoundDesc">One switch for all in-game sounds</small></div><strong class="worm-settings-indicator">AUTO SAVE</strong></div>
+    </section>
+   </main>
+  </div>
+  <footer class="br-settings-foot worm-settings-footer"><span data-word="settingsAutoSave">SETTINGS SAVED AUTOMATICALLY</span><button class="br-foot-primary worm-primary" id="worm-settings-back" type="button" data-word="backPause">SAVE AND EXIT</button></footer>
  </div>
 </div>
 <div id="worm-guide" class="worm-shade" hidden role="dialog" aria-modal="true">
@@ -141,6 +137,6 @@
 <script src="https://bridge.playgama.com/v2/stable/playgama-bridge.js" defer></script>
 <script src="playgama-platform.js" defer></script>
 <script src="worm-skin-studio.js?v=5" defer></script>
-<script src="cosmic-worms.js?v=32" defer></script>
+<script src="cosmic-worms.js?v=33" defer></script>
 </body>
 </html>
