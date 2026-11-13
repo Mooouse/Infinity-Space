@@ -195,6 +195,9 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     const coil=await page.evaluate(()=>window.InfinityWormsQA.encircleProbe());
     assert.ok(coil.canClose&&coil.availableLength>coil.requiredLength,
       'A sufficiently long rival must be able to commit to a real encircling loop');
+    assert.ok(coil.loop>Math.PI*1.7&&coil.radiusError<25,
+      'The attacker must actually curl around its prey and nearly close its body loop: '+
+      JSON.stringify(coil));
     const relaxation=await page.evaluate(()=>window.InfinityWormsQA.relaxationProbe());
     assert.ok(relaxation.maxShift>1.5&&relaxation.maxShift<25,
       'Sharp turns must contract physically over time, without snapping: '+JSON.stringify(relaxation));
