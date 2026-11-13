@@ -10,7 +10,7 @@ const storedLang=(()=>{try{return localStorage.getItem('infiniti-space-language'
 const language=/^(ru|en|es)$/.test(storedLang)?storedLang:(/^ru/i.test(navigator.language)?'ru':/^es/i.test(navigator.language)?'es':'en');
 document.documentElement.lang=language;
 const WORDS={
- en:{settings:'SETTINGS',skins:'COSMIC SKINS',skinDesc:'Choose a space-inspired appearance. All skins are free.',visuals:'VISUALS',glow:'Enhanced body glow',names:'Show rival names',zoom:'Camera distance',backPause:'SAVE AND EXIT',length:'LENGTH',rank:'RANK',time:'TIME',leaders:'LEADERBOARD',radar:'GALAXY RADAR',pause:'PAUSE',
+ en:{settings:'SETTINGS',settingsIntro:'Customize your flight without leaving the match.',glowDesc:'Brighter cosmic trails and highlights',namesDesc:'Names above other worms',appearance:'Cosmic appearance',appearanceDesc:'Choose a skin with live preview',chooseSkin:'SKINS',settingsSound:'SOUND & CONTROLS',settingsSoundName:'Game audio',settingsSoundDesc:'One switch for all sounds',settingsCameraTitle:'CAMERA',settingsCameraHint:'Mouse wheel or pinch with two fingers. Gentle smooth zoom.',skins:'COSMIC SKINS',skinDesc:'Choose a space-inspired appearance. All skins are free.',visuals:'VISUALS',glow:'Enhanced body glow',names:'Show rival names',zoom:'Camera distance',backPause:'SAVE AND EXIT',length:'LENGTH',rank:'RANK',time:'TIME',leaders:'LEADERBOARD',radar:'GALAXY RADAR',pause:'PAUSE',
  pauseTagline:'The universe waits. Your journey continues.',pauseRun:'CURRENT FLIGHT',pauseLook:'YOUR COSMIC WORM',pauseSkinLabel:'CURRENT SKIN',pauseActions:'WHAT NEXT',soundOn:'SOUND ON',soundOff:'SOUND OFF',
   boost:'BOOST',paused:'PAUSED',pauseDesc:'Resume the flight, review the controls or return to mode selection.',
  resume:'CONTINUE',help:'HOW TO PLAY',menu:'EXIT TO MENU',guideTitle:'COSMIC WORMS',skip:'SKIP',next:'NEXT',start:'START',
@@ -22,7 +22,7 @@ const WORDS={
  ['OUTMANEUVER RIVALS','Your head must not touch another worm’s body. Cut opponents off with your own tail; defeated worms drop valuable matter.','◌'],
  ['BOOST WHEN NEEDED','Hold Space or the mouse button to accelerate. Boosting slowly burns mass and drops energy behind you. On phones, steer with the joystick and hold BOOST.','➤']
  ]},
- ru:{settings:'НАСТРОЙКИ',skins:'КОСМИЧЕСКИЕ СКИНЫ',skinDesc:'Выбери космический облик червя. Все скины бесплатны.',visuals:'ГРАФИКА',glow:'Усиленное свечение тела',names:'Показывать имена соперников',zoom:'Дистанция камеры',backPause:'СОХРАНИТЬ И ВЫЙТИ',length:'ДЛИНА',rank:'МЕСТО',time:'ВРЕМЯ',leaders:'ТАБЛИЦА ЛИДЕРОВ',radar:'РАДАР ГАЛАКТИКИ',pause:'ПАУЗА',
+ ru:{settings:'НАСТРОЙКИ',settingsIntro:'Измени параметры, не покидая матч.',glowDesc:'Яркость космического свечения и шлейфов',namesDesc:'Имена над другими червями',appearance:'Космический облик',appearanceDesc:'Выбрать скин с живым предпросмотром',chooseSkin:'СКИНЫ',settingsSound:'ЗВУК И УПРАВЛЕНИЕ',settingsSoundName:'Звуки игры',settingsSoundDesc:'Одно отключение для всех звуков',settingsCameraTitle:'КАМЕРА',settingsCameraHint:'Колесо мыши или два пальца на телефоне. Небольшое плавное приближение.',skins:'КОСМИЧЕСКИЕ СКИНЫ',skinDesc:'Выбери космический облик червя. Все скины бесплатны.',visuals:'ГРАФИКА',glow:'Усиленное свечение тела',names:'Показывать имена соперников',zoom:'Дистанция камеры',backPause:'СОХРАНИТЬ И ВЫЙТИ',length:'ДЛИНА',rank:'МЕСТО',time:'ВРЕМЯ',leaders:'ТАБЛИЦА ЛИДЕРОВ',radar:'РАДАР ГАЛАКТИКИ',pause:'ПАУЗА',
  pauseTagline:'Космос подождёт. Твой полёт ещё не окончен.',pauseRun:'ТЕКУЩИЙ ЗАБЕГ',pauseLook:'ТВОЙ КОСМИЧЕСКИЙ ЧЕРВЬ',pauseSkinLabel:'ВЫБРАННЫЙ СКИН',pauseActions:'ДЕЙСТВИЯ',soundOn:'ЗВУК ВКЛ',soundOff:'ЗВУК ВЫКЛ',
   boost:'РЫВОК',paused:'ПАУЗА',pauseDesc:'Продолжи полёт, посмотри обучение или вернись к выбору режима.',
  resume:'ПРОДОЛЖИТЬ',help:'КАК ИГРАТЬ',menu:'ВЫХОД В МЕНЮ',guideTitle:'КОСМИЧЕСКИЕ ЧЕРВИ',skip:'ПРОПУСТИТЬ',next:'ДАЛЕЕ',start:'ИГРАТЬ',
@@ -34,7 +34,7 @@ const WORDS={
  ['ПЕРЕХИТРИ СОПЕРНИКОВ','Не касайся головой тела другого червя. Перекрывай противникам путь собственным хвостом. После их гибели остаётся ценная материя.','◌'],
  ['ИСПОЛЬЗУЙ РЫВОК','Удерживай Пробел или левую кнопку мыши для ускорения. Рывок расходует массу. На телефоне управляй стиком и удерживай кнопку «Рывок».','➤']
  ]},
- es:{settings:'AJUSTES',skins:'ASPECTOS CÓSMICOS',skinDesc:'Elige un aspecto cósmico. Todos son gratuitos.',visuals:'GRÁFICOS',glow:'Brillo y estelas mejorados',names:'Mostrar nombres de rivales',zoom:'Distancia de cámara',backPause:'GUARDAR Y SALIR',length:'LONGITUD',rank:'PUESTO',time:'TIEMPO',leaders:'CLASIFICACIÓN',radar:'RADAR GALÁCTICO',pause:'PAUSA',
+ es:{settings:'AJUSTES',settingsIntro:'Personaliza tu vuelo sin salir de la partida.',glowDesc:'Estelas cósmicas y reflejos más brillantes',namesDesc:'Nombres de otros gusanos',appearance:'Apariencia cósmica',appearanceDesc:'Elige un aspecto con vista previa',chooseSkin:'ASPECTOS',settingsSound:'SONIDO Y CONTROLES',settingsSoundName:'Audio del juego',settingsSoundDesc:'Un botón para todos los sonidos',settingsCameraTitle:'CÁMARA',settingsCameraHint:'Rueda del ratón o gesto de dos dedos. Zoom suave y limitado.',skins:'ASPECTOS CÓSMICOS',skinDesc:'Elige un aspecto cósmico. Todos son gratuitos.',visuals:'GRÁFICOS',glow:'Brillo y estelas mejorados',names:'Mostrar nombres de rivales',zoom:'Distancia de cámara',backPause:'GUARDAR Y SALIR',length:'LONGITUD',rank:'PUESTO',time:'TIEMPO',leaders:'CLASIFICACIÓN',radar:'RADAR GALÁCTICO',pause:'PAUSA',
  pauseTagline:'El universo espera. Tu viaje continúa.',pauseRun:'PARTIDA ACTUAL',pauseLook:'TU GUSANO CÓSMICO',pauseSkinLabel:'ASPECTO ACTUAL',pauseActions:'ACCIONES',soundOn:'SONIDO SÍ',soundOff:'SONIDO NO',
   boost:'IMPULSO',paused:'PAUSA',pauseDesc:'Continúa, revisa los controles o elige otro modo.',
  resume:'CONTINUAR',help:'CÓMO JUGAR',menu:'SALIR AL MENÚ',guideTitle:'GUSANOS CÓSMICOS',skip:'SALTAR',next:'SIGUIENTE',start:'JUGAR',
@@ -82,8 +82,8 @@ const SKINS=[
 const SETTINGS_KEY='infinity-space-worms-settings-v2';
 function loadSettings(){
  try{const s=JSON.parse(localStorage.getItem(SETTINGS_KEY));if(s&&typeof s==='object')
-  return {skin:SKINS.some(v=>v.id===s.skin)?s.skin:'nebula',glow:s.glow!==false,names:s.names!==false,zoom:clamp(Number(s.zoom)||100,75,140),head:['classic','blackhole','pulsar','comet','crystal','eclipse'].includes(s.head)?s.head:'classic',muted:s.muted===true,customEnabled:s.customEnabled===true,customSegments:Array.isArray(s.customSegments)?s.customSegments.filter(c=>/^#[0-9a-f]{6}$/i.test(c)).slice(0,64):[]};}catch(_){}
- return {skin:'nebula',glow:true,names:true,zoom:100,head:'classic',muted:false,customEnabled:false,customSegments:[]};
+  return {skin:SKINS.some(v=>v.id===s.skin)?s.skin:'nebula',glow:s.glow!==false,names:s.names!==false,viewZoom:clamp(Number(s.viewZoom)||1,.84,1.16),head:['classic','blackhole','pulsar','comet','crystal','eclipse'].includes(s.head)?s.head:'classic',muted:s.muted===true,customEnabled:s.customEnabled===true,customSegments:Array.isArray(s.customSegments)?s.customSegments.filter(c=>/^#[0-9a-f]{6}$/i.test(c)).slice(0,64):[]};}catch(_){}
+ return {skin:'nebula',glow:true,names:true,viewZoom:1,head:'classic',muted:false,customEnabled:false,customSegments:[]};
 }
 const options=loadSettings();
 function saveOptions(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(options));}catch(_){}}
@@ -121,6 +121,8 @@ function syncPauseSound(){
  const label=T[options.muted?'soundOff':'soundOn'];
  b.querySelector('.worm-pause-sound-label').textContent=label;
  b.setAttribute('aria-label',label);b.title=label;
+ const settingsButton=$('worm-settings-sound');
+ if(settingsButton){settingsButton.dataset.muted=String(options.muted);settingsButton.setAttribute('aria-pressed',String(options.muted));settingsButton.textContent=label;settingsButton.setAttribute('aria-label',label);}
  if(wormAudioContext&&wormAudioMaster)
   wormAudioMaster.gain.setTargetAtTime(options.muted?0:1,wormAudioContext.currentTime,.025);
 }
@@ -589,9 +591,11 @@ function kill(w,killer,reason){
  }
 }
 
+function backgroundFlightActive(){return game.state==='paused'||game.state==='settings'||game.state==='skins'||(game.state==='guide'&&guideReturn==='paused');}
 function updateWorm(w,dt){
  if(!w.alive)return;
  w.invulnerable=Math.max(0,w.invulnerable-dt);
+ if(w.human&&backgroundFlightActive())w.invulnerable=Math.max(w.invulnerable,2.5);
  if(!w.human){
   // Worms always glide forward. AFK only disables steering and boosting.
   if(w.afkTimer>0){
@@ -604,6 +608,11 @@ function updateWorm(w,dt){
     w.target=w.angle;w.boost=false;
    }else steerBot(w,dt);
   }
+ }else if(backgroundFlightActive()){
+  // Leave the world alive behind menus, but glide safely instead of dying while navigating UI.
+  const rx=(w.x-WORLD.cx)/WORLD.rx,ry=(w.y-WORLD.cy)/WORLD.ry;
+  if(rx*rx+ry*ry>.72)w.target=Math.atan2(WORLD.cy-w.y,WORLD.cx-w.x);
+  w.boost=false;
  }else{
   const keys=input.keys;
   let dx=(keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')?1:0);
@@ -1134,8 +1143,8 @@ function paintDeathVignette(){
 function updateCamera(){
  const p=game.player;if(!p)return;
  const replay=game.state==='death-replay'||game.state==='finished';
- const targetZoom=clamp(((vw<700?.87:1.04)-Math.log(Math.max(1,p.mass)/60)*.115)/
-  (options.zoom/100)*(replay?.89:1),.35,1.45);
+ const targetZoom=clamp(((vw<700?.87:1.04)-Math.log(Math.max(1,p.mass)/60)*.115)*
+  options.viewZoom*(replay?.89:1),.35,1.45);
  camera.zoom+=(targetZoom-camera.zoom)*.045;
  const focus=replay&&game.deathPosition?game.deathPosition:p;
  camera.x+=(focus.x-camera.x)*.09;camera.y+=(focus.y-camera.y)*.09;
@@ -1179,8 +1188,7 @@ function showSettings(){
  $('worm-settings').hidden=false;
  $('worm-setting-glow').checked=options.glow;
  $('worm-setting-names').checked=options.names;
- $('worm-setting-zoom').value=String(options.zoom);
- $('worm-zoom-value').textContent=options.zoom+'%';
+ syncPauseSound();
 
 }
 function closeSettings(){
@@ -1188,6 +1196,7 @@ function closeSettings(){
  game.state='paused';
  $('worm-settings').hidden=true;
  $('worm-pause-overlay').hidden=false;
+ syncPauseAppearance();syncPauseSound();
 }
 
 function revealDeathResult(){
@@ -1247,17 +1256,18 @@ function exit(){
  location.assign('index.html?select=worms');
 }
 $('worm-pause').onclick=pause;$('worm-resume').onclick=pause;
-$('worm-pause-sound').onclick=()=>{options.muted=!options.muted;saveOptions();syncPauseSound();if(!options.muted)playWormSound('resume');};
+function toggleWormAudio(){options.muted=!options.muted;saveOptions();syncPauseSound();if(!options.muted)playWormSound('resume');}
+$('worm-pause-sound').onclick=toggleWormAudio;
+$('worm-settings-sound').onclick=toggleWormAudio;
 syncPauseSound();
 $('worm-settings-open').onclick=showSettings;
 $('worm-skins-open').onclick=showSkinWorkshop;
 $('worm-settings-back').onclick=closeSettings;
+$('worm-settings-close').onclick=closeSettings;
+$('worm-settings-skins').onclick=()=>{closeSettings();showSkinWorkshop();};
 $('worm-setting-glow').onchange=e=>{options.glow=e.target.checked;saveOptions();};
 $('worm-setting-names').onchange=e=>{options.names=e.target.checked;saveOptions();};
-$('worm-setting-zoom').oninput=e=>{
- options.zoom=clamp(Number(e.target.value),75,140);
- $('worm-zoom-value').textContent=options.zoom+'%';saveOptions();
-};
+// Camera distance is adjusted during flight, not with a settings slider.
 $('worm-open-guide').onclick=()=>showGuide('paused');$('worm-exit').onclick=exit;
 $('worm-guide-skip').onclick=closeGuide;
 $('worm-guide-next').onclick=()=>{if(guideStep<2){guideStep++;paintGuide();}else closeGuide();};
@@ -1277,17 +1287,59 @@ stick.addEventListener('pointerdown',e=>{e.preventDefault();input.stickPointer=e
 stick.addEventListener('pointermove',e=>{if(input.stickPointer===e.pointerId)updateStick(e);});
 const stopStick=e=>{if(e.pointerId!==input.stickPointer)return;input.stickPointer=-1;input.stickPower=0;thumb.style.transform='translate(0,0)';};
 stick.addEventListener('pointerup',stopStick);stick.addEventListener('pointercancel',stopStick);stick.addEventListener('lostpointercapture',stopStick);
+// Small camera adjustment only: ±16%, with smooth camera easing.
+function changeViewZoom(ratio){
+ if(!Number.isFinite(ratio)||ratio<=0)return;
+ const next=clamp(options.viewZoom*ratio,.84,1.16);
+ if(Math.abs(next-options.viewZoom)<.0001)return;
+ options.viewZoom=next;saveOptions();
+}
+canvas.addEventListener('wheel',e=>{
+ if(game.state!=='playing'||e.ctrlKey)return;
+ e.preventDefault();
+ const pixels=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?vh:1);
+ changeViewZoom(Math.exp(-clamp(pixels,-240,240)*.00027));
+},{passive:false});
+const canvasTouches=new Map();let pinchDistance=0;
+function touchDistance(){
+ const a=[...canvasTouches.values()];
+ return a.length<2?0:Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);
+}
 canvas.addEventListener('pointermove',e=>{
- if(e.pointerType==='touch'){if(input.touchAngle!==null)input.touchAngle=Math.atan2(e.clientY-vh/2,e.clientX-vw/2);}
- else{input.mx=e.clientX;input.my=e.clientY;input.mouseMoved=true;}
+ if(e.pointerType==='touch'){
+  if(!canvasTouches.has(e.pointerId))return;
+  canvasTouches.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(canvasTouches.size>=2){
+   const next=touchDistance();
+   if(pinchDistance>0&&next>0)changeViewZoom(next/pinchDistance);
+   pinchDistance=next;input.touchAngle=null;
+  }else input.touchAngle=Math.atan2(e.clientY-vh/2,e.clientX-vw/2);
+ }else{input.mx=e.clientX;input.my=e.clientY;input.mouseMoved=true;}
 });
 canvas.addEventListener('pointerdown',e=>{
  if(game.state!=='playing')return;
  if(e.pointerType==='mouse'&&e.button===0)input.mouseDown=true;
- if(e.pointerType==='touch')input.touchAngle=Math.atan2(e.clientY-vh/2,e.clientX-vw/2);
+ if(e.pointerType==='touch'){
+  canvasTouches.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(canvasTouches.size>=2){input.touchAngle=null;pinchDistance=touchDistance();}
+  else input.touchAngle=Math.atan2(e.clientY-vh/2,e.clientX-vw/2);
+ }
 });
-window.addEventListener('pointerup',e=>{if(e.pointerType==='mouse')input.mouseDown=false;if(e.pointerType==='touch')input.touchAngle=null;});
-window.addEventListener('pointercancel',()=>{input.mouseDown=false;input.touchAngle=null;});
+function endCanvasTouch(pointerId){
+ canvasTouches.delete(pointerId);pinchDistance=canvasTouches.size>=2?touchDistance():0;
+ const remaining=canvasTouches.values().next().value;
+ input.touchAngle=canvasTouches.size===1&&remaining?
+  Math.atan2(remaining.y-vh/2,remaining.x-vw/2):null;
+}
+window.addEventListener('pointerup',e=>{
+ if(e.pointerType==='mouse')input.mouseDown=false;
+ if(e.pointerType==='touch')endCanvasTouch(e.pointerId);
+});
+window.addEventListener('pointercancel',e=>{
+ input.mouseDown=false;
+ if(e.pointerType==='touch')endCanvasTouch(e.pointerId);
+});
+
 window.addEventListener('contextmenu',e=>e.preventDefault());
 window.addEventListener('keydown',e=>{
  if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD','ShiftLeft','ShiftRight'].includes(e.code))e.preventDefault();
@@ -1305,9 +1357,14 @@ window.addEventListener('blur',()=>{input.mouseDown=false;input.boostKey=false;i
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&game.state==='playing'&&!DEMO)pause();});
 function frame(now){
  requestAnimationFrame(frame);
+ if(document.hidden){last=now;return;}
+ const background=backgroundFlightActive();
+ if(background&&now-lastIdlePaint<34)return;
+ if(qaManualPhysics&&now-lastIdlePaint<120)return;
+ if(background||qaManualPhysics)lastIdlePaint=now;
  let dt=last?clamp((now-last)/1000,0,.047):.016;last=now;
  starTime=now*.001;
- if(game.state==='playing'||game.state==='death-replay'){
+ if(game.state==='playing'||game.state==='death-replay'||background){
   if(!qaManualPhysics)simulate(dt);
   if(DEMO&&(!game.player.alive||game.time>80))init();
   if(game.state==='death-replay'){
@@ -1318,12 +1375,11 @@ function frame(now){
    if(game.deathElapsed>=DEATH_REPLAY_SECONDS)revealDeathResult();
   }
   uiClock+=dt;
-  if(uiClock>.15){uiClock=0;if(!DEMO)updateUI();}
+  if(uiClock>.15){uiClock=0;if(!DEMO){updateUI();if(background){$('worm-pause-length').textContent=$('worm-length').textContent;$('worm-pause-rank').textContent=$('worm-place').textContent;$('worm-pause-time').textContent=$('worm-time').textContent;}}}
  }
  if(toastTimer>0){toastTimer-=dt;if(toastTimer<=0)$('worm-toast').classList.remove('show');}
- // While paused or designing skins, the frozen game world does not need
- // 60 expensive paints per second. The workshop preview animates separately.
- if(qaManualPhysics||['paused','settings','skins','guide','finished'].includes(game.state)){
+ // Menus show the active universe at a moderate frame rate; initial guide/results stay static.
+ if(!background&&['guide','finished'].includes(game.state)){
   if(now-lastIdlePaint<120)return;
   lastIdlePaint=now;
  }
@@ -1339,7 +1395,7 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
     alive:game.worms.filter(w=>w.alive).length,food:game.food.length,
     world:{w:WORLD.w,h:WORLD.h,rx:WORLD.rx,ry:WORLD.ry},
     targetFood:FOOD_TARGET,botCount:BOT_COUNT,gridCells:game.foodGrid.size,
-    skin:options.skin,customEnabled:options.customEnabled,customColors:options.customSegments?.length||0,glow:options.glow,names:options.names,zoomSetting:options.zoom,
+    skin:options.skin,customEnabled:options.customEnabled,customColors:options.customSegments?.length||0,glow:options.glow,names:options.names,zoomSetting:Math.round(options.viewZoom*100),
     lastDeath:game.lastDeath||null,guideOpen:!$('worm-guide').hidden,
     settingsOpen:!$('worm-settings').hidden,boosting:game.player.boost,
     deathElapsed:game.deathElapsed,deathDelay:DEATH_REPLAY_SECONDS,
