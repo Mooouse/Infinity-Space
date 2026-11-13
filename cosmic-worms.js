@@ -497,6 +497,17 @@ function collectWreckTarget(w){
    if(score<best){best=score;selected=f;selectedWreck=wreck;}
   }
  }
+ // If the sparse beacons were consumed first, fall back to live remnants
+ // anywhere along the corpse rather than abandoning food that's still there.
+ if(!selected)for(const wreck of game.wrecks){
+  if(wreck.remaining<=0||now>=wreck.expires)continue;
+  for(const f of wreck.items){
+   if(f._index<0)continue;
+   const score=Math.hypot(f.x-w.x,f.y-w.y)+(now-wreck.created)*2.2-
+     Math.min(160,wreck.remaining*.18)-f.value*5;
+   if(score<best){best=score;selected=f;selectedWreck=wreck;}
+  }
+ }
  if(!selected)return null;
  // Once close, sweep up actual nearby pieces, not just sampled beacons.
  foodNearby(w.x,w.y,Math.min(750,Math.max(260,BOT_PERSONAS[w.persona]?.sight||440)),f=>{
