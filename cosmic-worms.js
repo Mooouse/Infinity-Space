@@ -286,7 +286,7 @@ function createWorm(name,human,index,preferEncounter=false,identity=null){
   mass,bestMass:mass,bestLength:count,alive:true,invulnerable:human?2.3:2.0,
   segments:[],boost:false,dropClock:0,think:rand(.1,.2),targetFood:null,targetWreckId:null,coil:null,coilCooldown:game.time+rand(16,35),objective:'food',kills:0,
   navFromX:pos.x,navFromY:pos.y,navSince:game.time,escapeUntil:0,escapeHeading:angle,
-  roamHeading:angle,roamUntil:game.time+rand(6,12),huntTargetId:null,huntUntil:0,huntCooldown:game.time+rand(7,16),
+  roamHeading:angle,roamUntil:game.time+rand(1.4,3.7),cruiseRichness:0,huntTargetId:null,huntUntil:0,huntCooldown:game.time+rand(4,10),
   foodEaten:0,bestRank:99,leadTime:0,deathDelay:0,
   persona:human?'human':(identity?.persona||chooseBotRole()),
   head:human?options.head:(identity?.head||BOT_HEADS[Math.floor(Math.random()*BOT_HEADS.length)]),
@@ -638,6 +638,44 @@ function guideCoil(w,dt,persona){
  return desired;
 }
 
+// Look ahead for *lanes* rich in resources, not isolated specks. A good
+// opponent surveys the coming corridor every few seconds, picks a profitable
+// route, and then commits to it. This preserves momentum without turning
+// rivals into mindless straight-line crawlers.
+function planFoodLane(w,persona){
+ const sight=clamp(persona.sight||450,380,1250);
+ const width=11,step=.235,middle=5;
+ const score=Array.from({length:width},(_,i)=>{
+  const a=Math.abs((i-middle)*step);
+  return -.055*a-.095*a*a;
+ });
+ let seen=0;
+ foodNearby(w.x,w.y,sight,f=>{
+  if(f._index<0||f.wreckId!==undefined)return;
+  const dx=f.x-w.x,dy=f.y-w.y;
+  const distance=Math.hypot(dx,dy);
+  if(distance<60||distance>sight)return;
+  const rel=normAngle(Math.atan2(dy,dx)-w.angle);
+  if(Math.abs(rel)>1.36)return;
+  const index=Math.round(rel/step)+middle;
+  if(index<0||index>=width)return;
+  const gain=Math.min(6,f.value)/(distance+240);
+  score[index]+=gain;
+  if(index>0)score[index-1]+=gain*.54;
+  if(index+1<width)score[index+1]+=gain*.54;
+  seen++;
+ });
+ if(seen===0)return {heading:w.angle+rand(-.24,.24),richness:0};
+ const patience=persona.awareness>=1?.09:.16;
+ score[middle]+=patience;
+ let best=middle;
+ for(let i=0;i<width;i++)if(score[i]>score[best])best=i;
+ let deviation=(best-middle)*step;
+ // Rookies have looser lanes, skilled rivals stay precise.
+ const allowed=persona.awareness>=1?1.10:.83;
+ deviation=clamp(deviation,-allowed,allowed);
+ return {heading:w.angle+deviation,richness:score[best]};
+}
 function steerBot(w,dt){
  const persona=BOT_PERSONAS[w.persona]||BOT_PERSONAS.casual;
  w.think-=dt;w.wiggle+=dt*.7;
@@ -646,50 +684,24 @@ function steerBot(w,dt){
  const salvage=collectWreckTarget(w);
  w.targetWreckId=salvage?.wreck.id??null;
  w.objective=salvage?'salvage':'food';
- const previousFood=w.targetFood;
+ // Corpse wrecks are an overriding objective. Ambient food uses a
+ // longer-horizon lane plan rather than chasing a new individual pellet
+ // on every reaction cycle.
  let goal=salvage?.food||null,goalScore=-Infinity;
  if(salvage){
   w.coil=null;w.boost=false;
   w.think=Math.min(w.think,.13);
+  w.targetFood=goal;
  }else{
-  // Select matter AHEAD of the head. Do not reverse to fetch every orb
-  // just passed; maintain a nearby goal while it remains worth pursuing.
-  const sight=persona.sight||0;
-  const scoreFood=f=>{
-   const dx=f.x-w.x,dy=f.y-w.y,d=Math.hypot(dx,dy);
-   const forward=dx*Math.cos(w.angle)+dy*Math.sin(w.angle);
-   const lateral=Math.abs(-dx*Math.sin(w.angle)+dy*Math.cos(w.angle));
-   // A snake cannot collect a distant orb to its side without disrupting
-   // its entire path. Sweep the forward corridor, then move on.
-   if(d<20||d>sight||forward<28||
-      lateral>Math.max(74,forward*.58))return -Infinity;
-   if(d<140&&lateral>56)return -Infinity;
-   const front=forward/Math.max(1,d);
-   return 300/(d+110)+front*1.2+
-    Math.min(1,f.value/5)*.4+(f===previousFood?.7:0);
-  };
-  if(previousFood&&previousFood._index>=0){
-   goalScore=scoreFood(previousFood);
-   if(goalScore>-Infinity)goal=previousFood;
+  w.targetFood=null;
+  if(game.time>=w.roamUntil){
+   const lane=planFoodLane(w,persona);
+   w.roamHeading=lane.heading;
+   w.cruiseRichness=lane.richness;
+   w.roamUntil=game.time+(
+    persona.awareness>1?rand(2.5,4.0):
+    persona.awareness>.5?rand(3.2,5.2):rand(5,8));
   }
-  if(sight>0)foodNearby(w.x,w.y,sight,f=>{
-   if(f._index<0)return;
-   const score=scoreFood(f);
-   if(score>goalScore){goal=f;goalScore=score;}
-  });
- }
- w.targetFood=goal;
- // When nothing is worth chasing, cruise toward a fixed bearing for
- // several seconds. A fresh sine offset every decision caused perpetual
- // corkscrews even in an empty part of the arena.
- // Ambient food is plentiful: travel along a steady course and harvest
- // particles on the way. Re-aim occasionally, not for every separate dot.
- // Corpse resources still use precise continuous pursuit until all are eaten.
- if(!salvage&&game.time>=w.roamUntil){
-  const toward=goal?Math.atan2(goal.y-w.y,goal.x-w.x):w.angle+rand(-.36,.36);
-  const sweep=w.persona==='newcomer'?.52:w.persona==='casual'?.39:.28;
-  w.roamHeading=w.angle+clamp(normAngle(toward-w.angle),-sweep,sweep);
-  w.roamUntil=game.time+rand(6.5,11.5);
  }
  let desired=salvage?Math.atan2(goal.y-w.y,goal.x-w.x):w.roamHeading;
  let chasing=false;
@@ -698,8 +710,7 @@ function steerBot(w,dt){
  if(!salvage&&persona.hunt>0&&w.mass>200){
   let prey=w.huntTargetId&&game.worms.find(v=>v.id===w.huntTargetId&&v.alive);
   if(prey&&game.time>=w.huntUntil){prey=null;w.huntTargetId=null;}
-  if(!prey&&game.time>=w.huntCooldown&&
-     Math.random()<persona.hunt*Math.max(.08,w.reaction)*.042){
+  if(!prey&&game.time>=w.huntCooldown){
    let candidate=null,closest=Math.min(persona.sight*.72,700);
    for(const other of game.worms){
     if(!other.alive||other===w||
@@ -711,8 +722,8 @@ function steerBot(w,dt){
    if(candidate){
     prey=candidate;
     w.huntTargetId=prey.id;
-    w.huntUntil=game.time+rand(2.2,3.7);
-    w.huntCooldown=game.time+rand(15,29);
+    w.huntUntil=game.time+rand(3.8,5.5);
+    w.huntCooldown=game.time+(persona.hunt>.7?rand(9,15):rand(17,29));
    }else w.huntCooldown=game.time+rand(4,8);
   }
   if(prey){
