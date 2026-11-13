@@ -187,6 +187,17 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.keyboard.up('Space');
     const corpse=await page.evaluate(()=>window.InfinityWormsQA.forceBotDeath());
     assert.ok(corpse&&corpse.dropped>=corpse.segments*2,'Food must drop all along a defeated worm body');
+    const salvage=await page.evaluate(()=>window.InfinityWormsQA.salvageProbe());
+    assert.equal(salvage.available,true,'Defeated bodies must broadcast salvage');
+    assert.ok(salvage.total>=40,'There should be a full competitive lobby');
+    assert.equal(salvage.prioritizing,salvage.total,
+      'Every rival, including the idle personality, must prioritize a new corpse over normal food and hunting');
+    const coil=await page.evaluate(()=>window.InfinityWormsQA.encircleProbe());
+    assert.ok(coil.canClose&&coil.availableLength>coil.requiredLength,
+      'A sufficiently long rival must be able to commit to a real encircling loop');
+    const relaxation=await page.evaluate(()=>window.InfinityWormsQA.relaxationProbe());
+    assert.ok(relaxation.maxShift>1.5&&relaxation.maxShift<25,
+      'Sharp turns must contract physically over time, without snapping: '+JSON.stringify(relaxation));
     const pausePosition=await page.locator('#worm-pause').evaluate(el=>el.getBoundingClientRect().top);
     assert.ok(pausePosition>height*.58,'Pause should be with bottom gameplay buttons instead of at the top');
     await page.locator('#worm-pause').click();
