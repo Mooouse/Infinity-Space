@@ -682,11 +682,16 @@ function steerBot(w,dt){
  // When nothing is worth chasing, cruise toward a fixed bearing for
  // several seconds. A fresh sine offset every decision caused perpetual
  // corkscrews even in an empty part of the arena.
- if(!goal&&game.time>=w.roamUntil){
-  w.roamHeading=w.angle+rand(-.30,.30);
-  w.roamUntil=game.time+rand(8,14);
+ // Ambient food is plentiful: travel along a steady course and harvest
+ // particles on the way. Re-aim occasionally, not for every separate dot.
+ // Corpse resources still use precise continuous pursuit until all are eaten.
+ if(!salvage&&game.time>=w.roamUntil){
+  const toward=goal?Math.atan2(goal.y-w.y,goal.x-w.x):w.angle+rand(-.36,.36);
+  const sweep=w.persona==='newcomer'?.52:w.persona==='casual'?.39:.28;
+  w.roamHeading=w.angle+clamp(normAngle(toward-w.angle),-sweep,sweep);
+  w.roamUntil=game.time+rand(6.5,11.5);
  }
- let desired=goal?Math.atan2(goal.y-w.y,goal.x-w.x):w.roamHeading;
+ let desired=salvage?Math.atan2(goal.y-w.y,goal.x-w.x):w.roamHeading;
  let chasing=false;
  // Hunting is a short, purposeful tactic with a long cooldown,
  // never a fresh random order to turn toward a different prey every tick.
