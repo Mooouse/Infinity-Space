@@ -192,6 +192,16 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.locator('#worm-pause').click();
     assert.equal(await page.locator('#worm-pause-overlay').isVisible(),true);
     assert.equal(await page.locator('#worm-exit').textContent(),'ВЫХОД В МЕНЮ');
+    // Pause is now a live-world overlay: rival worms and match time keep moving
+    // while the player remains protected and the UI is interactive.
+    const pausedStart=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
+    await page.waitForTimeout(350);
+    const pausedEnd=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
+    assert.equal(pausedEnd.state,'paused');
+    assert.ok(pausedEnd.time>pausedStart.time,
+      'Opening pause must not freeze the surrounding universe');
+    assert.equal(pausedEnd.resultVisible,false);
+    assert.equal(await page.locator('#worm-pause-sound').count(),1);
     await page.locator('#worm-skins-open').click();
     assert.equal(await page.locator('.ws-overlay').isVisible(),true,'Separate skin editor must open from pause');
     assert.equal(await page.locator('.ws-preset').count(),16);
@@ -219,22 +229,32 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.equal(await page.locator('#worm-pause-overlay').isVisible(),true,'Skin editor returns to pause');
     await page.locator('#worm-settings-open').click();
     assert.equal(await page.locator('#worm-settings').isVisible(),true);
+    // The camera-distance slider was deliberately removed: camera changes
+    // are now small gestures directly on the live playfield.
+    assert.equal(await page.locator('#worm-setting-zoom').count(),0);
+    assert.equal(await page.locator('#worm-zoom-value').count(),0);
+    assert.equal(await page.locator('#worm-settings-sound').count(),1);
+    assert.equal(await page.locator('#worm-settings-skins').count(),1);
     if(width>=1280){
      await page.locator('#worm-settings-back').hover();
-     // This border animates. Its computed color on the first frame is an
-     // intermediate RGB value; assert after the transition completes.
-     await page.waitForFunction(()=>{
-      const el=document.querySelector('#worm-settings-back');
-      return el?.matches(':hover')&&
-       getComputedStyle(el).borderTopColor==='rgb(255, 188, 72)';
-     },null,{timeout:4000,polling:100});
-     assert.equal(await page.locator('#worm-settings-back').evaluate(el=>getComputedStyle(el).borderTopColor),
-      'rgb(255, 188, 72)','Settings save button reaches vivid amber after hover transition');
+     await page.waitForTimeout(220);
+     const style=await page.locator('#worm-settings-back').evaluate(el=>{
+      const cs=getComputedStyle(el);return {border:cs.borderTopColor,glow:cs.boxShadow};
+     });
+     assert.equal(style.border,'rgb(197, 165, 255)',
+      'Settings save button must use the new purple accent, not old amber');
+     assert.ok(style.glow!=='none'&&style.glow.includes('rgb('),
+      'Settings save button must retain a visible hover glow');
     }
     await page.locator('#worm-setting-glow').uncheck({force:true});
     await page.locator('#worm-setting-names').uncheck({force:true});
-    await page.locator('#worm-setting-zoom').evaluate(el=>{el.value='120';el.dispatchEvent(new Event('input',{bubbles:true}));});
-    assert.equal(await page.locator('#worm-zoom-value').textContent(),'120%');
+    const audioBefore=await page.locator('#worm-settings-sound').getAttribute('aria-pressed');
+    await page.locator('#worm-settings-sound').click();
+    assert.notEqual(await page.locator('#worm-settings-sound').getAttribute('aria-pressed'),audioBefore,
+      'Settings sound button toggles the persisted audio setting');
+    assert.equal(await page.locator('#worm-pause-sound').getAttribute('aria-pressed'),
+      await page.locator('#worm-settings-sound').getAttribute('aria-pressed'),
+      'Settings and pause must share a single audio toggle');
     await page.locator('#worm-settings-back').click();
     assert.equal(await page.locator('#worm-pause-overlay').isVisible(),true,'Settings Back must return to pause');
     await page.locator('#worm-open-guide').click();
@@ -242,6 +262,24 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.locator('#worm-guide-skip').click();
     assert.equal(await page.locator('#worm-pause-overlay').isVisible(),true,'Guide returns to pause');
     await page.locator('#worm-resume').click();
+    const cameraBefore=await page.evaluate(()=>window.InfinityWormsQA.snapshot().zoomSetting);
+    if(width>=1280){
+     await page.mouse.move(width*.48,height*.49);
+     await page.mouse.wheel(0,-240);
+    }else{
+     // Two active canvas touches must pinch without engaging single-finger steer.
+     await page.evaluate(()=>{
+      const canvas=document.querySelector('#worm-field');
+      for(const [type,id,x,y] of [['pointerdown',11,90,380],['pointerdown',12,260,380],
+        ['pointermove',12,280,380],['pointerup',11,90,380],['pointerup',12,280,380]])
+       canvas.dispatchEvent(new PointerEvent(type,{
+        bubbles:true,pointerId:id,pointerType:'touch',clientX:x,clientY:y,isPrimary:id===11
+       }));
+     });
+    }
+    const cameraAfter=await page.evaluate(()=>window.InfinityWormsQA.snapshot().zoomSetting);
+    assert.ok(cameraAfter>cameraBefore&&cameraAfter<=116,
+      'Wheel/pinch should zoom in slightly and stay inside the 16% limit');
     await page.evaluate(()=>window.InfinityWormsQA.forceDeath());
     let aftermath=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
     assert.equal(aftermath.state,'death-replay','Death should enter live aftermath, not results');
