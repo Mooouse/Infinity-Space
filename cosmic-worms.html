@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="unified-space.css?v=4">
 <link rel="stylesheet" href="secondary-design.css?v=6">
 <link rel="stylesheet" href="profile-report.css?v=4">
-<link rel="stylesheet" href="mode-unified.css?v=4">
+<link rel="stylesheet" href="mode-unified.css?v=5">
 </head>
 <body>
 <canvas id="worm-field" aria-label="Cosmic Worms playing field"></canvas>
@@ -81,13 +81,37 @@
 </div>
 <div id="worm-settings" class="worm-shade" hidden role="dialog" aria-modal="true" aria-labelledby="worm-settings-heading">
  <div class="worm-panel worm-settings-panel">
-  <span class="worm-eyebrow">INFINITY SPACE / COSMIC WORMS</span>
-  <h1 id="worm-settings-heading" data-word="settings">SETTINGS</h1>
-  <h2 data-word="visuals">VISUALS</h2>
-  <label class="worm-setting-toggle"><span data-word="glow">Enhanced glow</span><input type="checkbox" id="worm-setting-glow" checked><i aria-hidden="true"></i></label>
-  <label class="worm-setting-toggle"><span data-word="names">Rival names</span><input type="checkbox" id="worm-setting-names" checked><i aria-hidden="true"></i></label>
-  <label class="worm-setting-range"><span data-word="zoom">Camera distance</span><strong id="worm-zoom-value">100%</strong><input id="worm-setting-zoom" type="range" min="75" max="140" step="5" value="100"></label>
-  <div class="worm-actions"><button class="worm-primary" id="worm-settings-back" data-word="backPause">SAVE AND EXIT</button></div>
+  <header class="worm-settings-header">
+   <div>
+    <span class="worm-eyebrow">INFINITY SPACE / COSMIC WORMS</span>
+    <h1 id="worm-settings-heading" data-word="settings">SETTINGS</h1>
+    <p data-word="settingsIntro">Customize your flight without leaving the match.</p>
+   </div>
+   <button class="worm-settings-close" id="worm-settings-close" type="button" aria-label="Back to pause">×</button>
+  </header>
+  <div class="worm-settings-content">
+   <div class="worm-settings-section">
+    <div class="worm-settings-section-head"><span class="worm-settings-index">01</span><h2 data-word="visuals">VISUALS</h2></div>
+    <label class="worm-setting-toggle"><span class="worm-setting-text"><strong data-word="glow">Enhanced body glow</strong><small data-word="glowDesc">Brighter cosmic trails and highlights</small></span><input type="checkbox" id="worm-setting-glow" checked><i aria-hidden="true"></i></label>
+    <label class="worm-setting-toggle"><span class="worm-setting-text"><strong data-word="names">Show rival names</strong><small data-word="namesDesc">Names above other worms</small></span><input type="checkbox" id="worm-setting-names" checked><i aria-hidden="true"></i></label>
+    <div class="worm-setting-action">
+     <span class="worm-setting-text"><strong data-word="appearance">Cosmic appearance</strong><small data-word="appearanceDesc">Choose a skin with live preview</small></span>
+     <button id="worm-settings-skins" type="button" data-word="chooseSkin">SKINS</button>
+    </div>
+   </div>
+   <div class="worm-settings-section">
+    <div class="worm-settings-section-head"><span class="worm-settings-index">02</span><h2 data-word="settingsSound">AUDIO & CONTROL</h2></div>
+    <div class="worm-setting-action worm-setting-audio">
+     <span class="worm-setting-text"><strong data-word="settingsSoundName">Game audio</strong><small data-word="settingsSoundDesc">One switch for all in-game sounds</small></span>
+     <button id="worm-settings-sound" class="worm-settings-sound" type="button" aria-pressed="false" data-muted="false">SOUND ON</button>
+    </div>
+    <div class="worm-settings-controls-info">
+     <div class="worm-settings-controls-icon" aria-hidden="true">⌖</div>
+     <div><strong data-word="settingsCameraTitle">CAMERA</strong><p data-word="settingsCameraHint">Mouse wheel · pinch with two fingers on mobile. Slight, smooth zoom.</p></div>
+    </div>
+   </div>
+  </div>
+  <footer class="worm-settings-footer"><button class="worm-primary" id="worm-settings-back" type="button" data-word="backPause">SAVE AND EXIT</button></footer>
  </div>
 </div>
 <div id="worm-guide" class="worm-shade" hidden role="dialog" aria-modal="true">
@@ -117,6 +141,6 @@
 <script src="https://bridge.playgama.com/v2/stable/playgama-bridge.js" defer></script>
 <script src="playgama-platform.js" defer></script>
 <script src="worm-skin-studio.js?v=5" defer></script>
-<script src="cosmic-worms.js?v=28" defer></script>
+<script src="cosmic-worms.js?v=29" defer></script>
 </body>
 </html>
