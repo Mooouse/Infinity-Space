@@ -1167,6 +1167,28 @@ function wormBodyPath(w){
 // Render all cosmic skins as seamless strokes along the centerline. A filled
 // offset polygon self-intersects on long coiled worms and turns into jagged
 // triangles. Local gradients avoid the head-to-tail zero-length gradient too.
+function cosmicBodyMask(sampled,half){
+ // Union of round capsules works on folded, intersecting and 8000+ mass
+ // bodies without the self-intersections of an offset-polygon ribbon.
+ const shape=new Path2D();
+ for(let i=1;i<sampled.length;i++){
+  const a=sampled[i-1],b=sampled[i],dx=b.x-a.x,dy=b.y-a.y;
+  const length=Math.hypot(dx,dy);
+  if(length<.01)continue;
+  const nx=-dy/length*half,ny=dx/length*half;
+  shape.moveTo(a.x+nx,a.y+ny);
+  shape.lineTo(b.x+nx,b.y+ny);
+  shape.lineTo(b.x-nx,b.y-ny);
+  shape.lineTo(a.x-nx,a.y-ny);
+  shape.closePath();
+ }
+ for(const p of sampled){
+  shape.moveTo(p.x+half,p.y);
+  shape.arc(p.x,p.y,half,0,TAU);
+  shape.closePath();
+ }
+ return shape;
+}
 function drawCosmicInterior(w,t,r,detail){
  const nodes=[w,...w.segments],n=nodes.length;
  if(n<4)return;
@@ -1179,35 +1201,15 @@ function drawCosmicInterior(w,t,r,detail){
  for(let i=0;i<n;i+=stride)sampled.push(nodes[i]);
  if(sampled[sampled.length-1]!==nodes[n-1])sampled.push(nodes[n-1]);
  const count=sampled.length,normal=new Array(count);
- // Preserve the ORIGINAL nebula/star/comet textures while fixing giant
- // bodies. The former single left/right offset polygon self-intersected
- // whenever a long worm folded back on itself, creating ugly dark wedges.
- // A nonzero-winding union of round capsules never cancels its overlaps.
- const shape=new Path2D(),half=r*.81;
+ // Continue using the original nebulas, stars and comets; only their
+ // transparent mask changes so a long coiled body cannot cut itself.
+ const half=r*.81;
  for(let i=0;i<count;i++){
   const a=sampled[Math.max(0,i-1)],b=sampled[Math.min(count-1,i+1)];
   const dx=a.x-b.x,dy=a.y-b.y,l=Math.hypot(dx,dy)||1;
   normal[i]={x:-dy/l,y:dx/l};
  }
- for(let i=1;i<count;i++){
-  const a=sampled[i-1],b=sampled[i],dx=b.x-a.x,dy=b.y-a.y;
-  const length=Math.hypot(dx,dy);
-  if(length<.01)continue;
-  const nx=-dy/length*half,ny=dx/length*half;
-  // All quads wind identically; intersections remain filled.
-  shape.moveTo(a.x+nx,a.y+ny);
-  shape.lineTo(b.x+nx,b.y+ny);
-  shape.lineTo(b.x-nx,b.y-ny);
-  shape.lineTo(a.x-nx,a.y-ny);
-  shape.closePath();
- }
- // Rounded joins remove pinholes and preserve the original soft ribbon.
- for(let i=0;i<count;i++){
-  const p=sampled[i];
-  shape.moveTo(p.x+half,p.y);
-  shape.arc(p.x,p.y,half,0,TAU);
-  shape.closePath();
- }
+ const shape=cosmicBodyMask(sampled,half);
  ctx.save();ctx.clip(shape);
  ctx.globalAlpha=1;
  ctx.fillStyle=w.skin==='horizon'||w.skin==='eclipse'?'#04040e':'#070d23';
@@ -1792,6 +1794,54 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
   // Deterministic browser-accessible regression: measure real steering
   // with isolated corpses, ambient food and empty space. This must not
   // mutate the player's live match.
+  // Regression tests for the rendering paths on a long looping worm.
+  visualMassProbe:()=>{
+   const masses=[61,500,8000,15000];
+   const samples=masses.map(mass=>({
+    mass,diameterAtMinZoom:wormRadius({mass})*2*.35,
+    detailAtMinZoom:cosmicSkinDetail({mass},.35),
+    dropScale:corpseDropScale(mass),segments:segmentCount({mass})
+   }));
+   // A dense loop used to punch holes in the old offset-polygon skin.
+   const points=Array.from({length:420},(_,i)=>({
+    x:160+Math.cos(i*.058)*59,
+    y:130+Math.sin(i*.058)*59
+   }));
+   const canvas=document.createElement('canvas');
+   canvas.width=320;canvas.height=280;
+   const g=canvas.getContext('2d',{willReadFrequently:true});
+   const mask=cosmicBodyMask(points,15);
+   g.fillStyle='#fff';g.fill(mask);
+   let transparentCenters=0;
+   for(let i=0;i<points.length;i+=17){
+    const p=points[i],alpha=g.getImageData(Math.round(p.x),Math.round(p.y),1,1).data[3];
+    if(alpha<230)transparentCenters++;
+   }
+   return {samples,transparentCenters,checkedCenters:Math.ceil(points.length/17),
+    palettes:Object.keys(SKIN_NEBULAE).length};
+  },
+  corpseSizeProbe:()=>({small:corpseDropScale(60),medium:corpseDropScale(1000),
+   giant:corpseDropScale(8000),huge:corpseDropScale(15000)}),
+  foodCourseProbe:()=>{
+   const userGame=game;
+   try{
+    game={food:[],foodGrid:new Map()};
+    const w={x:5000,y:5000,angle:0};
+    const persona=BOT_PERSONAS.pro;
+    const cases=[];
+    for(const direction of [.78,-.78,0]){
+     game.food.length=0;game.foodGrid.clear();
+     for(let i=0;i<96;i++){
+      const d=370+(i%13)*13,angle=direction;
+      addFood(makeFood(5000+Math.cos(angle)*d+Math.sin(i)*23,
+       5000+Math.sin(angle)*d+Math.cos(i)*23,'#ffe500',3,4));
+     }
+     for(let i=0;i<8;i++)addFood(makeFood(5000+465+i*9,5000,'#ff1744',3,4));
+     cases.push({direction,heading:planFoodLane(w,persona).heading});
+    }
+    return cases;
+   }finally{game=userGame;}
+  },
   navigationProbe:()=>{
    const activeGame=game;
    const run=(mode)=>{
@@ -1917,8 +1967,10 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
    if(!b)return null;
    b.invulnerable=0;const before=game.food.length;
    kill(b,null,'body');
+   const drop=game.wrecks[0];
+   const meanRadius=drop?.items.length?drop.items.reduce((sum,f)=>sum+f.r,0)/drop.items.length:0;
    return {name:b.name,segments:b.segments.length,dropped:game.food.length-before,
-    lastDeath:game.lastDeath};
+    mass:b.mass,meanRadius,lastDeath:game.lastDeath};
   },
   spawnProbe:()=>{
    const w=createWorm('SPAWN_QA',false,777,true);
