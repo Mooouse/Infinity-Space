@@ -344,8 +344,16 @@ body.worm-death-replay #worm-hud{transition:opacity .85s ease}
 .worm-actions button#worm-exit,.worm-actions button#worm-result-menu{border-color:#bd2445;border-bottom-color:#64172c;
 }
 .worm-actions button#worm-settings-back{
- --worm-accent:#2860ff;border-color:#365ee2;border-bottom-color:#152963;
- background:linear-gradient(155deg,#1b3074,#111c41);
+ --worm-accent:#ffbc48;border-color:#cf8c32;border-bottom-color:#754520;
+ background:linear-gradient(155deg,#75421c,#402513);color:#fff4d9;
+}
+@media(hover:hover) and (pointer:fine){
+ #worm-settings .worm-actions #worm-settings-back:not(:disabled):hover{
+  --worm-accent:#ffbc48;
+  border-color:#ffbc48!important;border-bottom-color:#a56626!important;
+  background:linear-gradient(155deg,#b87829,#613513)!important;
+  box-shadow:0 0 20px #ffbc487a,0 7px 15px #030009b8!important;
+ }
 }
 .worm-panel{border-color:#3f496f;border-bottom-color:#242a50;}
 .worm-panel h2,.worm-settings-panel h2{color:#f0f3ff}
