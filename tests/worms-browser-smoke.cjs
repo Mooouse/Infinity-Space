@@ -98,6 +98,24 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     const giants=await page.evaluate(()=>window.InfinityWormsQA.giantRivalsProbe());
     assert.ok(giants.massive>=2&&giants.largest>10000,
       'Several heavyweight rivals must be established before the player joins: '+JSON.stringify(giants));
+    // At 8000+ mass camera zoom must not downgrade ANY cosmic skin,
+    // including small rivals seen beside the giant player.
+    const visual=await page.evaluate(()=>window.InfinityWormsQA.visualMassProbe());
+    assert.equal(visual.palettes,16,'All original cosmic palettes remain');
+    assert.equal(visual.transparentCenters,0,
+      'Coiled bodies must have no holes in the nebula mask: '+JSON.stringify(visual));
+    assert.ok(visual.samples.every(m=>m.detailAtMinZoom),
+      'All worms must retain original stars and comets at minimum zoom: '+
+      JSON.stringify(visual.samples));
+    assert.ok(visual.samples.find(m=>m.mass===8000).segments>350,
+      'Visual regression covers a 350+ segment giant');
+    const corpseScale=await page.evaluate(()=>window.InfinityWormsQA.corpseSizeProbe());
+    assert.ok(corpseScale.small<corpseScale.medium&&
+      corpseScale.medium<corpseScale.giant&&corpseScale.giant<corpseScale.huge,
+      'Resource orb size must grow with defeated worm mass: '+JSON.stringify(corpseScale));
+    const course=await page.evaluate(()=>window.InfinityWormsQA.foodCourseProbe());
+    assert.ok(course[0].heading>.35&&course[1].heading<-.35&&Math.abs(course[2].heading)<.25,
+      'Experienced rivals should navigate toward rich food lanes: '+JSON.stringify(course));
     const regrowth=await page.evaluate(()=>window.InfinityWormsQA.foodRegenerationProbe());
     assert.ok(regrowth.valid&&regrowth.nearby&&regrowth.after===regrowth.before&&regrowth.queued===1,
       'Ordinary food must regenerate near its depleted region: '+JSON.stringify(regrowth));
@@ -193,6 +211,9 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.keyboard.up('Space');
     const corpse=await page.evaluate(()=>window.InfinityWormsQA.forceBotDeath());
     assert.ok(corpse&&corpse.dropped>=corpse.segments*2,'Food must drop all along a defeated worm body');
+    assert.ok(corpse.meanRadius>3.3&&
+      corpse.meanRadius>4.1*Math.min(2.5,corpse.lastDeath.dropScale*.82),
+      'Large defeated worms should drop visibly larger resources: '+JSON.stringify(corpse));
     // All three behaviors are exercised using the exact production
     // steering algorithm, not only by checking the declared objective.
     const routes=await page.evaluate(()=>window.InfinityWormsQA.navigationProbe());
