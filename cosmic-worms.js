@@ -1660,7 +1660,7 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
   wrecks:()=>game.wrecks.map(w=>({id:w.id,remaining:w.remaining,total:w.items.length,
     age:game.time-w.created})),
   salvageProbe:()=>{
-   const active=game.wrecks.find(w=>w.remaining>0&&game.time<w.expires);
+   const active=game.wrecks.find(w=>w.remaining>0);
    if(!active)return {available:false,total:0,prioritizing:0};
    const bots=game.worms.filter(w=>!w.human&&w.alive);
    for(const b of bots){b.think=0;steerBot(b,1/60);}
