@@ -193,7 +193,20 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.keyboard.up('Space');
     const corpse=await page.evaluate(()=>window.InfinityWormsQA.forceBotDeath());
     assert.ok(corpse&&corpse.dropped>=corpse.segments*2,'Food must drop all along a defeated worm body');
-    const salvage=await page.evaluate(()=>window.InfinityWormsQA.salvageProbe());
+    // All three behaviors are exercised using the exact production
+    // steering algorithm, not only by checking the declared objective.
+    const routes=await page.evaluate(()=>window.InfinityWormsQA.navigationProbe());
+    assert.equal(routes.salvage.collected,routes.salvage.total,
+      'Rival must finish the whole defeated worm, not quit at half: '+JSON.stringify(routes.salvage));
+    assert.equal(routes.salvage.remaining,0,'No wreck pieces left after the harvesting route');
+    assert.ok(routes.salvage.displacementRatio>.75&&routes.salvage.flips===0,
+      'Corpse scavenging should be a moving sweep, not repeated tight U-turns: '+JSON.stringify(routes.salvage));
+    assert.ok(routes.ambient.displacementRatio>.68&&routes.ambient.meanTurn<1.2,
+      'Rivals gathering normal food should travel through the map, not spin on one spot: '+
+      JSON.stringify(routes.ambient));
+    assert.ok(routes.empty.displacementRatio>.94&&routes.empty.meanTurn<.35,
+      'With no targets a rival must cruise straight, not orbit indefinitely: '+JSON.stringify(routes.empty));
+        const salvage=await page.evaluate(()=>window.InfinityWormsQA.salvageProbe());
     assert.equal(salvage.available,true,'Defeated bodies must broadcast salvage');
     assert.ok(salvage.total>=40,'There should be a full competitive lobby');
     assert.equal(salvage.prioritizing,salvage.total,
