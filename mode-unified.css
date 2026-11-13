@@ -1096,3 +1096,74 @@ body:has(#worm-field) #worm-result .worm-results>div:last-child{border-right:0!i
  #worm-settings .worm-settings-footer{min-height:54px;padding:8px 17px!important}
  body:has(#arena) #paused .arena-pause-stats>div{min-height:63px!important;padding:7px!important}
 }
+
+
+/* COMPETITIVE HUD responsive finish */
+@media(min-width:2000px) and (min-height:1000px){
+ body:has(#arena) .hud .brand{padding:16px 21px!important}
+ body:has(#arena) .hud .brand b{font-size:20px!important}
+ body:has(#arena) .hud .brand small{font-size:12px!important}
+ body:has(#arena) .hud .stat{min-width:145px!important;padding:14px 20px!important}
+ body:has(#arena) .hud .stat label{font-size:12px!important}
+ body:has(#arena) .hud .stat b{font-size:30px!important}
+ body:has(#arena) .hud :is(.left,#radar){top:140px!important}
+ body:has(#arena) .hud .left{max-width:265px!important;min-width:235px!important}
+ body:has(#arena) .hud .left h3{font-size:14px!important}
+ body:has(#arena) .hud .left .rank{font-size:15px!important}
+ body:has(#arena) .hud #radar canvas{width:190px;height:133px}
+ body:has(#arena) .hud .ability{min-width:77px!important;min-height:76px!important}
+ body:has(#arena) .hud #pause{min-width:132px!important;height:76px!important;font-size:14px!important;right:calc(304px + env(safe-area-inset-right))!important}
+ body:has(#worm-field) #worm-hud .worm-leaders{width:265px!important}
+ body:has(#worm-field) #worm-hud .worm-rank{font-size:15px!important}
+}
+@media(max-width:760px), (pointer:coarse) and (max-width:1024px){
+ body:has(#arena) .hud .top{
+  left:9px!important;right:9px!important;top:calc(8px + env(safe-area-inset-top))!important;
+  flex-wrap:nowrap!important;gap:6px!important;align-items:flex-start!important;
+ }
+ body:has(#arena) .hud .brand{
+  flex:0 1 42%;min-width:0!important;max-width:42%!important;
+  padding:8px!important;
+ }
+ body:has(#arena) .hud .brand b{font-size:clamp(10px,2.5vw,13px)!important;letter-spacing:.01em!important}
+ body:has(#arena) .hud .brand small{
+  white-space:normal;overflow-wrap:anywhere;font-size:clamp(8px,1.9vw,10px)!important;
+ }
+ body:has(#arena) .hud .arena-stage-hud{min-width:0!important;max-width:100%!important}
+ body:has(#arena) .hud .arena-stage-name{font-size:9px!important;white-space:normal!important}
+ body:has(#arena) .hud .arena-stage-wait{display:none!important}
+ body:has(#arena) .hud .stats{flex:1 1 58%;min-width:0!important;gap:5px!important}
+ body:has(#arena) .hud .stats .stat{
+  flex:1 1 70px;min-width:0!important;padding:7px 6px!important;border-radius:5px!important;
+ }
+ body:has(#arena) .hud .stats .stat label{font-size:8px!important;white-space:normal!important}
+ body:has(#arena) .hud .stats .stat b{font-size:clamp(13px,3.4vw,18px)!important}
+ body:has(#arena) .hud :is(.left,#radar){display:none!important}
+ body:has(#arena) .hud .hint{display:none!important}
+ body:has(#arena) .hud .ability{
+  min-width:52px!important;width:52px!important;height:55px!important;min-height:55px!important;
+ }
+ body:has(#arena) .hud .ability span{font-size:21px!important}
+ body:has(#arena) .hud #pause{
+  min-width:76px!important;height:55px!important;right:calc(207px + env(safe-area-inset-right))!important;
+  bottom:calc(11px + env(safe-area-inset-bottom))!important;
+ }
+ body:has(#arena) .hud .actions{right:9px!important;bottom:calc(11px + env(safe-area-inset-bottom))!important;gap:6px!important}
+ body:has(#worm-field) #worm-hud .worm-top{
+  left:9px!important;right:9px!important;top:calc(8px + env(safe-area-inset-top))!important;
+  gap:5px!important;align-items:flex-start!important;
+ }
+ body:has(#worm-field) #worm-hud .worm-brand{max-width:40%!important;min-width:0!important;padding:7px 8px!important}
+ body:has(#worm-field) #worm-hud .worm-metrics{gap:5px!important;flex:1;min-width:0!important}
+ body:has(#worm-field) #worm-hud .worm-metric{flex:1 1 0!important;min-width:0!important;padding:7px 5px!important}
+ body:has(#worm-field) #worm-hud .worm-metric strong{font-size:clamp(13px,3.5vw,19px)!important}
+ body:has(#worm-field) #worm-hud .worm-metric small{font-size:clamp(7px,1.7vw,9px)!important}
+ body:has(#worm-field) #worm-hud :is(.worm-leaders,.worm-radar){display:none!important}
+}
+@media(max-width:365px){
+ body:has(#arena) .hud .stats .stat:nth-child(2){display:none!important}
+ body:has(#arena) .hud #pause{right:calc(189px + env(safe-area-inset-right))!important;min-width:67px!important;font-size:10px!important}
+ body:has(#arena) .hud .ability{min-width:47px!important;width:47px!important}
+ body:has(#arena) .hud .actions{gap:5px!important}
+ body:has(#worm-field) #worm-hud .worm-brand b{font-size:10px!important}
+}
