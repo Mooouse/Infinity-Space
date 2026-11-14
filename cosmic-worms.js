@@ -567,14 +567,20 @@ function init(){
 }
 function sortedWorms(){return game.worms.filter(w=>w.alive).sort((a,b)=>b.mass-a.mass)}
 function ranking(w){return 1+game.worms.reduce((n,b)=>n+(b.alive&&b!==w&&b.mass>w.mass?1:0),0)}
-// Recently defeated worms broadcast their entire salvage trail. The corpse
-// is everyone's priority; ordinary ambient food and combat are secondary.
+// Fallen worms are first priority only for rivals who can actually reach
+// them. The previous global beacon pulled ALL 58 pilots into one corpse
+// from opposite sides of the world, causing a lethal traffic jam.
+function corpseAwarenessRadius(w){
+ const sight=BOT_PERSONAS[w.persona]?.sight||650;
+ return w.persona==='afk'?950:clamp(sight*1.55,1000,2100);
+}
 function collectWreckTarget(w){
  // Remains override normal food, and a chosen corpse stays locked until empty.
  // Near the pile, collect the pieces AHEAD so steering doesn't reverse for
  // the orb that was just passed.
  const locked=game.wrecks.find(v=>v.id===w.targetWreckId&&v.remaining>0);
  const candidates=locked?[locked]:game.wrecks;
+ const reach=corpseAwarenessRadius(w);
  const cx=Math.cos(w.angle),cy=Math.sin(w.angle),pickup=wormRadius(w)+24;
  let chosen=null,chosenWreck=null,best=Infinity;
  const scoreOf=f=>{
@@ -587,17 +593,24 @@ function collectWreckTarget(w){
  };
  for(const wreck of candidates){
   if(wreck.remaining<=0)continue;
+  if(!locked&&Number.isFinite(wreck.minX)){
+   const dx=Math.max(wreck.minX-w.x,0,w.x-wreck.maxX);
+   const dy=Math.max(wreck.minY-w.y,0,w.y-wreck.maxY);
+   if(dx*dx+dy*dy>reach*reach)continue;
+  }
   const items=wreck.items;
   const near=!!(w.targetWreckId===wreck.id&&
    w.targetFood&&Math.hypot(w.targetFood.x-w.x,w.targetFood.y-w.y)<380);
   const stride=near?1:Math.max(1,Math.ceil(items.length/90));
   for(let k=0;k<items.length;k+=stride){
    const f=items[k];if(f._index<0)continue;
+   if(!locked&&Math.hypot(f.x-w.x,f.y-w.y)>reach)continue;
    const score=scoreOf(f);
    if(score<best){best=score;chosen=f;chosenWreck=wreck;}
   }
   if(!chosen&&stride>1)for(const f of items){
    if(f._index<0)continue;
+   if(!locked&&Math.hypot(f.x-w.x,f.y-w.y)>reach)continue;
    const score=scoreOf(f);
    if(score<best){best=score;chosen=f;chosenWreck=wreck;}
   }
@@ -606,6 +619,7 @@ function collectWreckTarget(w){
  const selectedId=chosenWreck.id;
  foodNearby(w.x,w.y,440,f=>{
   if(f._index<0||f.wreckId!==selectedId)return;
+  if(!locked&&Math.hypot(f.x-w.x,f.y-w.y)>reach)return;
   const score=scoreOf(f);
   if(score<best){best=score;chosen=f;}
  });
@@ -916,7 +930,8 @@ function kill(w,killer,reason){
  w.alive=false;w.boost=false;w.deathDelay=DEMO?2.5:rand(4.5,6.5);
  if(killer&&killer!==w){killer.kills++;killer.mass+=Math.min(18,w.mass*.12);}
  // Materialize the ENTIRE corpse before any bot respawns, from head to tip.
- const wreck={id:game.nextWreckId++,created:game.time,remaining:0,items:[]};
+ const wreck={id:game.nextWreckId++,created:game.time,remaining:0,items:[],
+  minX:Infinity,maxX:-Infinity,minY:Infinity,maxY:-Infinity};
  // Never impose a global food cap here: it previously discarded most of a
  // long worm's remains as soon as the ambient field became dense.
  const body=[{x:w.x,y:w.y},...w.segments];
@@ -933,6 +948,10 @@ function kill(w,killer,reason){
     node.y+sideY*offset+rand(-2,2),i%6===0?w.accent:w.color[0],
     rand(2.8,6)*(1+(dropScale-1)*.65),size);
    resource.wreckId=wreck.id;
+   wreck.minX=Math.min(wreck.minX,resource.x);
+   wreck.maxX=Math.max(wreck.maxX,resource.x);
+   wreck.minY=Math.min(wreck.minY,resource.y);
+   wreck.maxY=Math.max(wreck.maxY,resource.y);
    addFood(resource);wreck.items.push(resource);wreck.remaining++;
    dropped++;
   }
