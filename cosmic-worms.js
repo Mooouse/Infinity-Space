@@ -312,7 +312,7 @@ function createWorm(name,human,index,preferEncounter=false,identity=null){
    initial&&index<=18?rand(1050,3300):
    rand(54,250);
  const count=segmentCount({mass});
- const initialIndex=initial&&index>=1&&index<=18?index:0;
+ const initialIndex=established?index:initial&&index>=4&&index<=18?index:0;
  const pos=human?{x:WORLD.cx,y:WORLD.cy}:spawnPosition(angle,count,preferEncounter,initialIndex);
  if(!pos)return null;
  if(pos.angle!==undefined)angle=pos.angle;
