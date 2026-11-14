@@ -25,8 +25,13 @@
 </div>
 <div id="touch-stick"><div id="thumb"></div></div>
 <div class="toast" id="toast"></div>
-<div class="shade" id="result"><div class="panel" style="max-width:560px"><span class="eyebrow" id="outcome-kicker">MATCH COMPLETE</span><h2 class="hero" id="outcome">VICTORY</h2><p class="desc" id="outcome-detail"></p><div id="result-stat"><div class="result-cell"><b id="r-place">1</b><small data-l="place">POSITION</small></div><div class="result-cell"><b id="r-kills">0</b><small data-l="kills">ELIMINATIONS</small></div><div class="result-cell"><b id="r-mass">0</b><small data-l="mass">MASS</small></div></div><div class="arena-dialog-actions"><button class="primary" id="again" data-l="again">PLAY AGAIN</button><button class="text-btn" id="change" data-l="change">CHANGE MODE</button></div></div></div>
-<div class="shade" id="paused" role="dialog" aria-modal="true" aria-labelledby="pause-title">
+<div class="shade" id="result"><div class="panel" style="max-width:560px"><span class="eyebrow" id="outcome-kicker">MATCH COMPLETE</span><h2 class="hero" id="outcome">VICTORY</h2><p class="desc" id="outcome-detail"></p><div id="result-stat"><div class="result-cell"><b id="r-place">1</b><small data-l="place">POSITION</small></div><div class="result-cell"><b id="r-kills">0</b><small data-l="kills">ELIMINATIONS</small></div><div class="result-cell"><b id="r-mass">0</b><small data-l="mass">MASS</small></div></div><p id="arena-result-ad-status" class="arena-ad-status" role="status" aria-live="polite"></p>
+<div class="arena-dialog-actions"><button id="arena-result-revive-ad" class="primary" type="button" hidden>▶ WATCH AD · REVIVE 50% MASS</button><button class="primary" id="again" data-l="again">PLAY AGAIN</button><button class="text-btn" id="change" data-l="change">CHANGE MODE</button></div></div></div>
+<div class="shade" id="arena-death-offer" role="dialog" aria-modal="true" aria-labelledby="arena-death-title"><div class="panel arena-death-panel">
+<span class="eyebrow">INFINITY SPACE / CRAZYGAMES</span><h2 class="hero" id="arena-death-title">SECOND CHANCE</h2>
+<p class="desc" id="arena-death-desc"></p><p id="arena-death-ad-status" class="arena-ad-status" role="status" aria-live="polite"></p>
+<div class="arena-dialog-actions"><button id="arena-revive-ad" type="button" class="primary">▶ WATCH AD · 50% MASS</button><button id="arena-normal-respawn" type="button" class="text-btn">NORMAL RESPAWN</button></div>
+</div></div><div class="shade" id="paused" role="dialog" aria-modal="true" aria-labelledby="pause-title">
  <div class="panel arena-pause-panel">
   <div class="arena-pause-heading"><div><span class="eyebrow">INFINITY SPACE / ARCADE</span>
   <h2 class="hero" id="pause-title" data-l="paused">PAUSED</h2></div>
@@ -580,7 +585,7 @@ let hazards=[
  {x:world.w*.68,y:world.h*.15,r:48,phase:4.0},
  {x:world.w*.30,y:world.h*.82,r:55,phase:5.3}
 ];
-game={state:'playing',mode,elapsed:0,left:c.duration,people,food:Array.from({length:c.food},createFood),relics:[createRelic(),createRelic(),createRelic(),createRelic(),createRelic()],relicTimer:7,hazards,portals:[{x:world.w*.17,y:world.h*.75},{x:world.w*.83,y:world.h*.25}],scores:[0,0],coreHold:-1,stormR:Math.hypot(world.w/2,world.h/2)+200,stormCx:world.w/2,stormCy:world.h/2,finishReason:'',firstPlace:false,eventClock:0};
+game={state:'playing',mode,elapsed:0,left:c.duration,reviveUsed:false,adPending:false,reported:false,deathMass:0,resultWon:false,resultRank:0,people,food:Array.from({length:c.food},createFood),relics:[createRelic(),createRelic(),createRelic(),createRelic(),createRelic()],relicTimer:7,hazards,portals:[{x:world.w*.17,y:world.h*.75},{x:world.w*.83,y:world.h*.25}],scores:[0,0],coreHold:-1,stormR:Math.hypot(world.w/2,world.h/2)+200,stormCx:world.w/2,stormCy:world.h/2,finishReason:'',firstPlace:false,eventClock:0};
 mouse.active=false;touch.active=false;keys={};camera.zoom=1;
 document.body.dataset.arenaMode=mode;syncArenaAudio();
 camera.x=people[0].x-sw*.5;camera.y=people[0].y-sh*.5;fx=[];uiTick=0;
@@ -590,7 +595,7 @@ if(DEMO_MODE){
  if(mode==='race')game.people.forEach((p,i)=>{p.mass=200+i%4*460;p.stage=massForm(p.mass);});
 }
 $('hud').hidden=DEMO_MODE;$('team-box').hidden=mode!=='core';$('mode-caption').textContent=L('m'+({arena:'Arena',royale:'Royale',core:'Core',race:'Race'}[mode]))+(mode==='race'?' · '+(lang==='ru'?'ДО ЧЁРНОЙ ДЫРЫ':'BECOME A BLACK HOLE'):mode==='core'?' · 100':'');
-$('result').classList.remove('active');$('paused').classList.remove('active');$('touch-stick').style.display='';
+$('result').classList.remove('active');$('paused').classList.remove('active');$('arena-death-offer').classList.remove('active');$('arena-result-revive-ad').hidden=true;$('arena-result-ad-status').textContent='';$('touch-stick').style.display='';
 $('hint').textContent=(lang==='ru'?'МЫШЬ / WASD — ПОЛЁТ · ПРОБЕЛ — РЫВОК · E — ИМПУЛЬС · Q — ЩИТ':'MOUSE / WASD — MOVE · SPACE — DASH · E — PULSE · Q — SHIELD')+(mode==='race'?(lang==='ru'?' · ЦЕЛЬ: ЧЁРНАЯ ДЫРА':' · GOAL: BLACK HOLE'):'');
 last=performance.now();
 if(!DEMO_MODE){
@@ -702,7 +707,7 @@ function syncArenaAudio(){
  button.setAttribute('aria-label',button.textContent);
 }
 function togglePause(){
- if(!game||game.state==='finished')return;
+ if(!game||!['playing','paused'].includes(game.state))return;
  game.state=game.state==='playing'?'paused':'playing';
  const paused=game.state==='paused';
  keys={};mouse.active=false;touch.active=false;
@@ -728,7 +733,10 @@ if(name==='pulse'&&p.pulseCD<=0){p.pulseCD=8.5;p.ring=1;for(const q of game.peop
 }
 $('pause').onclick=togglePause;$('resume').onclick=togglePause;
 $('arena-pause-sound').onclick=()=>{arenaMuted=!arenaMuted;try{localStorage.setItem('infinity-space-arena-muted',arenaMuted?'1':'0')}catch(_){}syncArenaAudio();if(!arenaMuted)sound(420,.095,'sine',.017);};
-syncArenaAudio();$('again').onclick=()=>init(mode);$('change').onclick=showMenu;$('change2').onclick=showMenu;
+syncArenaAudio();
+$('again').onclick=()=>{if(game?.adPending)return;if(game?.state==='finished'&&!game.reported)recordArenaMatch(game.resultWon,game.resultRank);init(mode);};
+$('change').onclick=()=>{if(game?.adPending)return;if(game?.state==='finished'&&!game.reported)recordArenaMatch(game.resultWon,game.resultRank);showMenu();};
+$('change2').onclick=showMenu;
 ['shield','pulse','dash'].forEach(id=>$(id).addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();useAbility(id)}));
 addEventListener('keydown',e=>{const code=e.code;if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyQ','KeyE','KeyP'].includes(code))e.preventDefault();keys[code]=true;if(e.repeat)return;if(code==='Space'||code==='ShiftLeft'||code==='ShiftRight')useAbility('dash');if(code==='KeyE')useAbility('pulse');if(code==='KeyQ')useAbility('shield');if(code==='KeyP'&&game&&game.state!=='guide')togglePause();if(code==='Escape'&&game&&game.state==='playing')togglePause();});addEventListener('keyup',e=>keys[e.code]=false);addEventListener('blur',()=>{keys={};if(game&&game.state==='playing')togglePause()});
 canvas.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'){mouse.x=e.clientX;mouse.y=e.clientY;mouse.active=true;}});canvas.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'){mouse.x=e.clientX;mouse.y=e.clientY;mouse.active=true;}});
@@ -803,18 +811,107 @@ const alive=g.people.filter(p=>p.alive);if(alive.length===1){finish(alive[0].pla
 if(g.left<=0){if(mode==='arena')finish(g.people.filter(p=>p.alive).sort((a,b)=>b.mass-a.mass)[0]===g.people[0],'arena');else if(mode==='core')finish(g.scores[0]>=g.scores[1],'core');else if(mode==='race')finish(g.people.slice().sort((a,b)=>b.mass-a.mass)[0]===g.people[0],'race');else finish(g.people[0].alive&&g.people.filter(p=>p.alive).length===1,'royale');return;}
 for(let i=fx.length-1;i>=0;i--){let p=fx[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=1-dt*1.6;p.vy*=1-dt*1.6;p.t-=dt;if(p.t<=0)fx.splice(i,1);}
 }
-function kill(victim,killer){if(!victim.alive)return;victim.alive=false;victim.respawn=mode==='royale'?0:2.5;victim.mass=Math.max(20,victim.mass);addFx(victim.x,victim.y,victim.color,33,180);if(victim.player&&mode!=='royale')notify(L('killed'));if(killer&&killer.player)notify(L('hunt'));}
+function arenaAdEligible(){return !DEMO_MODE&&!!window.SpaceCrazyAds?.supported&&!game.reviveUsed&&!game.adPending;}
+function offerArenaRespawn(){
+ if(!arenaAdEligible()||mode==='royale'||game.state!=='playing')return;
+ game.state='death-offer';
+ $('arena-death-title').textContent=lang==='ru'?'ВТОРОЙ ШАНС':'SECOND CHANCE';
+ $('arena-death-desc').textContent=lang==='ru'?'Можно бесплатно возродиться с начальной массой или посмотреть рекламу и вернуть 50% массы.':
+  'Respawn normally for free, or optionally watch an ad to keep 50% of your mass.';
+ $('arena-revive-ad').textContent=lang==='ru'?'▶ РЕКЛАМА · 50% МАССЫ':'▶ WATCH AD · 50% MASS';
+ $('arena-normal-respawn').textContent=lang==='ru'?'ОБЫЧНОЕ ВОЗРОЖДЕНИЕ':'NORMAL RESPAWN';
+ $('arena-death-ad-status').textContent=window.SpaceCrazyAds?.available?'':lang==='ru'?'Реклама сейчас недоступна. Бесплатное возрождение доступно.':'Ad unavailable. Free respawn is available.';
+ $('arena-death-offer').classList.add('active');
+ window.SpacePlatform?.playing?.(false);
+}
+function reviveArenaHalfMass(){
+ if(!game||game.people[0].alive)return false;
+ const g=game,p=g.people[0];
+ p.mass=Math.max(40,Math.floor(g.deathMass*.5));p.alive=true;p.respawn=0;p.stage=massForm(p.mass);
+ p.r=13+Math.sqrt(p.mass)*2.45;p.invuln=5;p.shield=4;
+ p.vx=p.vy=0;p.dirX=1;p.dirY=0;
+ if(mode==='royale'){
+  const gap=Math.min(100,g.stormR*.17);
+  p.x=clamp(g.stormCx+rand(-gap,gap),p.r+20,world.w-p.r-20);
+  p.y=clamp(g.stormCy+rand(-gap,gap),p.r+20,world.h-p.r-20);
+ }else{
+  p.x=clamp(p.x+rand(-180,180),p.r+20,world.w-p.r-20);
+  p.y=clamp(p.y+rand(-180,180),p.r+20,world.h-p.r-20);
+ }
+ g.reviveUsed=true;g.adPending=false;g.state='playing';
+ $('arena-death-offer').classList.remove('active');$('result').classList.remove('active');
+ $('touch-stick').style.display='';camera.x=p.x-sw*.5;camera.y=p.y-sh*.5;
+ last=performance.now();window.SpacePlatform?.playing?.(true);updateUI();
+ notify(lang==='ru'?'Возрождение · 50% массы':'Revived with 50% mass');return true;
+}
+async function requestArenaRevive(fromResult){
+ if(!game||game.adPending||!arenaAdEligible()||game.people[0].alive)return;
+ const current=game,status=$(fromResult?'arena-result-ad-status':'arena-death-ad-status');
+ if(!window.SpaceCrazyAds?.available){status.textContent=lang==='ru'?'Реклама недоступна.':'Ad unavailable.';return;}
+ const buttons=(fromResult?$('result'):$('arena-death-offer')).querySelectorAll('button');
+ current.adPending=true;buttons.forEach(b=>b.disabled=true);
+ status.textContent=lang==='ru'?'Загрузка рекламы…':'Loading ad…';
+ const success=await window.SpaceCrazyAds.rewarded();
+ if(game!==current)return;
+ current.adPending=false;buttons.forEach(b=>b.disabled=false);
+ if(success){reviveArenaHalfMass();return;}
+ status.textContent=lang==='ru'?'Реклама не завершена. Масса не восстановлена.':'Ad incomplete. Mass not restored.';
+}
+$('arena-normal-respawn').onclick=()=>{
+ if(game?.state!=='death-offer'||game.adPending)return;
+ $('arena-death-offer').classList.remove('active');game.state='playing';window.SpacePlatform?.playing?.(true);
+};
+$('arena-revive-ad').onclick=()=>requestArenaRevive(false);
+$('arena-result-revive-ad').onclick=()=>requestArenaRevive(true);
+function kill(victim,killer){
+ if(!victim.alive)return;
+ victim.alive=false;victim.respawn=mode==='royale'?0:2.5;
+ victim.mass=Math.max(20,victim.mass);addFx(victim.x,victim.y,victim.color,33,180);
+ if(victim.player){
+  game.deathMass=victim.mass;
+  if(mode!=='royale'){notify(L('killed'));if(arenaAdEligible())offerArenaRespawn();}
+ }
+ if(killer&&killer.player)notify(L('hunt'));
+}
 function consume(big,small){if(!small.alive)return;big.mass+=small.mass*.56;big.kills++;kill(small,big);if(big.player)sound(170,.19,'triangle',.046);}
+function recordArenaMatch(won,rank){
+ if(!game||game.reported||DEMO_MODE)return;
+ game.reported=true;const p=game.people[0];
+ window.InfinityProfile?.recordMatch?.(mode,{win:won,place:rank,kills:p.kills,
+  objects:p.absorbed||0,mass:Math.max(p.mass,p.peakMass||0),time:game.elapsed,
+  points:mode==='core'?game.scores[p.team]||0:0,stage:Math.max(p.stage,p.peakStage||0)});
+ try{
+  const key='infinity-space-arena-v1',saved=JSON.parse(localStorage.getItem(key)||'{}');
+  saved.matches=(saved.matches||0)+1;saved.wins=(saved.wins||0)+(won?1:0);
+  saved.kills=(saved.kills||0)+p.kills;saved.bestMass=Math.max(saved.bestMass||0,p.mass);
+  saved.lastMode=mode;localStorage.setItem(key,JSON.stringify(saved));
+ }catch(_){}
+}
+function maybeArenaMidgame(){
+ if(DEMO_MODE||game.elapsed<60||!window.SpaceCrazyAds?.available)return;
+ const current=game,buttons=$('result').querySelectorAll('button');
+ current.adPending=true;buttons.forEach(b=>b.disabled=true);
+ window.SpaceCrazyAds.midgame().finally(()=>{
+  if(game!==current)return;
+  current.adPending=false;buttons.forEach(b=>b.disabled=false);
+ });
+}
 function finish(won,reason){
 if(!game||game.state==='finished')return;
-if(DEMO_MODE){game.state='finished';demoRestartAt=performance.now()+900;return;}$('paused').classList.remove('active');game.state='finished';window.SpacePlatform?.playing?.(false);game.finishReason=reason;let p=game.people[0],rank=game.people.slice().sort((a,b)=>b.mass-a.mass).indexOf(p)+1;
+if(DEMO_MODE){game.state='finished';demoRestartAt=performance.now()+900;return;}
+$('paused').classList.remove('active');$('arena-death-offer').classList.remove('active');
+game.state='finished';window.SpacePlatform?.playing?.(false);game.finishReason=reason;
+let p=game.people[0],rank=game.people.slice().sort((a,b)=>b.mass-a.mass).indexOf(p)+1;
+game.resultWon=won;game.resultRank=rank;
+const offerRevive=!won&&mode==='royale'&&!p.alive&&game.left>8&&arenaAdEligible();
+$('arena-result-revive-ad').hidden=!offerRevive;
+$('arena-result-revive-ad').textContent=lang==='ru'?'▶ РЕКЛАМА · ВОЗРОДИТЬСЯ С 50% МАССЫ':'▶ WATCH AD · REVIVE WITH 50% MASS';
+$('arena-result-ad-status').textContent=offerRevive?(lang==='ru'?'Необязательно. Одно возрождение за матч.':'Optional. One revival per match.'):'';
+
 $('outcome').textContent=L(won?'win':'lose');$('outcome').style.color=won?'#dfc2ff':'#ffb5bb';$('outcome-kicker').textContent=L('finish');$('outcome-detail').textContent=lang==='ru'?(reason==='core'?'Синие '+Math.floor(game.scores[0])+' : '+Math.floor(game.scores[1])+' Красные':'Режим: '+L('m'+({arena:'Arena',royale:'Royale',core:'Core',race:'Race'}[mode]))):'Mode: '+configs[mode].title;
 $('r-place').textContent=rank+'/'+game.people.length;$('r-kills').textContent=p.kills;$('r-mass').textContent=Math.floor(p.mass);$('result').classList.add('active');$('touch-stick').style.display='none';
-if(!DEMO_MODE)window.InfinityProfile?.recordMatch?.(mode,{
- win:won,place:rank,kills:p.kills,objects:p.absorbed||0,mass:Math.max(p.mass,p.peakMass||0),
- time:game.elapsed,points:mode==='core'?game.scores[p.team]||0:0,stage:Math.max(p.stage,p.peakStage||0)
-});
-try{const key='infinity-space-arena-v1',saved=JSON.parse(localStorage.getItem(key)||'{}');saved.matches=(saved.matches||0)+1;saved.wins=(saved.wins||0)+(won?1:0);saved.kills=(saved.kills||0)+p.kills;saved.bestMass=Math.max(saved.bestMass||0,p.mass);saved.lastMode=mode;localStorage.setItem(key,JSON.stringify(saved));}catch(e){}
+if(!offerRevive)recordArenaMatch(won,rank);
+if(!offerRevive)maybeArenaMidgame();
 sound(won?680:180,.42,'sine',.048);
 }
 function updateUI(){if(!game)return;let g=game,p=g.people[0],ranked=g.people.slice().sort((a,b)=>b.mass-a.mass),rank=ranked.indexOf(p)+1;$('mass').textContent=Math.floor(p.mass);$('clock').textContent=Math.floor(g.left/60).toString().padStart(2,'0')+':'+Math.floor(g.left%60).toString().padStart(2,'0');$('place').textContent=rank+' / '+g.people.length;$('team-score').textContent=Math.floor(g.scores[0])+' : '+Math.floor(g.scores[1]);const leaders=ranked.slice(0,6);
