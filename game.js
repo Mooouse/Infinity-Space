@@ -5029,6 +5029,7 @@ else{completeAway();showMainMenu();}
 // start its own soundtrack over the live Worms mode.
 if(!WORM_SETTINGS_EMBED)startMusic();
 function unlockMusicFromGesture(){
+ if(WORM_SETTINGS_EMBED)return; // Do not start a second soundtrack in the settings iframe.
  if(!g.music||window.SpacePlatform?.muted||musicPreview)return;
  if(!externalMusic)startMusic();
  else if(externalMusic.paused)setMusicVolume();
