@@ -150,7 +150,7 @@ const NAMES=['Astra','Orbit','Nova','Pulsar','Quasar','Mira','Voidling','Zenith'
 // The lobby has a stable mixture of player archetypes rather than one global AI
 // difficulty. Timing, awareness, aim, aggression, speed and AFK habits vary.
 const BOT_ROSTER=['newcomer','casual','cautious','hunter','afk','veteran','pro','reckless'];
-const ROLE_POOL=['newcomer','newcomer','casual','casual','casual','casual','cautious','cautious','hunter','hunter','veteran','pro','reckless','afk'];
+const ROLE_POOL=['newcomer','casual','casual','cautious','cautious','hunter','hunter','hunter','veteran','veteran','veteran','pro','pro','pro','reckless','afk'];
 const BOT_HEADS=['classic','blackhole','pulsar','comet','crystal','eclipse'];
 const BOT_SUFFIX=['','','','','_x','77','_tv','_io','_2','_sun','_star'];
 function shuffleList(list){
@@ -1862,6 +1862,13 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
     pauseVisible:!$('worm-pause-overlay').hidden,
     settingsVisible:!$('worm-settings').hidden,
     rank:ranking(p)};
+  },
+  botSkillBalanceProbe:()=>{
+   const active=game.worms.filter(w=>!w.human&&w.alive);
+   const experienced=active.filter(w=>['hunter','veteran','pro'].includes(w.persona));
+   const passive=active.filter(w=>w.persona==='afk');
+   return {total:active.length,experienced:experienced.length,
+    passive:passive.length,share:active.length?experienced.length/active.length:0};
   },
   botEvasionProbe:()=>{
    const prev=game;
