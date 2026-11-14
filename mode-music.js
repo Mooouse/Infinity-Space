@@ -2,7 +2,9 @@
    Reads the canonical Endless Space save rather than creating a second shop. */
 (()=>{'use strict';
 const tracks=window.SpaceMusicTracks||[];
-if(!tracks.length)return;
+const params=new URLSearchParams(location.search);
+const previewParams=new URLSearchParams(location.hash.slice(1));
+if(!tracks.length||params.has('demo')||previewParams.has('demo'))return;
 const locale=()=>{
  let language='en';try{language=localStorage.getItem('infiniti-space-language')||navigator.language||'en'}catch(_){}
  return /^ru/i.test(language)?'ru':/^es/i.test(language)?'es':'en';
@@ -45,7 +47,7 @@ function saveSelection(track,disable=false){
  if(disable)saved.music=!saved.music;
  else{saved.activeTrack=track.id;saved.music=true;}
  saved.ownedTracks=[...bought];
- try{localStorage.setItem(SAVE,JSON.stringify(saved));}catch(_){return false;}
+ try{const json=JSON.stringify(saved);localStorage.setItem(SAVE,json);window.SpacePlatform?.persist?.(json);}catch(_){return false;}
  sync();return true;
 }
 function close(){
