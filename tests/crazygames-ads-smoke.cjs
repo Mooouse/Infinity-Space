@@ -61,6 +61,9 @@ function installAds(){
   assert.equal(await page.locator('.ws-head-choice').count(),30,
    'Disabled CrazyGames SDK must hide the two rewarded head offers');
   await page.locator('.ws-x').click();
+  // Subsequent revival tests explicitly simulate the enabled CrazyGames
+  // environment again; leaving supported=false would correctly hide revive.
+  await page.evaluate(()=>{window.SpaceCrazyAds.supported=true;});
   await page.locator('#worm-resume').click();
   await page.evaluate(()=>{window.InfinityWormsQA.setMass(900);window.InfinityWormsQA.forceDeath();});
   await page.locator('#worm-result').waitFor({state:'visible',timeout:12000});
