@@ -27,7 +27,15 @@ const {chromium}=require('playwright');
   await page.locator('#worm-field').waitFor({state:'visible',timeout:11000});
   const guide=page.locator('#worm-guide');
   if(await guide.isVisible())await page.locator('#worm-guide-skip').click();
-  await page.waitForFunction(()=>document.getElementById('worm-hud')&&document.getElementById('worm-length').textContent!=='0',null,{timeout:15000});
+  await page.waitForFunction(()=>{
+   const hud=document.getElementById('worm-hud');
+   const mass=document.getElementById('worm-mass');
+   return !!hud&&!!mass&&Number((mass.textContent||'').replace(/[^0-9]/g,''))>0;
+  },null,{timeout:15000});
+  assert.equal(await page.locator('#worm-length').count(),0,
+   'Single-HTML Worms build must use mass, not the removed length HUD');
+  assert.equal((await page.locator('#worm-mass').locator('xpath=..').locator('small').textContent()).trim(),
+   'MASS','Embedded HUD mass must agree with the leaderboard metric');
   await page.locator('#worm-pause').click();
   await page.locator('#worm-exit').click();
   await page.waitForURL(/playgama\/index\.html\?select=worms/,{timeout:15000});
