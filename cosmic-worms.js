@@ -847,6 +847,12 @@ function kill(w,killer,reason){
   head:{x:body[0].x,y:body[0].y},
   tip:{x:body[body.length-1].x,y:body[body.length-1].y}};
  if(w.human){
+  // A collision can kill the player while any live-world menu is visible.
+  // Exit every menu first so the actual death replay/results are visible.
+  $('worm-pause-overlay').hidden=true;
+  $('worm-settings').hidden=true;
+  $('worm-guide').hidden=true;
+  window.WormSkinStudio?.close?.();
   // Keep the arena fully alive while the player watches rivals collect
   // the wreckage. The results only fade in after the replay window.
   game.state='death-replay';
@@ -887,7 +893,7 @@ function backgroundFlightActive(){return game.state==='paused'||game.state==='se
 function updateWorm(w,dt){
  if(!w.alive)return;
  w.invulnerable=Math.max(0,w.invulnerable-dt);
- if(w.human&&backgroundFlightActive())w.invulnerable=Math.max(w.invulnerable,2.5);
+ // No free immunity for opening pause: unattended flight is still dangerous.
  if(!w.human){
   // Worms always glide forward. AFK only disables steering and boosting.
   if(w.afkTimer>0){
@@ -992,27 +998,17 @@ function headOnWinner(a,b){
   a.speed>b.speed?a:b.speed>a.speed?b:(a.id<b.id?a:b);
 }
 function collisions(){
- // Broadphase includes both huge bodies and head-to-head collisions.
- // Glancing contact with the glow or outside edge is not a fatal hit.
+ // Pausing blocks input, NOT normal collision physics. The player and
+ // opponents both remain vulnerable and their bodies remain solid.
  for(const w of game.worms){
-  if(!w.alive||w.human&&backgroundFlightActive())continue;
-  const pausedPlayer=backgroundFlightActive()&&game.player?.alive;
-  // Spawn immunity never turns the player into a ghost while menus are open.
-  if(w.invulnerable>0&&!(pausedPlayer&&!w.human))continue;
+  if(!w.alive||w.invulnerable>0)continue;
   const wr=wormRadius(w);
   bodiesNearby(w.x,w.y,Math.max(112,wr+76),entry=>{
    const other=entry.w;
-   const solidPausedPlayer=pausedPlayer&&other===game.player;
-   if(!w.alive||other===w||!other.alive||other.invulnerable>0&&!solidPausedPlayer)return;
+   if(!w.alive||other===w||!other.alive||other.invulnerable>0)return;
    const radius=wormRadius(other),dx=w.x-entry.x,dy=w.y-entry.y;
-   // The head can enter the edge of another body a little before impact.
    const hit=entry.head?wr*.82+radius*.72:wr*.72+radius*.65;
    if(dx*dx+dy*dy>=hit*hit)return;
-   if(solidPausedPlayer){
-    // Opponents cannot pass through the paused player. Do not award mass.
-    w.invulnerable=0;kill(w,null,'body');return;
-   }
-   if(w.invulnerable>0)return;
    if(entry.head){
     const winner=headOnWinner(w,other);
     kill(winner===w?other:w,winner,'head');
@@ -1580,8 +1576,7 @@ function pause(){
   window.SpacePlatform?.playing?.(false);
  }else if(game.state==='paused'){
   game.state='playing';$('worm-pause-overlay').hidden=true;playWormSound('resume');
-  // Pause protection ends quickly instead of making the player intangible.
-  game.player.invulnerable=Math.min(game.player.invulnerable,.30);
+  // Pausing never resets or extends the ordinary spawn protection.
   window.SpacePlatform?.playing?.(true);
  }
 }
