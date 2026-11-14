@@ -1817,8 +1817,10 @@ html body:has(#worm-field) #mode-music-open:focus-visible{outline:2px solid #dcb
  background:none!important;box-shadow:none!important;
  opacity:1!important;visibility:visible!important;
 }
-.ws-overlay .ws-head-symbol svg{
+.ws-overlay .ws-head-symbol svg,
+.ws-overlay .ws-head-symbol canvas{
  display:block!important;width:43px!important;height:43px!important;
+ max-width:43px!important;max-height:43px!important;
  overflow:visible!important;filter:drop-shadow(0 0 6px #9d6df05e);
 }
 .ws-overlay .ws-head-label{
