@@ -45,7 +45,7 @@ const {chromium}=require('playwright');
   await mainSettings.locator('#screen-settings').waitFor({state:'visible',timeout:25000});
   assert.equal(await mainSettings.locator('#screen-settings [data-settings-tab]').count(),4,
     'Embedded Worms must display the actual main-game Settings page');
-  await mainSettings.locator('#screen-settings .br-head-back').click();
+  await mainSettings.locator('#screen-settings [data-save-settings]').click();
   await page.locator('#worm-pause-overlay').waitFor({state:'visible',timeout:8000});
   assert.equal(await page.locator('#worm-settings').isVisible(),false);
   await page.locator('#worm-exit').click();
