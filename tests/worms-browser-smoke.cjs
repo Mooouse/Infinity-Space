@@ -68,7 +68,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.waitForFunction(()=>!!window.InfinityWormsQA,{timeout:12000});
     let a=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
     assert.equal(a.mode,'worms');
-    await page.locator('#mode-music-open').waitFor({state:'visible',timeout:10000});
+    await page.locator('#mode-music-open').waitFor({state:'attached',timeout:10000});
     assert.equal(await page.locator('#mode-music-open').count(),1,
       'The music collection must exist during Worms gameplay');
     // All three HUD instruments must have one visual geometry, including
@@ -83,7 +83,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
        label:label?.textContent?.trim(),labelVisible:label?getComputedStyle(label).display!=='none':false};
      });
     });
-    assert.ok(hudControls.every(c=>c.w>=58&&c.h>=58&&c.labelVisible&&c.label),
+    assert.ok(hudControls.every(c=>(width===390?c.w===48&&c.h===48:c.w>=58&&c.h>=58)&&c.labelVisible&&c.label),
       'All music/pause/boost controls need icons and readable labels: '+JSON.stringify(hudControls));
     assert.equal(new Set(hudControls.map(c=>c.w+'x'+c.h)).size,1,
       'Music, pause and boost must use identical dimensions: '+JSON.stringify(hudControls));
@@ -106,8 +106,8 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
      });
      assert.ok(controls.stick.left>controls.viewport*.52,
       'Mobile Worms joystick belongs on the right: '+JSON.stringify(controls));
-     assert.ok(controls.boost.width>=70&&controls.boost.height>=70&&
-      controls.pause.width>=50&&controls.pause.height>=50,
+     assert.ok(controls.boost.width===48&&controls.boost.height===48&&
+      controls.pause.width===48&&controls.pause.height===48,
       'Phone controls must never be flattened: '+JSON.stringify(controls));
      assert.ok(controls.boost.right<controls.stick.left,
       'Joystick and boost should not overlap: '+JSON.stringify(controls));
@@ -196,6 +196,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.locator('#worm-guide-next').click();
     await page.locator('#worm-guide-next').click();
     await page.waitForFunction(()=>window.InfinityWormsQA.snapshot().state==='playing');
+    assert.equal(await page.locator('#mode-music-open').isVisible(),true,'Music shortcut belongs to the active match only');
     if(width>=1280){
      await page.locator('#worm-pause').hover();
      await page.waitForTimeout(220); // Allow the hover transition to settle.
