@@ -1679,6 +1679,10 @@ body:has(#worm-field) #worm-hud .worm-boost-button:hover{
  border-color:#ffc5d7!important;box-shadow:inset 0 1px #ffffff77,0 4px 0 #78203b,0 0 23px #ff497dba!important;
 }
 
+/* Preserve the existing compact music shortcut on other game modes.
+   The three-button labeled instrument layout applies to Worms only. */
+#mode-music-open .mode-music-button-label{display:none}
+
 /* Worms / unified HUD instruments: all three controls share one shape,
    one surface, one shadow hierarchy, and the same icon/label scale.
    Earlier circular and bevel treatments remain superseded here. */
