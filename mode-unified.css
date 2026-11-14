@@ -1781,8 +1781,10 @@ html body:has(#worm-field) #mode-music-open:focus-visible{outline:2px solid #dcb
  html body:has(#worm-field) #worm-hud .worm-boost-button{left:calc(9px + env(safe-area-inset-left))!important}
 }
 
-/* Canvas must never crop the snake on narrow portrait screens. */
-.ws-overlay .ws-preview-canvas{object-fit:contain!important}
+/* Full-bleed preview: contain letterboxed the 920×220 starfield within the
+   shorter responsive display slot, cutting off the background at both sides.
+   Fill the complete slot while retaining the existing responsive dimensions. */
+.ws-overlay .ws-preview-canvas{object-fit:fill!important;object-position:center!important}
 
 /* Shared skin workshop: identical rendering in the main menu and Worms.
    ui-worms.css is NOT loaded by index.html, so never rely on it for artwork. */

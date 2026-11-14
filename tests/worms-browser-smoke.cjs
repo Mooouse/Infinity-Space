@@ -412,8 +412,8 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
       'Preset preview must show a continuous skin gradient');
     assert.equal(await page.locator('.ws-bead').count(),64,'All 64 segment colors can be customized');
     assert.equal(await page.locator('.ws-preview-canvas').isVisible(),true,'Live moving worm preview should be visible');
-    assert.equal(await page.locator('.ws-preview-canvas').evaluate(el=>getComputedStyle(el).objectFit),'contain',
-      'Mobile workshop previews must show the complete worm, never crop its head or tail');
+    assert.equal(await page.locator('.ws-preview-canvas').evaluate(el=>getComputedStyle(el).objectFit),'fill',
+      'Canvas must cover the whole preview surface without black pillarboxes at the sides');
     await page.waitForFunction(()=>{const c=document.querySelector('.ws-preview-canvas');if(!c)return false;const p=c.getContext('2d').getImageData(700,80,80,70).data;return p.some((v,i)=>i%4!==3&&v>150)},null,{timeout:5000});
     assert.equal(await page.locator('.ws-advanced-summary').isVisible(),true,'Advanced body painter toggle exists');
     assert.equal(await page.locator('.ws-head-choice').count(),30,'All 30 illustrated head designs must be available');
@@ -444,6 +444,34 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.ok(headFit.length===30&&headFit.every(h=>h.width>=40&&h.height>=40&&
       h.width<=74&&h.height<=74),
       'Every head must cover the body diameter without becoming oversized: '+JSON.stringify(headFit));
+    const headPaint=await page.evaluate(async()=>{
+      const art=window.WormHeadArt,results=[],canvas=document.createElement('canvas');
+      canvas.width=128;canvas.height=128;
+      const g=canvas.getContext('2d',{willReadFrequently:true});
+      for(const id of art.ids){
+       g.clearRect(0,0,128,128);
+       let painted=false;
+       for(let attempt=0;attempt<35&&!painted;attempt++){
+        painted=art.draw(g,id,64,64,0,24);
+        if(!painted)await new Promise(resolve=>setTimeout(resolve,30));
+       }
+       if(!painted){results.push({id,missing:true});continue}
+       const pixels=g.getImageData(0,0,128,128).data;
+       let minX=128,minY=128,maxX=-1,maxY=-1,visiblePixels=0;
+       for(let y=0;y<128;y++)for(let x=0;x<128;x++){
+        if(pixels[(y*128+x)*4+3]>80){
+         visiblePixels++;minX=Math.min(minX,x);minY=Math.min(minY,y);
+         maxX=Math.max(maxX,x);maxY=Math.max(maxY,y);
+        }
+       }
+       results.push({id,width:maxX-minX+1,height:maxY-minY+1,visiblePixels});
+      }
+      return results;
+    });
+    assert.ok(headPaint.length===30&&headPaint.every(p=>
+      !p.missing&&p.width>=30&&p.height>=30&&p.visiblePixels>=420),
+      'Each game head must paint a full visible illustration, not the tiny clipped stripes: '+
+      JSON.stringify(headPaint));
     for(const id of ['skull','robot','mushroom','crown','ufo','flame']){
       assert.ok(headFit.find(h=>h.id===id).orientation!==0,
        'Upright '+id+' artwork must be oriented along the worm travel direction');

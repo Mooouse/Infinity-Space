@@ -155,31 +155,44 @@ function headImage(id){
  let entry=headImages.get(id);
  if(!entry){
   const img=new Image();
-  entry={img,bounds:null,callbacks:[]};
+  entry={img,source:null,bounds:null,callbacks:[]};
   headImages.set(id,entry);
   img.onload=()=>{
-   // All SVGs share a viewBox, but their visible silhouettes have very
-   // different padding. Trim TRANSPARENT pixels, not the design itself.
-   const canvas=document.createElement('canvas');canvas.width=128;canvas.height=128;
-   const g=canvas.getContext('2d',{willReadFrequently:true});
+   // Rasterize the complete SVG once, then crop that SAME raster. The old
+   // code measured pixels in a 128px canvas but cropped the original SVG,
+   // which browsers can intrinsically size at 300×150: only a thin strip
+   // appeared instead of the head. Never mix source coordinate systems.
+   const raster=document.createElement('canvas');
+   const side=192;raster.width=side;raster.height=side;
+   const g=raster.getContext('2d',{willReadFrequently:true});
    if(g){
     try{
-     g.drawImage(img,0,0,128,128);
-     const bytes=g.getImageData(0,0,128,128).data;
-     let x0=128,y0=128,x1=-1,y1=-1;
-     for(let y=0;y<128;y++)for(let x=0;x<128;x++)
-      if(bytes[(y*128+x)*4+3]>=25){
+     g.clearRect(0,0,side,side);
+     g.drawImage(img,0,0,side,side);
+     const bytes=g.getImageData(0,0,side,side).data;
+     let x0=side,y0=side,x1=-1,y1=-1;
+     for(let y=0;y<side;y++)for(let x=0;x<side;x++)
+      if(bytes[(y*side+x)*4+3]>=25){
        x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y);
       }
-     if(x1>=x0)entry.bounds={sx:x0/2,sy:y0/2,sw:(x1-x0+1)/2,sh:(y1-y0+1)/2};
-    }catch(_){/* Preserve full SVG if a browser disables pixel readback. */}
+     if(x1>=x0){
+      entry.source=raster;
+      entry.bounds={sx:x0,sy:y0,sw:x1-x0+1,sh:y1-y0+1};
+     }
+    }catch(_){/* Keep full SVG when canvas readback is restricted. */}
    }
-   if(!entry.bounds)entry.bounds={sx:0,sy:0,sw:64,sh:64};
+   if(!entry.bounds){
+    entry.source=img;
+    entry.bounds={sx:0,sy:0,sw:img.naturalWidth,sh:img.naturalHeight};
+   }
    entry.callbacks.splice(0).forEach(cb=>cb());
   };
   img.onerror=()=>{entry.callbacks.splice(0).forEach(cb=>cb())};
+  // A viewBox alone has a browser-defined intrinsic size. Set both axes
+  // explicitly to 64 so that all fallback images also preserve their shape.
   img.src='data:image/svg+xml;charset=utf-8,'+
-   encodeURIComponent(headArt[id].replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" '));
+   encodeURIComponent(headArt[id].replace('<svg ',
+    '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" '));
  }
  return entry;
 }
@@ -195,12 +208,12 @@ function headDimensions(id,r){
 }
 function drawHead(ctx,id,x,y,angle,r){
  const entry=headImage(id),layout=headDimensions(id,r);
- if(!layout||!entry.img.complete||!entry.img.naturalWidth)return false;
+ if(!layout||!entry.source||!entry.img.complete||!entry.img.naturalWidth)return false;
  const {width,height,bounds,rotation,lead}=layout;
  ctx.save();
  ctx.translate(x+Math.cos(angle)*r*lead,y+Math.sin(angle)*r*lead);
  ctx.rotate(angle+rotation);
- ctx.drawImage(entry.img,bounds.sx,bounds.sy,bounds.sw,bounds.sh,
+ ctx.drawImage(entry.source,bounds.sx,bounds.sy,bounds.sw,bounds.sh,
   -width/2,-height/2,width,height);
  ctx.restore();
  return true;
