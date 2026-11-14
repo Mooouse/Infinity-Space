@@ -13,18 +13,50 @@ const {chromium}=require('playwright');
    localStorage.setItem('infiniti-space-language','en');
   });
   page.on('pageerror',e=>errors.push(String(e.stack||e).slice(0,500)));
+  const bridgeMock = `window.bridge={
+   EVENT_NAME:{AUDIO_STATE_CHANGED:'audio',PAUSE_STATE_CHANGED:'pause',
+     REWARDED_STATE_CHANGED:'rewarded',INTERSTITIAL_STATE_CHANGED:'interstitial'},
+   initialize:async opts=>{
+     const configPath=opts?.configFilePath||'./playgama-bridge-config.json';
+     const response=await fetch(configPath);
+     if(!response.ok)throw Error('Playgama SDK config missing: '+configPath);
+     window.__playgamaTest={configPath,config:await response.json()};
+   },
+   platform:{id:'playgama_sandbox',language:'en',isPaused:false,isAudioEnabled:true,
+     sendMessage:async()=>{},on:()=>{},off:()=>{}},
+   advertisement:{isRewardedSupported:true,isInterstitialSupported:true,
+     on:()=>{},off:()=>{},checkAdBlock:async()=>false,
+     showRewarded:async()=>{},showInterstitial:async()=>{}},
+   storage:{get:async()=>[],set:async()=>{}}
+  };`;
   await page.route('https://bridge.playgama.com/**',route=>route.fulfill({
-   contentType:'application/javascript',
-   body:'window.bridge={initialize:async()=>{},platform:{id:"playgama_sandbox",isPaused:false,isAudioEnabled:true,sendMessage:async()=>{},on:()=>{},off:()=>{}},advertisement:{on:()=>{},off:()=>{},checkAdBlock:async()=>false},storage:{get:async()=>[],set:async()=>{}}};'
+   contentType:'application/javascript',body:bridgeMock
   }));
   await page.goto('http://127.0.0.1:8766/playgama/index.html',{waitUntil:'domcontentloaded',timeout:60000});
   await page.locator('#hub-mode-story').waitFor({state:'visible',timeout:30000});
+  await page.waitForFunction(()=>window.SpacePlatform?.status==='ready',null,{timeout:12000});
+  assert.deepEqual(await page.evaluate(()=>({
+   playgama:window.SpacePlatform?.isPlaygama,
+   configPath:window.__playgamaTest?.configPath,
+   rewardSupported:window.SpacePlatform?.adsAvailable,
+   crazySDK:!!document.querySelector('script[src*="crazygames-sdk"]')
+  })),{playgama:true,configPath:'./playgama-bridge-config.json',
+       rewardSupported:true,crazySDK:false},'Root must initialize only Playgama SDK');
   assert.equal(await page.locator('.hub-mode-dots button').count(),6);
   assert.equal(await page.evaluate(()=>typeof window.SpaceOpenMode),'function','Embedded routing must be present in single HTML');
   await page.locator('.hub-mode-dots [data-mode="worms"]').click();
   await page.locator('.hub-mode-story-play').click();
   await page.waitForURL(/blob:.*#mode=worms/,{timeout:15000});
   await page.locator('#worm-field').waitFor({state:'visible',timeout:11000});
+  await page.waitForFunction(()=>window.SpacePlatform?.status==='ready',null,{timeout:12000});
+  assert.deepEqual(await page.evaluate(()=>({
+   playgama:window.SpacePlatform?.isPlaygama,
+   configIsData:window.__playgamaTest?.configPath?.startsWith('data:'),
+   configLoaded:window.__playgamaTest?.config?.advertisement?.rewarded?.preloadOnStart,
+   adAvailable:window.SpacePlatform?.adsAvailable,
+   crazySDK:!!document.querySelector('script[src*="crazygames-sdk"]')
+  })),{playgama:true,configIsData:true,configLoaded:true,adAvailable:true,
+       crazySDK:false},'Worms Blob must initialize the actual Playgama SDK');
   const guide=page.locator('#worm-guide');
   if(await guide.isVisible())await page.locator('#worm-guide-skip').click();
   await page.waitForFunction(()=>{
@@ -74,6 +106,15 @@ const {chromium}=require('playwright');
   await page.locator('.hub-mode-story-play').click();
   await page.waitForURL(/blob:.*#mode=arena/,{timeout:15000});
   await page.locator('#hud:not([hidden])').waitFor({state:'visible',timeout:16000});
+  await page.waitForFunction(()=>window.SpacePlatform?.status==='ready',null,{timeout:12000});
+  assert.deepEqual(await page.evaluate(()=>({
+   playgama:window.SpacePlatform?.isPlaygama,
+   configIsData:window.__playgamaTest?.configPath?.startsWith('data:'),
+   configLoaded:window.__playgamaTest?.config?.advertisement?.rewarded?.preloadOnStart,
+   adAvailable:window.SpacePlatform?.adsAvailable,
+   crazySDK:!!document.querySelector('script[src*="crazygames-sdk"]')
+  })),{playgama:true,configIsData:true,configLoaded:true,adAvailable:true,
+       crazySDK:false},'Arena Blob must initialize the actual Playgama SDK');
   if(await page.locator('#guide').isVisible())await page.locator('#guide-skip').click();
   await page.locator('#pause').click();
   await page.locator('#change2').click();
