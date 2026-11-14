@@ -68,6 +68,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.waitForFunction(()=>!!window.InfinityWormsQA,{timeout:12000});
     let a=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
     assert.equal(a.mode,'worms');
+    await page.locator('#mode-music-open').waitFor({state:'visible',timeout:10000});
     assert.equal(await page.locator('#mode-music-open').count(),1,
       'The music collection must exist during Worms gameplay');
     assert.equal(await page.evaluate(()=>window.SpaceModeMusic?.current()),1,
