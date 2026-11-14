@@ -31,11 +31,41 @@ const L={
  es:{title:'Taller de gusanos',desc:'Elige un cuerpo cósmico continuo con estrellas, cometas y degradados.',
  templates:'Estilos',segment:'Degradado',palette:'Colores',all:'Rellenar',stripes:'Alternar',reset:'Restablecer',done:'Listo',close:'Cerrar',picked:'Segmento',custom:'Color propio',tip:'Pulsa un círculo para pintarlo. Mayús + clic pinta un rango.'}
 };
+// Preset skins are lasting rewards for rank-one finishes, eliminations
+// and personal mass records. The first two are always available.
+const UNLOCKS={
+ pulsar:['kills',5],flare:['mass',400],horizon:['wins',1],
+ supernova:['kills',15],comet:['mass',1200],stardust:['wins',3],
+ eclipse:['mass',3000],meteor:['kills',40],galaxy:['wins',5],
+ crystal:['mass',6000],rift:['wins',10],dragon:['kills',100],
+ royal:['wins',20],voidbloom:['mass',12000]
+};
+function milestones(){
+ const totals=window.InfinityProfile?.getStats?.().worms||{};
+ const live=window.InfinityWormsProgress?.()||{};
+ return {wins:Math.max(0,totals.wins||0),kills:Math.max(0,(totals.kills||0)+(live.kills||0)),
+  mass:Math.max(0,totals.maxMass||0,live.mass||0)};
+}
+function rewardFor(id){
+ const challenge=UNLOCKS[id];
+ if(!challenge)return {unlocked:true,kind:'free',need:0,current:0};
+ const [kind,need]=challenge,progress=milestones();
+ const current=Number(progress[kind])||0;
+ return {unlocked:current>=need,kind,need,current};
+}
+function requirementText(id,language){
+ const r=rewardFor(id);if(r.unlocked)return language==='ru'?'ОТКРЫТО':language==='es'?'DESBLOQUEADO':'UNLOCKED';
+ const key=r.kind==='wins'?
+  (language==='ru'?'ТОП-1':language==='es'?'TOP 1':'TOP 1'):
+  r.kind==='kills'?(language==='ru'?'УБИЙСТВ':language==='es'?'BAJAS':'KILLS'):
+  (language==='ru'?'МАССА':language==='es'?'MASA':'MASS');
+ return '🔒 '+key+' '+Math.floor(r.current)+' / '+r.need;
+}
 const normalize=x=>/^#[0-9a-f]{6}$/i.test(x)?x.toLowerCase():null;
 const presetColors=id=>PRESETS.find(x=>x[0]===id)?.[4]||PRESETS[0][4];
 function load(){
  let raw={};try{raw=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(_){}
- const skin=PRESETS.some(p=>p[0]===raw.skin)?raw.skin:'nebula';
+ const skin=PRESETS.some(p=>p[0]===raw.skin)&&rewardFor(raw.skin).unlocked?raw.skin:'nebula';
  const backup=presetColors(skin);
  return {
   ...raw,skin,head:HEADS.includes(raw.head)?raw.head:'classic',
@@ -108,9 +138,13 @@ function open({onChange,onClose}={}){
  function renderPresets(){
   const list=$('.ws-presets');list.replaceChildren();
   PRESETS.forEach(p=>{
+   const reward=rewardFor(p[0]);
    const item=document.createElement('button');item.type='button';
    item.className='ws-preset'+(data.skin===p[0]&&!data.customEnabled?' selected':'');
    item.dataset.skin=p[0];
+   item.disabled=!reward.unlocked;
+   item.classList.toggle('locked',!reward.unlocked);
+   item.title=requirementText(p[0],lang);
    item.setAttribute('aria-pressed',String(data.skin===p[0]&&!data.customEnabled));
    const beads=document.createElement('span');
    beads.className='ws-preset-beads ws-preset-worm';
@@ -118,7 +152,10 @@ function open({onChange,onClose}={}){
     [p[4][3],p[4][0],p[4][2],p[4][1]].join(',')+')');
    const label=document.createElement('span');label.textContent=p[lang==='ru'?2:lang==='es'?3:1];
    item.append(beads,label);
+   const unlock=document.createElement('small');unlock.className='ws-unlock-label';
+   unlock.textContent=requirementText(p[0],lang);item.append(unlock);
    item.onclick=()=>{
+    if(!rewardFor(p[0]).unlocked)return;
     data.skin=p[0];data.customEnabled=false;data.customSegments=Array.from({length:64},(_,i)=>p[4][i%p[4].length]);
     persist();renderPresets();renderSegments();
    };
@@ -287,5 +324,5 @@ function open({onChange,onClose}={}){
  previewFrame=requestAnimationFrame(paintPreview);
  return close;
 }
-window.WormSkinStudio={open,close,read:load,presets:PRESETS};
+window.WormSkinStudio={open,close,read:load,presets:PRESETS,isUnlocked:id=>rewardFor(id).unlocked,rewardFor,progress:milestones};
 })();
