@@ -14,6 +14,7 @@ on:
       - 'tools/build_single_html.py'
       - 'tests/single-html-smoke.cjs'
       - 'tests/embedded-modes-smoke.cjs'
+      - 'tests/playgama-mobile-sdk-smoke.cjs'
       - '.github/workflows/playgama-package.yml'
   workflow_dispatch:
 permissions:
@@ -35,6 +36,7 @@ jobs:
           node --check platform.js
           node --check playgama-platform.js
           node --check playgama-ui.js
+          node --check tests/playgama-mobile-sdk-smoke.cjs
           python3 -m py_compile tools/build_single_html.py
           node -e "JSON.parse(require('fs').readFileSync('playgama-bridge-config.json','utf8'))"
           node tests/meta.cjs
@@ -110,6 +112,7 @@ jobs:
           export NODE_PATH="$RUNNER_TEMP/infinity-single-test/node_modules"
           timeout 120 node tests/single-html-smoke.cjs
           timeout 150 node tests/embedded-modes-smoke.cjs
+          timeout 180 node tests/playgama-mobile-sdk-smoke.cjs
 
       - name: Upload high-quality-music single HTML (streams original MP3s)
         uses: actions/upload-artifact@v4
