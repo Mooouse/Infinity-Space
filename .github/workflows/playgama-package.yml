@@ -1,4 +1,4 @@
-name: Package Infinity Space HQ music for Playgama
+name: Build and publish Playgama SDK upload
 on:
   push:
     branches: [main]
@@ -41,7 +41,7 @@ jobs:
           node tests/regressions.cjs
           node tests/music.cjs
 
-      - name: Build Playgama ZIP under 20 MB with original unmodified audio served online
+      - name: Build Playgama SDK v2 ZIP under 20 MB with original HQ audio streamed
         run: |
           set -euo pipefail
           mkdir -p dist
@@ -59,6 +59,7 @@ jobs:
           assert '<script>window.SpaceInlineBridgeConfig=' in standalone.read_text('utf-8')
           assert '<script>window.SpaceInlineBridgeConfig=' not in upload.read_text('utf-8')
           assert json.loads(cfg.read_text('utf-8')) == json.loads(Path('playgama-bridge-config.json').read_text('utf-8'))
+          import base64, re
           for page in [standalone, upload]:
               html = page.read_text('utf-8')
               assert html.count('data:image/jpeg;base64,') >= 12
@@ -67,6 +68,15 @@ jobs:
               assert 'data:audio/mp4;base64,' not in html
               assert 'inline-audio-' not in html
               assert 'https://mooouse.github.io/Infinity-Space/assets/music/' in html
+              match = re.search(r'var payload=(\\{"arena":"[A-Za-z0-9+/=]+","worms":"[A-Za-z0-9+/=]+"\\}), cache=\\{\\};', html)
+              assert match, 'Missing embedded Playgama arcade modes'
+              import json as _json
+              for mode, encoded in _json.loads(match.group(1)).items():
+                  nested = base64.b64decode(encoded).decode('utf-8')
+                  assert '<script src="https://bridge.playgama.com/v2/stable/playgama-bridge.js"></script>' in nested, mode
+                  assert 'window.SpacePlaygamaBuild=true;' in nested, mode
+                  assert 'window.SpaceInlineBridgeConfig=' in nested, mode
+              print('PASS: Playgama Bridge v2 loads before adapters in all embedded modes')
           for n in range(1, 13):
               original = Path(f'assets/music/track-{n:02d}.mp3')
               assert original.stat().st_size > 1_000_000
@@ -106,7 +116,7 @@ jobs:
         with:
           name: infinity-space-single-html
           path: dist/index.html
-          retention-days: 1
+          retention-days: 14
           if-no-files-found: error
 
       - name: Upload small Playgama ZIP (HTML and Bridge JSON, stream HQ MP3s)
@@ -117,20 +127,20 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
-      - name: Publish direct HTML download URL (no artifact ZIP wrapper)
+      - name: Publish Playgama upload ZIP and standalone HTML (stable direct URLs)
         if: github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          TAG="infinity-space-single-html"
+          TAG="infinity-space-playgama-sdk"
           if ! gh release view "$TAG" >/dev/null 2>&1; then
             gh release create "$TAG" --target "$GITHUB_SHA" \
-              --title "Infinity Space — One HTML (Playgama)" \
-              --notes "Standalone and Playgama ZIP both stream exact untouched original MP3s from the game's GitHub Pages. Playgama ZIP contains HTML and required Bridge JSON, under 20 MB. Needs internet to play music. Release files are overwritten with each new build." \
+              --title "Infinity Space — Playgama SDK v2 upload" \
+              --notes "Upload infinity-space-playgama.zip to Playgama. Root index.html and playgama-bridge-config.json are included; Playgama Bridge v2 is active in every game mode. Under 20 MB. Original MP3s are streamed from the public music host (internet required)." \
               --latest=false
           fi
-          gh release upload "$TAG" dist/index.html --clobber
+          gh release upload "$TAG" dist/playgama/index.html --clobber
           gh release upload "$TAG" infinity-space-playgama.zip --clobber
           gh release view "$TAG" --json assets --jq '.assets[] | [.name,.size,.url] | @tsv'
