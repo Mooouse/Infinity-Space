@@ -223,7 +223,7 @@
    // with unrelated persistent-universe actions.
    const allowed=entry.id==='endless'
     ? new Set(['map','evolution','achievements','music','bestiary','settings','daily','roulette','profile'])
-    : new Set(['achievements','statistics','settings']);
+    : new Set(['achievements','statistics','music','settings']);
    nicknameField.hidden=entry.id==='endless';
    chip.hidden=entry.id!=='endless';
    nicknameStatus.textContent='';
