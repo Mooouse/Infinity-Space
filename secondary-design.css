@@ -67,6 +67,12 @@ body.ui-v15 :is(#modal #screen-achievements,#screen-mode-achievements) .br-ach-r
  background:linear-gradient(110deg,#1b122dba,#120c20ba)!important;
  box-shadow:inset 0 1px #ffffff0b!important;
 }
+/* The two-ID selector above forces display:grid!important. Honor the
+   HTML hidden attribute with higher specificity than that grid rule. */
+body.ui-v15 :is(#modal #screen-achievements,#screen-mode-achievements) .br-ach-row[hidden],
+body.ui-v15 :is(#modal #screen-achievements,#screen-mode-achievements) .br-ach-row.is-filtered-out{
+ display:none!important;
+}
 body.ui-v15 :is(#modal #screen-achievements,#screen-mode-achievements) .br-ach-symbol{
  width:36px!important;height:36px!important;border-radius:5px!important;
 }
