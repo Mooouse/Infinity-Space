@@ -82,7 +82,7 @@ const SKINS=[
 const SETTINGS_KEY='infinity-space-worms-settings-v2';
 function loadSettings(){
  try{const s=JSON.parse(localStorage.getItem(SETTINGS_KEY));if(s&&typeof s==='object')
-  return {skin:SKINS.some(v=>v.id===s.skin)?s.skin:'nebula',glow:s.glow!==false,names:s.names!==false,viewZoom:clamp(Number(s.viewZoom)||1,.84,1.16),head:['classic','blackhole','pulsar','comet','crystal','eclipse'].includes(s.head)?s.head:'classic',muted:s.muted===true,controlMode:['auto','mouse','keys','stick','touch'].includes(s.controlMode)?s.controlMode:'auto',customEnabled:s.customEnabled===true,customSegments:Array.isArray(s.customSegments)?s.customSegments.filter(c=>/^#[0-9a-f]{6}$/i.test(c)).slice(0,64):[]};}catch(_){}
+  return {skin:SKINS.some(v=>v.id===s.skin)?s.skin:'nebula',glow:s.glow!==false,names:s.names!==false,viewZoom:clamp(Number(s.viewZoom)||1,.84,1.16),head:window.WormHeadArt?.ids.includes(s.head)?s.head:'classic',muted:s.muted===true,controlMode:['auto','mouse','keys','stick','touch'].includes(s.controlMode)?s.controlMode:'auto',customEnabled:s.customEnabled===true,customSegments:Array.isArray(s.customSegments)?s.customSegments.filter(c=>/^#[0-9a-f]{6}$/i.test(c)).slice(0,64):[]};}catch(_){}
  return {skin:'nebula',glow:true,names:true,viewZoom:1,head:'classic',muted:false,controlMode:'auto',customEnabled:false,customSegments:[]};
 }
 const options=loadSettings();
@@ -164,7 +164,7 @@ const NAMES=['Astra','Orbit','Nova','Pulsar','Quasar','Mira','Voidling','Zenith'
 // difficulty. Timing, awareness, aim, aggression, speed and AFK habits vary.
 const BOT_ROSTER=['newcomer','casual','cautious','hunter','afk','veteran','pro','reckless'];
 const ROLE_POOL=['newcomer','casual','casual','cautious','cautious','hunter','hunter','hunter','veteran','veteran','veteran','pro','pro','pro','reckless','afk'];
-const BOT_HEADS=['classic','blackhole','pulsar','comet','crystal','eclipse'];
+const BOT_HEADS=window.WormHeadArt?.ids||['classic','pizza','pig','blackhole','cat','dragon'];
 const BOT_SUFFIX=['','','','','_x','77','_tv','_io','_2','_sun','_star'];
 function shuffleList(list){
  for(let i=list.length-1;i>0;i--){

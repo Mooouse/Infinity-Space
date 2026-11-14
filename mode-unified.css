@@ -1784,14 +1784,14 @@ html body:has(#worm-field) #mode-music-open:focus-visible{outline:2px solid #dcb
 /* Shared skin workshop: identical rendering in the main menu and Worms.
    ui-worms.css is NOT loaded by index.html, so never rely on it for artwork. */
 .ws-overlay .ws-head-options{
- display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px;
+ display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:7px;
  margin:9px 0 12px;
 }
 .ws-overlay .ws-head-choice{
  display:flex!important;flex-direction:column!important;
  align-items:center!important;justify-content:center!important;
- gap:8px!important;min-width:0!important;min-height:87px!important;
- padding:10px 6px!important;
+ gap:6px!important;min-width:0!important;min-height:83px!important;
+ padding:8px 5px!important;
  border:1px solid #6b4d9b!important;border-radius:9px!important;
  background:linear-gradient(160deg,#2d1b49,#1a102f)!important;
  color:#efe4ff!important;text-align:center!important;

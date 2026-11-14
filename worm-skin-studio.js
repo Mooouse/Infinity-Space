@@ -3,7 +3,7 @@
 (function(){
 'use strict';
 const KEY='infinity-space-worms-settings-v2';
-const HEADS=['classic','blackhole','pulsar','comet','crystal','eclipse'];
+const HEADS=["classic","pizza","pig","blackhole","cat","dragon","robot","alien","shark","skull","ghost","astronaut","planet","sun","comet","crystal","eclipse","pulsar","mushroom","crown","star","donut","fox","demon","octopus","ufo","panda","cyclops","frog","flame"];
 const COLORS=['#ff1744','#ff6633','#ffe500','#ffb200','#27ff40','#79ff27','#2860ff','#648bff','#9922ff','#d64aff','#ffffff','#15192e','#f7a8ff','#8a3bff'];
 const PRESETS=[
  ['nebula','Nebula','Туманность','Nebulosa',['#9922ff','#ff1744','#2860ff','#39006b']],
@@ -81,26 +81,61 @@ function save(obj){
 // trajectory. Stronger, layered turns make the body visibly curve, without
 // independent segment wobble or discontinuities as time advances.
 function previewCenterline(seconds,count=59){
- const speed=140,spacing=.079,anchorX=752,anchorY=110;
- // Visible S-turns, sampled along one continuous flight path.
- const trajectoryY=t=>45*Math.sin(t*1.24)+22*Math.sin(t*2.18+.68)+9*Math.sin(t*.52);
- const cameraY=trajectoryY(seconds);
- return Array.from({length:count},(_,i)=>{
-  const age=(count-1-i)*spacing,delta=trajectoryY(seconds-age)-cameraY;
-  // Smooth bounded camera projection keeps body/glow/head inside 920×220.
-  return {x:anchorX-age*speed,y:anchorY+67*Math.tanh(delta/66)};
- });
+ const speed=152,interval=.079,headX=770,headY=110;
+ // A continuous heading curve with limited turn rate. Sample the actual
+ // preceding travel distance so the whole body follows its head's bends.
+ const heading=t=>.68*Math.sin(t*1.72)+.27*Math.sin(t*3.05+.72)+
+  .08*Math.sin(t*.52);
+ let x=headX,y=headY;
+ const path=Array(count);
+ path[count-1]={x,y};
+ for(let i=count-2;i>=0;i--){
+  const age=(count-1-i-.5)*interval,angle=heading(seconds-age);
+  x-=speed*interval*Math.cos(angle);
+  y-=speed*interval*Math.sin(angle);
+  path[i]={x,y};
+ }
+ // Camera follows the head. The gentle screen projection prevents the
+ // longest S-turn from clipping the preview's 22px-thick body + glow.
+ return path.map(p=>({x:p.x,y:headY+58*Math.tanh((p.y-headY)/75)}));
 }
 
 
+// Canonical, self-contained 64×64 SVG artwork shared by the selector,
+// live workshop preview and canvas gameplay. Heads face toward +X.
+const icon=shape=>'<svg viewBox="0 0 64 64" aria-hidden="true"><g stroke-linecap="round" stroke-linejoin="round">'+shape+'</g></svg>';
 const headArt={
-  classic:'<svg viewBox="0 0 48 48" aria-hidden="true"><defs><radialGradient id="wh-classic"><stop stop-color="#ffeaff"/><stop offset=".64" stop-color="#a779ff"/><stop offset="1" stop-color="#5329af"/></radialGradient></defs><circle cx="24" cy="24" r="17" fill="url(#wh-classic)" stroke="#eedcff" stroke-width="1.5"/><circle cx="31" cy="18" r="4" fill="#fff"/><circle cx="34" cy="18" r="1.7" fill="#1c0b32"/><path d="M14 30Q23 35 31 28" stroke="#fcefff" stroke-width="1.5" fill="none" opacity=".7"/></svg>',
-  blackhole:'<svg viewBox="0 0 48 48" aria-hidden="true"><defs><radialGradient id="wh-blackhole"><stop offset=".39" stop-color="#02000a"/><stop offset=".43" stop-color="#ffe56a"/><stop offset=".61" stop-color="#ff498b"/><stop offset=".82" stop-color="#7841ff"/><stop offset="1" stop-color="#7841ff" stop-opacity="0"/></radialGradient></defs><circle cx="24" cy="24" r="23" fill="url(#wh-blackhole)"/><circle cx="24" cy="24" r="9" fill="#020008"/><ellipse cx="24" cy="24" rx="22" ry="8" fill="none" stroke="#ffe19c" stroke-width="2.6" transform="rotate(-25 24 24)"/></svg>',
-  pulsar:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M23 1 19 14 26 22 35 42" stroke="#2860ff" stroke-width="6" opacity=".65" stroke-linecap="round"/><path d="M27 2 25 18 19 29 16 46" stroke="#ffe500" stroke-width="3" opacity=".85" stroke-linecap="round"/><circle cx="24" cy="24" r="12" fill="#2860ff" stroke="#d0ecff" stroke-width="1.8"/><circle cx="24" cy="24" r="7" fill="#fff0a3"/><circle cx="24" cy="24" r="3" fill="#fff"/><ellipse cx="24" cy="24" rx="22" ry="8" fill="none" stroke="#ffe500" stroke-width="2" transform="rotate(-30 24 24)"/></svg>',
-  comet:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M3 33Q14 16 30 12L20 29Z" fill="#ff1744" opacity=".65"/><path d="M0 38Q17 23 32 12L23 29Z" fill="#ffe500" opacity=".9"/><path d="M6 43Q17 27 31 17" fill="none" stroke="#ffad35" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="16" r="11" fill="#ffdf65" stroke="#fff9c7" stroke-width="2"/><circle cx="35" cy="13" r="5" fill="#fff4cf"/></svg>',
-  crystal:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 2 43 21 24 46 5 21Z" fill="#7350f2" stroke="#ede0ff" stroke-width="2"/><path d="M24 2 24 46 5 21Z" fill="#a894ff"/><path d="M24 2 43 21 24 46 31 20Z" fill="#5e39ca"/><path d="M5 21H43M24 2 17 21 24 46" stroke="#fff3ff" stroke-width="1.1" fill="none" opacity=".8"/></svg>',
-  eclipse:'<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#9228f4" opacity=".35"/><circle cx="24" cy="24" r="17" fill="#ff488f"/><circle cx="24" cy="24" r="13" fill="#05020f"/><path d="M37 11A18 18 0 0 1 40 31" fill="none" stroke="#ffe8a5" stroke-width="3.5" stroke-linecap="round"/><path d="M9 34A18 18 0 0 0 14 40" fill="none" stroke="#7e52ff" stroke-width="2.5" stroke-linecap="round"/></svg>'
- };
+ classic:icon('<path d="M19 10Q7 19 9 34Q11 51 31 53Q53 53 56 33Q56 12 33 10Z" fill="#884cff" stroke="#ead0ff" stroke-width="3"/><path d="M14 26Q28 3 45 18" fill="none" stroke="#ff90fa" stroke-width="5" opacity=".8"/><ellipse cx="36" cy="24" rx="5" ry="7" fill="#fff"/><ellipse cx="36" cy="42" rx="5" ry="7" fill="#fff"/><circle cx="39" cy="25" r="2.4" fill="#180730"/><circle cx="39" cy="41" r="2.4" fill="#180730"/><path d="M43 30Q52 33 43 36" fill="none" stroke="#ffd5ff" stroke-width="2.5"/>'),
+ pizza:icon('<path d="M6 10Q10 30 6 53L57 32Z" fill="#ffce46" stroke="#ffefad" stroke-width="2.4"/><path d="M7 10Q3 33 7 53L17 49Q15 33 17 14Z" fill="#aa5a26" stroke="#f6a04a" stroke-width="3"/><path d="M20 18 49 31 20 45" fill="none" stroke="#ff8c33" stroke-width="3" opacity=".7"/><circle cx="27" cy="26" r="6" fill="#e43642" stroke="#a0142d" stroke-width="1.6"/><circle cx="28" cy="38" r="5.2" fill="#d82a42" stroke="#a0142d" stroke-width="1.4"/><circle cx="40" cy="32" r="3.6" fill="#e43642"/><path d="M19 34q4-3 6-2M35 20q-2 4 2 6" fill="none" stroke="#3f9f45" stroke-width="2.8"/>'),
+ pig:icon('<path d="M13 17 14 5 30 15M14 47 14 59 30 49" fill="#ff87bd" stroke="#c84182" stroke-width="3"/><path d="M16 17Q35 7 48 19Q57 28 50 43Q36 57 16 46Q7 32 16 17" fill="#ff9fc8" stroke="#ffe1ef" stroke-width="2.6"/><ellipse cx="46" cy="32" rx="13" ry="12" fill="#f271ab" stroke="#bf3d78" stroke-width="2"/><ellipse cx="46" cy="27" rx="2.3" ry="3.8" fill="#9c315b"/><ellipse cx="46" cy="37" rx="2.3" ry="3.8" fill="#9c315b"/><circle cx="30" cy="22" r="3.1" fill="#24122d"/><circle cx="30" cy="42" r="3.1" fill="#24122d"/><circle cx="29" cy="21" r="1" fill="#fff"/>'),
+ blackhole:icon('<defs><radialGradient id="wh-new-bh"><stop offset="0" stop-color="#03000a"/><stop offset=".43" stop-color="#03000a"/><stop offset=".50" stop-color="#ffe57f"/><stop offset=".63" stop-color="#ff536a"/><stop offset=".79" stop-color="#8d40ff"/><stop offset="1" stop-color="#8d40ff" stop-opacity="0"/></radialGradient></defs><circle cx="32" cy="32" r="30" fill="url(#wh-new-bh)"/><ellipse cx="32" cy="32" rx="28" ry="10" transform="rotate(-24 32 32)" stroke="#ffe7ae" stroke-width="3.3" fill="none"/><circle cx="32" cy="32" r="14" fill="#010008"/><path d="M11 17 14 13M51 45 55 49" stroke="#c28aff" stroke-width="3"/>'),
+ cat:icon('<path d="M11 19 13 4 30 15 46 4 49 20Q58 33 49 45Q32 57 14 45Q6 34 11 19" fill="#be88ff" stroke="#f1d9ff" stroke-width="3"/><path d="M15 17 18 11 27 18M37 18 44 11 47 20" fill="#fc8db2"/><ellipse cx="34" cy="24" rx="4" ry="6" fill="#2c153e"/><ellipse cx="34" cy="40" rx="4" ry="6" fill="#2c153e"/><path d="M47 29 53 32 47 35Z" fill="#ff6eab"/><path d="M44 33 56 25M44 33 57 41" stroke="#fff0fa" stroke-width="1.5" fill="none"/>'),
+ dragon:icon('<path d="M8 15 3 4 22 14 25 3 38 19 51 17 60 29 52 35 60 45 41 43 30 56 20 46 4 59 9 40Z" fill="#38bb62" stroke="#d8ff8c" stroke-width="2.6"/><path d="M14 20 5 26 17 29M15 44 5 38 18 36" fill="#ffe247" stroke="#246f35" stroke-width="2"/><path d="M34 18 55 31 33 45" fill="#20994d" opacity=".7"/><ellipse cx="39" cy="24" rx="5" ry="3" fill="#ffde37"/><ellipse cx="39" cy="40" rx="5" ry="3" fill="#ffde37"/><path d="M51 28 56 32 51 36" stroke="#fff59a" stroke-width="2" fill="none"/>'),
+ robot:icon('<path d="M17 14V8H28M36 8H47V14" stroke="#a4b6ff" stroke-width="4" fill="none"/><rect x="8" y="13" width="49" height="39" rx="9" fill="#5478d1" stroke="#d1e1ff" stroke-width="3"/><rect x="14" y="18" width="38" height="28" rx="6" fill="#1c234a"/><rect x="23" y="23" width="9" height="8" rx="2" fill="#ffe86b"/><rect x="35" y="23" width="9" height="8" rx="2" fill="#ffe86b"/><path d="M22 39H45" stroke="#9e79ff" stroke-width="3"/><circle cx="32" cy="8" r="3.7" fill="#ff557e"/>'),
+ alien:icon('<path d="M6 30Q9 8 34 10Q55 12 58 30Q57 51 34 54Q10 52 6 30" fill="#85ef6c" stroke="#e6ffb1" stroke-width="3"/><path d="M23 25Q40 15 43 28Q34 37 23 25M22 40Q40 31 44 40Q35 50 22 40" fill="#1e1737"/><circle cx="45" cy="30" r="3" fill="#f0ffb8"/><circle cx="45" cy="40" r="2.3" fill="#f0ffb8"/><path d="M11 16 5 8M16 15 16 4" stroke="#a8ff8e" stroke-width="2.5"/>'),
+ shark:icon('<path d="M8 20 3 8 28 18 35 3 42 22 58 31 42 42 34 60 27 45 4 56 8 42Z" fill="#588cd5" stroke="#d8ebff" stroke-width="3"/><path d="M15 24Q36 28 53 31Q35 38 15 40" fill="#bce5ff"/><path d="M39 26 48 31 39 36" fill="#172b5c"/><circle cx="37" cy="22" r="3" fill="#101a36"/><circle cx="37" cy="42" r="3" fill="#101a36"/><path d="M46 29 48 32 46 35M50 30 52 32 50 34" stroke="#fff" stroke-width="1.8"/>'),
+ skull:icon('<path d="M11 22Q11 8 30 8Q49 8 52 24L52 39 45 43 45 55 19 55 19 43 12 39Z" fill="#f1e5d6" stroke="#fffefa" stroke-width="2.5"/><path d="M24 19 40 19 36 29 23 29Z" fill="#291b3d"/><path d="M22 38Q30 31 38 38" stroke="#301b42" stroke-width="4" fill="none"/><path d="M24 47V54M32 47V54M40 47V54" stroke="#8a7582" stroke-width="2.5"/><path d="M10 29 4 33 10 37" fill="#d2bead"/>'),
+ ghost:icon('<path d="M11 17Q18 2 34 7Q54 9 55 30L55 54 46 47 38 55 29 48 21 55 13 47 7 52 7 31Q7 22 11 17" fill="#d9d3ff" stroke="#fff" stroke-width="2.8"/><ellipse cx="36" cy="25" rx="5" ry="6.5" fill="#342168"/><ellipse cx="36" cy="41" rx="5" ry="6.5" fill="#342168"/><circle cx="39" cy="23" r="2" fill="#fff"/><path d="M46 31q5 4 0 8" stroke="#a78dff" stroke-width="3" fill="none"/>'),
+ astronaut:icon('<circle cx="32" cy="32" r="26" fill="#f2f4ff" stroke="#9cb1ed" stroke-width="3.5"/><ellipse cx="34" cy="32" rx="19" ry="22" fill="#181e48" stroke="#a6b9ff" stroke-width="2.5"/><path d="M20 24Q28 14 40 20" stroke="#6b84e9" stroke-width="5" opacity=".7" fill="none"/><circle cx="40" cy="28" r="4" fill="#ffdf6c"/><path d="M16 44 23 50 39 51" stroke="#fff" stroke-width="2.5" fill="none"/><circle cx="9" cy="32" r="4" fill="#ff586f"/>'),
+ planet:icon('<circle cx="32" cy="32" r="21" fill="#a76aff" stroke="#e2bcff" stroke-width="2.8"/><path d="M16 27Q30 36 50 23M16 39Q31 46 47 35" fill="none" stroke="#5d31b9" stroke-width="5" opacity=".8"/><ellipse cx="32" cy="32" rx="29" ry="10" transform="rotate(-27 32 32)" fill="none" stroke="#ffe374" stroke-width="5"/><ellipse cx="32" cy="32" rx="29" ry="10" transform="rotate(-27 32 32)" fill="none" stroke="#fff4c1" stroke-width="1.4"/>'),
+ sun:icon('<path d="M32 1 38 13 50 7 49 21 62 26 52 34 60 47 45 46 39 61 28 49 15 57 16 43 2 36 13 27 5 14 21 16Z" fill="#ffad24" stroke="#ffe78f" stroke-width="2.4"/><circle cx="32" cy="32" r="20" fill="#ffe155" stroke="#fff8bb" stroke-width="2.7"/><circle cx="41" cy="26" r="3" fill="#9c4626"/><circle cx="41" cy="39" r="3" fill="#9c4626"/><path d="M45 30Q51 33 45 36" fill="none" stroke="#a34e27" stroke-width="2.6"/>'),
+ comet:icon('<path d="M4 15Q19 18 37 25L12 8M3 45Q20 42 37 36L9 56" fill="#ff563f" opacity=".82"/><path d="M2 28Q20 26 39 31Q20 37 2 40" fill="#ffcd42" stroke="#ff9f2b" stroke-width="2"/><circle cx="42" cy="32" r="15" fill="#ffdf73" stroke="#fff8ba" stroke-width="3"/><path d="M37 25q9-2 13 5" fill="none" stroke="#fff" stroke-width="4" opacity=".9"/>'),
+ crystal:icon('<path d="M30 2 58 32 31 62 5 32Z" fill="#8055e9" stroke="#f6eaff" stroke-width="2.7"/><path d="M30 2 29 62 5 32Z" fill="#b79aff"/><path d="M30 2 58 32 30 62 40 31Z" fill="#6245cb"/><path d="M5 32 58 32M30 2 20 32 30 62" stroke="#f7edff" stroke-width="1.5" fill="none" opacity=".9"/>'),
+ eclipse:icon('<circle cx="32" cy="32" r="27" fill="#aa56ff" opacity=".38"/><circle cx="32" cy="32" r="23" fill="#ff4a96"/><circle cx="31" cy="32" r="19" fill="#10071f"/><path d="M40 12Q59 27 45 47" stroke="#ffedb2" stroke-width="5.2" fill="none" stroke-linecap="round"/><circle cx="14" cy="14" r="3.2" fill="#b68aff"/>'),
+ pulsar:icon('<path d="M30 2 22 25 28 33 34 62M40 2 33 25 38 34 25 62" fill="none" stroke="#4c74ff" stroke-width="5"/><circle cx="32" cy="32" r="18" fill="#3d65f4" stroke="#d7e8ff" stroke-width="2.8"/><circle cx="32" cy="32" r="11" fill="#fff0a2"/><circle cx="32" cy="32" r="5" fill="#fff"/><ellipse cx="32" cy="32" rx="30" ry="10" transform="rotate(-20 32 32)" fill="none" stroke="#ffdf37" stroke-width="3.6"/>'),
+ mushroom:icon('<path d="M28 29 28 57Q42 60 47 51L44 29Z" fill="#fff1d6" stroke="#dbbaaa" stroke-width="2.4"/><path d="M6 31Q9 6 31 6Q54 7 59 31L52 38Q32 44 8 38Z" fill="#f34856" stroke="#ffb7a4" stroke-width="3"/><circle cx="26" cy="18" r="5.5" fill="#fff1d6"/><circle cx="45" cy="28" r="5" fill="#fff1d6"/><circle cx="13" cy="29" r="3.5" fill="#fff1d6"/><path d="M41 45 49 45" stroke="#85636b" stroke-width="2.5"/>'),
+ crown:icon('<path d="M7 14 18 24 27 5 36 24 53 12 55 47 10 47Z" fill="#ffc837" stroke="#fff3a3" stroke-width="2.8"/><path d="M10 44H55V53H10Z" fill="#cc7c27" stroke="#ffeca1" stroke-width="2"/><path d="M17 31 27 37 40 28" fill="none" stroke="#fff6ae" stroke-width="3"/><circle cx="16" cy="46" r="3" fill="#ff3672"/><circle cx="33" cy="46" r="3" fill="#8f57ff"/><circle cx="49" cy="46" r="3" fill="#ff3672"/>'),
+ star:icon('<path d="M33 2 41 22 62 25 45 39 49 60 32 49 13 60 18 39 2 25 24 22Z" fill="#ffe34b" stroke="#fff9b5" stroke-width="2.7"/><circle cx="36" cy="28" r="3" fill="#8a4b21"/><circle cx="36" cy="41" r="3" fill="#8a4b21"/><path d="M41 32Q47 35 41 38" fill="none" stroke="#b46b26" stroke-width="2.6"/>'),
+ donut:icon('<circle cx="32" cy="32" r="26" fill="#d49a5d" stroke="#ffe4b8" stroke-width="2.4"/><path d="M8 29Q11 10 30 9Q54 8 57 32Q55 55 32 57Q8 55 8 29" fill="#ff82c6"/><circle cx="32" cy="32" r="11" fill="#603c48" stroke="#d59b62" stroke-width="4"/><path d="M15 23 20 20M40 13 44 17M50 42 45 46M17 45 23 48M49 24 53 21" stroke="#fff2a5" stroke-width="3"/><path d="M23 12 28 15M13 35 19 34M38 51 40 47" stroke="#6654ee" stroke-width="3"/>'),
+ fox:icon('<path d="M9 18 10 3 30 16 42 4 49 24 60 32 49 43 42 60 27 48 10 60 10 43Z" fill="#ff9a3c" stroke="#ffdfaa" stroke-width="2.7"/><path d="M12 20 15 10 25 19M38 19 44 10 46 22" fill="#ffdb8e"/><path d="M28 33Q39 29 56 32Q41 47 27 44" fill="#fff0cd"/><ellipse cx="35" cy="23" rx="3.3" ry="4" fill="#352033"/><ellipse cx="35" cy="43" rx="3.3" ry="4" fill="#352033"/><circle cx="57" cy="32" r="3.5" fill="#39243a"/>'),
+ demon:icon('<path d="M14 19 9 1 29 14 42 1 50 20Q58 32 51 45Q39 58 18 49Q7 35 14 19" fill="#d9295e" stroke="#ffa2b2" stroke-width="3"/><path d="M12 16 9 7 24 18M37 18 44 6 48 20" fill="#ffc05d"/><path d="M27 26 42 29 28 32" fill="#ffe46c"/><path d="M26 41 42 38 29 36" fill="#ffe46c"/><path d="M44 30 54 32 44 36" fill="#46102e"/><path d="M23 48 27 57 32 49" fill="#fff0db"/>'),
+ octopus:icon('<path d="M25 14Q9 2 6 17Q-2 34 15 37M23 29Q3 22 8 43Q10 57 22 49M23 43Q7 50 18 59Q31 62 34 51" stroke="#9c5ae5" stroke-width="7" fill="none"/><path d="M15 17Q22 3 40 11Q57 17 56 34Q52 52 33 54Q13 52 15 34Z" fill="#ad73f2" stroke="#e8ccff" stroke-width="3"/><circle cx="39" cy="24" r="4" fill="#fff"/><circle cx="39" cy="43" r="4" fill="#fff"/><circle cx="41" cy="24" r="2" fill="#201039"/><circle cx="41" cy="43" r="2" fill="#201039"/><path d="M47 32Q51 35 47 38" stroke="#ffacd9" stroke-width="2.5" fill="none"/>'),
+ ufo:icon('<ellipse cx="32" cy="38" rx="29" ry="15" fill="#6d69d9" stroke="#c6b8ff" stroke-width="3"/><path d="M17 35Q16 12 31 9Q47 10 49 35Z" fill="#aee7ff" stroke="#ebfaff" stroke-width="2.2"/><ellipse cx="32" cy="35" rx="29" ry="10" fill="#8177ed" stroke="#ded5ff" stroke-width="2.8"/><circle cx="15" cy="37" r="3" fill="#ffdc44"/><circle cx="32" cy="42" r="3" fill="#ff5a8a"/><circle cx="50" cy="37" r="3" fill="#ffdc44"/><path d="M23 23Q29 16 38 21" stroke="#fff" stroke-width="3" fill="none"/>'),
+ panda:icon('<circle cx="15" cy="17" r="11" fill="#212038"/><circle cx="15" cy="48" r="11" fill="#212038"/><ellipse cx="33" cy="32" rx="25" ry="24" fill="#fffaf1" stroke="#c8c5db" stroke-width="2.4"/><ellipse cx="34" cy="22" rx="8" ry="10" fill="#2d2941"/><ellipse cx="34" cy="42" rx="8" ry="10" fill="#2d2941"/><circle cx="37" cy="23" r="2.8" fill="#fff"/><circle cx="37" cy="41" r="2.8" fill="#fff"/><path d="M47 28Q55 32 47 36" fill="#24243a"/>'),
+ cyclops:icon('<path d="M13 13Q25 3 42 12Q59 21 56 40Q50 59 28 54Q8 49 9 32Z" fill="#6e79ff" stroke="#d6d8ff" stroke-width="3"/><path d="M29 11 24 3 19 12M40 13 49 4" fill="none" stroke="#ba98ff" stroke-width="4"/><circle cx="37" cy="32" r="15" fill="#fff" stroke="#321e68" stroke-width="2"/><circle cx="40" cy="32" r="8" fill="#ffab34"/><circle cx="42" cy="32" r="4" fill="#251336"/><circle cx="39" cy="28" r="2" fill="#fff"/>'),
+ frog:icon('<path d="M14 15Q30 4 48 17Q59 29 52 43Q34 57 13 46Q5 34 14 15" fill="#6adf5b" stroke="#d8ff9e" stroke-width="3"/><circle cx="35" cy="14" r="11" fill="#7ff26c" stroke="#d8ff9e" stroke-width="2.4"/><circle cx="35" cy="50" r="11" fill="#7ff26c" stroke="#d8ff9e" stroke-width="2.4"/><circle cx="39" cy="16" r="5" fill="#fff"/><circle cx="39" cy="48" r="5" fill="#fff"/><circle cx="41" cy="16" r="2.5" fill="#1f4831"/><circle cx="41" cy="48" r="2.5" fill="#1f4831"/><path d="M44 30Q54 32 44 35" fill="none" stroke="#286d3c" stroke-width="2.7"/>'),
+ flame:icon('<path d="M6 46Q21 39 17 13Q30 24 33 3Q46 23 55 17Q47 35 61 42Q42 64 24 54Z" fill="#ff6429" stroke="#ffd35d" stroke-width="3"/><path d="M21 43Q29 32 28 24Q38 33 44 28Q40 41 48 46Q37 58 23 50Z" fill="#ffe64b"/><path d="M37 36 45 38 35 41M36 48 45 45 37 43" fill="#f65b28"/><circle cx="47" cy="40" r="2" fill="#9c2418"/>')
+};
 const headImages=new Map();
 function headImage(id){
  if(!headArt[id])id='classic';
@@ -119,14 +154,15 @@ function drawHead(ctx,id,x,y,angle,r){
  const img=headImage(id);
  if(!img.complete||img.naturalWidth===0)return false;
  ctx.save();ctx.translate(x,y);ctx.rotate(angle);
- const size=r*3.0;
+ // Keep the silhouette near the actual body diameter, not a giant sticker.
+ const size=r*2.68;
  ctx.drawImage(img,-size/2,-size/2,size,size);
  ctx.restore();
  return true;
 }
-const WormHeadArt={markup:id=>headArt[id]||headArt.classic,draw:drawHead};
+const WormHeadArt={ids:HEADS.slice(),markup:id=>headArt[id]||headArt.classic,draw:drawHead};
 window.WormHeadArt=WormHeadArt;
-// Preload all six tiny SVG assets before they are selected in the game.
+// Preload every illustrated head for smooth switching during gameplay.
 for(const id of HEADS)headImage(id);
 
 let active=null;
@@ -162,7 +198,38 @@ function open({onChange,onClose}={}){
  $('.ws-head-heading').textContent=lang==='ru'?'Форма головы':lang==='es'?'Forma de cabeza':'Head shape';
  $('.ws-advanced-summary').textContent=lang==='ru'?'НАСТРОЙКА ПЕРЕЛИВОВ · 64 ЦВЕТОВЫЕ ТОЧКИ':lang==='es'?'COLORES PERSONALIZADOS · 64 SEGMENTOS':'ADVANCED GRADIENT · 64 COLOR POINTS';
 
- const headLabels={classic:['Классическая','Classic','Clásica'],blackhole:['Чёрная дыра','Black Hole','Agujero negro'],pulsar:['Пульсар','Pulsar','Púlsar'],comet:['Комета','Comet','Cometa'],crystal:['Кристалл','Crystal','Cristal'],eclipse:['Затмение','Eclipse','Eclipse']};
+ const headLabels={
+ classic:['Космос','Cosmos','Cosmos'],
+ pizza:['Пицца','Pizza','Pizza'],
+ pig:['Свинка','Piggy','Cerdito'],
+ blackhole:['Чёрная дыра','Black Hole','Agujero negro'],
+ cat:['Кот','Cat','Gato'],
+ dragon:['Дракон','Dragon','Dragón'],
+ robot:['Робот','Robot','Robot'],
+ alien:['Пришелец','Alien','Alienígena'],
+ shark:['Акула','Shark','Tiburón'],
+ skull:['Череп','Skull','Calavera'],
+ ghost:['Призрак','Ghost','Fantasma'],
+ astronaut:['Космонавт','Astronaut','Astronauta'],
+ planet:['Сатурн','Saturn','Saturno'],
+ sun:['Солнце','Sun','Sol'],
+ comet:['Комета','Comet','Cometa'],
+ crystal:['Кристалл','Crystal','Cristal'],
+ eclipse:['Затмение','Eclipse','Eclipse'],
+ pulsar:['Пульсар','Pulsar','Púlsar'],
+ mushroom:['Гриб','Mushroom','Hongo'],
+ crown:['Корона','Crown','Corona'],
+ star:['Звёздочка','Star','Estrella'],
+ donut:['Пончик','Donut','Dona'],
+ fox:['Лиса','Fox','Zorro'],
+ demon:['Демон','Demon','Demonio'],
+ octopus:['Осьминог','Octopus','Pulpo'],
+ ufo:['НЛО','UFO','OVNI'],
+ panda:['Панда','Panda','Panda'],
+ cyclops:['Циклоп','Cyclops','Cíclope'],
+ frog:['Лягушка','Frog','Rana'],
+ flame:['Огонь','Flame','Llama']
+};
  for(const id of HEADS){const b=document.createElement('button');b.type='button';b.className='ws-head-choice';b.dataset.head=id;b.innerHTML='<span class="ws-head-symbol" aria-hidden="true">'+headArt[id]+'</span><span class="ws-head-label"></span>';b.lastChild.textContent=headLabels[id][lang==='ru'?0:lang==='es'?2:1];b.onclick=()=>{data.head=id;persist();root.querySelectorAll('.ws-head-choice').forEach(x=>x.classList.toggle('selected',x.dataset.head===id))};$('.ws-head-options').append(b)}
  root.querySelectorAll('.ws-head-choice').forEach(x=>x.classList.toggle('selected',x.dataset.head===data.head));
  $('.ws-reset').textContent=t.reset;$('.ws-stripes').textContent=t.stripes;
@@ -250,14 +317,14 @@ function open({onChange,onClose}={}){
  let previewFrame=0,lastPreviewPaint=0;
  function paintPreview(now){
   if(!root.isConnected)return;
-  // 25fps is smooth for the worm while avoiding saturation of software canvas.
-  if(now-lastPreviewPaint<39){previewFrame=requestAnimationFrame(paintPreview);return;}
+  // 40 fps preserves smooth travelling bends without overworking Canvas.
+  if(now-lastPreviewPaint<25){previewFrame=requestAnimationFrame(paintPreview);return;}
   lastPreviewPaint=now;
   const w=preview.width,h=preview.height,t=now*.001;
   pc.clearRect(0,0,w,h);
   pc.fillStyle='#090719';pc.fillRect(0,0,w,h);
   for(let i=0;i<85;i++){
-   const parallax=i%3===0?59:37;
+   const parallax=i%3===0?92:58;
    const x=((i*397.71-t*parallax)%w+w)%w,y=(i*181.39)%h;
    const a=.25+.5*(.5+.5*Math.sin(t*1.8+i*1.76));
    pc.fillStyle='rgba(227,220,255,'+a.toFixed(3)+')';
