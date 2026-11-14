@@ -397,7 +397,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
       'Preview worm and glow must remain inside the 920x220 canvas: '+JSON.stringify(previewBounds));
     assert.ok(previewMotion.tailMotion>2&&previewMotion.bodyMotion>2,
       'Worm preview must flow along its previous trajectory, not hang motionless: '+JSON.stringify(previewMotion));
-    assert.equal(await page.locator('.ws-preset').count(),16);
+    assert.equal(await page.locator('.ws-preset').count(),18);
     assert.equal(await page.locator('.ws-preset[data-skin="nebula"]').isEnabled(),true);
     assert.equal(await page.locator('.ws-preset[data-skin="aurora"]').isEnabled(),true);
     assert.equal(await page.locator('.ws-preset[data-skin="pulsar"]').isEnabled(),false,
@@ -414,9 +414,14 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.equal(await page.locator('.ws-preview-canvas').isVisible(),true,'Live moving worm preview should be visible');
     assert.equal(await page.locator('.ws-preview-canvas').evaluate(el=>getComputedStyle(el).objectFit),'fill',
       'Canvas must cover the whole preview surface without black pillarboxes at the sides');
+    const sceneRatio=await page.locator('.ws-preview-canvas').evaluate(el=>{
+     const r=el.getBoundingClientRect();return r.width/r.height;
+    });
+    assert.ok(Math.abs(sceneRatio-920/220)<.03,
+      'Worm heads must keep their aspect ratio, not be squashed by CSS: '+sceneRatio);
     await page.waitForFunction(()=>{const c=document.querySelector('.ws-preview-canvas');if(!c)return false;const p=c.getContext('2d').getImageData(700,80,80,70).data;return p.some((v,i)=>i%4!==3&&v>150)},null,{timeout:5000});
     assert.equal(await page.locator('.ws-advanced-summary').isVisible(),true,'Advanced body painter toggle exists');
-    assert.equal(await page.locator('.ws-head-choice').count(),30,'All 30 illustrated head designs must be available');
+    assert.equal(await page.locator('.ws-head-choice').count(),32,'All 32 illustrated head designs must be available');
     assert.equal(await page.evaluate(()=>window.WormHeadArt===window.WormSkinStudio.headArt),true,
       'Gameplay and workshop must share exactly one source of artwork');
     const headReady=await page.evaluate(async()=>{
@@ -433,7 +438,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
       }
       return true;
     });
-    assert.ok(headReady,'All 30 canonical workshop SVGs must paint on gameplay Canvas');
+    assert.ok(headReady,'All 32 canonical workshop SVGs must paint on gameplay Canvas');
     const headFit=await page.evaluate(()=>{
       const art=window.WormHeadArt;
       return art.ids.map(id=>{
@@ -441,7 +446,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
        return {id,width:d?.width,height:d?.height,orientation:art.orientation(id)};
       });
     });
-    assert.ok(headFit.length===30&&headFit.every(h=>h.width>=40&&h.height>=40&&
+    assert.ok(headFit.length===32&&headFit.every(h=>h.width>=40&&h.height>=40&&
       h.width<=74&&h.height<=74),
       'Every head must cover the body diameter without becoming oversized: '+JSON.stringify(headFit));
     const headPaint=await page.evaluate(async()=>{
@@ -468,7 +473,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
       }
       return results;
     });
-    assert.ok(headPaint.length===30&&headPaint.every(p=>
+    assert.ok(headPaint.length===32&&headPaint.every(p=>
       !p.missing&&p.width>=30&&p.height>=30&&p.visiblePixels>=420),
       'Each game head must paint a full visible illustration, not the tiny clipped stripes: '+
       JSON.stringify(headPaint));
@@ -492,8 +497,8 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
         Math.abs((c.top+c.height/2)-(s.top+s.height/2))<2),
        closeColor:close&&getComputedStyle(close).color};
     }));
-    assert.ok(iconMetrics.length===30&&iconMetrics.every(v=>v.hasCanvas&&v.painted&&v.visible&&v.iconWidth>=35),
-      'All 30 head selectors must use the same visible Canvas drawing as gameplay: '+JSON.stringify(iconMetrics));
+    assert.ok(iconMetrics.length===32&&iconMetrics.every(v=>v.hasCanvas&&v.painted&&v.visible&&v.iconWidth>=35),
+      'All 32 head selectors must use the same visible Canvas drawing as gameplay: '+JSON.stringify(iconMetrics));
     assert.ok(iconMetrics.some(v=>v.shape==='pizza'&&v.painted),
       'Pizza head must be visibly rendered in the preview');
     assert.ok(iconMetrics.some(v=>v.shape==='pig'&&v.painted),

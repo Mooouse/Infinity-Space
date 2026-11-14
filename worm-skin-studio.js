@@ -55,6 +55,9 @@ function grantAdReward(type,id){
  return true;
 }
 function headUnlocked(id){return HEADS.includes(id)&&(!AD_ONLY_HEADS.has(id)||adOwned('head',id))}
+const playgamaBuild=()=>window.SpacePlaygamaBuild===true||location.protocol==='blob:'||
+ /(^|\\.)playgama\\.(com|io)$/.test(location.hostname||'')||
+ new URLSearchParams(location.search).has('playgama');
 // Preset skins are lasting rewards for rank-one finishes, eliminations
 // and personal mass records. The first two are always available.
 const UNLOCKS={
@@ -361,6 +364,7 @@ function open({onChange,onClose}={}){
  function renderHeads(){
   const list=$('.ws-head-options');list.replaceChildren();
   for(const id of HEADS){
+   if(playgamaBuild()&&AD_ONLY_HEADS.has(id))continue;
    const locked=AD_ONLY_HEADS.has(id)&&!headUnlocked(id);
    const b=document.createElement('button');b.type='button';
    b.className='ws-head-choice'+(locked?' ad-locked':'')+(data.head===id?' selected':'');
@@ -407,6 +411,7 @@ function open({onChange,onClose}={}){
  function renderPresets(){
   const list=$('.ws-presets');list.replaceChildren();
   PRESETS.forEach(p=>{
+   if(playgamaBuild()&&AD_ONLY_SKINS.has(p[0]))return;
    const reward=rewardFor(p[0]);
    const item=document.createElement('button');item.type='button';
    item.className='ws-preset'+(data.skin===p[0]&&!data.customEnabled?' selected':'');

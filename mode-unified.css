@@ -1873,3 +1873,41 @@ html body:has(#worm-field) #mode-music-open:focus-visible{outline:2px solid #dcb
 .ws-overlay .ws-head-choice .ws-head-unlock{display:block;max-width:100%}
 .ws-overlay .ws-preset.ad-locked:hover,.ws-overlay .ws-head-choice.ad-locked:hover{box-shadow:0 0 16px #ffc05f48!important}
 .ws-overlay .ws-preset.ad-locked:disabled,.ws-overlay .ws-head-choice.ad-locked:disabled{opacity:.65;cursor:default!important}
+
+/* CrazyGames-only optional rewards. Never make a skip/restart path smaller
+   or less prominent than the ad action. */
+#arena-result-revive-ad[hidden],#worm-revive-ad[hidden],#worm-revive-note[hidden]{display:none!important}
+.worm-revive-note,.arena-ad-status{
+ display:block;max-width:100%;text-align:center;margin:9px 0 13px;
+ font:750 12px/1.55 Inter,system-ui,sans-serif;color:#edc8ff;
+}
+.arena-ad-status:empty{display:none}
+#arena-death-offer .panel{
+ width:min(540px,calc(100vw - 24px))!important;max-width:540px!important;
+ padding:clamp(18px,3vw,32px)!important;
+}
+#arena-death-offer .hero{font-size:clamp(25px,5vw,43px)!important;color:#f2e6ff!important;margin:10px 0!important}
+#arena-death-offer .desc{font-size:13px!important;color:#dac9ef!important;line-height:1.5!important}
+#arena-death-offer .arena-dialog-actions button{
+ min-height:52px!important;color:#f8ecff!important;font-weight:850!important;
+ background:linear-gradient(155deg,#2e1e46,#1a102c)!important;
+ border:1px solid #725396!important;border-bottom:3px solid #392452!important;
+ border-radius:10px!important;
+}
+#arena-death-offer .arena-dialog-actions button.primary{
+ background:linear-gradient(155deg,#593099,#3b1c73)!important;
+ border-color:#b38bff!important;
+}
+#arena-death-offer .arena-dialog-actions button:not(:disabled):hover{
+ box-shadow:0 0 16px #a46aff66!important;border-color:#e7caff!important;
+}
+#arena-death-offer .arena-dialog-actions button:disabled,
+#result .arena-dialog-actions button:disabled,
+#worm-result .worm-actions button:disabled{opacity:.56!important;cursor:wait!important}
+#result #arena-result-revive-ad:not([hidden]){
+ border-color:#c69eff!important;box-shadow:0 0 14px #9d64fb45!important;
+}
+@media(max-width:460px){
+ #arena-death-offer .arena-dialog-actions{grid-template-columns:1fr!important}
+ #arena-death-offer .arena-dialog-actions button{min-height:47px!important}
+}

@@ -36,7 +36,17 @@ const {chromium}=require('playwright');
    'Single-HTML Worms build must use mass, not the removed length HUD');
   assert.equal((await page.locator('#worm-mass').locator('xpath=..').locator('small').textContent()).trim(),
    'MASS','Embedded HUD mass must agree with the leaderboard metric');
+  assert.equal(await page.evaluate(()=>window.SpaceCrazyAds?.supported),false,
+   'Playgama must never activate CrazyGames advertisements');
   await page.locator('#worm-pause').click();
+  await page.locator('#worm-skins-open').click();
+  assert.equal(await page.locator('.ws-head-choice[data-head="rocket"]').count(),0,
+   'CrazyGames ad-only heads stay out of Playgama');
+  assert.equal(await page.locator('.ws-preset[data-skin="adnova"]').count(),0,
+   'CrazyGames ad-only skins stay out of Playgama');
+  await page.locator('.ws-x').click();
+  await page.locator('#worm-pause-overlay').waitFor({state:'visible',timeout:6000});
+
   await page.locator('#worm-settings-open').click();
   assert.equal(await page.locator('#worm-settings').isVisible(),true);
   // The embedded blob mode must still open the real main Settings page
