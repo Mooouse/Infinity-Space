@@ -412,6 +412,8 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
       'Preset preview must show a continuous skin gradient');
     assert.equal(await page.locator('.ws-bead').count(),64,'All 64 segment colors can be customized');
     assert.equal(await page.locator('.ws-preview-canvas').isVisible(),true,'Live moving worm preview should be visible');
+    assert.equal(await page.locator('.ws-preview-canvas').evaluate(el=>getComputedStyle(el).objectFit),'contain',
+      'Mobile workshop previews must show the complete worm, never crop its head or tail');
     await page.waitForFunction(()=>{const c=document.querySelector('.ws-preview-canvas');if(!c)return false;const p=c.getContext('2d').getImageData(700,80,80,70).data;return p.some((v,i)=>i%4!==3&&v>150)},null,{timeout:5000});
     assert.equal(await page.locator('.ws-advanced-summary').isVisible(),true,'Advanced body painter toggle exists');
     assert.equal(await page.locator('.ws-head-choice').count(),30,'All 30 illustrated head designs must be available');
