@@ -43,7 +43,7 @@ const playgamaMock = `window.bridge = {
           null,{timeout:30000});
         assert.equal(await page.evaluate(()=>window.__playgamaInit?.path),
           './playgama-bridge-config.json','Playgama upload must read sibling config');
-        assert.equal(await page.evaluate(mode=>window.SpaceOpenMode(mode)),true);
+        assert.equal(await page.evaluate(mode=>window.SpaceOpenMode(mode),mode),true);
         await page.waitForURL(url=>url.protocol==='blob:',{timeout:20000});
         await page.waitForFunction(()=>window.SpacePlatform?.status==='ready',
           null,{timeout:25000});
