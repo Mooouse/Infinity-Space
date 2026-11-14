@@ -1793,8 +1793,25 @@ $('worm-revive-ad').onclick=async()=>{
  if(success){reviveWormWithHalfMass();return;}
  note.textContent=({ru:'Реклама не завершена. Масса не восстановлена.',en:'Ad incomplete. Mass not restored.',es:'Anuncio incompleto. Masa no restaurada.'})[language];
 };
-$('worm-restart').onclick=()=>{if(game.adPending)return;init();window.SpacePlatform?.playing?.(game.state==='playing');};
-$('worm-result-menu').onclick=()=>{if(!game.adPending)exit();};
+// On declining the optional rewarded offer, the NEXT ROUND is an eligible
+// natural break for a midgame ad. Never show it while the offer is open.
+async function leaveWormResults(next){
+ if(game.adPending)return;
+ const current=game;
+ if(current.state==='finished'&&!current.reviveUsed&&current.time>=45&&window.SpaceCrazyAds?.available){
+  current.adPending=true;
+  const buttons=$('worm-result').querySelectorAll('.worm-actions button');
+  buttons.forEach(b=>b.disabled=true);
+  try{await window.SpaceCrazyAds.midgame();}
+  finally{
+   if(game===current){current.adPending=false;buttons.forEach(b=>b.disabled=false);}
+  }
+  if(game!==current)return;
+ }
+ next();
+}
+$('worm-restart').onclick=()=>leaveWormResults(()=>{init();window.SpacePlatform?.playing?.(game.state==='playing');});
+$('worm-result-menu').onclick=()=>leaveWormResults(exit);
 const boost=$('worm-boost');
 boost.addEventListener('pointerdown',e=>{if(game.state!=='playing')return;e.preventDefault();boost.setPointerCapture(e.pointerId);input.boostTouch=true;});
 for(const evt of ['pointerup','pointercancel','lostpointercapture'])boost.addEventListener(evt,()=>{input.boostTouch=false;});

@@ -734,8 +734,27 @@ if(name==='pulse'&&p.pulseCD<=0){p.pulseCD=8.5;p.ring=1;for(const q of game.peop
 $('pause').onclick=togglePause;$('resume').onclick=togglePause;
 $('arena-pause-sound').onclick=()=>{arenaMuted=!arenaMuted;try{localStorage.setItem('infinity-space-arena-muted',arenaMuted?'1':'0')}catch(_){}syncArenaAudio();if(!arenaMuted)sound(420,.095,'sine',.017);};
 syncArenaAudio();
-$('again').onclick=()=>{if(game?.adPending)return;if(game?.state==='finished'&&!game.reported)recordArenaMatch(game.resultWon,game.resultRank);init(mode);};
-$('change').onclick=()=>{if(game?.adPending)return;if(game?.state==='finished'&&!game.reported)recordArenaMatch(game.resultWon,game.resultRank);showMenu();};
+// Midgame ad after DECLINING a rewarded Royale revive is requested only on
+// explicit next-round/navigation action, not in the rewarded-offer dialog.
+async function leaveArenaResults(next){
+ if(game?.adPending)return;
+ const current=game;
+ if(current?.state==='finished'){
+  if(!current.reported)recordArenaMatch(current.resultWon,current.resultRank);
+  if(current.finishReason==='royale'&&!current.reviveUsed&&
+     current.elapsed>=60&&window.SpaceCrazyAds?.available){
+   current.adPending=true;
+   const buttons=$('result').querySelectorAll('button');
+   buttons.forEach(b=>b.disabled=true);
+   try{await window.SpaceCrazyAds.midgame();}
+   finally{if(game===current){current.adPending=false;buttons.forEach(b=>b.disabled=false);}}
+   if(game!==current)return;
+  }
+ }
+ next();
+}
+$('again').onclick=()=>leaveArenaResults(()=>init(mode));
+$('change').onclick=()=>leaveArenaResults(showMenu);
 $('change2').onclick=showMenu;
 ['shield','pulse','dash'].forEach(id=>$(id).addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();useAbility(id)}));
 addEventListener('keydown',e=>{const code=e.code;if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyQ','KeyE','KeyP'].includes(code))e.preventDefault();keys[code]=true;if(e.repeat)return;if(code==='Space'||code==='ShiftLeft'||code==='ShiftRight')useAbility('dash');if(code==='KeyE')useAbility('pulse');if(code==='KeyQ')useAbility('shield');if(code==='KeyP'&&game&&game.state!=='guide')togglePause();if(code==='Escape'&&game&&game.state==='playing')togglePause();});addEventListener('keyup',e=>keys[e.code]=false);addEventListener('blur',()=>{keys={};if(game&&game.state==='playing')togglePause()});
