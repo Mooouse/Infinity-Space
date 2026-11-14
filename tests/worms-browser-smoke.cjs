@@ -87,9 +87,9 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
      };
     });
     assert.equal(saturated.brand,'rgb(255, 229, 0)','Bright yellow accent required');
-    assert.equal(saturated.mass,'rgb(247, 248, 255)','Neutral HUD numbers should not create a rainbow');
-    assert.equal(saturated.rank,'rgb(255, 229, 0)','Leaderboard rank should be highlighted in gold');
-    assert.equal(saturated.timer,'rgb(224, 229, 248)');
+    assert.equal(saturated.mass,'rgb(255, 248, 255)','Neutral HUD numbers should not create a rainbow');
+    assert.equal(saturated.rank,'rgb(255, 214, 63)','Leaderboard rank should be highlighted in gold');
+    assert.equal(saturated.timer,'rgb(255, 248, 255)');
     assert.equal(saturated.blue,'#2860ff');
     assert.equal(saturated.purple,'#9922ff');
     assert.equal(a.world.w,22400);assert.equal(a.world.h,22400);
@@ -150,10 +150,10 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     if(width>=1280){
      await page.locator('#worm-pause').hover();
      assert.equal(await page.locator('#worm-pause').evaluate(el=>getComputedStyle(el).borderTopColor),
-      'rgb(225, 208, 255)','New compact pause button must keep its lavender glow');
+      'rgb(240, 220, 255)','Glass pause dial must glow lavender');
      await page.locator('#worm-boost').hover();
      assert.equal(await page.locator('#worm-boost').evaluate(el=>getComputedStyle(el).borderTopColor),
-      'rgb(255, 212, 224)','Acceleration button must glow red/pink, not purple');
+      'rgb(255, 206, 218)','Sprint dial must glow pink, not purple');
     }
     await page.evaluate(()=>{window.InfinityWormsQA.testProtection(90);window.InfinityWormsQA.freezeRealtime(true);});
     const skillMix=await page.evaluate(()=>window.InfinityWormsQA.botSkillBalanceProbe());
@@ -329,39 +329,29 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.equal(await page.locator('#worm-pause-overlay').isVisible(),true,'Skin editor returns to pause');
     await page.locator('#worm-settings-open').click();
     assert.equal(await page.locator('#worm-settings').isVisible(),true);
-    // The camera-distance slider was deliberately removed: camera changes
-    // are now small gestures directly on the live playfield.
-    assert.equal(await page.locator('#worm-setting-zoom').count(),0);
-    assert.equal(await page.locator('#worm-zoom-value').count(),0);
-    assert.equal(await page.locator('#worm-settings-sound').count(),1);
-    assert.equal(await page.locator('#worm-settings-skins').count(),1);
-    assert.equal(await page.locator('#worm-settings [data-settings-tab]').count(),4,
-      'Worms settings must use the same full category page as the main game');
-    assert.equal(await page.locator('#worm-settings [data-settings-pane].active').count(),1);
-    if(width>=1280){
-     await page.locator('#worm-settings-back').hover();
-     await page.waitForTimeout(220);
-     const style=await page.locator('#worm-settings-back').evaluate(el=>{
-      const cs=getComputedStyle(el);return {border:cs.borderTopColor,glow:cs.boxShadow};
-     });
-     assert.equal(style.border,'rgb(236, 223, 255)',
-      'Main-style settings save button must reach bright lavender on hover');
-     assert.ok(style.glow!=='none'&&style.glow.includes('rgb('),
-      'Settings save button must retain a visible hover glow');
-    }
-    await page.locator('#worm-settings [data-settings-tab="graphics"]').click();
-    await page.locator('#worm-setting-glow').uncheck({force:true});
-    await page.locator('#worm-setting-names').uncheck({force:true});
-    await page.locator('#worm-settings [data-settings-tab="audio"]').click();
-    const audioBefore=await page.locator('#worm-settings-sound').getAttribute('aria-pressed');
-    await page.locator('#worm-settings-sound').click();
-    assert.notEqual(await page.locator('#worm-settings-sound').getAttribute('aria-pressed'),audioBefore,
-      'Settings sound button toggles the persisted audio setting');
-    assert.equal(await page.locator('#worm-pause-sound').getAttribute('aria-pressed'),
-      await page.locator('#worm-settings-sound').getAttribute('aria-pressed'),
-      'Settings and pause must share a single audio toggle');
-    await page.locator('#worm-settings-back').click();
-    assert.equal(await page.locator('#worm-pause-overlay').isVisible(),true,'Settings Back must return to pause');
+    // The original Infinity Space settings page is hosted in a frame, NOT
+    // an independently designed duplicate in the Worms document.
+    assert.equal(await page.locator('#worm-settings [data-settings-tab]').count(),0,
+      'Remove the duplicate mode-specific settings screen');
+    assert.equal(await page.locator('#worm-settings-frame').count(),1);
+    await page.waitForFunction(()=>
+      document.getElementById('worm-settings-frame')?.src.includes('worm-settings-embed=1'),
+      null,{timeout:15000});
+    const mainSettings=page.frameLocator('#worm-settings-frame');
+    await mainSettings.locator('#screen-settings').waitFor({state:'visible',timeout:30000});
+    assert.equal(await mainSettings.locator('#screen-settings [data-settings-tab]').count(),4,
+      'Pause opens the actual primary settings screen with all four main sections');
+    assert.equal(await mainSettings.locator('#screen-settings [data-settings-pane].active').count(),1);
+    assert.equal(await mainSettings.locator('#screen-settings [data-save-settings]').count(),1);
+    await mainSettings.locator('#screen-settings [data-settings-tab="audio"]').click();
+    assert.equal(await mainSettings.locator('#screen-settings [data-settings-pane="audio"].active').count(),1);
+    await mainSettings.locator('#screen-settings [data-settings-tab="graphics"]').click();
+    assert.equal(await mainSettings.locator('#screen-settings [data-settings-pane="graphics"].active').count(),1);
+    await mainSettings.locator('#screen-settings .br-head-back').click();
+    assert.equal(await page.locator('#worm-settings').isVisible(),false,
+      'Back closes the real settings without leaving the match');
+    assert.equal(await page.locator('#worm-pause-overlay').isVisible(),true,
+      'Main Settings Back must restore the original Worms pause');
     await page.locator('#worm-open-guide').click();
     assert.equal(await page.locator('#worm-guide').isVisible(),true);
     await page.locator('#worm-guide-skip').click();
