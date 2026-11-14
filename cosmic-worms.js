@@ -97,7 +97,7 @@ function syncWormControlMode(){
  input.touchAngle=null;
  input.stickPointer=-1;
  const floating=document.getElementById('worm-stick');
- if(floating){floating.classList.remove('floating-active');floating.style.left='';floating.style.top='';}
+ if(floating){floating.classList.remove('floating-active');floating.style.removeProperty('--floating-left');floating.style.removeProperty('--floating-top');}
  const thumb=document.getElementById('worm-thumb');
  if(thumb)thumb.style.transform='translate(0,0)';
 }
@@ -1834,7 +1834,7 @@ function releaseStick(pointerId){
  if(pointerId!==input.stickPointer)return;
  input.stickPointer=-1;input.stickPower=0;thumb.style.transform='translate(0,0)';
  stick.classList.remove('floating-active');
- stick.style.left='';stick.style.top='';
+ stick.style.removeProperty('--floating-left');stick.style.removeProperty('--floating-top');
 }
 stick.addEventListener('pointerdown',e=>{
  if(effectiveControlMode()==='floating'||game.state!=='playing')return;
@@ -1848,7 +1848,7 @@ function startFloatingStick(e){
  const width=stick.offsetWidth||110,height=stick.offsetHeight||110;
  const x=clamp(e.clientX-width/2,0,Math.max(0,vw-width));
  const y=clamp(e.clientY-height/2,0,Math.max(0,vh-height));
- stick.style.left=x+'px';stick.style.top=y+'px';
+ stick.style.setProperty('--floating-left',x+'px');stick.style.setProperty('--floating-top',y+'px');
  stick.classList.add('floating-active');
  input.touchAngle=null;
  updateStick(e);
