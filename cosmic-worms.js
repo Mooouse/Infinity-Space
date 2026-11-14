@@ -82,10 +82,20 @@ const SKINS=[
 const SETTINGS_KEY='infinity-space-worms-settings-v2';
 function loadSettings(){
  try{const s=JSON.parse(localStorage.getItem(SETTINGS_KEY));if(s&&typeof s==='object')
-  return {skin:SKINS.some(v=>v.id===s.skin)?s.skin:'nebula',glow:s.glow!==false,names:s.names!==false,viewZoom:clamp(Number(s.viewZoom)||1,.84,1.16),head:['classic','blackhole','pulsar','comet','crystal','eclipse'].includes(s.head)?s.head:'classic',muted:s.muted===true,customEnabled:s.customEnabled===true,customSegments:Array.isArray(s.customSegments)?s.customSegments.filter(c=>/^#[0-9a-f]{6}$/i.test(c)).slice(0,64):[]};}catch(_){}
- return {skin:'nebula',glow:true,names:true,viewZoom:1,head:'classic',muted:false,customEnabled:false,customSegments:[]};
+  return {skin:SKINS.some(v=>v.id===s.skin)?s.skin:'nebula',glow:s.glow!==false,names:s.names!==false,viewZoom:clamp(Number(s.viewZoom)||1,.84,1.16),head:['classic','blackhole','pulsar','comet','crystal','eclipse'].includes(s.head)?s.head:'classic',muted:s.muted===true,controlMode:['auto','mouse','keys','stick','touch'].includes(s.controlMode)?s.controlMode:'auto',customEnabled:s.customEnabled===true,customSegments:Array.isArray(s.customSegments)?s.customSegments.filter(c=>/^#[0-9a-f]{6}$/i.test(c)).slice(0,64):[]};}catch(_){}
+ return {skin:'nebula',glow:true,names:true,viewZoom:1,head:'classic',muted:false,controlMode:'auto',customEnabled:false,customSegments:[]};
 }
 const options=loadSettings();
+function syncWormControlMode(){
+ document.documentElement.dataset.wormControl=options.controlMode;
+ input.stickPower=0;
+ input.touchAngle=null;
+}
+window.addEventListener('storage',e=>{
+ if(e.key!==SETTINGS_KEY)return;
+ Object.assign(options,loadSettings());
+ syncWormControlMode();syncPauseSound();
+});
 function saveOptions(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(options));}catch(_){}}
 
 let wormAudioContext=null,wormAudioMaster=null,lastWormPickupSound=0;
@@ -217,6 +227,7 @@ let game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),w
 let qaManualPhysics=false; // tester-only: stop rAF simulation while deterministic QA advances physics
 let lastIdlePaint=0;
 const input={mx:0,my:0,mouseMoved:false,mouseDown:false,boostKey:false,boostTouch:false,keys:new Set(),stickAngle:0,stickPower:0,stickPointer:-1,touchAngle:null};
+syncWormControlMode();
 const camera={x:WORLD.cx,y:WORLD.cy,zoom:1};
 const stars=Array.from({length:680},(_,i)=>({x:Math.random(),y:Math.random(),r:i%8===0?1.6:rand(.35,1.05),a:rand(.42,1),phase:rand(0,TAU),depth:rand(.04,.17),c:['#ff1744','#27ff40','#ffe500','#ffffff','#9922ff','#2860ff'][i%6]}));
 const nebula=Array.from({length:8},(_,i)=>({x:rand(.1,.94),y:rand(.1,.88),r:rand(.18,.40),c:['#9922ff','#2860ff','#ff1744','#27ff40','#ffe500','#2860ff','#9922ff','#ff1744'][i]}));
@@ -1038,10 +1049,11 @@ function updateWorm(w,dt){
   const keys=input.keys;
   let dx=(keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')?1:0);
   let dy=(keys.has('KeyS')||keys.has('ArrowDown')?1:0)-(keys.has('KeyW')||keys.has('ArrowUp')?1:0);
-  if(dx||dy)w.target=Math.atan2(dy,dx);
-  else if(input.stickPower>.18)w.target=input.stickAngle;
-  else if(input.touchAngle!==null)w.target=input.touchAngle;
-  else if(input.mouseMoved){
+  const mode=options.controlMode||'auto';
+  if((mode==='auto'||mode==='keys')&&(dx||dy))w.target=Math.atan2(dy,dx);
+  else if((mode==='auto'||mode==='stick')&&input.stickPower>.18)w.target=input.stickAngle;
+  else if((mode==='auto'||mode==='touch')&&input.touchAngle!==null)w.target=input.touchAngle;
+  else if((mode==='auto'||mode==='mouse')&&input.mouseMoved){
    // Pointer steering is relative to the ACTUAL projected head, not the
    // screen center: smoothing/zoom no longer makes steering feel offset.
    const sx=vw*.5+(w.x-camera.x)*camera.zoom;
@@ -1678,6 +1690,7 @@ function showSettings(){
 }
 function closeSettings(){
  if(game.state!=='settings')return;
+ Object.assign(options,loadSettings());syncWormControlMode();
  game.state='paused';
  $('worm-settings').hidden=true;
  $('worm-settings-frame').src='about:blank';
