@@ -84,14 +84,22 @@ const SKINS=[
 const SETTINGS_KEY='infinity-space-worms-settings-v2';
 function loadSettings(){
  try{const s=JSON.parse(localStorage.getItem(SETTINGS_KEY));if(s&&typeof s==='object')
-  return {skin:SKINS.some(v=>v.id===s.skin)?s.skin:'nebula',glow:s.glow!==false,names:s.names!==false,viewZoom:clamp(Number(s.viewZoom)||1,.84,1.16),head:window.WormSkinStudio?.isHeadUnlocked?.(s.head)?s.head:'classic',muted:s.muted===true,controlMode:['auto','mouse','keys','stick','touch'].includes(s.controlMode)?s.controlMode:'auto',customEnabled:s.customEnabled===true,customSegments:Array.isArray(s.customSegments)?s.customSegments.filter(c=>/^#[0-9a-f]{6}$/i.test(c)).slice(0,64):[]};}catch(_){}
- return {skin:'nebula',glow:true,names:true,viewZoom:1,head:'classic',muted:false,controlMode:'auto',customEnabled:false,customSegments:[]};
+  return {skin:SKINS.some(v=>v.id===s.skin)?s.skin:'nebula',glow:s.glow!==false,names:s.names!==false,viewZoom:clamp(Number(s.viewZoom)||1,.84,1.16),head:window.WormSkinStudio?.isHeadUnlocked?.(s.head)?s.head:'classic',muted:s.muted===true,controlMode:['auto','mouse','keys','stick','touch'].includes(s.controlMode)?s.controlMode:'auto',mobileControlMode:['fixed','floating','touch'].includes(s.mobileControlMode)?s.mobileControlMode:'fixed',customEnabled:s.customEnabled===true,customSegments:Array.isArray(s.customSegments)?s.customSegments.filter(c=>/^#[0-9a-f]{6}$/i.test(c)).slice(0,64):[]};}catch(_){}
+ return {skin:'nebula',glow:true,names:true,viewZoom:1,head:'classic',muted:false,controlMode:'auto',mobileControlMode:'fixed',customEnabled:false,customSegments:[]};
 }
 const options=loadSettings();
+function phoneSteering(){return matchMedia('(pointer:coarse) and (max-width:1024px)').matches||matchMedia('(max-width:760px)').matches;}
+function effectiveControlMode(){return phoneSteering()?options.mobileControlMode:options.controlMode;}
 function syncWormControlMode(){
- document.documentElement.dataset.wormControl=options.controlMode;
+ document.documentElement.dataset.wormControl=effectiveControlMode();
+ document.documentElement.dataset.wormDevice=phoneSteering()?'phone':'desktop';
  input.stickPower=0;
  input.touchAngle=null;
+ input.stickPointer=-1;
+ const floating=document.getElementById('worm-stick');
+ if(floating){floating.classList.remove('floating-active');floating.style.left='';floating.style.top='';}
+ const thumb=document.getElementById('worm-thumb');
+ if(thumb)thumb.style.transform='translate(0,0)';
 }
 window.addEventListener('storage',e=>{
  if(e.key!==SETTINGS_KEY)return;
@@ -1076,11 +1084,11 @@ function updateWorm(w,dt){
   const keys=input.keys;
   let dx=(keys.has('KeyD')||keys.has('ArrowRight')?1:0)-(keys.has('KeyA')||keys.has('ArrowLeft')?1:0);
   let dy=(keys.has('KeyS')||keys.has('ArrowDown')?1:0)-(keys.has('KeyW')||keys.has('ArrowUp')?1:0);
-  const mode=options.controlMode||'auto';
-  if((mode==='auto'||mode==='keys')&&(dx||dy))w.target=Math.atan2(dy,dx);
-  else if((mode==='auto'||mode==='stick')&&input.stickPower>.18)w.target=input.stickAngle;
+  const mode=effectiveControlMode();
+  if(!phoneSteering()&&(mode==='auto'||mode==='keys')&&(dx||dy))w.target=Math.atan2(dy,dx);
+  else if((mode==='auto'||mode==='stick'||mode==='fixed'||mode==='floating')&&input.stickPower>.18)w.target=input.stickAngle;
   else if((mode==='auto'||mode==='touch')&&input.touchAngle!==null)w.target=input.touchAngle;
-  else if((mode==='auto'||mode==='mouse')&&input.mouseMoved){
+  else if(!phoneSteering()&&(mode==='auto'||mode==='mouse')&&input.mouseMoved){
    // Pointer steering is relative to the ACTUAL projected head, not the
    // screen center: smoothing/zoom no longer makes steering feel offset.
    const sx=vw*.5+(w.x-camera.x)*camera.zoom;
@@ -1822,10 +1830,30 @@ function updateStick(e){
  const amt=Math.min(max,d);thumb.style.transform='translate('+((dx/(d||1))*amt)+'px,'+((dy/(d||1))*amt)+'px)';
  input.stickPower=clamp(d/(max||1),0,1);if(d>4)input.stickAngle=Math.atan2(dy,dx);
 }
-stick.addEventListener('pointerdown',e=>{e.preventDefault();input.stickPointer=e.pointerId;stick.setPointerCapture(e.pointerId);updateStick(e);});
+function releaseStick(pointerId){
+ if(pointerId!==input.stickPointer)return;
+ input.stickPointer=-1;input.stickPower=0;thumb.style.transform='translate(0,0)';
+ stick.classList.remove('floating-active');
+ stick.style.left='';stick.style.top='';
+}
+stick.addEventListener('pointerdown',e=>{
+ if(effectiveControlMode()==='floating'||game.state!=='playing')return;
+ e.preventDefault();input.stickPointer=e.pointerId;stick.setPointerCapture(e.pointerId);updateStick(e);
+});
 stick.addEventListener('pointermove',e=>{if(input.stickPointer===e.pointerId)updateStick(e);});
-const stopStick=e=>{if(e.pointerId!==input.stickPointer)return;input.stickPointer=-1;input.stickPower=0;thumb.style.transform='translate(0,0)';};
-stick.addEventListener('pointerup',stopStick);stick.addEventListener('pointercancel',stopStick);stick.addEventListener('lostpointercapture',stopStick);
+for(const name of ['pointerup','pointercancel','lostpointercapture'])
+ stick.addEventListener(name,e=>releaseStick(e.pointerId));
+function startFloatingStick(e){
+ input.stickPointer=e.pointerId;
+ const width=stick.offsetWidth||110,height=stick.offsetHeight||110;
+ const x=clamp(e.clientX-width/2,0,Math.max(0,vw-width));
+ const y=clamp(e.clientY-height/2,0,Math.max(0,vh-height));
+ stick.style.left=x+'px';stick.style.top=y+'px';
+ stick.classList.add('floating-active');
+ input.touchAngle=null;
+ updateStick(e);
+}
+window.addEventListener('resize',syncWormControlMode);
 // Small camera adjustment only: ±16%, with smooth camera easing.
 function changeViewZoom(ratio){
  if(!Number.isFinite(ratio)||ratio<=0)return;
@@ -1849,10 +1877,15 @@ canvas.addEventListener('pointermove',e=>{
   if(!canvasTouches.has(e.pointerId))return;
   canvasTouches.set(e.pointerId,{x:e.clientX,y:e.clientY});
   if(canvasTouches.size>=2){
+   if(effectiveControlMode()==='floating')releaseStick(input.stickPointer);
    const next=touchDistance();
    if(pinchDistance>0&&next>0)changeViewZoom(next/pinchDistance);
    pinchDistance=next;input.touchAngle=null;
-  }else input.touchAngle=Math.atan2(e.clientY-vh/2,e.clientX-vw/2);
+  }else if(phoneSteering()&&effectiveControlMode()==='floating'){
+   if(e.pointerId===input.stickPointer)updateStick(e);
+  }else if(!phoneSteering()||effectiveControlMode()==='touch'){
+   input.touchAngle=Math.atan2(e.clientY-vh/2,e.clientX-vw/2);
+  }
  }else{input.mx=e.clientX;input.my=e.clientY;input.mouseMoved=true;}
 });
 canvas.addEventListener('pointerdown',e=>{
@@ -1860,14 +1893,21 @@ canvas.addEventListener('pointerdown',e=>{
  if(e.pointerType==='mouse'&&e.button===0)input.mouseDown=true;
  if(e.pointerType==='touch'){
   canvasTouches.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  if(canvasTouches.size>=2){input.touchAngle=null;pinchDistance=touchDistance();}
-  else input.touchAngle=Math.atan2(e.clientY-vh/2,e.clientX-vw/2);
+  if(canvasTouches.size>=2){
+   if(effectiveControlMode()==='floating')releaseStick(input.stickPointer);
+   input.touchAngle=null;pinchDistance=touchDistance();
+  }else if(phoneSteering()&&effectiveControlMode()==='floating'){
+   startFloatingStick(e);
+  }else if(!phoneSteering()||effectiveControlMode()==='touch'){
+   input.touchAngle=Math.atan2(e.clientY-vh/2,e.clientX-vw/2);
+  }
  }
 });
 function endCanvasTouch(pointerId){
+ releaseStick(pointerId);
  canvasTouches.delete(pointerId);pinchDistance=canvasTouches.size>=2?touchDistance():0;
  const remaining=canvasTouches.values().next().value;
- input.touchAngle=canvasTouches.size===1&&remaining?
+ input.touchAngle=(!phoneSteering()||effectiveControlMode()==='touch')&&canvasTouches.size===1&&remaining?
   Math.atan2(remaining.y-vh/2,remaining.x-vw/2):null;
 }
 window.addEventListener('pointerup',e=>{
