@@ -1995,9 +1995,3 @@ body:has(#worm-field):has(.mode-music-overlay) #mode-music-open {
   left:calc(119px + env(safe-area-inset-left))!important;
  }
 }
-/* Achievement rarity really hides nonmatching rows, even when shared card
-   layout rules later gain their own display declarations. */
-body.ui-v15 :is(#screen-achievements,#screen-mode-achievements) .br-ach-row.is-filtered-out,
-body.ui-v15 :is(#screen-achievements,#screen-mode-achievements) .br-ach-row[hidden] {
- display:none!important;
-}
