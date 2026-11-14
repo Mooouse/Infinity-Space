@@ -37,6 +37,17 @@ const {chromium}=require('playwright');
   assert.equal((await page.locator('#worm-mass').locator('xpath=..').locator('small').textContent()).trim(),
    'MASS','Embedded HUD mass must agree with the leaderboard metric');
   await page.locator('#worm-pause').click();
+  await page.locator('#worm-settings-open').click();
+  assert.equal(await page.locator('#worm-settings').isVisible(),true);
+  // The embedded blob mode must still open the real main Settings page
+  // from the parent one-HTML game, not a duplicate mode-specific panel.
+  const mainSettings=page.frameLocator('#worm-settings-frame');
+  await mainSettings.locator('#screen-settings').waitFor({state:'visible',timeout:25000});
+  assert.equal(await mainSettings.locator('#screen-settings [data-settings-tab]').count(),4,
+    'Embedded Worms must display the actual main-game Settings page');
+  await mainSettings.locator('#screen-settings .br-head-back').click();
+  await page.locator('#worm-pause-overlay').waitFor({state:'visible',timeout:8000});
+  assert.equal(await page.locator('#worm-settings').isVisible(),false);
   await page.locator('#worm-exit').click();
   await page.waitForURL(/playgama\/index\.html\?select=worms/,{timeout:15000});
   await page.locator('#hub-mode-story').waitFor({state:'visible',timeout:20000});
