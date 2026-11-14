@@ -62,8 +62,7 @@ def build() -> str:
             nested = nested[:marker.end()] + '\n' + music_bootstrap + nested[marker.end():]
             # Blob pages inherit the host origin. The SDK is injected by
             # platform.js; do not incorrectly reject them solely for being blobs.
-            nested = nested.replace("location.protocol==='blob:'||\n  ", "")
-            nested = nested.replace("location.protocol==='blob:'||\n     ", "")
+            nested = nested.replace("location.protocol==='blob:'||", "")
             if 'location.protocol===\'blob:\'||' in nested:
                 raise RuntimeError('Blob advertising still disabled in ' + mode)
             payload[mode] = base64.b64encode(nested.encode('utf-8')).decode('ascii')
