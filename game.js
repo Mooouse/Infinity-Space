@@ -4650,6 +4650,28 @@ if(window.SpaceUIv15Templates && document.createElement('template').content){
   const controlSelect=move('[data-settings-pane="control"] select:nth-of-type(1)','set-control-mode');
   const cruiseOption=document.createElement('option');cruiseOption.value='direction';cruiseOption.textContent=L('Cruise arrow · continuous flight','Стрелка · постоянный полёт','Flecha · vuelo continuo');
   controlSelect.append(cruiseOption);controlSelect.value=g.controlMode;
+  // Separate Worms controls live inside the canonical Settings page.
+  const wormKey='infinity-space-worms-settings-v2';
+  const wormSection=document.createElement('section');wormSection.className='br-worm-control-group';
+  const wormHeading=document.createElement('h3');
+  wormHeading.textContent=L('COSMIC WORMS · CONTROLS','КОСМИЧЕСКИЕ ЧЕРВИ · УПРАВЛЕНИЕ','GUSANOS CÓSMICOS · CONTROLES');
+  const wormNote=document.createElement('p');
+  wormNote.textContent=L('Choose Worms steering independently. The phone joystick starts on the right.','Отдельно выбери управление червём. Стик на телефоне по умолчанию справа.','Elige los controles de Gusanos por separado. El joystick empieza a la derecha.');
+  const wormRow=document.createElement('label');wormRow.className='br-worm-control-row';
+  const wormLabel=document.createElement('span');wormLabel.textContent=L('Worm steering','Управление червём','Control del gusano');
+  const wormSelect=document.createElement('select');wormSelect.id='set-worm-control';
+  const wormModes=[
+   ['auto',L('Automatic · mouse / keyboard / joystick','Авто · мышь / клавиатура / стик','Automático · ratón / teclado / joystick')],
+   ['mouse',L('Follow cursor','Следовать за курсором','Seguir cursor')],
+   ['keys',L('Keyboard · WASD / arrows','Клавиатура · WASD / стрелки','Teclado · WASD / flechas')],
+   ['stick',L('Fixed joystick on the right','Фиксированный стик справа','Joystick fijo a la derecha')],
+   ['touch',L('Touch direction','Направление касанием','Dirección táctil')]
+  ];
+  wormModes.forEach(([value,label])=>{const option=document.createElement('option');option.value=value;option.textContent=label;wormSelect.append(option);});
+  try{const data=JSON.parse(localStorage.getItem(wormKey)||'{}');wormSelect.value=wormModes.some(m=>m[0]===data?.controlMode)?data.controlMode:'auto';}catch(_){wormSelect.value='auto';}
+  wormSelect.onchange=()=>{try{const data=JSON.parse(localStorage.getItem(wormKey)||'{}')||{};data.controlMode=wormSelect.value;localStorage.setItem(wormKey,JSON.stringify(data));}catch(_){}};
+  wormRow.append(wormLabel,wormSelect);wormSection.append(wormHeading,wormNote,wormRow);
+  q(root,'[data-settings-pane="control"]').append(wormSection);
   const controlPreview=document.createElement('div');controlPreview.className='control-selection-preview';controlPreview.setAttribute('aria-live','polite');
   controlSelect.closest('.br-option').append(controlPreview);
   const controlDescriptions={
