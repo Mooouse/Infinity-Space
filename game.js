@@ -4991,12 +4991,43 @@ if(window.SpaceUIv15Templates && document.createElement('template').content){
  refreshV15();
 }
 
-if(g.pendingDeath){pendingDeath=g.pendingDeath;showDeathOffer();}
+// Worms opens THIS ACTUAL main-menu settings screen, never a separately
+// maintained imitation. In embedded mode the iframe shows only settings;
+// Back/ESC returns to the live Worms pause screen in the parent document.
+const WORM_SETTINGS_EMBED=new URLSearchParams(location.search).get('worm-settings-embed')==='1';
+if(WORM_SETTINGS_EMBED){
+ const style=document.createElement('style');
+ style.textContent=`
+  html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#0b0619!important}
+  #universe,#hud,.vignette,#abyss-warning,#tester-panel,.v15-tester{
+    display:none!important
+  }
+  #modal{position:fixed!important;inset:0!important;display:block!important;
+    width:100%!important;height:100dvh!important;z-index:999!important;
+    background:#090615!important;overflow:auto!important}
+  #modal.off{display:block!important}
+  #screen-settings{min-height:100dvh}
+ `;
+ document.head.appendChild(style);
+ const closeEmbeddedSettings=()=>{
+  if(window.parent!==window)window.parent.postMessage({type:'infinity-space-worms-settings-close'},'*');
+ };
+ // Capture before the normal main-menu router: these are the real
+ // Settings Back controls, but their destination is the Worms match.
+ document.addEventListener('click',e=>{
+  if(e.target.closest('#screen-settings .br-head-back, #screen-settings .br-foot-secondary')){
+   e.preventDefault();e.stopImmediatePropagation();closeEmbeddedSettings();
+  }
+ },true);
+ addEventListener('keydown',e=>{
+  if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();closeEmbeddedSettings();}
+ },true);
+ showSettings();
+}else if(g.pendingDeath){pendingDeath=g.pendingDeath;showDeathOffer();}
 else{completeAway();showMainMenu();}
-// Start the selected (free by default) soundtrack on the main menu.
-// Browsers can reject audible autoplay until a real input event; retry on
-// user activation so the first click/tap/keypress starts the music.
-startMusic();
+// Keep the settings iframe silent: a hidden second main game must not
+// start its own soundtrack over the live Worms mode.
+if(!WORM_SETTINGS_EMBED)startMusic();
 function unlockMusicFromGesture(){
  if(!g.music||window.SpacePlatform?.muted||musicPreview)return;
  if(!externalMusic)startMusic();
