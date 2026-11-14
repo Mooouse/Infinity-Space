@@ -434,22 +434,43 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
       return true;
     });
     assert.ok(headReady,'All 30 canonical workshop SVGs must paint on gameplay Canvas');
+    const headFit=await page.evaluate(()=>{
+      const art=window.WormHeadArt;
+      return art.ids.map(id=>{
+       const d=art.dimensions(id,22);
+       return {id,width:d?.width,height:d?.height,orientation:art.orientation(id)};
+      });
+    });
+    assert.ok(headFit.length===30&&headFit.every(h=>h.width>=40&&h.height>=40&&
+      h.width<=74&&h.height<=74),
+      'Every head must cover the body diameter without becoming oversized: '+JSON.stringify(headFit));
+    for(const id of ['skull','robot','mushroom','crown','ufo','flame']){
+      assert.ok(headFit.find(h=>h.id===id).orientation!==0,
+       'Upright '+id+' artwork must be oriented along the worm travel direction');
+    }
+    assert.ok(headFit.find(h=>h.id==='pizza').orientation===0&&
+      headFit.find(h=>h.id==='pig').orientation===0,
+      'Already forward-facing heads must remain correctly oriented');
     const iconMetrics=await page.locator('.ws-head-choice').evaluateAll(buttons=>buttons.map(button=>{
-      const el=button.querySelector('.ws-head-symbol'),svg=el?.querySelector('svg'),rect=el?.getBoundingClientRect();
+      const el=button.querySelector('.ws-head-symbol'),canvas=el?.querySelector('canvas'),rect=el?.getBoundingClientRect();
       const close=document.querySelector('.ws-x'),closeSvg=close?.querySelector('svg');
       const c=close?.getBoundingClientRect(),s=closeSvg?.getBoundingClientRect();
-      return {shape:button.dataset.head,hasSvg:!!svg,visible:el&&getComputedStyle(el).display!=='none',
+      let painted=false;
+      if(canvas){const bytes=canvas.getContext('2d').getImageData(0,0,64,64).data;
+       for(let i=3;i<bytes.length;i+=4){if(bytes[i]>45){painted=true;break;}}
+      }
+      return {shape:button.dataset.head,hasCanvas:!!canvas,painted,visible:el&&getComputedStyle(el).display!=='none',
        iconWidth:rect?.width,closeCentered:!!(c&&s&&Math.abs((c.left+c.width/2)-(s.left+s.width/2))<2&&
         Math.abs((c.top+c.height/2)-(s.top+s.height/2))<2),
        closeColor:close&&getComputedStyle(close).color};
     }));
-    assert.ok(iconMetrics.length===30&&iconMetrics.every(v=>v.hasSvg&&v.visible&&v.iconWidth>=35),
-      'All 30 head selectors need visible illustrated previews: '+JSON.stringify(iconMetrics));
-    assert.ok(await page.locator('.ws-head-choice[data-head="pizza"] svg').isVisible(),
-      'Pizza head is a genuine preview illustration');
-    assert.ok(await page.locator('.ws-head-choice[data-head="pig"] svg').isVisible(),
-      'Pig head is a genuine preview illustration');
-    assert.ok(iconMetrics.some(v=>v.shape==='blackhole'&&v.hasSvg));
+    assert.ok(iconMetrics.length===30&&iconMetrics.every(v=>v.hasCanvas&&v.painted&&v.visible&&v.iconWidth>=35),
+      'All 30 head selectors must use the same visible Canvas drawing as gameplay: '+JSON.stringify(iconMetrics));
+    assert.ok(iconMetrics.some(v=>v.shape==='pizza'&&v.painted),
+      'Pizza head must be visibly rendered in the preview');
+    assert.ok(iconMetrics.some(v=>v.shape==='pig'&&v.painted),
+      'Pig head must be visibly rendered in the preview');
+    assert.ok(iconMetrics.some(v=>v.shape==='blackhole'&&v.painted));
         assert.ok(iconMetrics.every(v=>v.closeCentered),'Workshop close icon must be physically centered');
     assert.ok(iconMetrics.every(v=>v.closeColor==='rgb(243, 231, 255)'),
       'Close icon must match the violet workshop palette: '+JSON.stringify(iconMetrics));
@@ -460,7 +481,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
       };
       return [scan(0),scan(1.5),scan(3)];
     });
-    assert.ok(curvature.every(v=>v>28),'Travelling body curves must be visible, not a straight rod: '+JSON.stringify(curvature));
+    assert.ok(curvature.every(v=>v>23),'Trailing body must bend naturally without compressing coordinates: '+JSON.stringify(curvature));
     const motionRanges=await page.evaluate(()=>{
       const samples=Array.from({length:85},(_,i)=>window.WormSkinStudio.previewCenterline(i*.25));
       const y=samples.flatMap(b=>b.map(p=>p.y));
@@ -469,6 +490,22 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     });
     assert.ok(motionRanges.travel>60&&motionRanges.minY>=40&&motionRanges.maxY<=180,
      'The worm must visibly undulate while staying within the preview frame: '+JSON.stringify(motionRanges));
+    const trailGeometry=await page.evaluate(()=>{
+      let minStep=Infinity,maxStep=0,maxHeadAngle=0;
+      for(let t=0;t<10;t+=.2){
+       const b=window.WormSkinStudio.previewCenterline(t);
+       for(let i=1;i<b.length;i++){
+        const d=Math.hypot(b[i].x-b[i-1].x,b[i].y-b[i-1].y);
+        minStep=Math.min(minStep,d);maxStep=Math.max(maxStep,d);
+       }
+       const last=b.at(-1),previous=b.at(-2);
+       maxHeadAngle=Math.max(maxHeadAngle,Math.abs(Math.atan2(last.y-previous.y,last.x-previous.x)));
+      }
+      return {minStep,maxStep,maxHeadAngle};
+    });
+    assert.ok(trailGeometry.minStep>11.4&&trailGeometry.maxStep<12.1&&
+       trailGeometry.maxHeadAngle<.42,
+      'Preview segments must follow a smooth equal-distance path, not stretch through fake waves: '+JSON.stringify(trailGeometry));
     await page.locator('.ws-head-choice[data-head="blackhole"]').click();
     assert.equal(await page.evaluate(()=>window.InfinityWormsQA.snapshot().head),'blackhole','Black hole head must be persisted and applied');
     await page.locator('.ws-preset').nth(1).click();

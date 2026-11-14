@@ -77,27 +77,24 @@ function save(obj){
  try{localStorage.setItem(KEY,JSON.stringify(obj))}catch(_){}
  window.dispatchEvent(new CustomEvent('infinity-worm-skin-changed',{detail:{skin:obj.skin,customEnabled:obj.customEnabled,customSegments:obj.customSegments.slice(),head:obj.head}}));
 }
-// A head-following camera: each point is an earlier position on one smooth
-// trajectory. Stronger, layered turns make the body visibly curve, without
-// independent segment wobble or discontinuities as time advances.
+// Preview motion is a true trailing path, sampled at equal time intervals.
+// Unlike the old nonlinear vertical projection, the same constant transform
+// is applied to every point, so bends propagate through the body naturally.
+// World heading changes smoothly; the camera follows the head's position.
 function previewCenterline(seconds,count=59){
- const speed=152,interval=.079,headX=770,headY=110;
- // A continuous heading curve with limited turn rate. Sample the actual
- // preceding travel distance so the whole body follows its head's bends.
- const heading=t=>.68*Math.sin(t*1.72)+.27*Math.sin(t*3.05+.72)+
-  .08*Math.sin(t*.52);
- let x=headX,y=headY;
- const path=Array(count);
- path[count-1]={x,y};
+ const speed=152,interval=.079,headX=767,headY=110;
+ const heading=t=>.34*Math.sin(t*1.55)+.075*Math.sin(t*.91+.75);
+ const body=Array(count);let x=headX,y=headY;
+ body[count-1]={x,y};
  for(let i=count-2;i>=0;i--){
-  const age=(count-1-i-.5)*interval,angle=heading(seconds-age);
-  x-=speed*interval*Math.cos(angle);
-  y-=speed*interval*Math.sin(angle);
-  path[i]={x,y};
+  const age=(count-1-i-.5)*interval;
+  const turn=heading(seconds-age),distance=speed*interval;
+  x-=distance*Math.cos(turn);
+  // Constant camera height scale preserves the body's physical continuity.
+  y-=distance*Math.sin(turn)*.78;
+  body[i]={x,y};
  }
- // Camera follows the head. The gentle screen projection prevents the
- // longest S-turn from clipping the preview's 22px-thick body + glow.
- return path.map(p=>({x:p.x,y:headY+58*Math.tanh((p.y-headY)/75)}));
+ return body;
 }
 
 
@@ -136,33 +133,93 @@ const headArt={
  frog:icon('<path d="M14 15Q30 4 48 17Q59 29 52 43Q34 57 13 46Q5 34 14 15" fill="#6adf5b" stroke="#d8ff9e" stroke-width="3"/><circle cx="35" cy="14" r="11" fill="#7ff26c" stroke="#d8ff9e" stroke-width="2.4"/><circle cx="35" cy="50" r="11" fill="#7ff26c" stroke="#d8ff9e" stroke-width="2.4"/><circle cx="39" cy="16" r="5" fill="#fff"/><circle cx="39" cy="48" r="5" fill="#fff"/><circle cx="41" cy="16" r="2.5" fill="#1f4831"/><circle cx="41" cy="48" r="2.5" fill="#1f4831"/><path d="M44 30Q54 32 44 35" fill="none" stroke="#286d3c" stroke-width="2.7"/>'),
  flame:icon('<path d="M6 46Q21 39 17 13Q30 24 33 3Q46 23 55 17Q47 35 61 42Q42 64 24 54Z" fill="#ff6429" stroke="#ffd35d" stroke-width="3"/><path d="M21 43Q29 32 28 24Q38 33 44 28Q40 41 48 46Q37 58 23 50Z" fill="#ffe64b"/><path d="M37 36 45 38 35 41M36 48 45 45 37 43" fill="#f65b28"/><circle cx="47" cy="40" r="2" fill="#9c2418"/>')
 };
+// Explicitly align artwork originally drawn upright to face the worm's
+// forward vector (+X). The SAME transform is used by cards, previews and play.
+const headMeta=Object.fromEntries(HEADS.map(id=>[id,{rotation:0,scale:1,lead:.08}]));
+Object.assign(headMeta,{
+ pizza:{rotation:0,scale:1.07,lead:.14},
+ pig:{rotation:0,scale:1.06,lead:.12},
+ skull:{rotation:-Math.PI/2,scale:1.08,lead:.1},
+ robot:{rotation:-Math.PI/2,scale:1.04,lead:.1},
+ mushroom:{rotation:Math.PI/2,scale:1.04,lead:.12},
+ crown:{rotation:Math.PI/2,scale:1.08,lead:.12},
+ ufo:{rotation:Math.PI/2,scale:1.06,lead:.1},
+ flame:{rotation:Math.PI/2,scale:1.05,lead:.12},
+ comet:{rotation:0,scale:1.06,lead:.13},
+ shark:{rotation:0,scale:1.06,lead:.14},
+ dragon:{rotation:0,scale:1.06,lead:.13}
+});
 const headImages=new Map();
 function headImage(id){
  if(!headArt[id])id='classic';
- if(!headImages.has(id)){
-  // Rasterize the very same SVG used by the workshop selector. No second
-  // painted approximation of the chosen shape anywhere in the game.
+ let entry=headImages.get(id);
+ if(!entry){
   const img=new Image();
-  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(
-   headArt[id].replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ')
-  );
-  headImages.set(id,img);
+  entry={img,bounds:null,callbacks:[]};
+  headImages.set(id,entry);
+  img.onload=()=>{
+   // All SVGs share a viewBox, but their visible silhouettes have very
+   // different padding. Trim TRANSPARENT pixels, not the design itself.
+   const canvas=document.createElement('canvas');canvas.width=128;canvas.height=128;
+   const g=canvas.getContext('2d',{willReadFrequently:true});
+   if(g){
+    try{
+     g.drawImage(img,0,0,128,128);
+     const bytes=g.getImageData(0,0,128,128).data;
+     let x0=128,y0=128,x1=-1,y1=-1;
+     for(let y=0;y<128;y++)for(let x=0;x<128;x++)
+      if(bytes[(y*128+x)*4+3]>=25){
+       x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y);
+      }
+     if(x1>=x0)entry.bounds={sx:x0/2,sy:y0/2,sw:(x1-x0+1)/2,sh:(y1-y0+1)/2};
+    }catch(_){/* Preserve full SVG if a browser disables pixel readback. */}
+   }
+   if(!entry.bounds)entry.bounds={sx:0,sy:0,sw:64,sh:64};
+   entry.callbacks.splice(0).forEach(cb=>cb());
+  };
+  img.onerror=()=>{entry.callbacks.splice(0).forEach(cb=>cb())};
+  img.src='data:image/svg+xml;charset=utf-8,'+
+   encodeURIComponent(headArt[id].replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" '));
  }
- return headImages.get(id);
+ return entry;
+}
+function headDimensions(id,r){
+ const entry=headImage(id),b=entry.bounds;
+ if(!b)return null;
+ const meta=headMeta[id]||headMeta.classic;
+ // Normalize by the shorter visible axis so every head covers the body's
+ // roughly 1.88r diameter without stretching its features.
+ const unit=Math.min(r*2.27*meta.scale/Math.min(b.sw,b.sh),
+  r*3.34/Math.max(b.sw,b.sh));
+ return {width:b.sw*unit,height:b.sh*unit,bounds:b,rotation:meta.rotation,lead:meta.lead};
 }
 function drawHead(ctx,id,x,y,angle,r){
- const img=headImage(id);
- if(!img.complete||img.naturalWidth===0)return false;
- ctx.save();ctx.translate(x,y);ctx.rotate(angle);
- // Keep the silhouette near the actual body diameter, not a giant sticker.
- const size=r*2.68;
- ctx.drawImage(img,-size/2,-size/2,size,size);
+ const entry=headImage(id),layout=headDimensions(id,r);
+ if(!layout||!entry.img.complete||!entry.img.naturalWidth)return false;
+ const {width,height,bounds,rotation,lead}=layout;
+ ctx.save();
+ ctx.translate(x+Math.cos(angle)*r*lead,y+Math.sin(angle)*r*lead);
+ ctx.rotate(angle+rotation);
+ ctx.drawImage(entry.img,bounds.sx,bounds.sy,bounds.sw,bounds.sh,
+  -width/2,-height/2,width,height);
  ctx.restore();
  return true;
 }
-const WormHeadArt={ids:HEADS.slice(),markup:id=>headArt[id]||headArt.classic,draw:drawHead};
+function drawHeadThumbnail(canvas,id){
+ const entry=headImage(id),g=canvas.getContext('2d');
+ if(!g)return;
+ const paint=()=>{
+  g.clearRect(0,0,canvas.width,canvas.height);
+  drawHead(g,id,canvas.width/2,canvas.height/2,0,20);
+ };
+ if(entry.bounds)paint();else entry.callbacks.push(paint);
+}
+const WormHeadArt={
+ ids:HEADS.slice(),markup:id=>headArt[id]||headArt.classic,
+ draw:drawHead,drawThumbnail:drawHeadThumbnail,dimensions:headDimensions,
+ orientation:id=>(headMeta[id]||headMeta.classic).rotation
+};
 window.WormHeadArt=WormHeadArt;
-// Preload every illustrated head for smooth switching during gameplay.
 for(const id of HEADS)headImage(id);
 
 let active=null;
@@ -230,7 +287,14 @@ function open({onChange,onClose}={}){
  frog:['Лягушка','Frog','Rana'],
  flame:['Огонь','Flame','Llama']
 };
- for(const id of HEADS){const b=document.createElement('button');b.type='button';b.className='ws-head-choice';b.dataset.head=id;b.innerHTML='<span class="ws-head-symbol" aria-hidden="true">'+headArt[id]+'</span><span class="ws-head-label"></span>';b.lastChild.textContent=headLabels[id][lang==='ru'?0:lang==='es'?2:1];b.onclick=()=>{data.head=id;persist();root.querySelectorAll('.ws-head-choice').forEach(x=>x.classList.toggle('selected',x.dataset.head===id))};$('.ws-head-options').append(b)}
+ for(const id of HEADS){
+  const b=document.createElement('button');b.type='button';b.className='ws-head-choice';b.dataset.head=id;
+  b.innerHTML='<span class="ws-head-symbol" aria-hidden="true"><canvas width="64" height="64"></canvas></span><span class="ws-head-label"></span>';
+  b.lastChild.textContent=headLabels[id][lang==='ru'?0:lang==='es'?2:1];
+  WormHeadArt.drawThumbnail(b.querySelector('canvas'),id);
+  b.onclick=()=>{data.head=id;persist();root.querySelectorAll('.ws-head-choice').forEach(x=>x.classList.toggle('selected',x.dataset.head===id))};
+  $('.ws-head-options').append(b);
+ }
  root.querySelectorAll('.ws-head-choice').forEach(x=>x.classList.toggle('selected',x.dataset.head===data.head));
  $('.ws-reset').textContent=t.reset;$('.ws-stripes').textContent=t.stripes;
  $('.ws-fill').textContent=t.all;$('.ws-done').textContent=t.done;
