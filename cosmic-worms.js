@@ -907,7 +907,7 @@ function kill(w,killer,reason){
   $('worm-pause-overlay').hidden=true;
   $('worm-settings').hidden=true;
   $('worm-guide').hidden=true;
-  window.WormSkinStudio?.close?.();
+  if(game.state==='skins')window.WormSkinStudio?.close?.();
   // Keep the arena fully alive while the player watches rivals collect
   // the wreckage. The results only fade in after the replay window.
   game.state='death-replay';
@@ -1846,6 +1846,44 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
   }),
   wrecks:()=>game.wrecks.map(w=>({id:w.id,remaining:w.remaining,total:w.items.length,
     age:game.time-w.created})),
+  forcePausedCollision:()=>{
+   if(game.state!=='paused')return {error:'not paused',state:game.state};
+   const p=game.player;
+   const adversary=game.worms.find(w=>!w.human&&w.alive);
+   if(!adversary)return {error:'no opponent'};
+   // A heavier live rival reaches the player's unprotected head.
+   // Route through production broadphase, collision and death handling.
+   p.invulnerable=0;
+   adversary.invulnerable=0;
+   adversary.mass=Math.max(p.mass+100,adversary.mass);
+   adversary.x=p.x;adversary.y=p.y;
+   addBodyGrid();collisions();
+   return {state:game.state,playerAlive:p.alive,
+    pauseVisible:!$('worm-pause-overlay').hidden,
+    settingsVisible:!$('worm-settings').hidden,
+    rank:ranking(p)};
+  },
+  botEvasionProbe:()=>{
+   const prev=game;
+   try{
+    const w={id:901,alive:true,human:false,persona:'pro',
+     x:5000,y:5000,angle:0,target:0,speed:185,mass:800,
+     segments:Array.from({length:75},(_,i)=>({x:5000-(i+1)*11.8,y:5000}))};
+    const barrier={id:902,alive:true,human:false,persona:'casual',
+     x:5210,y:4680,angle:Math.PI/2,speed:0,mass:1000,
+     segments:Array.from({length:55},(_,i)=>({x:5210,y:4690+i*11.8}))};
+    game={worms:[w,barrier],bodyGrid:new Map()};
+    addBodyGrid();
+    const pro=BOT_PERSONAS.pro;
+    const straight=botRouteRisk(w,0,pro);
+    const left=botRouteRisk(w,-1.16,pro);
+    const right=botRouteRisk(w,1.16,pro);
+    const alert=botHasUrgentThreat(w);
+    return {straight:straight.penalty,turn:Math.min(left.penalty,right.penalty),
+     straightClearance:straight.clearance,
+     saferClearance:Math.max(left.clearance,right.clearance),alert};
+   }finally{game=prev;}
+  },
   // Deterministic browser-accessible regression: measure real steering
   // with isolated corpses, ambient food and empty space. This must not
   // mutate the player's live match.
