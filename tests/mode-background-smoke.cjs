@@ -74,7 +74,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   // No Sections button; the bottom navigation is permanently available.
   assert.equal(await page.locator('.hub-mode-story-back').count(),0);
   assert.equal(await page.locator('.hub-story-shortcut').count(),11);
-  assert.deepEqual(await visibleShortcuts(),['achievements','statistics','settings'],
+  assert.deepEqual(await visibleShortcuts(),['achievements','music','statistics','settings'],
    'Competitive mode menu must hide unrelated universe actions');
   assert.equal(await page.locator('.hub-story-shortcut[data-shortcut="map"]').isVisible(),false,
    'Universe map is hidden in competitive mode');
@@ -112,7 +112,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
   },{y,left,right});
   await mobile.waitForFunction(()=>window.SpaceMenuSceneMode==='worms',null,{timeout:5000});
   assert.deepEqual(await mobile.locator('.hub-story-shortcut:visible').evaluateAll(nodes=>nodes.map(n=>n.dataset.shortcut)),
-   ['achievements','statistics','settings'],'Mobile competitive mode must hide unrelated actions');
+   ['achievements','music','statistics','settings'],'Mobile competitive mode must hide unrelated actions');
   const overflow=await mobile.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth}));
   assert.ok(overflow.scroll<=overflow.width+2,'Main menu mode story must not overflow screen: '+JSON.stringify(overflow));
   assert.equal(errors.length,0,errors.join('\n'));
