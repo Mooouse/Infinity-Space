@@ -1656,3 +1656,25 @@ body:has(#worm-field) #mode-music-open{bottom:calc(111px + env(safe-area-inset-b
  .ws-overlay .ws-footer button{min-height:47px!important}
  .ws-overlay .ws-footer .ws-done{grid-column:auto!important}
 }
+
+
+/* Match the game's square-corner saturated action language: no generic
+   circular red/gray phone buttons. All touch hit areas remain square. */
+body:has(#worm-field) #worm-hud .worm-pause-button{
+ border-radius:13px!important;border:1px solid #ab8bf5!important;
+ border-bottom:3px solid #402178!important;
+ background:linear-gradient(145deg,#6538c9,#2e185f)!important;
+ box-shadow:inset 0 1px #ffffff55,0 4px 0 #210b48,0 0 18px #7841df65!important;
+}
+body:has(#worm-field) #worm-hud .worm-boost-button{
+ border-radius:15px!important;border:1px solid #ff7396!important;
+ border-bottom:3px solid #8c2148!important;
+ background:linear-gradient(145deg,#e64070,#922048)!important;
+ box-shadow:inset 0 1px #ffffff60,0 4px 0 #5a132b,0 0 18px #ef2e6873!important;
+}
+body:has(#worm-field) #worm-hud .worm-pause-button:hover{
+ border-color:#dfc8ff!important;box-shadow:inset 0 1px #ffffff5b,0 4px 0 #2f1768,0 0 23px #a16affbb!important;
+}
+body:has(#worm-field) #worm-hud .worm-boost-button:hover{
+ border-color:#ffc5d7!important;box-shadow:inset 0 1px #ffffff77,0 4px 0 #78203b,0 0 23px #ff497dba!important;
+}
