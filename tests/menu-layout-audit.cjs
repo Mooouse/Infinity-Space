@@ -123,7 +123,7 @@ const inspect=()=>{
      if(Math.abs(m.dock.cx-w/2)>5)issues.push('context-dock-not-centered');
      const allowed=n===0
       ? ['map','evolution','achievements','music','bestiary','settings','daily','roulette','profile']
-      : ['achievements','statistics','settings'];
+      : ['achievements','music','statistics','settings'];
      if(m.shortcuts.join(',')!==allowed.join(','))
       issues.push('unrelated-shortcuts-'+m.shortcuts.join(','));
      if(m.rewardsVisible!==(n===0))issues.push('rewards-on-wrong-mode');
