@@ -104,6 +104,19 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     const giants=await page.evaluate(()=>window.InfinityWormsQA.giantRivalsProbe());
     assert.ok(giants.massive>=2&&giants.largest>10000,
       'Several heavyweight rivals must be established before the player joins: '+JSON.stringify(giants));
+    const spread=await page.evaluate(()=>window.InfinityWormsQA.spawnDistributionProbe());
+    assert.ok(spread.total>=50,'Opening must populate the complete arena: '+JSON.stringify(spread));
+    assert.ok(spread.nearbyWithin3100<=14,
+      'Too many rivals spawned in the same small radius around the player: '+JSON.stringify(spread));
+    assert.ok(spread.farBeyond6500>=18,
+      'Rivals should populate the entire arena rather than one central hotspot: '+JSON.stringify(spread));
+    assert.ok(spread.minHeadDistance>600,
+      'Starting worms need physical separation to avoid immediate mass deaths: '+JSON.stringify(spread));
+    assert.ok(spread.giantCount>=2&&spread.giantsFar>=2&&spread.giantBodiesOnOuterArc,
+      'Long established rivals must begin on separated curved outer lanes: '+JSON.stringify(spread));
+    const wreckScope=await page.evaluate(()=>window.InfinityWormsQA.wreckScopeProbe());
+    assert.deepEqual(wreckScope,{near:true,distant:false,committed:true},
+      'A corpse must attract nearby scavengers, not all rivals across the whole map');
     // At 8000+ mass camera zoom must not downgrade ANY cosmic skin,
     // including small rivals seen beside the giant player.
     const visual=await page.evaluate(()=>window.InfinityWormsQA.visualMassProbe());
@@ -244,8 +257,11 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
         const salvage=await page.evaluate(()=>window.InfinityWormsQA.salvageProbe());
     assert.equal(salvage.available,true,'Defeated bodies must broadcast salvage');
     assert.ok(salvage.total>=40,'There should be a full competitive lobby');
-    assert.equal(salvage.prioritizing,salvage.total,
-      'Every rival, including the idle personality, must prioritize a new corpse over normal food and hunting');
+    assert.equal(salvage.prioritizing,salvage.eligible,
+      'Every rival near fallen worm resources should harvest them; distant rivals must not converge into one fatal cluster: '+
+      JSON.stringify(salvage));
+    assert.ok(salvage.eligible<salvage.total,
+      'Corpse announcements must not redirect the whole map at once: '+JSON.stringify(salvage));
     const coil=await page.evaluate(()=>window.InfinityWormsQA.encircleProbe());
     assert.ok(coil.canClose&&coil.availableLength>coil.requiredLength,
       'A sufficiently long rival must be able to commit to a real encircling loop');
