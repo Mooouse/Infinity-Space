@@ -321,6 +321,11 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
       JSON.stringify(salvage));
     assert.ok(salvage.eligible<salvage.total,
       'Corpse announcements must not redirect the whole map at once: '+JSON.stringify(salvage));
+    const combat=await page.evaluate(()=>window.InfinityWormsQA.combatProbe());
+    assert.equal(combat.locked,true,
+      'Experienced opponents must seek distant living prey without waiting for corpse loot: '+JSON.stringify(combat));
+    assert.equal(combat.boosted,true,
+      'Experienced opponents must use sustained acceleration while intercepting prey: '+JSON.stringify(combat));
     const coil=await page.evaluate(()=>window.InfinityWormsQA.encircleProbe());
     assert.ok(coil.canClose&&coil.availableLength>coil.requiredLength,
       'A sufficiently long rival must be able to commit to a real encircling loop');
@@ -376,6 +381,18 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.ok(Math.hypot(previewMotion.head1.x-previewMotion.head0.x,
       previewMotion.head1.y-previewMotion.head0.y)<.01,
       'Preview head must stay camera-locked while the world moves: '+JSON.stringify(previewMotion));
+    const previewBounds=await page.evaluate(()=>{
+      const result=[];
+      for(let t=0;t<12;t+=.2){
+       const body=window.WormSkinStudio.previewCenterline(t);
+       result.push(...body.map(p=>({x:p.x,y:p.y})));
+      }
+      const xs=result.map(p=>p.x),ys=result.map(p=>p.y);
+      return {minX:Math.min(...xs),maxX:Math.max(...xs),minY:Math.min(...ys),maxY:Math.max(...ys)};
+    });
+    assert.ok(previewBounds.minX>=40&&previewBounds.maxX<=880&&
+      previewBounds.minY>=40&&previewBounds.maxY<=180,
+      'Preview worm and glow must remain inside the 920x220 canvas: '+JSON.stringify(previewBounds));
     assert.ok(previewMotion.tailMotion>2&&previewMotion.bodyMotion>2,
       'Worm preview must flow along its previous trajectory, not hang motionless: '+JSON.stringify(previewMotion));
     assert.equal(await page.locator('.ws-preset').count(),16);
@@ -396,6 +413,23 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.waitForFunction(()=>{const c=document.querySelector('.ws-preview-canvas');if(!c)return false;const p=c.getContext('2d').getImageData(700,80,80,70).data;return p.some((v,i)=>i%4!==3&&v>150)},null,{timeout:5000});
     assert.equal(await page.locator('.ws-advanced-summary').isVisible(),true,'Advanced body painter toggle exists');
     assert.equal(await page.locator('.ws-head-choice').count(),6,'All six cosmic head designs must be available');
+    assert.equal(await page.evaluate(()=>window.WormHeadArt===window.WormSkinStudio.headArt),true,
+      'Gameplay and workshop must share exactly one source of artwork');
+    const headReady=await page.evaluate(async()=>{
+      const art=window.WormHeadArt,canvas=document.createElement('canvas');
+      canvas.width=100;canvas.height=100;
+      const g=canvas.getContext('2d');
+      for(const head of ['classic','blackhole','pulsar','comet','crystal','eclipse']){
+       let drawn=false;
+       for(let i=0;i<30&&!drawn;i++){
+        drawn=art.draw(g,head,50,50,0,24);
+        if(!drawn)await new Promise(resolve=>setTimeout(resolve,30));
+       }
+       if(!drawn)return false;
+      }
+      return true;
+    });
+    assert.ok(headReady,'The six canonical workshop SVGs must paint on gameplay Canvas');
     const iconMetrics=await page.locator('.ws-head-choice').evaluateAll(buttons=>buttons.map(button=>{
       const el=button.querySelector('.ws-head-symbol'),svg=el?.querySelector('svg'),rect=el?.getBoundingClientRect();
       const close=document.querySelector('.ws-x'),closeSvg=close?.querySelector('svg');

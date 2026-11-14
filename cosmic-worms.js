@@ -332,9 +332,9 @@ function createWorm(name,human,index,preferEncounter=false,identity=null){
  if(pos.angle!==undefined)angle=pos.angle;
  const w={name,human,id:index,x:pos.x,y:pos.y,angle,target:angle,
   mass,bestMass:mass,bestLength:count,alive:true,invulnerable:human?2.3:2.0,
-  segments:[],boost:false,dropClock:0,think:rand(.1,.2),targetFood:null,targetWreckId:null,coil:null,coilCooldown:game.time+rand(16,35),objective:'food',kills:0,
+  segments:[],boost:false,dropClock:0,think:rand(.1,.2),targetFood:null,targetWreckId:null,coil:null,coilCooldown:game.time+rand(4,10),objective:'food',kills:0,
   navFromX:pos.x,navFromY:pos.y,navSince:game.time,escapeUntil:0,escapeHeading:angle,
-  roamHeading:angle,roamUntil:game.time+rand(1.4,3.7),cruiseRichness:0,huntTargetId:null,huntUntil:0,huntCooldown:game.time+rand(4,10),
+  roamHeading:angle,roamUntil:game.time+rand(1.4,3.7),cruiseRichness:0,huntTargetId:null,huntUntil:0,huntCooldown:game.time+rand(1,3),boostUntil:0,boostRestUntil:0,
   foodEaten:0,bestRank:99,leadTime:0,deathDelay:0,
   persona:human?'human':(identity?.persona||chooseBotRole()),
   head:human?options.head:(identity?.head||BOT_HEADS[Math.floor(Math.random()*BOT_HEADS.length)]),
@@ -642,7 +642,7 @@ function collectWreckTarget(w){
 // Advanced opponents sometimes attempt to trap a rival inside a continuous
 // body loop. They need enough length to close it: this is a physical tactic,
 // not an artificial kill outside the game's normal body collisions.
-const COIL_AGGRESSION={afk:0,newcomer:0,casual:.008,cautious:.003,hunter:.036,veteran:.048,pro:.070,reckless:.018};
+const COIL_AGGRESSION={afk:0,newcomer:0,casual:.025,cautious:.014,hunter:.32,veteran:.38,pro:.54,reckless:.16};
 function encircleRadius(victim){
  return clamp(56+wormRadius(victim)*1.3+Math.min(38,victim.segments.length*.2),100,195);
 }
@@ -667,7 +667,7 @@ function guideCoil(w,dt,persona){
  let coil=w.coil;
  const existing=coil&&game.worms.find(other=>other.id===coil.id&&other.alive);
  if(coil&&(!existing||!canEncircle(w,existing)||game.time>coil.until)){
-  w.coil=null;w.coilCooldown=game.time+rand(18,37);coil=null;
+  w.coil=null;w.coilCooldown=game.time+rand(5,12);coil=null;
  }
  if(!coil&&game.time>=(w.coilCooldown||0)&&COIL_AGGRESSION[w.persona]>0&&
     Math.random()<COIL_AGGRESSION[w.persona]*Math.max(.07,w.reaction||.1)){
@@ -694,7 +694,7 @@ function guideCoil(w,dt,persona){
  if(preyDistance>coil.radius*1.3)coil.escaped+=dt;
  else coil.escaped=Math.max(0,coil.escaped-dt*.7);
  if(coil.escaped>1.45||coil.progress>TAU*2.8){
-  w.coil=null;w.coilCooldown=game.time+rand(18,33);return null;
+  w.coil=null;w.coilCooldown=game.time+rand(6,13);return null;
  }
  // Follow an orbit around the prey. Radial correction tightens the loop
  // smoothly while the head still obeys the normal turning-radius limit.
@@ -849,35 +849,44 @@ function steerBot(w,dt){
  }
  let desired=salvage?Math.atan2(goal.y-w.y,goal.x-w.x):w.roamHeading;
  let chasing=false;
- // Hunting is a short, purposeful tactic with a long cooldown,
- // never a fresh random order to turn toward a different prey every tick.
- if(!salvage&&persona.hunt>0&&w.mass>200){
+ // Opportunistic hunters continuously seek rivals, even before a corpse
+ // exists. Keep a target for several seconds; intercept rather than trailing.
+ let preyDistance=Infinity;
+ if(!salvage&&persona.hunt>0&&w.mass>105){
   let prey=w.huntTargetId&&game.worms.find(v=>v.id===w.huntTargetId&&v.alive);
-  if(prey&&game.time>=w.huntUntil){prey=null;w.huntTargetId=null;}
+  if(prey&&(game.time>=w.huntUntil||prey.mass>w.mass*1.8)){
+   prey=null;w.huntTargetId=null;
+  }
   if(!prey&&game.time>=w.huntCooldown){
-   let candidate=null,closest=Math.min(persona.sight*.72,700);
+   let score=Infinity,candidate=null;
+   const maxRange=persona.sight*(persona.hunt>.5?3.0:1.8);
    for(const other of game.worms){
-    if(!other.alive||other===w||
-       other.mass>w.mass*(w.persona==='reckless'?1.2:.88))continue;
+    if(!other.alive||other===w||other.mass>w.mass*(w.persona==='reckless'?1.6:1.25))continue;
     const dx=other.x-w.x,dy=other.y-w.y,d=Math.hypot(dx,dy);
-    const front=(dx*Math.cos(w.angle)+dy*Math.sin(w.angle))/Math.max(1,d);
-    if(d<closest&&d>180&&front>.45){candidate=other;closest=d;}
+    if(d<125||d>maxRange)continue;
+    const front=(dx*Math.cos(w.angle)+dy*Math.sin(w.angle))/d;
+    // Close, catchable targets win, but rear/side prey are fair game.
+    const rating=d*(front<-.25?1.12:1)+(other.mass>w.mass?190:0)+
+     (other.mass<w.mass*.32?110:0);
+    if(rating<score){candidate=other;score=rating;}
    }
    if(candidate){
-    prey=candidate;
-    w.huntTargetId=prey.id;
-    w.huntUntil=game.time+rand(3.8,5.5);
-    w.huntCooldown=game.time+(persona.hunt>.7?rand(9,15):rand(17,29));
-   }else w.huntCooldown=game.time+rand(4,8);
+    prey=candidate;w.huntTargetId=prey.id;
+    w.huntUntil=game.time+rand(10,17);
+    w.huntCooldown=game.time+rand(1,3);
+   }else w.huntCooldown=game.time+rand(1.1,3.4);
   }
   if(prey){
-   const dx=prey.x-w.x,dy=prey.y-w.y,d=Math.hypot(dx,dy);
-   if(d>840||d<95){w.huntTargetId=null;w.huntCooldown=game.time+rand(10,19);}
-   else{
-    const lead=Math.min(140,d*.24);
-    desired=Math.atan2(prey.y+Math.sin(prey.angle)*lead-w.y,
-     prey.x+Math.cos(prey.angle)*lead-w.x);
-    chasing=true;
+   const dx=prey.x-w.x,dy=prey.y-w.y;
+   preyDistance=Math.hypot(dx,dy);
+   if(preyDistance>persona.sight*3.65||preyDistance<80){
+    w.huntTargetId=null;w.huntCooldown=game.time+rand(1,3);
+   }else{
+    const intercept=Math.min(290,preyDistance*.33);
+    const futureX=prey.x+Math.cos(prey.angle)*intercept;
+    const futureY=prey.y+Math.sin(prey.angle)*intercept;
+    desired=Math.atan2(futureY-w.y,futureX-w.x);
+    chasing=true;w.objective='hunt';
    }
   }
  }
@@ -928,9 +937,19 @@ function steerBot(w,dt){
  }
  w.target=bestAngle;
  const safe=bestClearance>(w.persona==='reckless'?18:65);
- w.boost=!salvage&&!w.coil&&game.time>=w.escapeUntil&&
-  w.mass>90&&edge<.85&&safe&&(chasing||goalScore>2.8)&&
-  Math.random()<persona.boost*.28;
+ const canBoost=!salvage&&!w.coil&&game.time>=w.escapeUntil&&
+  w.mass>115&&edge<.85&&safe;
+ if(canBoost&&game.time>=w.boostRestUntil&&game.time>=w.boostUntil){
+  const aligned=Math.abs(normAngle(w.target-w.angle))<.65;
+  const engage=chasing&&preyDistance<1450&&aligned;
+  const gather=goalScore>2.8;
+  if((engage||gather)&&Math.random()<persona.boost*(engage?.42:.08)){
+   w.boostUntil=game.time+rand(1.0,2.5);
+   w.boostRestUntil=w.boostUntil+rand(1.4,3.3);
+  }
+ }
+ w.boost=canBoost&&game.time<w.boostUntil;
+
 }
 
 // The size AND value of a defeated worm's dropped matter scales with
@@ -1406,68 +1425,11 @@ function drawCosmicInterior(w,t,r,detail){
  ctx.restore();
 }
 function drawSkinHead(w,r){
- const p=w.pattern,head=w.human?options.head:(w.head||'classic');
- if(head==='blackhole'){
-  ctx.save();ctx.translate(w.x,w.y);ctx.rotate(w.angle);
-  const pulse=performance.now()*.0015;
-  ctx.shadowColor='#a54bff';ctx.shadowBlur=options.glow?r*1.2:0;
-  const halo=ctx.createRadialGradient(0,0,r*.18,0,0,r*1.72);
-  halo.addColorStop(0,'#03020a');halo.addColorStop(.39,'#080513');
-  halo.addColorStop(.5,'#ffca42');halo.addColorStop(.59,'#f23b7d');
-  halo.addColorStop(.73,'#7d37ff88');halo.addColorStop(1,'#7d37ff00');
-  ctx.fillStyle=halo;ctx.beginPath();ctx.arc(0,0,r*1.72,0,TAU);ctx.fill();
-  ctx.shadowBlur=0;
-  for(let i=0;i<10;i++){
-   const a=pulse*2.5+i*TAU/10,rr=r*(.77+Math.sin(pulse*2+i)*.17);
-   ctx.fillStyle=i%2?'#ffc75e':'#e76bff';ctx.beginPath();ctx.arc(Math.cos(a)*rr,Math.sin(a)*rr*.55,r*.048,0,TAU);ctx.fill();
-  }
-  ctx.fillStyle='#000005';ctx.beginPath();ctx.arc(0,0,r*.71,0,TAU);ctx.fill();
-  ctx.strokeStyle='#ffe4a3';ctx.lineWidth=r*.10;ctx.beginPath();ctx.ellipse(0,0,r*1.19,r*.44,-.28,0,TAU);ctx.stroke();
-  ctx.restore();return;
- }
- if(head!=='classic'){
-  ctx.save();ctx.translate(w.x,w.y);ctx.rotate(w.angle);
-  ctx.shadowColor=w.accent;ctx.shadowBlur=options.glow?r*.8:0;
-  ctx.fillStyle=head==='eclipse'?'#05030b':head==='crystal'?'#8680ff':head==='comet'?'#fff3bb':'#fefcff';
-  ctx.strokeStyle=w.accent;ctx.lineWidth=r*.13;ctx.beginPath();
-  if(head==='crystal'){for(let i=0;i<6;i++){const a=i*TAU/6,px=Math.cos(a)*r*1.15,py=Math.sin(a)*r*1.15;i?ctx.lineTo(px,py):ctx.moveTo(px,py)}ctx.closePath()}
-  else ctx.arc(0,0,r*1.05,0,TAU);
-  ctx.fill();ctx.stroke();ctx.shadowBlur=0;
-  if(head==='pulsar'||head==='eclipse'){ctx.strokeStyle=head==='pulsar'?'#ffe500':'#ff4a7a';ctx.lineWidth=r*.2;ctx.beginPath();ctx.ellipse(0,0,r*1.45,r*.48,-.35,0,TAU);ctx.stroke()}
-  if(head==='comet'){ctx.fillStyle='#ff8b38';ctx.beginPath();ctx.moveTo(-r*.7,-r*.55);ctx.lineTo(-r*2.3,-r*.15);ctx.lineTo(-r*.7,r*.55);ctx.fill()}
-  ctx.restore();return;
- }
-ctx.save();ctx.translate(w.x,w.y);ctx.rotate(w.angle);
- ctx.fillStyle=p==='eclipse'||p==='horizon'?'#05050d':w.color[0];
- ctx.strokeStyle=w.accent;ctx.lineWidth=r*.14;
- ctx.shadowColor=w.color[0];ctx.shadowBlur=options.glow?16:0;
- ctx.beginPath();
- if(p==='meteor'||p==='crystal'){
-  ctx.moveTo(r*1.35,0);ctx.lineTo(r*.33,-r*1.1);ctx.lineTo(-r*1.02,-r*.7);
-  ctx.lineTo(-r*1.12,r*.61);ctx.lineTo(r*.4,r*1.08);ctx.closePath();
- }else ctx.arc(0,0,r*1.12,0,TAU);
- ctx.fill();ctx.stroke();ctx.shadowBlur=0;
- if(['horizon','eclipse','pulsar','galaxy'].includes(p)){
-  ctx.strokeStyle=p==='eclipse'?'#ffe500':p==='horizon'?'#2860ff':p==='pulsar'?'#ffe500':'#a928ff';
-  ctx.lineWidth=r*.13;ctx.beginPath();ctx.ellipse(-r*.18,0,r*1.3,r*.65,p==='galaxy'?-.42:.35,0,TAU);ctx.stroke();
- }
- if(['aurora','flare','supernova','comet','stardust'].includes(p)){
-  for(const side of [-1,1]){
-   ctx.fillStyle=p==='comet'?'#2860ff':p==='aurora'?'#27ff40':'#ffe500';
-   ctx.beginPath();ctx.moveTo(-r*.2,side*r*.72);
-   ctx.lineTo(p==='aurora'?-r*.5:r*.27,side*r*(p==='flare'?1.8:1.5));
-   ctx.lineTo(r*.5,side*r*.65);ctx.closePath();ctx.fill();
-  }
- }
- for(const side of [-1,1]){
-  ctx.fillStyle=p==='eclipse'||p==='horizon'?'#ffe500':'#fff';
-  ctx.beginPath();
-  if(p==='meteor'||p==='crystal')ctx.ellipse(r*.48,side*r*.53,r*.23,r*.13,side*.2,0,TAU);
-  else ctx.arc(r*.48,side*r*.53,r*.27,0,TAU);
-  ctx.fill();
-  ctx.fillStyle='#11162d';ctx.beginPath();ctx.arc(r*.59,side*r*.53,r*.115,0,TAU);ctx.fill();
- }
- ctx.restore();
+ const head=w.human?options.head:(w.head||'classic');
+ // Single renderer used by the workshop icon, animation preview and game.
+ if(window.WormHeadArt?.draw(ctx,head,w.x,w.y,w.angle,r))return;
+ ctx.save();ctx.fillStyle=w.color[0];ctx.beginPath();
+ ctx.arc(w.x,w.y,r,0,TAU);ctx.fill();ctx.restore();
 }
 
 /* Acceleration is communicated only by the worm itself: the ENTIRE
@@ -2069,6 +2031,35 @@ window.InfinityWormsQA={
     }
     return cases;
    }finally{game=userGame;}
+  },
+  combatProbe:()=>{
+   const previous=game;
+   try{
+    game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),
+     worms:[],wrecks:[],ambientCount:0,foodRespawnQueue:[]};
+    const hunter={id:-801,persona:'pro',human:false,alive:true,x:5000,y:5000,
+     angle:0,target:0,think:0,reaction:.08,wiggle:0,speed:172,mass:850,boost:false,
+     segments:Array.from({length:180},()=>({x:0,y:0})),
+     targetFood:null,targetWreckId:null,coil:null,coilCooldown:999,objective:'food',
+     navFromX:5000,navFromY:5000,navSince:0,escapeUntil:0,escapeHeading:0,
+     roamHeading:0,roamUntil:99,huntTargetId:null,huntUntil:0,huntCooldown:0,
+     boostUntil:0,boostRestUntil:0};
+    const prey={id:-802,persona:'casual',human:false,alive:true,x:6600,y:5200,
+     angle:.15,target:.15,think:0,speed:150,mass:260,
+     segments:Array.from({length:35},()=>({x:0,y:0}))};
+    game.worms=[hunter,prey];
+    let boosted=false,locked=false,objective='';
+    for(let i=0;i<250;i++){
+     game.time=i*.08;hunter.think=0;
+     steerBot(hunter,.08);
+     if(hunter.huntTargetId===prey.id)locked=true;
+     if(hunter.boost)boosted=true;
+     objective=hunter.objective;
+     hunter.angle+=clamp(normAngle(hunter.target-hunter.angle),-.24,.24);
+     hunter.x+=Math.cos(hunter.angle)*15;hunter.y+=Math.sin(hunter.angle)*15;
+    }
+    return {locked,boosted,objective,range:Math.hypot(hunter.x-prey.x,hunter.y-prey.y)};
+   }finally{game=previous;}
   },
   navigationProbe:()=>{
    const activeGame=game;

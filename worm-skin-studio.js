@@ -82,13 +82,53 @@ function save(obj){
 // independent segment wobble or discontinuities as time advances.
 function previewCenterline(seconds,count=59){
  const speed=140,spacing=.079,anchorX=752,anchorY=110;
- const trajectoryY=t=>34*Math.sin(t*.9)+18*Math.sin(t*1.45+.8)+4*Math.sin(t*2.35);
+ // Visible S-turns, sampled along one continuous flight path.
+ const trajectoryY=t=>45*Math.sin(t*1.24)+22*Math.sin(t*2.18+.68)+9*Math.sin(t*.52);
  const cameraY=trajectoryY(seconds);
  return Array.from({length:count},(_,i)=>{
-  const age=(count-1-i)*spacing;
-  return {x:anchorX-age*speed,y:anchorY+(trajectoryY(seconds-age)-cameraY)*.85};
+  const age=(count-1-i)*spacing,delta=trajectoryY(seconds-age)-cameraY;
+  // Smooth bounded camera projection keeps body/glow/head inside 920×220.
+  return {x:anchorX-age*speed,y:anchorY+67*Math.tanh(delta/66)};
  });
 }
+
+
+const headArt={
+  classic:'<svg viewBox="0 0 48 48" aria-hidden="true"><defs><radialGradient id="wh-classic"><stop stop-color="#ffeaff"/><stop offset=".64" stop-color="#a779ff"/><stop offset="1" stop-color="#5329af"/></radialGradient></defs><circle cx="24" cy="24" r="17" fill="url(#wh-classic)" stroke="#eedcff" stroke-width="1.5"/><circle cx="31" cy="18" r="4" fill="#fff"/><circle cx="34" cy="18" r="1.7" fill="#1c0b32"/><path d="M14 30Q23 35 31 28" stroke="#fcefff" stroke-width="1.5" fill="none" opacity=".7"/></svg>',
+  blackhole:'<svg viewBox="0 0 48 48" aria-hidden="true"><defs><radialGradient id="wh-blackhole"><stop offset=".39" stop-color="#02000a"/><stop offset=".43" stop-color="#ffe56a"/><stop offset=".61" stop-color="#ff498b"/><stop offset=".82" stop-color="#7841ff"/><stop offset="1" stop-color="#7841ff" stop-opacity="0"/></radialGradient></defs><circle cx="24" cy="24" r="23" fill="url(#wh-blackhole)"/><circle cx="24" cy="24" r="9" fill="#020008"/><ellipse cx="24" cy="24" rx="22" ry="8" fill="none" stroke="#ffe19c" stroke-width="2.6" transform="rotate(-25 24 24)"/></svg>',
+  pulsar:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M23 1 19 14 26 22 35 42" stroke="#2860ff" stroke-width="6" opacity=".65" stroke-linecap="round"/><path d="M27 2 25 18 19 29 16 46" stroke="#ffe500" stroke-width="3" opacity=".85" stroke-linecap="round"/><circle cx="24" cy="24" r="12" fill="#2860ff" stroke="#d0ecff" stroke-width="1.8"/><circle cx="24" cy="24" r="7" fill="#fff0a3"/><circle cx="24" cy="24" r="3" fill="#fff"/><ellipse cx="24" cy="24" rx="22" ry="8" fill="none" stroke="#ffe500" stroke-width="2" transform="rotate(-30 24 24)"/></svg>',
+  comet:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M3 33Q14 16 30 12L20 29Z" fill="#ff1744" opacity=".65"/><path d="M0 38Q17 23 32 12L23 29Z" fill="#ffe500" opacity=".9"/><path d="M6 43Q17 27 31 17" fill="none" stroke="#ffad35" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="16" r="11" fill="#ffdf65" stroke="#fff9c7" stroke-width="2"/><circle cx="35" cy="13" r="5" fill="#fff4cf"/></svg>',
+  crystal:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 2 43 21 24 46 5 21Z" fill="#7350f2" stroke="#ede0ff" stroke-width="2"/><path d="M24 2 24 46 5 21Z" fill="#a894ff"/><path d="M24 2 43 21 24 46 31 20Z" fill="#5e39ca"/><path d="M5 21H43M24 2 17 21 24 46" stroke="#fff3ff" stroke-width="1.1" fill="none" opacity=".8"/></svg>',
+  eclipse:'<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#9228f4" opacity=".35"/><circle cx="24" cy="24" r="17" fill="#ff488f"/><circle cx="24" cy="24" r="13" fill="#05020f"/><path d="M37 11A18 18 0 0 1 40 31" fill="none" stroke="#ffe8a5" stroke-width="3.5" stroke-linecap="round"/><path d="M9 34A18 18 0 0 0 14 40" fill="none" stroke="#7e52ff" stroke-width="2.5" stroke-linecap="round"/></svg>'
+ };
+const headImages=new Map();
+function headImage(id){
+ if(!headArt[id])id='classic';
+ if(!headImages.has(id)){
+  // Rasterize the very same SVG used by the workshop selector. No second
+  // painted approximation of the chosen shape anywhere in the game.
+  const img=new Image();
+  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(
+   headArt[id].replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ')
+  );
+  headImages.set(id,img);
+ }
+ return headImages.get(id);
+}
+function drawHead(ctx,id,x,y,angle,r){
+ const img=headImage(id);
+ if(!img.complete||img.naturalWidth===0)return false;
+ ctx.save();ctx.translate(x,y);ctx.rotate(angle);
+ const size=r*3.0;
+ ctx.drawImage(img,-size/2,-size/2,size,size);
+ ctx.restore();
+ return true;
+}
+const WormHeadArt={markup:id=>headArt[id]||headArt.classic,draw:drawHead};
+window.WormHeadArt=WormHeadArt;
+// Preload all six tiny SVG assets before they are selected in the game.
+for(const id of HEADS)headImage(id);
+
 let active=null;
 function close(){
  if(!active)return;
@@ -122,14 +162,6 @@ function open({onChange,onClose}={}){
  $('.ws-head-heading').textContent=lang==='ru'?'Форма головы':lang==='es'?'Forma de cabeza':'Head shape';
  $('.ws-advanced-summary').textContent=lang==='ru'?'НАСТРОЙКА ПЕРЕЛИВОВ · 64 ЦВЕТОВЫЕ ТОЧКИ':lang==='es'?'COLORES PERSONALIZADOS · 64 SEGMENTOS':'ADVANCED GRADIENT · 64 COLOR POINTS';
 
- const headArt={
-  classic:'<svg viewBox="0 0 48 48" aria-hidden="true"><defs><radialGradient id="wh-classic"><stop stop-color="#ffeaff"/><stop offset=".64" stop-color="#a779ff"/><stop offset="1" stop-color="#5329af"/></radialGradient></defs><circle cx="24" cy="24" r="17" fill="url(#wh-classic)" stroke="#eedcff" stroke-width="1.5"/><circle cx="31" cy="18" r="4" fill="#fff"/><circle cx="34" cy="18" r="1.7" fill="#1c0b32"/><path d="M14 30Q23 35 31 28" stroke="#fcefff" stroke-width="1.5" fill="none" opacity=".7"/></svg>',
-  blackhole:'<svg viewBox="0 0 48 48" aria-hidden="true"><defs><radialGradient id="wh-blackhole"><stop offset=".39" stop-color="#02000a"/><stop offset=".43" stop-color="#ffe56a"/><stop offset=".61" stop-color="#ff498b"/><stop offset=".82" stop-color="#7841ff"/><stop offset="1" stop-color="#7841ff" stop-opacity="0"/></radialGradient></defs><circle cx="24" cy="24" r="23" fill="url(#wh-blackhole)"/><circle cx="24" cy="24" r="9" fill="#020008"/><ellipse cx="24" cy="24" rx="22" ry="8" fill="none" stroke="#ffe19c" stroke-width="2.6" transform="rotate(-25 24 24)"/></svg>',
-  pulsar:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M23 1 19 14 26 22 35 42" stroke="#2860ff" stroke-width="6" opacity=".65" stroke-linecap="round"/><path d="M27 2 25 18 19 29 16 46" stroke="#ffe500" stroke-width="3" opacity=".85" stroke-linecap="round"/><circle cx="24" cy="24" r="12" fill="#2860ff" stroke="#d0ecff" stroke-width="1.8"/><circle cx="24" cy="24" r="7" fill="#fff0a3"/><circle cx="24" cy="24" r="3" fill="#fff"/><ellipse cx="24" cy="24" rx="22" ry="8" fill="none" stroke="#ffe500" stroke-width="2" transform="rotate(-30 24 24)"/></svg>',
-  comet:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M3 33Q14 16 30 12L20 29Z" fill="#ff1744" opacity=".65"/><path d="M0 38Q17 23 32 12L23 29Z" fill="#ffe500" opacity=".9"/><path d="M6 43Q17 27 31 17" fill="none" stroke="#ffad35" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="16" r="11" fill="#ffdf65" stroke="#fff9c7" stroke-width="2"/><circle cx="35" cy="13" r="5" fill="#fff4cf"/></svg>',
-  crystal:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 2 43 21 24 46 5 21Z" fill="#7350f2" stroke="#ede0ff" stroke-width="2"/><path d="M24 2 24 46 5 21Z" fill="#a894ff"/><path d="M24 2 43 21 24 46 31 20Z" fill="#5e39ca"/><path d="M5 21H43M24 2 17 21 24 46" stroke="#fff3ff" stroke-width="1.1" fill="none" opacity=".8"/></svg>',
-  eclipse:'<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#9228f4" opacity=".35"/><circle cx="24" cy="24" r="17" fill="#ff488f"/><circle cx="24" cy="24" r="13" fill="#05020f"/><path d="M37 11A18 18 0 0 1 40 31" fill="none" stroke="#ffe8a5" stroke-width="3.5" stroke-linecap="round"/><path d="M9 34A18 18 0 0 0 14 40" fill="none" stroke="#7e52ff" stroke-width="2.5" stroke-linecap="round"/></svg>'
- };
  const headLabels={classic:['Классическая','Classic','Clásica'],blackhole:['Чёрная дыра','Black Hole','Agujero negro'],pulsar:['Пульсар','Pulsar','Púlsar'],comet:['Комета','Comet','Cometa'],crystal:['Кристалл','Crystal','Cristal'],eclipse:['Затмение','Eclipse','Eclipse']};
  for(const id of HEADS){const b=document.createElement('button');b.type='button';b.className='ws-head-choice';b.dataset.head=id;b.innerHTML='<span class="ws-head-symbol" aria-hidden="true">'+headArt[id]+'</span><span class="ws-head-label"></span>';b.lastChild.textContent=headLabels[id][lang==='ru'?0:lang==='es'?2:1];b.onclick=()=>{data.head=id;persist();root.querySelectorAll('.ws-head-choice').forEach(x=>x.classList.toggle('selected',x.dataset.head===id))};$('.ws-head-options').append(b)}
  root.querySelectorAll('.ws-head-choice').forEach(x=>x.classList.toggle('selected',x.dataset.head===data.head));
@@ -292,45 +324,10 @@ function open({onChange,onClose}={}){
    pc.fillStyle='#fff';pc.beginPath();pc.arc(p.x,p.y,3,0,Math.PI*2);pc.fill();
   }
   pc.restore();
-  const head=body[count-1],next=body[count-2],angle=Math.atan2(head.y-next.y,head.x-next.x);
-  pc.translate(head.x,head.y);pc.rotate(angle);
-  const radius=25,accent=data.customEnabled?colors[0]:presetColors(data.skin)[0];
-  pc.shadowColor=accent;pc.shadowBlur=17;
-  if(data.head==='blackhole'){
-   const g=pc.createRadialGradient(0,0,3,0,0,48);
-   g.addColorStop(0,'#000008');g.addColorStop(.38,'#080515');
-   g.addColorStop(.52,'#ffd25e');g.addColorStop(.64,'#ee3c9c');
-   g.addColorStop(.86,'#7737ff99');g.addColorStop(1,'#7737ff00');
-   pc.fillStyle=g;pc.beginPath();pc.arc(0,0,48,0,Math.PI*2);pc.fill();
-   pc.fillStyle='#000006';pc.beginPath();pc.arc(0,0,18,0,Math.PI*2);pc.fill();
-   pc.strokeStyle='#ffe5b0';pc.lineWidth=3;pc.beginPath();pc.ellipse(0,0,35,12,-.28,0,Math.PI*2);pc.stroke();
-   pc.shadowBlur=0;
-   for(let i=0;i<8;i++){
-    const a=t*3+i*Math.PI/4;
-    pc.fillStyle=i%2?'#ffe599':'#fc7de6';pc.beginPath();
-    pc.arc(Math.cos(a)*30,Math.sin(a)*12,2.2,0,Math.PI*2);pc.fill();
-   }
-  }else{
-   pc.fillStyle=data.head==='eclipse'?'#03030b':data.head==='crystal'?'#9e8aff':data.head==='comet'?'#ffec9d':accent;
-   pc.strokeStyle='#f5dfff';pc.lineWidth=3;
-   pc.beginPath();
-   if(data.head==='crystal'||data.head==='comet'){
-    for(let j=0;j<6;j++){
-     const a=j*Math.PI/3,rad=data.head==='comet'&&j===3?37:radius;
-     j?pc.lineTo(Math.cos(a)*rad,Math.sin(a)*rad):pc.moveTo(Math.cos(a)*rad,Math.sin(a)*rad);
-    }
-    pc.closePath();
-   }else pc.arc(0,0,radius,0,Math.PI*2);
-   pc.fill();pc.stroke();pc.shadowBlur=0;
-   if(data.head==='pulsar'||data.head==='eclipse'){
-    pc.strokeStyle=data.head==='pulsar'?'#ffe500':'#ff5b98';pc.lineWidth=5;
-    pc.beginPath();pc.ellipse(0,0,36,11,-.35,0,Math.PI*2);pc.stroke();
-   }else if(data.head==='classic'){
-    for(const side of [-1,1]){
-     pc.fillStyle='#fff';pc.beginPath();pc.arc(10,side*10,6,0,Math.PI*2);pc.fill();
-     pc.fillStyle='#0a1023';pc.beginPath();pc.arc(12,side*10,2.5,0,Math.PI*2);pc.fill();
-    }
-   }
+  const head=body[count-1],next=body[count-2];
+  const angle=Math.atan2(head.y-next.y,head.x-next.x);
+  if(!WormHeadArt.draw(pc,data.head,head.x,head.y,angle,25)){
+   pc.fillStyle='#f0dcff';pc.beginPath();pc.arc(head.x,head.y,24,0,Math.PI*2);pc.fill();
   }
   pc.restore();
   previewFrame=requestAnimationFrame(paintPreview);
@@ -341,5 +338,5 @@ function open({onChange,onClose}={}){
  previewFrame=requestAnimationFrame(paintPreview);
  return close;
 }
-window.WormSkinStudio={open,close,read:load,presets:PRESETS,isUnlocked:id=>rewardFor(id).unlocked,rewardFor,progress:milestones,previewCenterline};
+window.WormSkinStudio={open,close,read:load,presets:PRESETS,isUnlocked:id=>rewardFor(id).unlocked,rewardFor,progress:milestones,previewCenterline,headArt:WormHeadArt};
 })();
