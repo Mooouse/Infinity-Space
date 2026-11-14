@@ -676,9 +676,82 @@ function planFoodLane(w,persona){
  deviation=clamp(deviation,-allowed,allowed);
  return {heading:w.angle+deviation,richness:score[best]};
 }
+// The collision planner must follow the same finite-turn arc as real physics.
+// Looking only at a straight, instantly rotated heading made even skilled
+// opponents rush into bodies and borders they had supposedly avoided.
+function botRouteRisk(w,heading,persona){
+ const speed=Math.max(105,w.speed||172),radius=wormRadius(w);
+ const look=persona.look||[110];
+ const distances=persona.awareness>=.75?[40,85,...look]:[65,...look];
+ let x=w.x,y=w.y,angle=w.angle,previous=0,penalty=0,clearance=Infinity;
+ for(const distance of distances){
+  const length=Math.max(0,distance-previous);
+  if(!length)continue;
+  const turn=clamp(normAngle(heading-angle),-3.35*length/speed,3.35*length/speed);
+  const midpoint=angle+turn*.5;
+  x+=Math.cos(midpoint)*length;y+=Math.sin(midpoint)*length;
+  angle+=turn;previous=distance;
+  const time=distance/speed,importance=1/(1+.9*time);
+  const normalized=((x-WORLD.cx)/WORLD.rx)**2+((y-WORLD.cy)/WORLD.ry)**2;
+  if(normalized>.79*.79){
+   const excess=Math.max(0,Math.sqrt(normalized)-.79);
+   penalty+=excess*520*importance;
+   if(normalized>.97*.97)penalty+=600*importance;
+  }
+  const scan=Math.max(155,radius+115);
+  bodiesNearby(x,y,scan,entry=>{
+   const other=entry.w;
+   if(!other.alive||other===w)return;
+   const otherRadius=wormRadius(other);
+   const lethal=entry.head?radius*.82+otherRadius*.72:
+     radius*.72+otherRadius*.65;
+   const d=Math.hypot(x-entry.x,y-entry.y);
+   const margin=d-lethal;
+   clearance=Math.min(clearance,margin);
+   if(margin<135)
+    penalty+=Math.pow(135-margin,1.5)*.31*importance;
+   if(margin<32)
+    penalty+=(32-margin)*7*importance;
+   if(entry.head){
+    // A rival head is moving as well: a static obstacle forecast is late.
+    const futureX=entry.x+Math.cos(other.angle)*Math.min(1.05,time)*Math.max(0,other.speed||160);
+    const futureY=entry.y+Math.sin(other.angle)*Math.min(1.05,time)*Math.max(0,other.speed||160);
+    const headMargin=Math.hypot(x-futureX,y-futureY)-lethal;
+    clearance=Math.min(clearance,headMargin);
+    if(headMargin<125)penalty+=Math.pow(125-headMargin,1.5)*.28*importance;
+   }
+  });
+ }
+ return {penalty,clearance};
+}
+// React before the next scheduled decision when an obstacle enters the
+// forward flight corridor. Fast reactions are a skill, not immunity.
+function botHasUrgentThreat(w){
+ const distance=Math.max(95,Math.min(220,w.speed*.93));
+ const x=w.x+Math.cos(w.angle)*distance;
+ const y=w.y+Math.sin(w.angle)*distance;
+ const border=((x-WORLD.cx)/WORLD.rx)**2+((y-WORLD.cy)/WORLD.ry)**2;
+ if(border>.89*.89)return true;
+ let threat=false;
+ const radius=wormRadius(w);
+ bodiesNearby(x,y,Math.max(120,radius+87),entry=>{
+  if(entry.w===w||!entry.w.alive)return;
+  const margin=Math.hypot(entry.x-x,entry.y-y)-
+    (radius*.72+wormRadius(entry.w)*.65);
+  if(margin<95)threat=true;
+ });
+ return threat;
+}
 function steerBot(w,dt){
  const persona=BOT_PERSONAS[w.persona]||BOT_PERSONAS.casual;
  w.think-=dt;w.wiggle+=dt*.7;
+ if(persona.awareness>=.45&&game.time>=(w.nextThreatScan||0)){
+  w.nextThreatScan=game.time+(persona.awareness>=1?.085:.19);
+  if(botHasUrgentThreat(w)){
+   w.think=0;
+   w.roamUntil=Math.min(w.roamUntil,game.time+.18);
+  }
+ }
  if(w.think>0)return;
  w.think=Math.max(.06,w.reaction*rand(.86,1.15));
  const salvage=collectWreckTarget(w);
@@ -767,38 +840,20 @@ function steerBot(w,dt){
  // sampled arbitrary 360-degree world bearings and changed its mind
  // at every decision despite the worm's finite turning radius.
  const approach=w.angle+clamp(normAngle(desired-w.angle),-.56,.56);
- const choices=[approach,w.angle,approach-.17,approach+.17,
-  approach-.34,approach+.34,approach-.54,approach+.54,
-  w.angle-.26,w.angle+.26];
+ const choices=[approach,w.angle,approach-.18,approach+.18,
+  w.angle-.45,w.angle+.45,w.angle-.80,w.angle+.80,
+  w.angle-1.16,w.angle+1.16];
  const samples=Math.max(1,Math.min(choices.length,persona.samples||1));
  let best=-Infinity,bestAngle=approach,bestClearance=Infinity;
  for(let k=0;k<samples;k++){
   const heading=choices[k];
-  let score=25*Math.cos(heading-desired)+9*Math.cos(heading-w.angle);
-  let clearance=Infinity;
-  for(const step of persona.look){
-   const swing=clamp(normAngle(heading-w.angle),
-    -3.35*step/Math.max(90,w.speed),3.35*step/Math.max(90,w.speed));
-   const future=w.angle+swing;
-   const x=w.x+Math.cos(future)*step,y=w.y+Math.sin(future)*step;
-   const border=((x-WORLD.cx)/WORLD.rx)**2+((y-WORLD.cy)/WORLD.ry)**2;
-   if(border>.91*.91)score-=Math.min(170,(border-.91*.91)*650);
-   const importance=Math.max(.26,1-step/850);
-   bodiesNearby(x,y,110,entry=>{
-    if(!entry.w.alive)return;
-    // Only the older tail is an obstacle; immediately connected body
-    // segments must not cause a constant avoidance turn.
-    if(entry.w===w&&(entry.index===undefined||entry.index<24))return;
-    const d=Math.hypot(x-entry.x,y-entry.y);
-    const danger=(wormRadius(w)+wormRadius(entry.w))*.78+11;
-    clearance=Math.min(clearance,d-danger);
-    if(d<danger+52)
-     score-=(danger+52-d)*importance*Math.max(.32,persona.awareness)*.62;
-    if(d<danger)
-     score-=(120+(danger-d)*2.2)*importance*Math.max(.38,persona.awareness);
-   });
-  }
-  if(score>best){best=score;bestAngle=heading;bestClearance=clearance;}
+  const route=botRouteRisk(w,heading,persona);
+  // Experienced rivals accept a longer detour instead of steering into
+  // a lethal body intersection for a little more food.
+  const caution=clamp(persona.awareness*.7,.42,1.55);
+  const score=25*Math.cos(heading-desired)+9*Math.cos(heading-w.angle)-
+   route.penalty*caution;
+  if(score>best){best=score;bestAngle=heading;bestClearance=route.clearance;}
  }
  w.target=bestAngle;
  const safe=bestClearance>(w.persona==='reckless'?18:65);
