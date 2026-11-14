@@ -1902,6 +1902,41 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
      oldPosition:{x,y},newPosition:replacement?{x:replacement.x,y:replacement.y}:null};
    }finally{game.foodRespawnQueue.push(...oldQueue);}
   },
+  spawnDistributionProbe:()=>{
+   const p=game.player,bots=game.worms.filter(w=>!w.human&&w.alive);
+   const radial=w=>Math.hypot(w.x-p.x,w.y-p.y);
+   let minimum=Infinity;
+   for(let i=0;i<bots.length;i++)
+    for(let j=i+1;j<bots.length;j++)
+     minimum=Math.min(minimum,Math.hypot(bots[i].x-bots[j].x,bots[i].y-bots[j].y));
+   const giants=bots.filter(w=>w.mass>=8000);
+   const ringGiantBodies=giants.every(w=>w.segments.every((seg,i)=>{
+    if(i%13!==0)return true;
+    const radialDist=Math.hypot(seg.x-WORLD.cx,seg.y-WORLD.cy);
+    return radialDist>6300&&radialDist<9000;
+   }));
+   return {total:bots.length,nearbyWithin3100:bots.filter(w=>radial(w)<3100).length,
+    farBeyond6500:bots.filter(w=>radial(w)>6500).length,
+    giantCount:giants.length,giantsFar:giants.filter(w=>radial(w)>6300).length,
+    giantBodiesOnOuterArc:ringGiantBodies,minHeadDistance:minimum};
+  },
+  wreckScopeProbe:()=>{
+   const actual=game;
+   try{
+    game={time:0,food:[],foodGrid:new Map(),wrecks:[],worms:[]};
+    const f=makeFood(1000,1000,'#ff1744',5,8);addFood(f);
+    f.wreckId=1;
+    game.wrecks=[{id:1,remaining:1,items:[f],
+     minX:f.x,maxX:f.x,minY:f.y,maxY:f.y}];
+    const makeWorm=(x,y,locked=false)=>({
+     id:x,persona:'pro',mass:250,x,y,angle:0,
+     targetWreckId:locked?1:null,targetFood:null,alive:true
+    });
+    return {near:!!collectWreckTarget(makeWorm(1500,1000)),
+     distant:!!collectWreckTarget(makeWorm(8000,8000)),
+     committed:!!collectWreckTarget(makeWorm(8000,8000,true))};
+   }finally{game=actual;}
+  },
   giantRivalsProbe:()=>({
    massive:game.worms.filter(w=>!w.human&&w.alive&&w.mass>=8000).length,
    largest:Math.max(0,...game.worms.filter(w=>!w.human&&w.alive).map(w=>w.mass)),
@@ -2052,10 +2087,15 @@ if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
   },
   salvageProbe:()=>{
    const active=game.wrecks.find(w=>w.remaining>0);
-   if(!active)return {available:false,total:0,prioritizing:0};
+   if(!active)return {available:false,total:0,eligible:0,prioritizing:0};
    const bots=game.worms.filter(w=>!w.human&&w.alive);
+   const eligible=bots.filter(b=>
+    game.wrecks.some(wreck=>wreck.remaining>0&&(
+     wreck.id===b.targetWreckId||wreck.items.some(f=>f._index>=0&&
+      Math.hypot(f.x-b.x,f.y-b.y)<=corpseAwarenessRadius(b))
+    ))).length;
    for(const b of bots){b.think=0;steerBot(b,1/60);}
-   return {available:true,id:active.id,total:bots.length,
+   return {available:true,id:active.id,total:bots.length,eligible,
     prioritizing:bots.filter(b=>b.objective==='salvage'&&b.targetWreckId!==null).length,
     types:[...new Set(bots.map(b=>b.persona))]};
   },
