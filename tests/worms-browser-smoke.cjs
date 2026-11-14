@@ -68,6 +68,25 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.waitForFunction(()=>!!window.InfinityWormsQA,{timeout:12000});
     let a=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
     assert.equal(a.mode,'worms');
+    assert.equal(await page.locator('#mode-music-open').count(),1,
+      'The music collection must exist during Worms gameplay');
+    assert.equal(await page.evaluate(()=>window.SpaceModeMusic?.current()),1,
+      'The free first soundtrack must be selected by default');
+    if(width===390){
+     const controls=await page.evaluate(()=>{
+      const bounds=id=>{const r=document.getElementById(id).getBoundingClientRect();
+       return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height};};
+      return {stick:bounds('worm-stick'),boost:bounds('worm-boost'),pause:bounds('worm-pause'),viewport:innerWidth};
+     });
+     assert.ok(controls.stick.left>controls.viewport*.52,
+      'Mobile Worms joystick belongs on the right: '+JSON.stringify(controls));
+     assert.ok(controls.boost.width>=70&&controls.boost.height>=70&&
+      controls.pause.width>=50&&controls.pause.height>=50,
+      'Phone controls must never be flattened: '+JSON.stringify(controls));
+     assert.ok(controls.boost.right<controls.stick.left,
+      'Joystick and boost should not overlap: '+JSON.stringify(controls));
+    }
+
     assert.equal(await page.locator('#worm-length').count(),0,
       'The HUD must not display worm length');
     assert.equal(await page.locator('#worm-mass').count(),1);
@@ -319,6 +338,13 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.locator('#worm-skins-open').click();
     assert.equal(await page.locator('.ws-overlay').isVisible(),true,'Separate skin editor must open from pause');
     assert.equal(await page.locator('.ws-preset').count(),16);
+    assert.equal(await page.locator('.ws-preset[data-skin="nebula"]').isEnabled(),true);
+    assert.equal(await page.locator('.ws-preset[data-skin="aurora"]').isEnabled(),true);
+    assert.equal(await page.locator('.ws-preset[data-skin="pulsar"]').isEnabled(),false,
+      'Rare skins must require kills, top-1 finishes or mass records');
+    assert.ok((await page.locator('.ws-preset[data-skin="pulsar"] .ws-unlock-label').textContent()).includes('5'),
+      'Locked cards must display an exact earned progress objective');
+
     assert.equal(await page.locator('.ws-preset-worm i').count(),0,
       'Premade cosmic skins must be seamless silhouettes, not circles');
     assert.ok(await page.locator('.ws-preset-worm').first().evaluate(el=>
@@ -352,6 +378,12 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
       document.getElementById('worm-settings-frame')?.src.includes('worm-settings-embed=1'),
       null,{timeout:15000});
     const mainSettings=page.frameLocator('#worm-settings-frame');
+    await mainSettings.locator('#set-worm-control').waitFor({state:'visible',timeout:30000});
+    await mainSettings.locator('#set-worm-control').selectOption('keys');
+    assert.equal(await mainSettings.locator('#set-worm-control').evaluate(el=>el.value),'keys',
+      'The main Settings page must allow separate controls for Worms');
+    await mainSettings.locator('#set-worm-control').selectOption('auto');
+
     await mainSettings.locator('#screen-settings').waitFor({state:'visible',timeout:30000});
     assert.equal(await mainSettings.locator('#screen-settings [data-settings-tab]').count(),4,
       'Pause opens the actual primary settings screen with all four main sections');
