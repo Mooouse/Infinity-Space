@@ -200,9 +200,10 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
       return {border:css.borderTopColor,shadow:css.boxShadow};
      });
      const pauseComponents=pauseStyle.border.match(/[0-9.]+/g)?.map(Number)||[];
-     assert.ok(pauseComponents.length>=3&&pauseComponents[0]>=175&&
-      pauseComponents[1]>=135&&pauseComponents[2]>=225&&pauseStyle.shadow!=='none',
-      'Pause dial should retain a visible lavender glow through its transition: '+JSON.stringify(pauseStyle));
+     assert.ok(pauseComponents.length>=3&&
+      pauseComponents[2]>pauseComponents[0]*1.25&&pauseComponents[2]>pauseComponents[1]*1.35&&
+      pauseStyle.shadow!=='none',
+      'The restrained pause hover accent must remain visibly violet: '+JSON.stringify(pauseStyle));
      await page.locator('#worm-boost').hover();
      await page.waitForTimeout(220);
      const boostStyle=await page.locator('#worm-boost').evaluate(el=>{
@@ -210,9 +211,10 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
       return {border:css.borderTopColor,shadow:css.boxShadow};
      });
      const boostComponents=boostStyle.border.match(/[0-9.]+/g)?.map(Number)||[];
-     assert.ok(boostComponents.length>=3&&boostComponents[0]>=215&&
-      boostComponents[0]>boostComponents[1]&&boostComponents[2]>=160&&boostStyle.shadow!=='none',
-      'Boost dial should retain a distinct pink glow: '+JSON.stringify(boostStyle));
+     assert.ok(boostComponents.length>=3&&boostComponents[0]>=190&&
+      boostComponents[0]>boostComponents[1]*1.45&&boostComponents[0]>boostComponents[2]*1.35&&
+      boostStyle.shadow!=='none',
+      'The restrained boost hover accent must remain visibly pink: '+JSON.stringify(boostStyle));
     }
     await page.evaluate(()=>{window.InfinityWormsQA.testProtection(90);window.InfinityWormsQA.freezeRealtime(true);});
     const skillMix=await page.evaluate(()=>window.InfinityWormsQA.botSkillBalanceProbe());
