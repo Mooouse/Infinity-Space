@@ -57,9 +57,24 @@ async function clickBack(page){
       }
      }else if(screen==='achievements'){
       await page.locator('#screen-achievements [data-ach-filter="rare"]').click();
-      if(!await page.locator('#screen-achievements [data-ach-filter="rare"]').evaluate(e=>e.classList.contains('active')))
-       failures.push({width,screen,reason:'filter-inert'});
+      const filtered=await page.evaluate(()=>{
+       const root=document.querySelector('#screen-achievements');
+       const rows=[...root.querySelectorAll('.br-ach-row')];
+       const visible=rows.filter(n=>getComputedStyle(n).display!=='none');
+       const active=root.querySelector('.br-filter.active')?.dataset.achFilter;
+       return {total:rows.length,count:visible.length,onlyRare:visible.every(n=>n.dataset.rarity==='rare'),
+        hidden:rows.some(n=>n.hidden&&getComputedStyle(n).display==='none'),active};
+      });
+      if(filtered.active!=='rare'||filtered.count===0||filtered.count>=filtered.total||
+         !filtered.onlyRare||!filtered.hidden)
+       failures.push({width,screen,reason:'rarity-rows-not-filtered',filtered});
       await page.locator('#screen-achievements [data-ach-filter="all"]').click();
+      const restored=await page.evaluate(()=>{
+       const root=document.querySelector('#screen-achievements');
+       const rows=[...root.querySelectorAll('.br-ach-row')];
+       return rows.every(n=>!n.hidden&&getComputedStyle(n).display!=='none');
+      });
+      if(!restored)failures.push({width,screen,reason:'rarity-filter-reset-failed'});
      }else if(screen==='bestiary'){
       const entries=page.locator('#screen-bestiary [data-bestiary]');
       if(await entries.count()>3){
