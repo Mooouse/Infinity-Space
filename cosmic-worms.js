@@ -77,12 +77,14 @@ const SKINS=[
  {id:'rift',en:'Riftwalker',ru:'Разлом',es:'Fractura',light:'#b832ff',dark:'#270050',accent:'#ff4bb7',pattern:'rift'},
  {id:'dragon',en:'Cosmic Dragon',ru:'Космический дракон',es:'Dragón cósmico',light:'#fc244c',dark:'#570a2e',accent:'#ffdf47',pattern:'dragon'},
  {id:'royal',en:'Royal Nebula',ru:'Королевская туманность',es:'Nebulosa real',light:'#ffd24e',dark:'#231461',accent:'#a86cff',pattern:'royal'},
- {id:'voidbloom',en:'Void Bloom',ru:'Цветок пустоты',es:'Flor del vacío',light:'#9c2ce7',dark:'#080413',accent:'#ff6cb9',pattern:'voidbloom'}
+ {id:'voidbloom',en:'Void Bloom',ru:'Цветок пустоты',es:'Flor del vacío',light:'#9c2ce7',dark:'#080413',accent:'#ff6cb9',pattern:'voidbloom'},
+ {id:'adnova',en:'Neon Comet',ru:'Неоновая комета',es:'Cometa neón',light:'#fa24a0',dark:'#270b62',accent:'#ffce30',pattern:'nebula'},
+ {id:'adember',en:'Solar Candy',ru:'Солнечный леденец',es:'Caramelo solar',light:'#ff572c',dark:'#481025',accent:'#ffe749',pattern:'flare'}
 ];
 const SETTINGS_KEY='infinity-space-worms-settings-v2';
 function loadSettings(){
  try{const s=JSON.parse(localStorage.getItem(SETTINGS_KEY));if(s&&typeof s==='object')
-  return {skin:SKINS.some(v=>v.id===s.skin)?s.skin:'nebula',glow:s.glow!==false,names:s.names!==false,viewZoom:clamp(Number(s.viewZoom)||1,.84,1.16),head:window.WormHeadArt?.ids.includes(s.head)?s.head:'classic',muted:s.muted===true,controlMode:['auto','mouse','keys','stick','touch'].includes(s.controlMode)?s.controlMode:'auto',customEnabled:s.customEnabled===true,customSegments:Array.isArray(s.customSegments)?s.customSegments.filter(c=>/^#[0-9a-f]{6}$/i.test(c)).slice(0,64):[]};}catch(_){}
+  return {skin:SKINS.some(v=>v.id===s.skin)?s.skin:'nebula',glow:s.glow!==false,names:s.names!==false,viewZoom:clamp(Number(s.viewZoom)||1,.84,1.16),head:window.WormSkinStudio?.isHeadUnlocked?.(s.head)?s.head:'classic',muted:s.muted===true,controlMode:['auto','mouse','keys','stick','touch'].includes(s.controlMode)?s.controlMode:'auto',customEnabled:s.customEnabled===true,customSegments:Array.isArray(s.customSegments)?s.customSegments.filter(c=>/^#[0-9a-f]{6}$/i.test(c)).slice(0,64):[]};}catch(_){}
  return {skin:'nebula',glow:true,names:true,viewZoom:1,head:'classic',muted:false,controlMode:'auto',customEnabled:false,customSegments:[]};
 }
 const options=loadSettings();

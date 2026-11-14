@@ -3,7 +3,7 @@
 (function(){
 'use strict';
 const KEY='infinity-space-worms-settings-v2';
-const HEADS=["classic","pizza","pig","blackhole","cat","dragon","robot","alien","shark","skull","ghost","astronaut","planet","sun","comet","crystal","eclipse","pulsar","mushroom","crown","star","donut","fox","demon","octopus","ufo","panda","cyclops","frog","flame"];
+const HEADS=["classic","pizza","pig","blackhole","cat","dragon","robot","alien","shark","skull","ghost","astronaut","planet","sun","comet","crystal","eclipse","pulsar","mushroom","crown","star","donut","fox","demon","octopus","ufo","panda","cyclops","frog","flame","rocket","lollipop"];
 const COLORS=['#ff1744','#ff6633','#ffe500','#ffb200','#27ff40','#79ff27','#2860ff','#648bff','#9922ff','#d64aff','#ffffff','#15192e','#f7a8ff','#8a3bff'];
 const PRESETS=[
  ['nebula','Nebula','Туманность','Nebulosa',['#9922ff','#ff1744','#2860ff','#39006b']],
@@ -21,7 +21,9 @@ const PRESETS=[
  ['rift','Riftwalker','Разлом','Fractura',['#b832ff','#ff4bb7','#375aff','#270050']],
  ['dragon','Cosmic Dragon','Космический дракон','Dragón cósmico',['#fc244c','#ffdf47','#9d27ff','#570a2e']],
  ['royal','Royal Nebula','Королевская туманность','Nebulosa real',['#ffd24e','#a86cff','#ff76d1','#231461']],
- ['voidbloom','Void Bloom','Цветок пустоты','Flor del vacío',['#9c2ce7','#ff6cb9','#4b21b6','#080413']]
+ ['voidbloom','Void Bloom','Цветок пустоты','Flor del vacío',['#9c2ce7','#ff6cb9','#4b21b6','#080413']],
+ ['adnova','Neon Comet','Неоновая комета','Cometa neón',['#fa24a0','#ffce30','#7344ff','#270b62']],
+ ['adember','Solar Candy','Солнечный леденец','Caramelo solar',['#ff572c','#ffe749','#ff256a','#481025']]
 ];
 const L={
  ru:{title:'Конструктор червя',desc:'Выбирай цельный космический облик со звёздами и кометами внутри тела или настрой плавный перелив цветов.',
@@ -31,6 +33,28 @@ const L={
  es:{title:'Taller de gusanos',desc:'Elige un cuerpo cósmico continuo con estrellas, cometas y degradados.',
  templates:'Estilos',segment:'Degradado',palette:'Colores',all:'Rellenar',stripes:'Alternar',reset:'Restablecer',done:'Listo',close:'Cerrar',picked:'Segmento',custom:'Color propio',tip:'Pulsa un círculo para pintarlo. Mayús + clic pinta un rango.'}
 };
+// Two skins and two heads are CrazyGames rewarded-only and persist independently
+// from the selected settings. No ads are ever requested by the Playgama build.
+const AD_ONLY_SKINS=new Set(['adnova','adember']);
+const AD_ONLY_HEADS=new Set(['rocket','lollipop']);
+const AD_REWARDS_KEY='infinity-space-crazy-worm-rewards-v1';
+function ownedAdRewards(){
+ try{
+  const data=JSON.parse(localStorage.getItem(AD_REWARDS_KEY)||'{}');
+  return {skins:Array.isArray(data.skins)?data.skins.filter(x=>AD_ONLY_SKINS.has(x)):[],
+    heads:Array.isArray(data.heads)?data.heads.filter(x=>AD_ONLY_HEADS.has(x)):[]};
+ }catch(_){return {skins:[],heads:[]}}
+}
+function adOwned(type,id){const k=type==='skin'?'skins':'heads';return ownedAdRewards()[k].includes(id);}
+function grantAdReward(type,id){
+ const valid=type==='skin'?AD_ONLY_SKINS.has(id):AD_ONLY_HEADS.has(id);
+ if(!valid)return false;
+ const all=ownedAdRewards(),key=type==='skin'?'skins':'heads';
+ if(!all[key].includes(id))all[key].push(id);
+ try{localStorage.setItem(AD_REWARDS_KEY,JSON.stringify(all))}catch(_){return false}
+ return true;
+}
+function headUnlocked(id){return HEADS.includes(id)&&(!AD_ONLY_HEADS.has(id)||adOwned('head',id))}
 // Preset skins are lasting rewards for rank-one finishes, eliminations
 // and personal mass records. The first two are always available.
 const UNLOCKS={
@@ -47,6 +71,7 @@ function milestones(){
   mass:Math.max(0,totals.maxMass||0,live.mass||0)};
 }
 function rewardFor(id){
+ if(AD_ONLY_SKINS.has(id))return {unlocked:adOwned('skin',id),kind:'ad',need:1,current:adOwned('skin',id)?1:0};
  const challenge=UNLOCKS[id];
  if(!challenge)return {unlocked:true,kind:'free',need:0,current:0};
  const [kind,need]=challenge,progress=milestones();
@@ -55,6 +80,7 @@ function rewardFor(id){
 }
 function requirementText(id,language){
  const r=rewardFor(id);if(r.unlocked)return language==='ru'?'ОТКРЫТО':language==='es'?'DESBLOQUEADO':'UNLOCKED';
+ if(r.kind==='ad')return language==='ru'?'▶ РЕКЛАМА':language==='es'?'▶ VER ANUNCIO':'▶ WATCH AD';
  const key=r.kind==='wins'?
   (language==='ru'?'ТОП-1':language==='es'?'TOP 1':'TOP 1'):
   r.kind==='kills'?(language==='ru'?'УБИЙСТВ':language==='es'?'BAJAS':'KILLS'):
@@ -68,7 +94,7 @@ function load(){
  const skin=PRESETS.some(p=>p[0]===raw.skin)&&rewardFor(raw.skin).unlocked?raw.skin:'nebula';
  const backup=presetColors(skin);
  return {
-  ...raw,skin,head:HEADS.includes(raw.head)?raw.head:'classic',
+  ...raw,skin,head:headUnlocked(raw.head)?raw.head:'classic',
   customEnabled:raw.customEnabled===true,
   customSegments:Array.from({length:64},(_,i)=>normalize(raw.customSegments?.[i])||backup[i%backup.length])
  };
@@ -131,7 +157,9 @@ const headArt={
  panda:icon('<circle cx="15" cy="17" r="11" fill="#212038"/><circle cx="15" cy="48" r="11" fill="#212038"/><ellipse cx="33" cy="32" rx="25" ry="24" fill="#fffaf1" stroke="#c8c5db" stroke-width="2.4"/><ellipse cx="34" cy="22" rx="8" ry="10" fill="#2d2941"/><ellipse cx="34" cy="42" rx="8" ry="10" fill="#2d2941"/><circle cx="37" cy="23" r="2.8" fill="#fff"/><circle cx="37" cy="41" r="2.8" fill="#fff"/><path d="M47 28Q55 32 47 36" fill="#24243a"/>'),
  cyclops:icon('<path d="M13 13Q25 3 42 12Q59 21 56 40Q50 59 28 54Q8 49 9 32Z" fill="#6e79ff" stroke="#d6d8ff" stroke-width="3"/><path d="M29 11 24 3 19 12M40 13 49 4" fill="none" stroke="#ba98ff" stroke-width="4"/><circle cx="37" cy="32" r="15" fill="#fff" stroke="#321e68" stroke-width="2"/><circle cx="40" cy="32" r="8" fill="#ffab34"/><circle cx="42" cy="32" r="4" fill="#251336"/><circle cx="39" cy="28" r="2" fill="#fff"/>'),
  frog:icon('<path d="M14 15Q30 4 48 17Q59 29 52 43Q34 57 13 46Q5 34 14 15" fill="#6adf5b" stroke="#d8ff9e" stroke-width="3"/><circle cx="35" cy="14" r="11" fill="#7ff26c" stroke="#d8ff9e" stroke-width="2.4"/><circle cx="35" cy="50" r="11" fill="#7ff26c" stroke="#d8ff9e" stroke-width="2.4"/><circle cx="39" cy="16" r="5" fill="#fff"/><circle cx="39" cy="48" r="5" fill="#fff"/><circle cx="41" cy="16" r="2.5" fill="#1f4831"/><circle cx="41" cy="48" r="2.5" fill="#1f4831"/><path d="M44 30Q54 32 44 35" fill="none" stroke="#286d3c" stroke-width="2.7"/>'),
- flame:icon('<path d="M6 46Q21 39 17 13Q30 24 33 3Q46 23 55 17Q47 35 61 42Q42 64 24 54Z" fill="#ff6429" stroke="#ffd35d" stroke-width="3"/><path d="M21 43Q29 32 28 24Q38 33 44 28Q40 41 48 46Q37 58 23 50Z" fill="#ffe64b"/><path d="M37 36 45 38 35 41M36 48 45 45 37 43" fill="#f65b28"/><circle cx="47" cy="40" r="2" fill="#9c2418"/>')
+ flame:icon('<path d="M6 46Q21 39 17 13Q30 24 33 3Q46 23 55 17Q47 35 61 42Q42 64 24 54Z" fill="#ff6429" stroke="#ffd35d" stroke-width="3"/><path d="M21 43Q29 32 28 24Q38 33 44 28Q40 41 48 46Q37 58 23 50Z" fill="#ffe64b"/><path d="M37 36 45 38 35 41M36 48 45 45 37 43" fill="#f65b28"/><circle cx="47" cy="40" r="2" fill="#9c2418"/>'),
+ rocket:icon('<path d="M5 24 26 25 44 14Q56 22 60 32Q56 42 44 50L26 39 5 40 13 33Z" fill="#ecedff" stroke="#b395ff" stroke-width="3"/><path d="M5 25 2 32 5 39 23 33Z" fill="#ffb93b"/><path d="M14 22 4 11 29 25M14 43 4 54 29 39" fill="#e84b96" stroke="#ff9ecf" stroke-width="2"/><circle cx="41" cy="32" r="9" fill="#395de2" stroke="#c9dbff" stroke-width="2"/><circle cx="43" cy="30" r="3.4" fill="#ffe76a"/>'),
+ lollipop:icon('<path d="M6 32H28" stroke="#f6dcb6" stroke-width="9"/><path d="M6 32H26" stroke="#d47f6c" stroke-width="2"/><circle cx="40" cy="32" r="21" fill="#e92c8f" stroke="#ffe2a8" stroke-width="3"/><path d="M38 12Q59 18 55 35Q50 49 32 49Q16 42 25 27Q34 17 45 24Q52 32 43 39Q34 45 30 34" fill="none" stroke="#ffe04e" stroke-width="6"/><path d="M24 18Q36 9 47 16" stroke="#fff4d9" stroke-width="3" fill="none"/>')
 };
 // Explicitly align artwork originally drawn upright to face the worm's
 // forward vector (+X). The SAME transform is used by cards, previews and play.
@@ -252,7 +280,7 @@ function open({onChange,onClose}={}){
  root.className='ws-overlay';root.setAttribute('role','dialog');root.setAttribute('aria-modal','true');root.setAttribute('aria-label',t.title);
  root.innerHTML='<section class="ws-dialog"><header class="ws-header"><div><span class="ws-eyebrow">INFINITY SPACE / COSMIC WORMS</span><h2 class="ws-title"></h2><p class="ws-desc"></p></div><button class="ws-x" type="button" aria-label=""></button></header>'+
  '<div class="ws-body"><div class="ws-live-preview"><div class="ws-live-caption"><strong class="ws-preview-title"></strong><span class="ws-preview-hint"></span></div><canvas class="ws-preview-canvas" width="920" height="220" aria-label="Animated worm appearance preview"></canvas></div><h3 class="ws-presets-title"></h3><div class="ws-presets"></div>'+
- '<div class="ws-section"><h3 class="ws-head-heading"></h3><div class="ws-head-options"></div></div>'+
+ '<p class="ws-ad-status" role="status" aria-live="polite"></p><div class="ws-section"><h3 class="ws-head-heading"></h3><div class="ws-head-options"></div></div>'+
  '<details class="ws-advanced"><summary class="ws-advanced-summary"></summary>'+
  '<div class="ws-section"><div class="ws-part-head"><h3 class="ws-segments-title"></h3><span class="ws-indicator"></span></div><p class="ws-tip"></p><div class="ws-segments" role="group"></div></div>'+
  '<div class="ws-section"><h3 class="ws-palette-title"></h3><div class="ws-palette"></div><label class="ws-custom-label"><span class="ws-custom-title"></span><input type="color" class="ws-custom" value="#ff1744"></label></div></details>'+
@@ -298,17 +326,61 @@ function open({onChange,onClose}={}){
  panda:['Панда','Panda','Panda'],
  cyclops:['Циклоп','Cyclops','Cíclope'],
  frog:['Лягушка','Frog','Rana'],
- flame:['Огонь','Flame','Llama']
+ flame:['Огонь','Flame','Llama'],
+ rocket:['Ракета · реклама','Rocket · Ad','Cohete · Anuncio'],
+ lollipop:['Леденец · реклама','Candy · Ad','Caramelo · Anuncio']
 };
- for(const id of HEADS){
-  const b=document.createElement('button');b.type='button';b.className='ws-head-choice';b.dataset.head=id;
-  b.innerHTML='<span class="ws-head-symbol" aria-hidden="true"><canvas width="64" height="64"></canvas></span><span class="ws-head-label"></span>';
-  b.lastChild.textContent=headLabels[id][lang==='ru'?0:lang==='es'?2:1];
-  WormHeadArt.drawThumbnail(b.querySelector('canvas'),id);
-  b.onclick=()=>{data.head=id;persist();root.querySelectorAll('.ws-head-choice').forEach(x=>x.classList.toggle('selected',x.dataset.head===id))};
-  $('.ws-head-options').append(b);
+ let watchingReward=false;
+ const adStatus=message=>{$('.ws-ad-status').textContent=message;};
+ async function watchUnlock(type,id){
+  if(watchingReward)return false;
+  if(!window.SpaceCrazyAds?.available){
+   adStatus(lang==='ru'?'Реклама доступна в CrazyGames.':lang==='es'?'Anuncios disponibles en CrazyGames.':'Ads are available in CrazyGames.');
+   return false;
+  }
+  watchingReward=true;
+  adStatus(lang==='ru'?'Загрузка рекламы…':lang==='es'?'Cargando anuncio…':'Loading ad…');
+  root.querySelectorAll('.ad-locked').forEach(el=>el.disabled=true);
+  let completed=false;
+  try{completed=await window.SpaceCrazyAds.rewarded();}
+  finally{watchingReward=false;}
+  if(!completed||!grantAdReward(type,id)){
+   adStatus(lang==='ru'?'Реклама не завершена. Награда не выдана.':lang==='es'?'Anuncio incompleto.':'Ad not completed. No reward granted.');
+   root.querySelectorAll('.ad-locked').forEach(el=>el.disabled=false);
+   return false;
+  }
+  adStatus(lang==='ru'?'Награда открыта навсегда!':lang==='es'?'¡Recompensa desbloqueada!':'Reward permanently unlocked!');
+  if(type==='skin'){
+   data.skin=id;data.customEnabled=false;
+   data.customSegments=Array.from({length:64},(_,i)=>presetColors(id)[i%4]);
+  }else data.head=id;
+  persist();
+  if(root.isConnected){renderPresets();renderHeads();renderSegments();}
+  return true;
  }
- root.querySelectorAll('.ws-head-choice').forEach(x=>x.classList.toggle('selected',x.dataset.head===data.head));
+ function renderHeads(){
+  const list=$('.ws-head-options');list.replaceChildren();
+  for(const id of HEADS){
+   const locked=AD_ONLY_HEADS.has(id)&&!headUnlocked(id);
+   const b=document.createElement('button');b.type='button';
+   b.className='ws-head-choice'+(locked?' ad-locked':'')+(data.head===id?' selected':'');
+   b.dataset.head=id;
+   b.innerHTML='<span class="ws-head-symbol" aria-hidden="true"><canvas width="64" height="64"></canvas></span><span class="ws-head-label"></span>';
+   b.querySelector('.ws-head-label').textContent=headLabels[id][lang==='ru'?0:lang==='es'?2:1];
+   if(locked){
+    const tag=document.createElement('small');tag.className='ws-head-unlock';
+    tag.textContent=lang==='ru'?'▶ ЗА РЕКЛАМУ':lang==='es'?'▶ VER ANUNCIO':'▶ WATCH AD';
+    b.append(tag);
+   }
+   WormHeadArt.drawThumbnail(b.querySelector('canvas'),id);
+   b.onclick=()=>{
+    if(locked){watchUnlock('head',id);return}
+    data.head=id;persist();
+    list.querySelectorAll('.ws-head-choice').forEach(x=>x.classList.toggle('selected',x.dataset.head===id));
+   };
+   list.append(b);
+  }
+ }
  $('.ws-reset').textContent=t.reset;$('.ws-stripes').textContent=t.stripes;
  $('.ws-fill').textContent=t.all;$('.ws-done').textContent=t.done;
  const persist=()=>{save(data);if(typeof onChange==='function')onChange(data)};
@@ -339,8 +411,9 @@ function open({onChange,onClose}={}){
    const item=document.createElement('button');item.type='button';
    item.className='ws-preset'+(data.skin===p[0]&&!data.customEnabled?' selected':'');
    item.dataset.skin=p[0];
-   item.disabled=!reward.unlocked;
+   item.disabled=!reward.unlocked&&reward.kind!=='ad';
    item.classList.toggle('locked',!reward.unlocked);
+   item.classList.toggle('ad-locked',!reward.unlocked&&reward.kind==='ad');
    item.title=requirementText(p[0],lang);
    item.setAttribute('aria-pressed',String(data.skin===p[0]&&!data.customEnabled));
    const beads=document.createElement('span');
@@ -352,7 +425,8 @@ function open({onChange,onClose}={}){
    const unlock=document.createElement('small');unlock.className='ws-unlock-label';
    unlock.textContent=requirementText(p[0],lang);item.append(unlock);
    item.onclick=()=>{
-    if(!rewardFor(p[0]).unlocked)return;
+    const lock=rewardFor(p[0]);
+    if(!lock.unlocked){if(lock.kind==='ad')watchUnlock('skin',p[0]);return;}
     data.skin=p[0];data.customEnabled=false;data.customSegments=Array.from({length:64},(_,i)=>p[4][i%p[4].length]);
     persist();renderPresets();renderSegments();
    };
@@ -478,9 +552,9 @@ function open({onChange,onClose}={}){
  }
 
  active={root,onClose,previewCancel:()=>cancelAnimationFrame(previewFrame)};
- renderPresets();renderPalette();renderSegments();
+ renderHeads();renderPresets();renderPalette();renderSegments();
  previewFrame=requestAnimationFrame(paintPreview);
  return close;
 }
-window.WormSkinStudio={open,close,read:load,presets:PRESETS,isUnlocked:id=>rewardFor(id).unlocked,rewardFor,progress:milestones,previewCenterline,headArt:WormHeadArt};
+window.WormSkinStudio={open,close,read:load,presets:PRESETS,isUnlocked:id=>rewardFor(id).unlocked,isHeadUnlocked:headUnlocked,rewardFor,adOwned,progress:milestones,previewCenterline,headArt:WormHeadArt};
 })();
