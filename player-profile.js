@@ -420,7 +420,8 @@ function showModeAchievements(mode){
   row.append(emblem,copy,percentage);cards.push(row);list.append(row);
  }
  const setFilter=rarity=>{
-  for(const row of cards)row.hidden=rarity!=='all'&&row.dataset.rarity!==rarity;
+  for(const row of cards){const filtered=rarity!=='all'&&row.dataset.rarity!==rarity;row.hidden=filtered;row.classList.toggle('is-filtered-out',filtered);}
+  list.scrollTop=0;
   for(const button of filters.querySelectorAll('button')){
    const active=button.dataset.achFilter===rarity;
    button.classList.toggle('active',active);
@@ -433,6 +434,7 @@ function showModeAchievements(mode){
   b.dataset.achFilter=rarity;b.textContent=tr(words);
   b.onclick=()=>setFilter(rarity);filters.append(b);
  }
+ setFilter('all');
  node.append(panel);document.body.append(node);
  const onKey=e=>{if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();close();}};
  const close=()=>{document.removeEventListener('keydown',onKey,true);node.remove();
