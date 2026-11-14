@@ -1857,3 +1857,19 @@ html body:has(#worm-field) #mode-music-open:focus-visible{outline:2px solid #dcb
 @media(max-width:380px){
  .ws-overlay .ws-head-options{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+/* Preserve the source 920:220 ratio at every viewport. The old fixed CSS
+   heights distorted the rendered worm and visibly flattened its head. */
+.ws-overlay .ws-preview-canvas{
+ display:block!important;width:100%!important;height:auto!important;
+ aspect-ratio:46 / 11!important;object-fit:fill!important;
+}
+/* Optional CrazyGames rewards keep the same visual hierarchy as normal
+   selections, and never obscure the existing preview. */
+.ws-overlay .ws-ad-status{margin:7px 0;font:750 11px/1.45 Inter,system-ui,sans-serif;color:#edc3ff;min-height:0}
+.ws-overlay .ws-preset.ad-locked,.ws-overlay .ws-head-choice.ad-locked{border-color:#dfab55!important;cursor:pointer!important}
+.ws-overlay .ws-preset.ad-locked .ws-unlock-label,
+.ws-overlay .ws-head-unlock{color:#ffd577;font-size:9px;font-weight:850;line-height:1.2;text-align:center}
+.ws-overlay .ws-head-choice .ws-head-unlock{display:block;max-width:100%}
+.ws-overlay .ws-preset.ad-locked:hover,.ws-overlay .ws-head-choice.ad-locked:hover{box-shadow:0 0 16px #ffc05f48!important}
+.ws-overlay .ws-preset.ad-locked:disabled,.ws-overlay .ws-head-choice.ad-locked:disabled{opacity:.65;cursor:default!important}

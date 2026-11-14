@@ -113,6 +113,7 @@ function boot(){
  document.addEventListener('pointerdown',wake,{capture:true,passive:true});
  document.addEventListener('keydown',wake,{capture:true});
  window.addEventListener('storage',e=>{if(e.key===SAVE)sync()});
+ window.addEventListener('space-platform-audio',sync);
  window.SpaceModeMusic={open,close,sync,owned:()=>[...owned(safeRead())],current:()=>activeTrack(safeRead()).id};
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
