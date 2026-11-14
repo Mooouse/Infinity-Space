@@ -1678,3 +1678,125 @@ body:has(#worm-field) #worm-hud .worm-pause-button:hover{
 body:has(#worm-field) #worm-hud .worm-boost-button:hover{
  border-color:#ffc5d7!important;box-shadow:inset 0 1px #ffffff77,0 4px 0 #78203b,0 0 23px #ff497dba!important;
 }
+
+/* Worms / unified HUD instruments: all three controls share one shape,
+   one surface, one shadow hierarchy, and the same icon/label scale.
+   Earlier circular and bevel treatments remain superseded here. */
+html body:has(#worm-field) #worm-hud .worm-pause-button,
+html body:has(#worm-field) #worm-hud .worm-boost-button,
+html body:has(#worm-field) #mode-music-open{
+ --hud-action-accent:#ad88ff;
+ --hud-action-glow:#9861e84b;
+ --hud-action-border:#b59aff;
+ box-sizing:border-box!important;
+ display:flex!important;flex-direction:column!important;
+ align-items:center!important;justify-content:center!important;
+ gap:3px!important;position:fixed!important;
+ top:auto!important;left:auto!important;
+ width:68px!important;height:68px!important;
+ min-width:68px!important;min-height:68px!important;
+ max-width:68px!important;max-height:68px!important;
+ aspect-ratio:1!important;
+ margin:0!important;padding:8px 5px!important;
+ border:1px solid var(--hud-action-border)!important;
+ border-bottom:3px solid #39235f!important;
+ border-radius:13px!important;
+ background:linear-gradient(155deg,#35224f 0%,#211531 56%,#140e24 100%)!important;
+ box-shadow:inset 0 1px #ffffff39,0 3px 0 #0c081b,
+            0 0 18px var(--hud-action-glow),0 8px 22px #060410a6!important;
+ color:#fff8ff!important;
+ text-shadow:0 1px 4px #05020d!important;
+ font:900 9px/1.1 Inter,system-ui,sans-serif!important;
+ letter-spacing:.035em!important;
+ cursor:pointer!important;filter:none!important;transform:none!important;
+ transition:transform .16s,border-color .16s,box-shadow .16s!important;
+ z-index:12!important;
+}
+html body:has(#worm-field) #worm-hud .worm-pause-button{
+ --hud-action-accent:#977aff;--hud-action-border:#af95ff;
+ --hud-action-glow:#8459ef4d;
+ right:calc(101px + env(safe-area-inset-right))!important;
+ bottom:calc(18px + env(safe-area-inset-bottom))!important;
+}
+html body:has(#worm-field) #worm-hud .worm-boost-button{
+ --hud-action-accent:#ff537e;--hud-action-border:#ff7fa3;
+ --hud-action-glow:#ff45725c;
+ right:calc(18px + env(safe-area-inset-right))!important;
+ bottom:calc(18px + env(safe-area-inset-bottom))!important;
+}
+html body:has(#worm-field) #mode-music-open{
+ --hud-action-accent:#b783ff;--hud-action-border:#c09cff;
+ --hud-action-glow:#aa73ff50;
+ right:calc(18px + env(safe-area-inset-right))!important;
+ bottom:calc(101px + env(safe-area-inset-bottom))!important;
+}
+html body:has(#worm-field) #worm-hud :is(.worm-pause-button,.worm-boost-button) svg,
+html body:has(#worm-field) #mode-music-open svg{
+ display:block!important;flex:0 0 23px!important;
+ width:23px!important;height:23px!important;
+ color:#fff9ff!important;
+}
+html body:has(#worm-field) #worm-hud .worm-pause-button span,
+html body:has(#worm-field) #worm-hud .worm-boost-button b,
+html body:has(#worm-field) #mode-music-open .mode-music-button-label{
+ display:block!important;color:#fff5ff!important;
+ font:900 9px/1.1 Inter,system-ui,sans-serif!important;
+ letter-spacing:.035em!important;white-space:nowrap!important;
+}
+html body:has(#worm-field) #worm-hud .worm-boost-button.is-boosting{
+ --hud-action-glow:#ff4a85b3;
+ border-color:#ffd4e3!important;
+ background:linear-gradient(155deg,#60304f,#321832 60%,#200e25)!important;
+ box-shadow:inset 0 1px #ffffff62,0 3px 0 #150b1d,
+            0 0 27px var(--hud-action-glow),0 8px 23px #0b0518!important;
+}
+@media(hover:hover) and (pointer:fine){
+ html body:has(#worm-field) #worm-hud :is(.worm-pause-button,.worm-boost-button):not(:disabled):hover,
+ html body:has(#worm-field) #mode-music-open:hover{
+  border-color:#f8e6ff!important;transform:translateY(-2px)!important;
+  box-shadow:inset 0 1px #ffffff58,0 3px 0 #171027,
+              0 0 27px var(--hud-action-accent),0 10px 23px #060410b5!important;
+ }
+}
+html body:has(#worm-field) #worm-hud :is(.worm-pause-button,.worm-boost-button):active,
+html body:has(#worm-field) #mode-music-open:active{
+ transform:translateY(2px)!important;
+ box-shadow:inset 0 2px 8px #0009,0 1px 0 #0c081b,
+            0 0 15px var(--hud-action-glow)!important;
+}
+html body:has(#worm-field) #worm-hud :is(.worm-pause-button,.worm-boost-button):focus-visible,
+html body:has(#worm-field) #mode-music-open:focus-visible{
+ outline:2px solid #fff!important;outline-offset:4px!important;
+}
+@media (pointer:coarse), (max-width:760px){
+ html body:has(#worm-field) #worm-hud .worm-pause-button,
+ html body:has(#worm-field) #worm-hud .worm-boost-button,
+ html body:has(#worm-field) #mode-music-open{
+  right:auto!important;left:calc(19px + env(safe-area-inset-left))!important;
+  width:72px!important;height:72px!important;
+  min-width:72px!important;min-height:72px!important;
+  max-width:72px!important;max-height:72px!important;
+  border-radius:13px!important;
+ }
+ html body:has(#worm-field) #mode-music-open{bottom:calc(196px + env(safe-area-inset-bottom))!important}
+ html body:has(#worm-field) #worm-hud .worm-pause-button{bottom:calc(107px + env(safe-area-inset-bottom))!important}
+ html body:has(#worm-field) #worm-hud .worm-boost-button{bottom:calc(18px + env(safe-area-inset-bottom))!important}
+}
+@media (max-height:430px) and (orientation:landscape){
+ html body:has(#worm-field) #worm-hud .worm-pause-button,
+ html body:has(#worm-field) #worm-hud .worm-boost-button,
+ html body:has(#worm-field) #mode-music-open{
+  width:58px!important;height:58px!important;
+  min-width:58px!important;min-height:58px!important;
+  max-width:58px!important;max-height:58px!important;
+  bottom:calc(8px + env(safe-area-inset-bottom))!important;
+ }
+ html body:has(#worm-field) #mode-music-open{left:calc(140px + env(safe-area-inset-left))!important}
+ html body:has(#worm-field) #worm-hud .worm-pause-button{left:calc(74px + env(safe-area-inset-left))!important}
+ html body:has(#worm-field) #worm-hud .worm-boost-button{left:calc(8px + env(safe-area-inset-left))!important}
+ html body:has(#worm-field) #worm-hud :is(.worm-pause-button,.worm-boost-button) svg,
+ html body:has(#worm-field) #mode-music-open svg{width:20px!important;height:20px!important;flex-basis:20px!important}
+ html body:has(#worm-field) #worm-hud .worm-pause-button span,
+ html body:has(#worm-field) #worm-hud .worm-boost-button b,
+ html body:has(#worm-field) #mode-music-open .mode-music-button-label{font-size:8px!important}
+}

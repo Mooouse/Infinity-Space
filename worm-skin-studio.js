@@ -77,6 +77,18 @@ function save(obj){
  try{localStorage.setItem(KEY,JSON.stringify(obj))}catch(_){}
  window.dispatchEvent(new CustomEvent('infinity-worm-skin-changed',{detail:{skin:obj.skin,customEnabled:obj.customEnabled,customSegments:obj.customSegments.slice(),head:obj.head}}));
 }
+// The preview camera follows a continuously advancing head. Each tail point
+// samples an earlier world position, so the body follows a true travelled path
+// rather than being displaced up and down as a stationary sine-wave ribbon.
+function previewCenterline(seconds,count=59){
+ const speed=140,step=.079,headTravel=seconds*speed,anchorX=752,anchorY=110;
+ const worldY=time=>Math.sin(time*.66)*16+Math.sin(time*1.13)*7;
+ const cameraY=worldY(seconds);
+ return Array.from({length:count},(_,i)=>{
+  const age=(count-1-i)*step,past=seconds-age;
+  return {x:anchorX+(past*speed-headTravel),y:anchorY+worldY(past)-cameraY};
+ });
+}
 let active=null;
 function close(){
  if(!active)return;
@@ -204,17 +216,13 @@ function open({onChange,onClose}={}){
   pc.clearRect(0,0,w,h);
   pc.fillStyle='#090719';pc.fillRect(0,0,w,h);
   for(let i=0;i<85;i++){
-   const x=(i*397.71)%w,y=(i*181.39)%h;
+   const parallax=i%3===0?43:24;
+   const x=((i*397.71-t*parallax)%w+w)%w,y=(i*181.39)%h;
    const a=.25+.5*(.5+.5*Math.sin(t*1.8+i*1.76));
    pc.fillStyle='rgba(227,220,255,'+a.toFixed(3)+')';
    pc.fillRect(x,y,i%11===0?2:1,i%11===0?2:1);
   }
-  const colors=colorsForView(),count=59,body=[];
-  for(let i=0;i<count;i++){
-   const x=80+i*11.9;
-   const y=111+Math.sin(i*.145-t*1.9)*21+Math.sin(i*.057+t*.55)*11;
-   body.push({x,y});
-  }
+  const colors=colorsForView(),count=59,body=previewCenterline(t,count);
   // Render the same seamless nebula body as the game: no separate circles.
   pc.save();pc.lineCap='round';pc.lineJoin='round';
   const path=new Path2D();path.moveTo(body[0].x,body[0].y);
@@ -324,5 +332,5 @@ function open({onChange,onClose}={}){
  previewFrame=requestAnimationFrame(paintPreview);
  return close;
 }
-window.WormSkinStudio={open,close,read:load,presets:PRESETS,isUnlocked:id=>rewardFor(id).unlocked,rewardFor,progress:milestones};
+window.WormSkinStudio={open,close,read:load,presets:PRESETS,isUnlocked:id=>rewardFor(id).unlocked,rewardFor,progress:milestones,previewCenterline};
 })();

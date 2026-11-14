@@ -31,7 +31,8 @@ function sync(){
  if(muted)audio?.pause();
  const button=document.querySelector('#mode-music-open');
  if(button){button.setAttribute('aria-label',translation('Music collection','Коллекция музыки','Colección musical'));
- button.title=translation('Music collection','Коллекция музыки','Colección musical');}
+ button.title=translation('Music collection','Коллекция музыки','Colección musical');
+ const caption=button.querySelector('.mode-music-button-label');if(caption)caption.textContent=translation('MUSIC','МУЗЫКА','MÚSICA');}
 }
 function saveSelection(track,disable=false){
  let saved=safeRead();
@@ -105,7 +106,7 @@ function open(){
 }
 function boot(){
  const button=document.createElement('button');button.id='mode-music-open';button.type='button';
- button.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 19V5l12-2v14"/><circle cx="5" cy="19" r="3"/><circle cx="17" cy="17" r="3"/></svg>';
+ button.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 19V5l12-2v14"/><circle cx="5" cy="19" r="3"/><circle cx="17" cy="17" r="3"/></svg><span class="mode-music-button-label">MUSIC</span>';
  button.onclick=open;document.body.append(button);
  sync();
  const wake=()=>sync();

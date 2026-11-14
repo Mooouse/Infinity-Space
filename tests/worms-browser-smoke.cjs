@@ -71,6 +71,31 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.locator('#mode-music-open').waitFor({state:'visible',timeout:10000});
     assert.equal(await page.locator('#mode-music-open').count(),1,
       'The music collection must exist during Worms gameplay');
+    // All three HUD instruments must have one visual geometry, including
+    // the music button which is created by the shared mode-music module.
+    const hudControls=await page.evaluate(()=>{
+     const ids=['mode-music-open','worm-pause','worm-boost'];
+     return ids.map(id=>{
+      const e=document.getElementById(id),r=e.getBoundingClientRect(),css=getComputedStyle(e);
+      const label=e.querySelector('span,b');
+      return {id,w:r.width,h:r.height,left:r.left,right:r.right,top:r.top,bottom:r.bottom,
+       radius:css.borderTopLeftRadius,background:css.backgroundImage,
+       label:label?.textContent?.trim(),labelVisible:label?getComputedStyle(label).display!=='none':false};
+     });
+    });
+    assert.ok(hudControls.every(c=>c.w>=58&&c.h>=58&&c.labelVisible&&c.label),
+      'All music/pause/boost controls need icons and readable labels: '+JSON.stringify(hudControls));
+    assert.equal(new Set(hudControls.map(c=>c.w+'x'+c.h)).size,1,
+      'Music, pause and boost must use identical dimensions: '+JSON.stringify(hudControls));
+    assert.equal(new Set(hudControls.map(c=>c.radius)).size,1,
+      'The three HUD buttons must have the same corners');
+    assert.equal(new Set(hudControls.map(c=>c.background)).size,1,
+      'The buttons must share the same base gradient, with only accent differences');
+    for(let i=0;i<hudControls.length;i++)for(let j=i+1;j<hudControls.length;j++){
+     const a=hudControls[i],b=hudControls[j];
+     assert.ok(a.right<=b.left||b.right<=a.left||a.bottom<=b.top||b.bottom<=a.top,
+      'Gameplay controls must never overlap: '+JSON.stringify([a,b]));
+    }
     assert.equal(await page.evaluate(()=>window.SpaceModeMusic?.current()),1,
       'The free first soundtrack must be selected by default');
     if(width===390){
@@ -338,6 +363,21 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.equal(await page.locator('#worm-pause-sound').count(),1);
     await page.locator('#worm-skins-open').click();
     assert.equal(await page.locator('.ws-overlay').isVisible(),true,'Separate skin editor must open from pause');
+    const previewMotion=await page.evaluate(()=>{
+     const a=window.WormSkinStudio.previewCenterline(0);
+     const b=window.WormSkinStudio.previewCenterline(1.5);
+     const end=a.length-1;
+     return {head0:a[end],head1:b[end],
+      tailMotion:Math.hypot(b[0].x-a[0].x,b[0].y-a[0].y),
+      bodyMotion:Math.hypot(b[25].x-a[25].x,b[25].y-a[25].y),
+      length:a.length};
+    });
+    assert.equal(previewMotion.length,59);
+    assert.ok(Math.hypot(previewMotion.head1.x-previewMotion.head0.x,
+      previewMotion.head1.y-previewMotion.head0.y)<.01,
+      'Preview head must stay camera-locked while the world moves: '+JSON.stringify(previewMotion));
+    assert.ok(previewMotion.tailMotion>2&&previewMotion.bodyMotion>2,
+      'Worm preview must flow along its previous trajectory, not hang motionless: '+JSON.stringify(previewMotion));
     assert.equal(await page.locator('.ws-preset').count(),16);
     assert.equal(await page.locator('.ws-preset[data-skin="nebula"]').isEnabled(),true);
     assert.equal(await page.locator('.ws-preset[data-skin="aurora"]').isEnabled(),true);
