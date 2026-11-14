@@ -231,11 +231,13 @@ function headDimensions(id,r){
  const entry=headImage(id),b=entry.bounds;
  if(!b)return null;
  const meta=headMeta[id]||headMeta.classic;
- // Normalize by the shorter visible axis so every head covers the body's
- // roughly 1.88r diameter without stretching its features.
- const unit=Math.min(r*2.27*meta.scale/Math.min(b.sw,b.sh),
-  r*3.34/Math.max(b.sw,b.sh));
- return {width:b.sw*unit,height:b.sh*unit,bounds:b,rotation:meta.rotation,lead:meta.lead};
+ // Uniform isotropic fit from the rasterized visible bounds: never adjust
+ // horizontal and vertical axes independently. A maximum silhouette span
+ // keeps wide/long heads balanced instead of looking flattened on the body.
+ const long=Math.max(b.sw,b.sh),short=Math.min(b.sw,b.sh);
+ const unit=Math.min(r*2.32*meta.scale/short,r*3.05/long);
+ const width=b.sw*unit,height=b.sh*unit;
+ return {width,height,bounds:b,rotation:meta.rotation,lead:meta.lead};
 }
 function drawHead(ctx,id,x,y,angle,r){
  const entry=headImage(id),layout=headDimensions(id,r);

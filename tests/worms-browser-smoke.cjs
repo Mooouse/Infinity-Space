@@ -185,7 +185,11 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
       'Ordinary food must regenerate near its depleted region: '+JSON.stringify(regrowth));
     const clearance=await page.evaluate(()=>window.InfinityWormsQA.spawnProbe());
     assert.equal(clearance.safe,true,'No bot can appear inside an existing worm body: '+JSON.stringify(clearance));
-    assert.equal((await page.evaluate(()=>window.InfinityWormsQA.skins())).length,16,'All 16 distinct skins must be selectable');
+    const skinCatalog=await page.evaluate(()=>window.InfinityWormsQA.skins());
+    const skinIds=skinCatalog.map(item=>item.id);
+    assert.equal(skinIds.length,18,'The two CrazyGames rewarded skins must extend the original 16-skin collection');
+    assert.ok(['adnova','adember'].every(id=>skinIds.includes(id)),
+     'Both rewarded-only skins must be registered, not replace existing skins');
     assert.equal(a.guideOpen,true,'First launch must explain mechanics');
     assert.equal(await page.locator('#worm-guide-counter').textContent(),'01 / 03');
     await page.locator('#worm-guide-next').click();
@@ -446,9 +450,20 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
        return {id,width:d?.width,height:d?.height,orientation:art.orientation(id)};
       });
     });
-    assert.ok(headFit.length===32&&headFit.every(h=>h.width>=40&&h.height>=40&&
-      h.width<=74&&h.height<=74),
-      'Every head must cover the body diameter without becoming oversized: '+JSON.stringify(headFit));
+    assert.ok(headFit.length===32&&headFit.every(h=>h.width>=35&&h.height>=35&&
+      h.width<=68&&h.height<=68),
+      'Every head must retain a balanced silhouette at the body diameter: '+JSON.stringify(headFit));
+    const headProportions=await page.evaluate(()=>{
+      const art=window.WormHeadArt;
+      return art.ids.map(id=>{
+       const d=art.dimensions(id,22),original=d.bounds.sw/d.bounds.sh;
+       const painted=d.width/d.height;
+       return {id,original,painted,error:Math.abs(original-painted)};
+      });
+    });
+    assert.ok(headProportions.every(v=>v.error<.00001),
+      'No head may be horizontally or vertically squashed at render time: '+
+      JSON.stringify(headProportions));
     const headPaint=await page.evaluate(async()=>{
       const art=window.WormHeadArt,results=[],canvas=document.createElement('canvas');
       canvas.width=128;canvas.height=128;
