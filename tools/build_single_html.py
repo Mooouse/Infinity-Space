@@ -169,7 +169,7 @@ def build_page(inline_bridge_config: bool = True) -> str:
 
         page = re.sub(r'<script\s+src="([^"]+)"(?:\s+defer)?\s*></script>',
                       inline_mode_js, page, flags=re.I)
-        if not re.search(r'<script src="https://bridge\\.playgama\\.com/v2/stable/playgama-bridge\\.js"></script>', page):
+        if '<script src="https://bridge.playgama.com/v2/stable/playgama-bridge.js"></script>' not in page:
             raise RuntimeError("Embedded game must load Playgama Bridge synchronously: " + filename)
         if re.search(r'(?:src|href)=["\'](?:[\w.-]+\.(?:js|css))', page):
             raise RuntimeError("Embedded game still relies on a local asset: " + filename)
