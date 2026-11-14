@@ -904,10 +904,12 @@ function kill(w,killer,reason){
  if(w.human){
   // A collision can kill the player while any live-world menu is visible.
   // Exit every menu first so the actual death replay/results are visible.
+  // The skin editor's close handler may reopen the pause overlay.
+  // Close it BEFORE hiding every menu, otherwise death is obstructed.
+  if(game.state==='skins')window.WormSkinStudio?.close?.();
   $('worm-pause-overlay').hidden=true;
   $('worm-settings').hidden=true;
   $('worm-guide').hidden=true;
-  if(game.state==='skins')window.WormSkinStudio?.close?.();
   // Keep the arena fully alive while the player watches rivals collect
   // the wreckage. The results only fade in after the replay window.
   game.state='death-replay';
