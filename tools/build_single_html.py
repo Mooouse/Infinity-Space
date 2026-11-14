@@ -2,8 +2,8 @@
 """Build Infinity Space without recompressing or degrading the original music.
 
 Standalone index.html uses the original high-quality MP3 files hosted on the
-game's GitHub Pages site (requires internet). The Playgama ZIP includes ALL
-original MP3 bytes locally and a root-level Playgama Bridge JSON configuration.
+game's GitHub Pages site (requires internet). The Playgama ZIP includes a root-level Playgama Bridge JSON configuration;
+the unchanged HQ MP3s are streamed from the game's existing music host.
 CSS, game JS, cover art and favicon remain inlined in both HTML variants.
 """
 import base64
@@ -74,7 +74,7 @@ def build_page(inline_bridge_config: bool = True) -> str:
 
     # Original MP3s are used without transcoding. The standalone HTML remains
     # small by fetching the exact original files from the game's public site.
-    # In the Playgama ZIP the same MP3s are packaged at their catalog paths.
+    # In the Playgama ZIP the same MP3s are streamed without transcoding.
     music_bootstrap = r"""<script>
 (function () {
   "use strict";
@@ -145,7 +145,11 @@ def build_page(inline_bridge_config: bool = True) -> str:
         def inline_mode_js(match: re.Match) -> str:
             src = match.group(1)
             if src.startswith("https://bridge.playgama.com/"):
-                return match.group(0)
+                # The embedded mode scripts are inlined and run immediately.
+                # A deferred Bridge SDK would run *after* playgama-platform.js,
+                # causing startup to fail in every Blob-backed arcade mode.
+                # Load Bridge synchronously, before the inlined adapter.
+                return '<script src="' + escape(src, quote=True) + '"></script>'
             name = src.split("?", 1)[0]
             if not re.fullmatch(r"[\w.-]+\.js", name):
                 raise RuntimeError("Unexpected embedded JavaScript: " + src)
@@ -165,6 +169,8 @@ def build_page(inline_bridge_config: bool = True) -> str:
 
         page = re.sub(r'<script\s+src="([^"]+)"(?:\s+defer)?\s*></script>',
                       inline_mode_js, page, flags=re.I)
+        if not re.search(r'<script src="https://bridge\\.playgama\\.com/v2/stable/playgama-bridge\\.js"></script>', page):
+            raise RuntimeError("Embedded game must load Playgama Bridge synchronously: " + filename)
         if re.search(r'(?:src|href)=["\'](?:[\w.-]+\.(?:js|css))', page):
             raise RuntimeError("Embedded game still relies on a local asset: " + filename)
         return page
