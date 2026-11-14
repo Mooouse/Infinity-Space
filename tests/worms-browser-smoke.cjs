@@ -394,7 +394,9 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.equal(await mainSettings.locator('#screen-settings [data-settings-pane="audio"].active').count(),1);
     await mainSettings.locator('#screen-settings [data-settings-tab="graphics"]').click();
     assert.equal(await mainSettings.locator('#screen-settings [data-settings-pane="graphics"].active').count(),1);
-    await mainSettings.locator('#screen-settings .br-head-back').click();
+    assert.match((await mainSettings.locator('#screen-settings [data-save-settings]').textContent()).toUpperCase(),
+      /СОХРАНИТЬ И ВЫЙТИ/,'The primary settings button must say Save and Exit');
+    await mainSettings.locator('#screen-settings [data-save-settings]').click();
     // postMessage from the real settings iframe to the live Worms page is
     // delivered asynchronously. Wait for navigation instead of asserting
     // visibility in the same event-loop turn as the click.
