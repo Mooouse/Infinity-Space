@@ -27,6 +27,8 @@ on:
       - 'tests/mode-background-smoke.cjs'
       - 'tests/mode-achievements-smoke.cjs'
       - 'tests/worms-browser-smoke.cjs'
+      - 'tests/crazygames-ads-smoke.cjs'
+      - 'crazygames-extras.js'
       - 'tests/arena-ui-audit.cjs'
       - 'tests/gameplay-navigation-audit.cjs'
       - '.github/workflows/ui-audit.yml'
@@ -56,5 +58,6 @@ jobs:
           timeout 150 node tests/mode-achievements-smoke.cjs
           timeout 500 node tests/full-ui-audit.cjs
           timeout 600 node tests/worms-browser-smoke.cjs
+          timeout 180 node tests/crazygames-ads-smoke.cjs
           timeout 400 node tests/arena-ui-audit.cjs
           timeout 180 node tests/gameplay-navigation-audit.cjs
