@@ -51,6 +51,15 @@ function installAds(){
   await page.waitForFunction(()=>window.WormSkinStudio.isHeadUnlocked('rocket'));
   const owned=await page.evaluate(()=>JSON.parse(localStorage.getItem('infinity-space-crazy-worm-rewards-v1')));
   assert.ok(owned.skins.includes('adnova')&&owned.heads.includes('rocket'));
+  // CrazyGames unavailable/disabled and standalone distributions must never
+  // offer ad-exclusive unlock buttons that cannot grant their rewards.
+  await page.locator('.ws-x').click();
+  await page.evaluate(()=>{window.SpaceCrazyAds.supported=false;});
+  await page.locator('#worm-skins-open').click();
+  assert.equal(await page.locator('.ws-preset').count(),16,
+   'Disabled CrazyGames SDK must hide the two rewarded skin offers');
+  assert.equal(await page.locator('.ws-head-choice').count(),30,
+   'Disabled CrazyGames SDK must hide the two rewarded head offers');
   await page.locator('.ws-x').click();
   await page.locator('#worm-resume').click();
   await page.evaluate(()=>{window.InfinityWormsQA.setMass(900);window.InfinityWormsQA.forceDeath();});
