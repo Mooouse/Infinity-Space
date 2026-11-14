@@ -1894,9 +1894,10 @@ html body:has(#worm-field) #mode-music-open:focus-visible{outline:2px solid #dcb
  border:1px solid #725396!important;border-bottom:3px solid #392452!important;
  border-radius:10px!important;
 }
+/* Equally prominent rewarded option and normal free respawn. */
 #arena-death-offer .arena-dialog-actions button.primary{
- background:linear-gradient(155deg,#593099,#3b1c73)!important;
- border-color:#b38bff!important;
+ background:linear-gradient(155deg,#2e1e46,#1a102c)!important;
+ border-color:#725396!important;
 }
 #arena-death-offer .arena-dialog-actions button:not(:disabled):hover{
  box-shadow:0 0 16px #a46aff66!important;border-color:#e7caff!important;

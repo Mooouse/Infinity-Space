@@ -56,7 +56,7 @@ function grantAdReward(type,id){
 }
 function headUnlocked(id){return HEADS.includes(id)&&(!AD_ONLY_HEADS.has(id)||adOwned('head',id))}
 const playgamaBuild=()=>window.SpacePlaygamaBuild===true||location.protocol==='blob:'||
- /(^|\\.)playgama\\.(com|io)$/.test(location.hostname||'')||
+ /(^|\.)playgama\.(com|io)$/.test(location.hostname||'')||
  new URLSearchParams(location.search).has('playgama');
 // Preset skins are lasting rewards for rank-one finishes, eliminations
 // and personal mass records. The first two are always available.

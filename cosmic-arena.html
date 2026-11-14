@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="unified-space.css?v=4">
 <link rel="stylesheet" href="secondary-design.css?v=6">
 <link rel="stylesheet" href="profile-report.css?v=4">
-<link rel="stylesheet" href="mode-unified.css?v=14">
+<link rel="stylesheet" href="mode-unified.css?v=15">
 
 </head>
 <body>
@@ -1096,7 +1096,14 @@ if(new URLSearchParams(location.search).has('tester')){
   snapshot(){
    if(!game)return null;
    const p=game.people[0];
-   return {mass:p.mass,stage:p.stage,zoom:camera.zoom,state:game.state,mode};
+   return {mass:p.mass,stage:p.stage,zoom:camera.zoom,state:game.state,mode,reviveUsed:game.reviveUsed,adPending:game.adPending,deathMass:game.deathMass};
+  },
+  setElapsed(seconds){if(!game)return;game.elapsed=Math.max(0,Number(seconds)||0);game.left=Math.max(0,configs[mode].duration-game.elapsed);},
+  forcePlayerDeath(){
+   if(!game||!game.people[0].alive)return game?.state;
+   kill(game.people[0],null);
+   if(mode==='royale'&&game.state==='playing')finish(false,'royale');
+   return game.state;
   },
   forceFinish(won=true){
    if(!game||DEMO_MODE)return;
