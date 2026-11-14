@@ -143,6 +143,14 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
       'rgb(255, 212, 224)','Acceleration button must glow red/pink, not purple');
     }
     await page.evaluate(()=>{window.InfinityWormsQA.testProtection(90);window.InfinityWormsQA.freezeRealtime(true);});
+    const skillMix=await page.evaluate(()=>window.InfinityWormsQA.botSkillBalanceProbe());
+    assert.ok(skillMix.experienced>=10&&skillMix.passive>=2,
+      'The lobby must contain numerous experienced rivals, not mostly beginners and idle pilots: '+
+      JSON.stringify(skillMix));
+    const evasion=await page.evaluate(()=>window.InfinityWormsQA.botEvasionProbe());
+    assert.ok(evasion.alert&&evasion.straight>evasion.turn*1.25,
+      'Advanced rivals must detect and evade a body across their forward path: '+
+      JSON.stringify(evasion));
     const styles=await page.evaluate(()=>window.InfinityWormsQA.botStyles());
     for(const role of ['afk','newcomer','casual','cautious','hunter','veteran','pro','reckless']){
      assert.ok(styles[role]>=2,'Missing realistic bot behavior: '+role);
@@ -361,7 +369,17 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     const cameraAfter=await page.evaluate(()=>window.InfinityWormsQA.snapshot().zoomSetting);
     assert.ok(cameraAfter>cameraBefore&&cameraAfter<=116,
       'Wheel/pinch should zoom in slightly and stay inside the 16% limit');
-    await page.evaluate(()=>window.InfinityWormsQA.forceDeath());
+    // The game still runs during pause: a real rival head-on collision
+    // must kill the player (rather than granting permanent immunity).
+    await page.locator('#worm-pause').click();
+    assert.equal(await page.evaluate(()=>window.InfinityWormsQA.snapshot().state),'paused');
+    const pauseCollision=await page.evaluate(()=>window.InfinityWormsQA.forcePausedCollision());
+    assert.equal(pauseCollision.state,'death-replay',
+      'Player must be able to die while the pause menu is open: '+JSON.stringify(pauseCollision));
+    assert.equal(pauseCollision.playerAlive,false);
+    assert.equal(pauseCollision.pauseVisible,false,
+      'Death must close the pause overlay to reveal the aftermath');
+    assert.equal(pauseCollision.settingsVisible,false);
     let aftermath=await page.evaluate(()=>window.InfinityWormsQA.snapshot());
     assert.equal(aftermath.state,'death-replay','Death should enter live aftermath, not results');
     assert.equal(aftermath.resultVisible,false,'Result modal must remain hidden at impact');
