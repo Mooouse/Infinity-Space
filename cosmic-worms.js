@@ -236,41 +236,73 @@ function wormRadius(w){return clamp(8+Math.pow(Math.max(1,w.mass)/60,.27)*12,13,
 function segmentCount(w){const mass=Math.max(1,w.mass);return Math.max(19,Math.floor(12+2.5*Math.sqrt(mass)+.02*mass))}
 // Spawn clearance is checked along the entire proposed body — not just the head.
 // Also reserve space in front of the new head so it cannot appear on someone's path.
-function spawnPosition(angle,count,nearPlayer=false){
- const cx=game.player?.x??WORLD.cx,cy=game.player?.y??WORLD.cy;
- for(let attempt=0;attempt<180;attempt++){
-  let pos;
-  if(nearPlayer&&attempt<95){
-   const a=rand(0,TAU),r=rand(850,3100);
-   pos={x:cx+Math.cos(a)*r,y:cy+Math.sin(a)*r};
-  }else pos=randomPos(.87);
-  let safe=true;
-  const total=(count+1)*11.8;
-  for(let i=0;i<=Math.ceil((total+190)/48);i++){
-   // Trace the complete spawn body, from 190px ahead of its head to its tip.
-   const offset=i*48-190;
-   const x=pos.x-Math.cos(angle)*offset,y=pos.y-Math.sin(angle)*offset;
-   const edge=((x-WORLD.cx)/WORLD.rx)**2+((y-WORLD.cy)/WORLD.ry)**2;
-   if(edge>.88*.88){safe=false;break;}
-   for(const other of game.worms){
-    if(!other.alive)continue;
-    const headD=Math.hypot(x-other.x,y-other.y);
-    if(headD<450){safe=false;break;}
-    if(headD>other.segments.length*12+500)continue;
-    for(let j=0;j<other.segments.length;j+=2){
-     const s=other.segments[j];
-     if((x-s.x)**2+(y-s.y)**2<350*350){safe=false;break;}
-    }
-    if(!safe)break;
+// Established large worms start in separate annuli, not a small pile
+// around the human. Their initial tail follows the orbit rather than
+// stretching thousands of units across the central arena.
+function establishedSpawnRing(index){
+ if(index<=3)return {radius:7700,slot:index-1,slots:3,phase:0};
+ if(index<=8)return {radius:5500,slot:index-4,slots:5,phase:.34};
+ if(index<=13)return {radius:3900,slot:index-9,slots:5,phase:-.12};
+ return {radius:2450,slot:index-14,slots:5,phase:.47};
+}
+function orbitSpawnPoint(position,distance,orbitRadius){
+ const theta=Math.atan2(position.y-WORLD.cy,position.x-WORLD.cx)+distance/orbitRadius;
+ return {x:WORLD.cx+orbitRadius*Math.cos(theta),
+  y:WORLD.cy+orbitRadius*Math.sin(theta)};
+}
+function spawnHasClearance(position,angle,count,orbitRadius=0,extra=0){
+ const total=(count+1)*11.8;
+ for(let d=-245;d<=total+80;d+=80){
+  const pt=orbitRadius?orbitSpawnPoint(position,-d,orbitRadius):
+   {x:position.x-Math.cos(angle)*d,y:position.y-Math.sin(angle)*d};
+  const border=((pt.x-WORLD.cx)/WORLD.rx)**2+((pt.y-WORLD.cy)/WORLD.ry)**2;
+  if(border>.90*.90)return false;
+  for(const other of game.worms){
+   if(!other.alive)continue;
+   const headDistance=Math.hypot(pt.x-other.x,pt.y-other.y);
+   if(headDistance<680+extra)return false;
+   if(headDistance>other.segments.length*11.8+940+extra)continue;
+   for(let j=0;j<other.segments.length;j+=3){
+    const seg=other.segments[j];
+    if((pt.x-seg.x)**2+(pt.y-seg.y)**2<(520+extra)**2)return false;
    }
-   if(!safe)break;
   }
-  if(safe)return pos;
  }
- return null; // No unsafe fallback: retry after other worms have moved.
+ return true;
+}
+function spawnPosition(angle,count,nearPlayer=false,initialIndex=0){
+ const ring=initialIndex>0&&initialIndex<=18?establishedSpawnRing(initialIndex):null;
+ if(ring){
+  // One randomized rotation per match. Each tier occupies separate
+  // positions so high-mass rivals survive the opening minutes.
+  const phase=game.spawnPhase??(game.spawnPhase=rand(0,TAU));
+  for(let attempt=0;attempt<90;attempt++){
+   const radius=ring.radius+rand(-140,140);
+   const theta=phase+ring.phase+ring.slot*TAU/ring.slots+
+    rand(-.075,.075)+(attempt>25?rand(-.12,.12):0);
+   const position={x:WORLD.cx+Math.cos(theta)*radius,
+    y:WORLD.cy+Math.sin(theta)*radius};
+   const heading=theta+Math.PI/2;
+   if(spawnHasClearance(position,heading,count,radius,20))
+    return {...position,angle:heading,orbitRadius:radius};
+  }
+ }
+ for(let attempt=0;attempt<150;attempt++){
+  let position;
+  // Only a few short starting rivals may arrive near the human,
+  // at a much wider distance than the previous 850..3100 cluster.
+  if(nearPlayer&&attempt<55){
+   const a=rand(0,TAU),distance=rand(1800,4400);
+   const p=game.player||{x:WORLD.cx,y:WORLD.cy};
+   position={x:p.x+Math.cos(a)*distance,y:p.y+Math.sin(a)*distance};
+  }else position=randomPos(.9);
+  if(Math.hypot(position.x-WORLD.cx,position.y-WORLD.cy)<1250)continue;
+  if(spawnHasClearance(position,angle,count))return position;
+ }
+ return null;
 }
 function createWorm(name,human,index,preferEncounter=false,identity=null){
- const angle=human?-.28:rand(0,TAU);
+ let angle=human?-.28:rand(0,TAU);
  // Established opponents: several genuinely enormous rivals already exist.
  const initial=!human&&game.time<.5;
  const established=!human&&index>0&&index<=3;
@@ -280,8 +312,10 @@ function createWorm(name,human,index,preferEncounter=false,identity=null){
    initial&&index<=18?rand(1050,3300):
    rand(54,250);
  const count=segmentCount({mass});
- const pos=human?{x:WORLD.cx,y:WORLD.cy}:spawnPosition(angle,count,preferEncounter);
+ const initialIndex=initial&&index>=1&&index<=18?index:0;
+ const pos=human?{x:WORLD.cx,y:WORLD.cy}:spawnPosition(angle,count,preferEncounter,initialIndex);
  if(!pos)return null;
+ if(pos.angle!==undefined)angle=pos.angle;
  const w={name,human,id:index,x:pos.x,y:pos.y,angle,target:angle,
   mass,bestMass:mass,bestLength:count,alive:true,invulnerable:human?2.3:2.0,
   segments:[],boost:false,dropClock:0,think:rand(.1,.2),targetFood:null,targetWreckId:null,coil:null,coilCooldown:game.time+rand(16,35),objective:'food',kills:0,
@@ -300,8 +334,10 @@ function createWorm(name,human,index,preferEncounter=false,identity=null){
  }
  applySkin(w,human?options.skin:(identity?.skin||SKINS[Math.floor(Math.random()*SKINS.length)].id));
  for(let i=0;i<count;i++){
-  w.segments.push({x:w.x-Math.cos(angle)*11.8*(i+1),
-   y:w.y-Math.sin(angle)*11.8*(i+1)});
+  const node=pos.orbitRadius?orbitSpawnPoint(pos,-11.8*(i+1),pos.orbitRadius):
+   {x:w.x-Math.cos(angle)*11.8*(i+1),
+    y:w.y-Math.sin(angle)*11.8*(i+1)};
+  w.segments.push(node);
  }
  seedWormTrail(w);
  return w;
@@ -310,10 +346,17 @@ function createWorm(name,human,index,preferEncounter=false,identity=null){
 function seedWormTrail(w){
  const gap=11.8,points=w.segments.length+6;
  w.traveled=0;w.trailStart=0;w.relaxPhase=0;w.trail=[];
- for(let i=points;i>0;i--)w.trail.push({
-  x:w.x-Math.cos(w.angle)*i*gap,
-  y:w.y-Math.sin(w.angle)*i*gap,s:-i*gap
- });
+ for(let i=points;i>0;i--){
+  const index=i-1;
+  let node=w.segments[index];
+  if(!node){
+   const last=w.segments[w.segments.length-1],prev=w.segments[w.segments.length-2]||w;
+   const vx=last.x-prev.x,vy=last.y-prev.y;
+   const length=Math.hypot(vx,vy)||1,extra=index-(w.segments.length-1);
+   node={x:last.x+vx/length*extra*gap,y:last.y+vy/length*extra*gap};
+  }
+  w.trail.push({x:node.x,y:node.y,s:-i*gap});
+ }
  w.trail.push({x:w.x,y:w.y,s:0});
 }
 // Gradual relaxation changes the physical body path, not merely its paint.
@@ -503,7 +546,7 @@ function init(){
  }
  for(let i=1;i<=BOT_COUNT;i++){
   const identity=identities[i-1];
-  const b=createWorm(identity.name,false,i,i<=32,identity);
+  const b=createWorm(identity.name,false,i,i>=19&&i<=23,identity);
   if(b)game.worms.push(b);
  }
  fillFood(FOOD_TARGET);
@@ -1079,7 +1122,7 @@ function recycleBots(dt){
   w.deathDelay-=dt;
   if(w.deathDelay>0)continue;
   const identity=botIdentity(w);
-  const fresh=createWorm(identity.name,false,w.id,w.id%3===0,identity);
+  const fresh=createWorm(identity.name,false,w.id,false,identity);
   if(fresh)Object.assign(w,fresh);
   else w.deathDelay=1.3; // Never force a bot into the player if no safe zone exists.
  }
