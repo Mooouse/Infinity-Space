@@ -68,7 +68,7 @@ jobs:
               assert 'data:audio/mp4;base64,' not in html
               assert 'inline-audio-' not in html
               assert 'https://mooouse.github.io/Infinity-Space/assets/music/' in html
-              match = re.search(r'var payload=(\\{"arena":"[A-Za-z0-9+/=]+","worms":"[A-Za-z0-9+/=]+"\\}), cache=\\{\\};', html)
+              match = re.search(r'var payload=(\{"arena":"[A-Za-z0-9+/=]+","worms":"[A-Za-z0-9+/=]+"\}), cache=\{\};', html)
               assert match, 'Missing embedded Playgama arcade modes'
               import json as _json
               for mode, encoded in _json.loads(match.group(1)).items():
@@ -124,7 +124,7 @@ jobs:
         with:
           name: infinity-space-playgama
           path: infinity-space-playgama.zip
-          retention-days: 1
+          retention-days: 14
           if-no-files-found: error
 
       - name: Publish Playgama upload ZIP and standalone HTML (stable direct URLs)
