@@ -1644,32 +1644,50 @@ function showSkinWorkshop(){
   }
  });
 }
+function mainSettingsUrl(){
+ // The regular mode is a separate HTML page; the packaged Playgama
+ // version launches it as a blob and stores its original parent URL.
+ let home=null;
+ try{
+  if(location.protocol==='blob:'){
+   home=sessionStorage.getItem('infinity-space-embedded-return')||document.referrer;
+  }else home=new URL('index.html',location.href).href;
+  if(!home)return null;
+  const url=new URL(home);
+  if(!/^https?:$/.test(url.protocol))return null;
+  url.searchParams.delete('select');
+  url.searchParams.set('worm-settings-embed','1');
+  url.hash='';
+  return url.href;
+ }catch(_){return null;}
+}
 function showSettings(){
  if(DEMO||game.state!=='paused')return;
+ const source=mainSettingsUrl();
+ if(!source){
+  // Never strand the player in a blank screen when the main page is
+  // unavailable (for example a malformed offline blob launcher).
+  notify(({ru:'Не удалось открыть основные настройки',es:'No se pueden abrir los ajustes',en:'Main settings unavailable'})[language]);
+  return;
+ }
  game.state='settings';
  $('worm-pause-overlay').hidden=true;
  $('worm-settings').hidden=false;
- $('worm-setting-glow').checked=options.glow;
- $('worm-setting-names').checked=options.names;
- activateSettingsTab('control');
- syncPauseSound();
-}
-function activateSettingsTab(name){
- for(const tab of document.querySelectorAll('#worm-settings [data-settings-tab]')){
-  const active=tab.dataset.settingsTab===name;
-  tab.classList.toggle('active',active);tab.setAttribute('aria-selected',String(active));
- }
- for(const pane of document.querySelectorAll('#worm-settings [data-settings-pane]')){
-  pane.classList.toggle('active',pane.dataset.settingsPane===name);
- }
+ const frame=$('worm-settings-frame');
+ frame.src=source;
 }
 function closeSettings(){
  if(game.state!=='settings')return;
  game.state='paused';
  $('worm-settings').hidden=true;
+ $('worm-settings-frame').src='about:blank';
  $('worm-pause-overlay').hidden=false;
  syncPauseAppearance();syncPauseSound();
 }
+window.addEventListener('message',event=>{
+ if(event.source!==$('worm-settings-frame').contentWindow)return;
+ if(event.data?.type==='infinity-space-worms-settings-close')closeSettings();
+});
 
 function revealDeathResult(){
  if(game.state!=='death-replay')return;
@@ -1732,19 +1750,9 @@ function exit(){
 $('worm-pause').onclick=pause;$('worm-resume').onclick=pause;
 function toggleWormAudio(){options.muted=!options.muted;saveOptions();syncPauseSound();if(!options.muted)playWormSound('resume');}
 $('worm-pause-sound').onclick=toggleWormAudio;
-$('worm-settings-sound').onclick=toggleWormAudio;
 syncPauseSound();
 $('worm-settings-open').onclick=showSettings;
 $('worm-skins-open').onclick=showSkinWorkshop;
-$('worm-settings-back').onclick=closeSettings;
-$('worm-settings-close').onclick=closeSettings;
-document.querySelectorAll('#worm-settings [data-settings-tab]').forEach(tab=>{
- tab.onclick=()=>activateSettingsTab(tab.dataset.settingsTab);
-});
-$('worm-settings-guide').onclick=()=>{closeSettings();showGuide('paused');};
-$('worm-settings-skins').onclick=()=>{closeSettings();showSkinWorkshop();};
-$('worm-setting-glow').onchange=e=>{options.glow=e.target.checked;saveOptions();};
-$('worm-setting-names').onchange=e=>{options.names=e.target.checked;saveOptions();};
 // Camera distance is adjusted during flight, not with a settings slider.
 $('worm-open-guide').onclick=()=>showGuide('paused');$('worm-exit').onclick=exit;
 $('worm-guide-skip').onclick=closeGuide;
