@@ -76,10 +76,18 @@ function enhanceSelects(scope){for(const native of scope.querySelectorAll('selec
 }
 }
 document.addEventListener('pointerdown',e=>{if(openSelect&&!openSelect.menu.contains(e.target)&&!openSelect.root.contains(e.target))closeSelect()});
-window.addEventListener('scroll',()=>closeSelect(),true);
+// A user scrolling the dropdown's own options must not dismiss it.
+window.addEventListener('scroll',e=>{if(openSelect&&!openSelect.menu.contains(e.target))closeSelect();},true);
 window.addEventListener('resize',()=>closeSelect());
 
 
-function cleanupSelects(){closeSelect();customSelects.splice(0).forEach(s=>{s.observer.disconnect();s.menu.remove();});}
+function cleanupSelects(){
+ closeSelect();
+ customSelects.splice(0).forEach(s=>{
+  s.observer.disconnect();s.menu.remove();s.root.remove();
+  s.native.classList.remove('native-select-visually-hidden');
+  delete s.native.dataset.v15Select;
+ });
+}
 window.SpaceUIv15Behavior={musicCover,mediaSVG,enhanceSelects,cleanupSelects,closeSelect};
 })();

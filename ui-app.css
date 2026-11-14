@@ -1835,7 +1835,9 @@ body.ui-v15 [hidden]{display:none!important}
 .ui-v15 .br-ach-big span{font-size:22px;margin-left:8px}.ui-v15 .br-ach-row[hidden]{display:none!important}
 .ui-v15 #screen-map #pin-editor.atlas-pin-menu{position:absolute;z-index:20;max-height:calc(100% - 16px);overflow:auto}
 .ui-v15 #screen-map #pin-editor input{font:inherit}
-.ui-v15 .game-select-pop{z-index:150}.ui-v15 .game-select-item:focus-visible{outline:2px solid #c5a8ff;outline-offset:-3px}
+/* Custom dropdowns are portaled to <body>. The canonical Settings iframe
+   raises #modal to z-index:999; its menus must remain clickable above it. */
+.ui-v15 .game-select-pop{z-index:1200}.ui-v15 .game-select-item:focus-visible{outline:2px solid #c5a8ff;outline-offset:-3px}
 .ui-v15 .v15-camera-toggle{display:none}
 .ui-v15 .flight-stick{border:1px solid #a987db88;background:radial-gradient(circle,#3b235d55,#160d2c88 65%,#22123caa);box-shadow:inset 0 0 0 9px #ad82f00a,inset 0 0 0 10px #ad82f022,0 6px 24px #0005;border-radius:50%;opacity:.72;transition:opacity .18s,border-color .18s,box-shadow .18s}
 .ui-v15 .flight-stick::before,.ui-v15 .flight-stick::after{content:'';position:absolute;inset:18%;border:1px dashed #b69bdf44;border-radius:50%;pointer-events:none}

@@ -385,6 +385,30 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
       'The main Settings page must allow separate controls for Worms');
     await mainSettings.locator('#set-worm-control').selectOption('auto');
 
+    // Regression: Settings from PAUSE uses an iframe whose modal is z-index:999.
+    // The real, portaled dropdown must render above it and accept pointer clicks.
+    const wormTrigger=mainSettings.locator('#set-worm-control + .game-select .game-select-trigger');
+    await wormTrigger.click();
+    const wormPopup=mainSettings.locator('.game-select-pop:not([hidden])');
+    await wormPopup.waitFor({state:'visible',timeout:6000});
+    assert.equal(await wormPopup.evaluate(menu=>getComputedStyle(menu).zIndex>getComputedStyle(document.querySelector('#modal')).zIndex),
+      true,'Dropdown must stack above the fullscreen embedded Settings modal');
+    // Wheel scrolling inside a menu must leave that menu open.
+    await wormPopup.evaluate(menu=>menu.dispatchEvent(new Event('scroll')));
+    assert.equal(await wormPopup.isVisible(),true,'Scrolling dropdown options must not close the menu');
+    const keyOption=wormPopup.locator('.game-select-item').nth(2);
+    assert.equal(await keyOption.evaluate(item=>{
+      const r=item.getBoundingClientRect(),top=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
+      return top===item||item.contains(top);
+    }),true,'Dropdown option must be the physically topmost clickable element');
+    await keyOption.click();
+    assert.equal(await mainSettings.locator('#set-worm-control').inputValue(),'keys',
+      'Selecting a dropdown item through the UI must update the real settings control');
+    assert.equal(await wormPopup.isVisible(),false,'Selected dropdown must close after choosing an option');
+    await wormTrigger.click();
+    await wormPopup.locator('.game-select-item').first().click();
+    assert.equal(await mainSettings.locator('#set-worm-control').inputValue(),'auto');
+
     await mainSettings.locator('#screen-settings').waitFor({state:'visible',timeout:30000});
     assert.equal(await mainSettings.locator('#screen-settings [data-settings-tab]').count(),4,
       'Pause opens the actual primary settings screen with all four main sections');
@@ -394,6 +418,16 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     assert.equal(await mainSettings.locator('#screen-settings [data-settings-pane="audio"].active').count(),1);
     await mainSettings.locator('#screen-settings [data-settings-tab="graphics"]').click();
     assert.equal(await mainSettings.locator('#screen-settings [data-settings-pane="graphics"].active').count(),1);
+    const qualityTrigger=mainSettings.locator('#set-quality + .game-select .game-select-trigger');
+    // Quality may be locked when automatic quality reduction is disabled.
+    if(await qualityTrigger.isEnabled()){
+      await qualityTrigger.click();
+      const qualityPopup=mainSettings.locator('.game-select-pop:not([hidden])');
+      await qualityPopup.waitFor({state:'visible'});
+      await qualityPopup.locator('.game-select-item').last().click();
+      assert.equal(await mainSettings.locator('#set-quality').inputValue(),'0.5',
+        'Graphics dropdown must update the actual quality setting');
+    }
     assert.match((await mainSettings.locator('#screen-settings [data-save-settings]').textContent()).toUpperCase(),
       /СОХРАНИТЬ И ВЫЙТИ/,'The primary settings button must say Save and Exit');
     await mainSettings.locator('#screen-settings [data-save-settings]').click();

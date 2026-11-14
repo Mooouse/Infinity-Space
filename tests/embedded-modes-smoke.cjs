@@ -45,6 +45,13 @@ const {chromium}=require('playwright');
   await mainSettings.locator('#screen-settings').waitFor({state:'visible',timeout:25000});
   assert.equal(await mainSettings.locator('#screen-settings [data-settings-tab]').count(),4,
     'Embedded Worms must display the actual main-game Settings page');
+  const embeddedWormSelect=mainSettings.locator('#set-worm-control + .game-select .game-select-trigger');
+  await embeddedWormSelect.click();
+  const embeddedPopup=mainSettings.locator('.game-select-pop:not([hidden])');
+  await embeddedPopup.waitFor({state:'visible',timeout:5000});
+  await embeddedPopup.locator('.game-select-item').nth(2).click();
+  assert.equal(await mainSettings.locator('#set-worm-control').inputValue(),'keys',
+    'Single-HTML Playgama Settings dropdown must be clickable from pause');
   await mainSettings.locator('#screen-settings [data-save-settings]').click();
   await page.locator('#worm-pause-overlay').waitFor({state:'visible',timeout:8000});
   assert.equal(await page.locator('#worm-settings').isVisible(),false);
