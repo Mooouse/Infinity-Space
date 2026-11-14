@@ -4650,27 +4650,40 @@ if(window.SpaceUIv15Templates && document.createElement('template').content){
   const controlSelect=move('[data-settings-pane="control"] select:nth-of-type(1)','set-control-mode');
   const cruiseOption=document.createElement('option');cruiseOption.value='direction';cruiseOption.textContent=L('Cruise arrow · continuous flight','Стрелка · постоянный полёт','Flecha · vuelo continuo');
   controlSelect.append(cruiseOption);controlSelect.value=g.controlMode;
-  // Separate Worms controls live inside the canonical Settings page.
+  // Worms has independent desktop and phone steering preferences. The
+  // canonical Settings screen controls both, including from the mode iframe.
   const wormKey='infinity-space-worms-settings-v2';
   const wormSection=document.createElement('section');wormSection.className='br-worm-control-group';
   const wormHeading=document.createElement('h3');
   wormHeading.textContent=L('COSMIC WORMS · CONTROLS','КОСМИЧЕСКИЕ ЧЕРВИ · УПРАВЛЕНИЕ','GUSANOS CÓSMICOS · CONTROLES');
   const wormNote=document.createElement('p');
-  wormNote.textContent=L('Choose Worms steering independently. The phone joystick starts on the right.','Отдельно выбери управление червём. Стик на телефоне по умолчанию справа.','Elige los controles de Gusanos por separado. El joystick empieza a la derecha.');
-  const wormRow=document.createElement('label');wormRow.className='br-worm-control-row';
-  const wormLabel=document.createElement('span');wormLabel.textContent=L('Worm steering','Управление червём','Control del gusano');
-  const wormSelect=document.createElement('select');wormSelect.id='set-worm-control';
-  const wormModes=[
-   ['auto',L('Automatic · mouse / keyboard / joystick','Авто · мышь / клавиатура / стик','Automático · ratón / teclado / joystick')],
+  wormNote.textContent=L('Desktop and phone controls are saved separately.','Управление на ПК и телефоне сохраняется отдельно.','El ordenador y el teléfono se configuran por separado.');
+  const pcModes=[
+   ['auto',L('Automatic · mouse / keyboard','Авто · мышь / клавиатура','Automático · ratón / teclado')],
    ['mouse',L('Follow cursor','Следовать за курсором','Seguir cursor')],
    ['keys',L('Keyboard · WASD / arrows','Клавиатура · WASD / стрелки','Teclado · WASD / flechas')],
-   ['stick',L('Fixed joystick on the right','Фиксированный стик справа','Joystick fijo a la derecha')],
+   ['stick',L('Fixed joystick','Фиксированный стик','Joystick fijo')],
    ['touch',L('Touch direction','Направление касанием','Dirección táctil')]
   ];
-  wormModes.forEach(([value,label])=>{const option=document.createElement('option');option.value=value;option.textContent=label;wormSelect.append(option);});
-  try{const data=JSON.parse(localStorage.getItem(wormKey)||'{}');wormSelect.value=wormModes.some(m=>m[0]===data?.controlMode)?data.controlMode:'auto';}catch(_){wormSelect.value='auto';}
-  wormSelect.onchange=()=>{try{const data=JSON.parse(localStorage.getItem(wormKey)||'{}')||{};data.controlMode=wormSelect.value;localStorage.setItem(wormKey,JSON.stringify(data));}catch(_){}};
-  wormRow.append(wormLabel,wormSelect);wormSection.append(wormHeading,wormNote,wormRow);
+  const phoneModes=[
+   ['fixed',L('Fixed joystick · right','Фиксированный стик · справа','Joystick fijo · derecha')],
+   ['floating',L('Floating joystick · where you touch','Плавающий стик · в месте касания','Joystick flotante · donde toques')],
+   ['touch',L('Touch to steer','Направление касанием','Toca para dirigir')]
+  ];
+  const readWormPrefs=()=>{try{return JSON.parse(localStorage.getItem(wormKey)||'{}')||{};}catch(_){return {};}};
+  const writeWormPrefs=(key,value)=>{const data=readWormPrefs();data[key]=value;try{localStorage.setItem(wormKey,JSON.stringify(data));}catch(_){}};
+  function addWormModeRow(id,heading,modes,key,fallback){
+   const row=document.createElement('label');row.className='br-worm-control-row';
+   const label=document.createElement('span');label.textContent=heading;
+   const select=document.createElement('select');select.id=id;select.setAttribute('aria-label',heading);
+   for(const [value,caption] of modes){const opt=document.createElement('option');opt.value=value;opt.textContent=caption;select.append(opt);}
+   const saved=readWormPrefs()[key];select.value=modes.some(v=>v[0]===saved)?saved:fallback;
+   select.onchange=()=>writeWormPrefs(key,select.value);
+   row.append(label,select);wormSection.append(row);
+  }
+  wormSection.append(wormHeading,wormNote);
+  addWormModeRow('set-worm-control',L('Desktop steering','Управление на ПК','Control en PC'),pcModes,'controlMode','auto');
+  addWormModeRow('set-worm-mobile-control',L('Phone steering','Управление на телефоне','Control en móvil'),phoneModes,'mobileControlMode','fixed');
   q(root,'[data-settings-pane="control"]').append(wormSection);
   const controlPreview=document.createElement('div');controlPreview.className='control-selection-preview';controlPreview.setAttribute('aria-live','polite');
   controlSelect.closest('.br-option').append(controlPreview);
@@ -4711,7 +4724,14 @@ if(window.SpaceUIv15Templates && document.createElement('template').content){
  showAchievements=function(){enterScreen('achievements');legacy.achievements();const {root}=mount('achievements');const list=q(root,'.br-ach-list');
   list.innerHTML=ACHIEVEMENTS.map(a=>{const [rarity,color]=RARITIES[a[1]],done=!!g.achievements?.[a[0]],progress=done?100:achievementProgress(a);return `<div class="br-ach-row" data-rarity="${rarity}" style="--rarity:${color}"><div class="br-ach-symbol ${rarity}">${icon(({common:'check',uncommon:'star',rare:'compass',epic:'orbit',legendary:'trophy',mythic:'star'})[rarity])}</div><div class="br-ach-copy"><span class="br-ach-rarity ${rarity}">${L(...RARITIES[a[1]][2])}</span><strong>${esc(L(...a[2]))}</strong><small>${fmt(achievementValue(a[3]))} / ${fmt(a[4])} ${goalLabel(a[3])}</small><div class="br-ach-prog" role="progressbar" aria-label="${esc(L(...a[2]))}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><i style="width:${progress}%"></i></div></div><b>${progress===100?'100':progress>0&&progress<.01?'&lt;0.01':progress.toFixed(1)}%</b></div>`;}).join('');
   const earned=Object.keys(g.achievements||{}).length;q(root,'.br-ach-big').innerHTML=`${earned}<span>/${ACHIEVEMENTS.length}</span>`;text(root,'.br-ach-summary p',L('Your discoveries and milestones','Твои открытия и достижения','Tus descubrimientos y logros'));
-  qa(root,'.br-filter').forEach(b=>b.onclick=()=>{qa(root,'.br-filter').forEach(n=>n.classList.toggle('active',n===b));qa(list,'.br-ach-row').forEach(n=>n.hidden=b.dataset.achFilter!=='all'&&n.dataset.rarity!==b.dataset.achFilter);});
+  const filters=qa(root,'.br-filter'),rows=qa(list,'.br-ach-row');
+  const setRarity=rarity=>{
+   for(const b of filters){const selected=b.dataset.achFilter===rarity;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected));}
+   for(const row of rows){const filtered=rarity!=='all'&&row.dataset.rarity!==rarity;row.hidden=filtered;row.classList.toggle('is-filtered-out',filtered);}
+   list.scrollTop=0;
+  };
+  for(const b of filters){b.type='button';b.onclick=()=>setRarity(b.dataset.achFilter);}
+  setRarity('all');
  };
  showBestiary=function(){
   enterScreen('bestiary');legacy.bestiary();
