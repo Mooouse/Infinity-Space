@@ -13,6 +13,7 @@ on:
       - 'tools/build_single_html.py'
       - 'tools/build_crazygames_html.py'
       - 'tests/crazygames-single-html-smoke.cjs'
+      - 'tests/worm-mobile-steering-smoke.cjs'
       - '.github/workflows/crazygames-html.yml'
   workflow_dispatch:
 permissions:
@@ -80,6 +81,7 @@ jobs:
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
           export NODE_PATH="$RUNNER_TEMP/crazygames-test/node_modules"
           timeout 300 node tests/crazygames-single-html-smoke.cjs
+          timeout 180 node tests/worm-mobile-steering-smoke.cjs
 
       - name: Attach standalone HTML build for QA
         uses: actions/upload-artifact@v4
