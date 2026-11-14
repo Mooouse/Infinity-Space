@@ -1,0 +1,107 @@
+name: Build CrazyGames one-file HTML
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'cosmic-arena.html'
+      - 'cosmic-worms.html'
+      - '*.js'
+      - '*.css'
+      - '*.svg'
+      - 'assets/music/**'
+      - 'tools/build_single_html.py'
+      - 'tools/build_crazygames_html.py'
+      - 'tests/crazygames-single-html-smoke.cjs'
+      - '.github/workflows/crazygames-html.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: crazygames-onefile-html
+  cancel-in-progress: true
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate source and Python packagers
+        run: |
+          set -euo pipefail
+          node --check platform.js
+          node --check game.js
+          node --check cosmic-worms.js
+          node --check crazygames-extras.js
+          node --check tests/crazygames-single-html-smoke.cjs
+          python3 -m py_compile tools/build_single_html.py tools/build_crazygames_html.py
+          node tests/meta.cjs
+          node tests/music.cjs
+
+      - name: Build CrazyGames standalone HTML below 20 MB
+        run: |
+          set -euo pipefail
+          python3 tools/build_crazygames_html.py dist-crazygames/index.html
+          python3 - <<'PY'
+          import base64,json,re
+          from pathlib import Path
+          path=Path('dist-crazygames/index.html')
+          html=path.read_text(encoding='utf-8')
+          assert 0 < path.stat().st_size < 20_000_000
+          assert 'data-origin="embedded-arcade-router"' in html
+          assert 'data-origin="platform.js"' in html
+          assert 'data-origin="crazygames-extras.js"' in html
+          assert 'data-origin="playgama-platform.js"' not in html
+          assert 'window.SpacePlaygamaBuild=true;' not in html
+          assert 'https://bridge.playgama.com/' not in html
+          assert html.count('data:image/jpeg;base64,') >= 12
+          match=re.search(r'var payload=(\{"arena":"[A-Za-z0-9+/=]+","worms":"[A-Za-z0-9+/=]+"\}), cache=\{\};',html)
+          assert match, 'Missing arcade modes'
+          for mode, encoded in json.loads(match[1]).items():
+              nested=base64.b64decode(encoded).decode('utf-8')
+              assert 'https://bridge.playgama.com/' not in nested, mode
+              assert 'window.SpacePlaygamaBuild=true;' not in nested, mode
+              assert 'data-origin="platform.js"' in nested, mode
+              assert 'data-origin="crazygames-extras.js"' in nested, mode
+              assert 'data:image/jpeg;base64,' in nested, mode
+              assert 'https://mooouse.github.io/Infinity-Space/assets/music/' in nested, mode
+          print('PASS: root and every embedded mode use only CrazyGames platform code')
+          PY
+
+      - name: Verify desktop and mobile in real Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --silent --no-audit --no-fund --prefix "$RUNNER_TEMP/crazygames-test" playwright@1.56.1
+          export PLAYWRIGHT_BROWSERS_PATH="$RUNNER_TEMP/crazygames-chromium"
+          "$RUNNER_TEMP/crazygames-test/node_modules/.bin/playwright" install chromium --only-shell
+          python3 -m http.server 8767 --directory dist-crazygames --bind 127.0.0.1 > "$RUNNER_TEMP/crazygames-server.log" 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          export NODE_PATH="$RUNNER_TEMP/crazygames-test/node_modules"
+          timeout 300 node tests/crazygames-single-html-smoke.cjs
+
+      - name: Attach standalone HTML build for QA
+        uses: actions/upload-artifact@v4
+        with:
+          name: crazygames-single-html
+          path: dist-crazygames/index.html
+          retention-days: 14
+          if-no-files-found: error
+
+      - name: Publish direct HTML download (no ZIP)
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="infinity-space-crazygames-html"
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --target "$GITHUB_SHA" \
+              --title "Infinity Space — CrazyGames single HTML" \
+              --notes "CrazyGames HTML5 v3 SDK, all modes inline, no Playgama bridge. Under 20 MB. The 12 original high-quality music MP3s stream from the existing public Infinity Space music host, so music requires internet." \
+              --latest=false
+          fi
+          gh release upload "$TAG" dist-crazygames/index.html --clobber
+          gh release view "$TAG" --json assets --jq '.assets[] | [.name,.size,.url] | @tsv'
