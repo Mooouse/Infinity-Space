@@ -147,6 +147,9 @@ function syncPauseAppearance(){
  $('worm-pause-player').textContent=game.player?.name||'PILOT';
 }
 function applySkin(w,id){
+ // Gameplay uses the same achievement locks as the workshop. Previously
+ // selected, now-locked designs fall back to the free starting skin.
+ if(w.human&&window.WormSkinStudio&&!window.WormSkinStudio.isUnlocked(id))id='nebula';
  const skin=SKINS.find(s=>s.id===id)||SKINS[0];
  w.skin=skin.id;w.pattern=skin.pattern;
  const custom=w.human&&options.customEnabled&&options.customSegments?.length;
@@ -1886,7 +1889,12 @@ function frame(now){
 }
 init();requestAnimationFrame(frame);
 if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
- window.InfinityWormsQA={
+ window.InfinityWormsProgress=()=>({
+ kills:game.player?.kills||0,
+ mass:game.player?.bestMass||game.player?.mass||0,
+ top1:game.player?.bestRank===1
+});
+window.InfinityWormsQA={
   snapshot:()=>({state:game.state,mode:'worms',demo:DEMO,time:game.time,mass:game.player.mass,
     bestMass:game.player.bestMass,length:game.player.segments.length,radius:wormRadius(game.player),head:options.head,angle:game.player.angle,
     targetAngle:game.player.target,x:game.player.x,y:game.player.y,zoom:camera.zoom,
