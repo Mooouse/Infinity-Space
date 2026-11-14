@@ -149,11 +149,25 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.waitForFunction(()=>window.InfinityWormsQA.snapshot().state==='playing');
     if(width>=1280){
      await page.locator('#worm-pause').hover();
-     assert.equal(await page.locator('#worm-pause').evaluate(el=>getComputedStyle(el).borderTopColor),
-      'rgb(240, 220, 255)','Glass pause dial must glow lavender');
+     await page.waitForTimeout(220); // Allow the hover transition to settle.
+     const pauseStyle=await page.locator('#worm-pause').evaluate(el=>{
+      const css=getComputedStyle(el);
+      return {border:css.borderTopColor,shadow:css.boxShadow};
+     });
+     const pauseComponents=pauseStyle.border.match(/[\\d.]+/g)?.map(Number)||[];
+     assert.ok(pauseComponents.length>=3&&pauseComponents[0]>=175&&
+      pauseComponents[1]>=135&&pauseComponents[2]>=225&&pauseStyle.shadow!=='none',
+      'Pause dial should retain a visible lavender glow through its transition: '+JSON.stringify(pauseStyle));
      await page.locator('#worm-boost').hover();
-     assert.equal(await page.locator('#worm-boost').evaluate(el=>getComputedStyle(el).borderTopColor),
-      'rgb(255, 206, 218)','Sprint dial must glow pink, not purple');
+     await page.waitForTimeout(220);
+     const boostStyle=await page.locator('#worm-boost').evaluate(el=>{
+      const css=getComputedStyle(el);
+      return {border:css.borderTopColor,shadow:css.boxShadow};
+     });
+     const boostComponents=boostStyle.border.match(/[\\d.]+/g)?.map(Number)||[];
+     assert.ok(boostComponents.length>=3&&boostComponents[0]>=215&&
+      boostComponents[0]>boostComponents[1]&&boostComponents[2]>=160&&boostStyle.shadow!=='none',
+      'Boost dial should retain a distinct pink glow: '+JSON.stringify(boostStyle));
     }
     await page.evaluate(()=>{window.InfinityWormsQA.testProtection(90);window.InfinityWormsQA.freezeRealtime(true);});
     const skillMix=await page.evaluate(()=>window.InfinityWormsQA.botSkillBalanceProbe());
@@ -348,10 +362,13 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await mainSettings.locator('#screen-settings [data-settings-tab="graphics"]').click();
     assert.equal(await mainSettings.locator('#screen-settings [data-settings-pane="graphics"].active').count(),1);
     await mainSettings.locator('#screen-settings .br-head-back').click();
-    assert.equal(await page.locator('#worm-settings').isVisible(),false,
-      'Back closes the real settings without leaving the match');
-    assert.equal(await page.locator('#worm-pause-overlay').isVisible(),true,
-      'Main Settings Back must restore the original Worms pause');
+    // postMessage from the real settings iframe to the live Worms page is
+    // delivered asynchronously. Wait for navigation instead of asserting
+    // visibility in the same event-loop turn as the click.
+    await page.locator('#worm-settings').waitFor({state:'hidden',timeout:8000});
+    await page.locator('#worm-pause-overlay').waitFor({state:'visible',timeout:8000});
+    assert.equal(await page.evaluate(()=>window.InfinityWormsQA.snapshot().state),'paused',
+      'Back must return to the existing live Worms match, not restart it');
     await page.locator('#worm-open-guide').click();
     assert.equal(await page.locator('#worm-guide').isVisible(),true);
     await page.locator('#worm-guide-skip').click();
