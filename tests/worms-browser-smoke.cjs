@@ -391,7 +391,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await wormTrigger.click();
     const wormPopup=mainSettings.locator('.game-select-pop:not([hidden])');
     await wormPopup.waitFor({state:'visible',timeout:6000});
-    assert.equal(await wormPopup.evaluate(menu=>getComputedStyle(menu).zIndex>getComputedStyle(document.querySelector('#modal')).zIndex),
+    assert.equal(await wormPopup.evaluate(menu=>Number(getComputedStyle(menu).zIndex)>Number(getComputedStyle(document.querySelector('#modal')).zIndex)),
       true,'Dropdown must stack above the fullscreen embedded Settings modal');
     // Wheel scrolling inside a menu must leave that menu open.
     await wormPopup.evaluate(menu=>menu.dispatchEvent(new Event('scroll')));
