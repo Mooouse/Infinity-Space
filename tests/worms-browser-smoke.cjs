@@ -396,6 +396,28 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
     await page.waitForFunction(()=>{const c=document.querySelector('.ws-preview-canvas');if(!c)return false;const p=c.getContext('2d').getImageData(700,80,80,70).data;return p.some((v,i)=>i%4!==3&&v>150)},null,{timeout:5000});
     assert.equal(await page.locator('.ws-advanced-summary').isVisible(),true,'Advanced body painter toggle exists');
     assert.equal(await page.locator('.ws-head-choice').count(),6,'All six cosmic head designs must be available');
+    const iconMetrics=await page.locator('.ws-head-choice').evaluateAll(buttons=>buttons.map(button=>{
+      const el=button.querySelector('.ws-head-symbol'),svg=el?.querySelector('svg'),rect=el?.getBoundingClientRect();
+      const close=document.querySelector('.ws-x'),closeSvg=close?.querySelector('svg');
+      const c=close?.getBoundingClientRect(),s=closeSvg?.getBoundingClientRect();
+      return {shape:button.dataset.head,hasSvg:!!svg,visible:el&&getComputedStyle(el).display!=='none',
+       iconWidth:rect?.width,closeCentered:!!(c&&s&&Math.abs((c.left+c.width/2)-(s.left+s.width/2))<2&&
+        Math.abs((c.top+c.height/2)-(s.top+s.height/2))<2),
+       closeColor:close&&getComputedStyle(close).color};
+    }));
+    assert.ok(iconMetrics.length===6&&iconMetrics.every(v=>v.hasSvg&&v.visible&&v.iconWidth>=35),
+      'All six head selectors need visible illustrated previews: '+JSON.stringify(iconMetrics));
+    assert.ok(iconMetrics.every(v=>v.closeCentered),'Workshop close icon must be physically centered');
+    assert.ok(iconMetrics.every(v=>v.closeColor==='rgb(243, 231, 255)'),
+      'Close icon must match the violet workshop palette: '+JSON.stringify(iconMetrics));
+    const curvature=await page.evaluate(()=>{
+      const scan=t=>{
+       const body=window.WormSkinStudio.previewCenterline(t),start=body[0],end=body.at(-1);
+       return Math.max(...body.map(p=>Math.abs(p.y-(start.y+(p.x-start.x)/(end.x-start.x)*(end.y-start.y)))));
+      };
+      return [scan(0),scan(1.5),scan(3)];
+    });
+    assert.ok(curvature.every(v=>v>22),'The preview must bend substantially over time: '+JSON.stringify(curvature));
     await page.locator('.ws-head-choice[data-head="blackhole"]').click();
     assert.equal(await page.evaluate(()=>window.InfinityWormsQA.snapshot().head),'blackhole','Black hole head must be persisted and applied');
     await page.locator('.ws-preset').nth(1).click();

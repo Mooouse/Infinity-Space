@@ -77,16 +77,16 @@ function save(obj){
  try{localStorage.setItem(KEY,JSON.stringify(obj))}catch(_){}
  window.dispatchEvent(new CustomEvent('infinity-worm-skin-changed',{detail:{skin:obj.skin,customEnabled:obj.customEnabled,customSegments:obj.customSegments.slice(),head:obj.head}}));
 }
-// The preview camera follows a continuously advancing head. Each tail point
-// samples an earlier world position, so the body follows a true travelled path
-// rather than being displaced up and down as a stationary sine-wave ribbon.
+// A head-following camera: each point is an earlier position on one smooth
+// trajectory. Stronger, layered turns make the body visibly curve, without
+// independent segment wobble or discontinuities as time advances.
 function previewCenterline(seconds,count=59){
- const speed=140,step=.079,headTravel=seconds*speed,anchorX=752,anchorY=110;
- const worldY=time=>Math.sin(time*.66)*16+Math.sin(time*1.13)*7;
- const cameraY=worldY(seconds);
+ const speed=140,spacing=.079,anchorX=752,anchorY=110;
+ const trajectoryY=t=>34*Math.sin(t*.9)+18*Math.sin(t*1.45+.8)+4*Math.sin(t*2.35);
+ const cameraY=trajectoryY(seconds);
  return Array.from({length:count},(_,i)=>{
-  const age=(count-1-i)*step,past=seconds-age;
-  return {x:anchorX+(past*speed-headTravel),y:anchorY+worldY(past)-cameraY};
+  const age=(count-1-i)*spacing;
+  return {x:anchorX-age*speed,y:anchorY+(trajectoryY(seconds-age)-cameraY)*.85};
  });
 }
 let active=null;
@@ -115,14 +115,23 @@ function open({onChange,onClose}={}){
  $('.ws-title').textContent=t.title;$('.ws-desc').textContent=t.desc;
  $('.ws-preview-title').textContent=lang==='ru'?'ЖИВОЙ ПРЕДПРОСМОТР':lang==='es'?'VISTA PREVIA ANIMADA':'LIVE IN-GAME PREVIEW';
  $('.ws-preview-hint').textContent=lang==='ru'?'Скин, голова и светящиеся частицы на движущемся черве':lang==='es'?'Diseño y partículas en movimiento':'Animated body, head and cosmic particles';
- $('.ws-x').textContent='×';$('.ws-x').setAttribute('aria-label',t.close);
+ $('.ws-x').innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6 18 18M18 6 6 18"/></svg>';$('.ws-x').setAttribute('aria-label',t.close);
  $('.ws-presets-title').textContent=t.templates;$('.ws-segments-title').textContent=t.segment;
  $('.ws-tip').textContent=t.tip;$('.ws-palette-title').textContent=t.palette;
  $('.ws-custom-title').textContent=t.custom;
  $('.ws-head-heading').textContent=lang==='ru'?'Форма головы':lang==='es'?'Forma de cabeza':'Head shape';
  $('.ws-advanced-summary').textContent=lang==='ru'?'НАСТРОЙКА ПЕРЕЛИВОВ · 64 ЦВЕТОВЫЕ ТОЧКИ':lang==='es'?'COLORES PERSONALIZADOS · 64 SEGMENTOS':'ADVANCED GRADIENT · 64 COLOR POINTS';
+
+ const headArt={
+  classic:'<svg viewBox="0 0 48 48" aria-hidden="true"><defs><radialGradient id="wh-classic"><stop stop-color="#ffeaff"/><stop offset=".64" stop-color="#a779ff"/><stop offset="1" stop-color="#5329af"/></radialGradient></defs><circle cx="24" cy="24" r="17" fill="url(#wh-classic)" stroke="#eedcff" stroke-width="1.5"/><circle cx="31" cy="18" r="4" fill="#fff"/><circle cx="34" cy="18" r="1.7" fill="#1c0b32"/><path d="M14 30Q23 35 31 28" stroke="#fcefff" stroke-width="1.5" fill="none" opacity=".7"/></svg>',
+  blackhole:'<svg viewBox="0 0 48 48" aria-hidden="true"><defs><radialGradient id="wh-blackhole"><stop offset=".39" stop-color="#02000a"/><stop offset=".43" stop-color="#ffe56a"/><stop offset=".61" stop-color="#ff498b"/><stop offset=".82" stop-color="#7841ff"/><stop offset="1" stop-color="#7841ff" stop-opacity="0"/></radialGradient></defs><circle cx="24" cy="24" r="23" fill="url(#wh-blackhole)"/><circle cx="24" cy="24" r="9" fill="#020008"/><ellipse cx="24" cy="24" rx="22" ry="8" fill="none" stroke="#ffe19c" stroke-width="2.6" transform="rotate(-25 24 24)"/></svg>',
+  pulsar:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M23 1 19 14 26 22 35 42" stroke="#2860ff" stroke-width="6" opacity=".65" stroke-linecap="round"/><path d="M27 2 25 18 19 29 16 46" stroke="#ffe500" stroke-width="3" opacity=".85" stroke-linecap="round"/><circle cx="24" cy="24" r="12" fill="#2860ff" stroke="#d0ecff" stroke-width="1.8"/><circle cx="24" cy="24" r="7" fill="#fff0a3"/><circle cx="24" cy="24" r="3" fill="#fff"/><ellipse cx="24" cy="24" rx="22" ry="8" fill="none" stroke="#ffe500" stroke-width="2" transform="rotate(-30 24 24)"/></svg>',
+  comet:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M3 33Q14 16 30 12L20 29Z" fill="#ff1744" opacity=".65"/><path d="M0 38Q17 23 32 12L23 29Z" fill="#ffe500" opacity=".9"/><path d="M6 43Q17 27 31 17" fill="none" stroke="#ffad35" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="16" r="11" fill="#ffdf65" stroke="#fff9c7" stroke-width="2"/><circle cx="35" cy="13" r="5" fill="#fff4cf"/></svg>',
+  crystal:'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 2 43 21 24 46 5 21Z" fill="#7350f2" stroke="#ede0ff" stroke-width="2"/><path d="M24 2 24 46 5 21Z" fill="#a894ff"/><path d="M24 2 43 21 24 46 31 20Z" fill="#5e39ca"/><path d="M5 21H43M24 2 17 21 24 46" stroke="#fff3ff" stroke-width="1.1" fill="none" opacity=".8"/></svg>',
+  eclipse:'<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21" fill="#9228f4" opacity=".35"/><circle cx="24" cy="24" r="17" fill="#ff488f"/><circle cx="24" cy="24" r="13" fill="#05020f"/><path d="M37 11A18 18 0 0 1 40 31" fill="none" stroke="#ffe8a5" stroke-width="3.5" stroke-linecap="round"/><path d="M9 34A18 18 0 0 0 14 40" fill="none" stroke="#7e52ff" stroke-width="2.5" stroke-linecap="round"/></svg>'
+ };
  const headLabels={classic:['Классическая','Classic','Clásica'],blackhole:['Чёрная дыра','Black Hole','Agujero negro'],pulsar:['Пульсар','Pulsar','Púlsar'],comet:['Комета','Comet','Cometa'],crystal:['Кристалл','Crystal','Cristal'],eclipse:['Затмение','Eclipse','Eclipse']};
- for(const id of HEADS){const b=document.createElement('button');b.type='button';b.className='ws-head-choice';b.dataset.head=id;b.innerHTML='<span class="ws-head-symbol" aria-hidden="true"></span><span></span>';b.lastChild.textContent=headLabels[id][lang==='ru'?0:lang==='es'?2:1];b.onclick=()=>{data.head=id;persist();root.querySelectorAll('.ws-head-choice').forEach(x=>x.classList.toggle('selected',x.dataset.head===id))};$('.ws-head-options').append(b)}
+ for(const id of HEADS){const b=document.createElement('button');b.type='button';b.className='ws-head-choice';b.dataset.head=id;b.innerHTML='<span class="ws-head-symbol" aria-hidden="true">'+headArt[id]+'</span><span class="ws-head-label"></span>';b.lastChild.textContent=headLabels[id][lang==='ru'?0:lang==='es'?2:1];b.onclick=()=>{data.head=id;persist();root.querySelectorAll('.ws-head-choice').forEach(x=>x.classList.toggle('selected',x.dataset.head===id))};$('.ws-head-options').append(b)}
  root.querySelectorAll('.ws-head-choice').forEach(x=>x.classList.toggle('selected',x.dataset.head===data.head));
  $('.ws-reset').textContent=t.reset;$('.ws-stripes').textContent=t.stripes;
  $('.ws-fill').textContent=t.all;$('.ws-done').textContent=t.done;
@@ -216,7 +225,7 @@ function open({onChange,onClose}={}){
   pc.clearRect(0,0,w,h);
   pc.fillStyle='#090719';pc.fillRect(0,0,w,h);
   for(let i=0;i<85;i++){
-   const parallax=i%3===0?43:24;
+   const parallax=i%3===0?59:37;
    const x=((i*397.71-t*parallax)%w+w)%w,y=(i*181.39)%h;
    const a=.25+.5*(.5+.5*Math.sin(t*1.8+i*1.76));
    pc.fillStyle='rgba(227,220,255,'+a.toFixed(3)+')';

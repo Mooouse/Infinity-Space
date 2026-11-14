@@ -1804,3 +1804,74 @@ html body:has(#worm-field) #mode-music-open:focus-visible{
  html body:has(#worm-field) #worm-hud .worm-boost-button b,
  html body:has(#worm-field) #mode-music-open .mode-music-button-label{font-size:8px!important}
 }
+
+
+/* Shared skin workshop: identical rendering in the main menu and Worms.
+   ui-worms.css is NOT loaded by index.html, so never rely on it for artwork. */
+.ws-overlay .ws-head-options{
+ display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px;
+ margin:9px 0 12px;
+}
+.ws-overlay .ws-head-choice{
+ display:flex!important;flex-direction:column!important;
+ align-items:center!important;justify-content:center!important;
+ gap:8px!important;min-width:0!important;min-height:87px!important;
+ padding:10px 6px!important;
+ border:1px solid #6b4d9b!important;border-radius:9px!important;
+ background:linear-gradient(160deg,#2d1b49,#1a102f)!important;
+ color:#efe4ff!important;text-align:center!important;
+ box-shadow:inset 0 1px #ffffff15!important;
+ cursor:pointer!important;
+}
+.ws-overlay .ws-head-choice.selected{
+ border-color:#bd94ff!important;
+ background:linear-gradient(160deg,#422568,#28163e)!important;
+ box-shadow:inset 0 1px #ffffff2d,0 0 15px #965ce759!important;
+}
+.ws-overlay .ws-head-choice:hover{
+ border-color:#d0b0ff!important;
+ box-shadow:inset 0 1px #ffffff30,0 0 18px #9754f36b!important;
+}
+.ws-overlay .ws-head-symbol{
+ display:grid!important;place-items:center!important;
+ flex:0 0 43px!important;width:43px!important;height:43px!important;
+ border:0!important;border-radius:0!important;
+ background:none!important;box-shadow:none!important;
+ opacity:1!important;visibility:visible!important;
+}
+.ws-overlay .ws-head-symbol svg{
+ display:block!important;width:43px!important;height:43px!important;
+ overflow:visible!important;filter:drop-shadow(0 0 6px #9d6df05e);
+}
+.ws-overlay .ws-head-label{
+ display:block!important;width:100%;font:800 11px/1.22 Inter,system-ui,sans-serif!important;
+ letter-spacing:.01em!important;color:#f2e9ff!important;overflow-wrap:anywhere!important;
+}
+.ws-overlay .ws-x{
+ flex:0 0 42px!important;
+ display:grid!important;place-items:center!important;
+ width:42px!important;height:42px!important;min-width:42px!important;
+ margin:0!important;padding:0!important;
+ border:1px solid #8965c2!important;border-radius:9px!important;
+ background:linear-gradient(155deg,#382051,#241536)!important;
+ box-shadow:inset 0 1px #ffffff28,0 3px 0 #100920!important;
+ color:#f3e7ff!important;line-height:1!important;
+ cursor:pointer!important;
+}
+.ws-overlay .ws-x svg{
+ display:block!important;width:22px!important;height:22px!important;
+ margin:0!important;position:static!important;color:inherit!important;
+}
+.ws-overlay .ws-x:hover{
+ border-color:#dfc0ff!important;background:linear-gradient(155deg,#583178,#31204e)!important;
+ box-shadow:inset 0 1px #ffffff35,0 0 16px #a66cff77!important;
+}
+.ws-overlay .ws-x:focus-visible{outline:2px solid #d7b8ff!important;outline-offset:3px!important}
+@media(max-width:700px){
+ .ws-overlay .ws-head-options{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+ .ws-overlay .ws-head-choice{min-height:81px!important;padding:8px 4px!important}
+ .ws-overlay .ws-head-label{font-size:10px!important}
+}
+@media(max-width:380px){
+ .ws-overlay .ws-head-options{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
