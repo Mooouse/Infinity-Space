@@ -1912,3 +1912,92 @@ html body:has(#worm-field) #mode-music-open:focus-visible{outline:2px solid #dcb
  #arena-death-offer .arena-dialog-actions{grid-template-columns:1fr!important}
  #arena-death-offer .arena-dialog-actions button{min-height:47px!important}
 }
+
+
+/* Mobile Worms control deck. One source of truth below the legacy styles:
+   fixed dimensions (not flex-basis or min-height) prevent squeezed controls. */
+@media (max-width:760px), (pointer:coarse) and (max-width:1024px) {
+ html body:has(#worm-field) #worm-hud .worm-pause-button,
+ html body:has(#worm-field) #worm-hud .worm-boost-button,
+ html body:has(#worm-field) #mode-music-open {
+  box-sizing:border-box!important;
+  position:fixed!important;right:auto!important;top:auto!important;
+  width:48px!important;min-width:48px!important;max-width:48px!important;
+  height:48px!important;min-height:48px!important;max-height:48px!important;
+  aspect-ratio:1/1!important;flex:none!important;flex-shrink:0!important;
+  left:calc(12px + env(safe-area-inset-left))!important;
+  display:flex!important;flex-direction:column!important;justify-content:center!important;
+  align-items:center!important;gap:2px!important;padding:5px 3px!important;
+  border-radius:10px!important;font-size:8px!important;
+  transform:none!important;
+ }
+ html body:has(#worm-field) #worm-hud .worm-boost-button {
+  bottom:calc(12px + env(safe-area-inset-bottom))!important;
+ }
+ html body:has(#worm-field) #worm-hud .worm-pause-button {
+  bottom:calc(70px + env(safe-area-inset-bottom))!important;
+ }
+ html body:has(#worm-field) #mode-music-open {
+  bottom:calc(128px + env(safe-area-inset-bottom))!important;
+  z-index:3!important;
+ }
+ html body:has(#worm-field) #worm-hud .worm-pause-button svg,
+ html body:has(#worm-field) #worm-hud .worm-boost-button svg,
+ html body:has(#worm-field) #mode-music-open svg {
+  width:20px!important;height:20px!important;flex:0 0 20px!important;
+ }
+ html body:has(#worm-field) #worm-hud .worm-pause-button span,
+ html body:has(#worm-field) #worm-hud .worm-boost-button b,
+ html body:has(#worm-field) #mode-music-open .mode-music-button-label {
+  font-size:8px!important;line-height:1!important;
+ }
+ /* A floating stick starts under the finger. Canvas events own its gesture,
+    so an invisible stationary joystick cannot intercept touches. */
+ html[data-worm-control="floating"] body:has(#worm-field) #worm-stick {
+  visibility:hidden!important;opacity:0!important;pointer-events:none!important;
+ }
+ html[data-worm-control="floating"] body:has(#worm-field) #worm-stick.floating-active {
+  position:fixed!important;visibility:visible!important;opacity:1!important;
+  left:var(--floating-left,50vw)!important;
+  top:var(--floating-top,50vh)!important;
+  right:auto!important;bottom:auto!important;pointer-events:none!important;
+ }
+ html[data-worm-control="touch"] body:has(#worm-field) #worm-stick {
+  display:none!important;
+ }
+}
+/* Music belongs to the playable HUD, not above pause/settings/results/skins.
+   The music dialog itself retains its independent overlay and close action. */
+body:has(#worm-field):has(#worm-pause-overlay:not([hidden])) #mode-music-open,
+body:has(#worm-field):has(#worm-settings:not([hidden])) #mode-music-open,
+body:has(#worm-field):has(#worm-guide:not([hidden])) #mode-music-open,
+body:has(#worm-field):has(#worm-result:not([hidden])) #mode-music-open,
+body:has(#worm-field):has(.ws-overlay) #mode-music-open,
+body:has(#worm-field):has(.mode-music-overlay) #mode-music-open {
+ visibility:hidden!important;pointer-events:none!important;
+}
+/* Landscape actions occupy one short row without obscuring the playfield. */
+@media (max-height:430px) and (orientation:landscape) and (pointer:coarse) {
+ html body:has(#worm-field) #worm-hud .worm-pause-button,
+ html body:has(#worm-field) #worm-hud .worm-boost-button,
+ html body:has(#worm-field) #mode-music-open {
+  width:45px!important;min-width:45px!important;max-width:45px!important;
+  height:45px!important;min-height:45px!important;max-height:45px!important;
+  bottom:calc(9px + env(safe-area-inset-bottom))!important;
+ }
+ html body:has(#worm-field) #worm-hud .worm-boost-button {
+  left:calc(9px + env(safe-area-inset-left))!important;
+ }
+ html body:has(#worm-field) #worm-hud .worm-pause-button {
+  left:calc(64px + env(safe-area-inset-left))!important;
+ }
+ html body:has(#worm-field) #mode-music-open {
+  left:calc(119px + env(safe-area-inset-left))!important;
+ }
+}
+/* Achievement rarity really hides nonmatching rows, even when shared card
+   layout rules later gain their own display declarations. */
+body.ui-v15 :is(#screen-achievements,#screen-mode-achievements) .br-ach-row.is-filtered-out,
+body.ui-v15 :is(#screen-achievements,#screen-mode-achievements) .br-ach-row[hidden] {
+ display:none!important;
+}
