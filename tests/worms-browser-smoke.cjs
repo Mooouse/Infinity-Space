@@ -154,7 +154,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
       const css=getComputedStyle(el);
       return {border:css.borderTopColor,shadow:css.boxShadow};
      });
-     const pauseComponents=pauseStyle.border.match(/[\\d.]+/g)?.map(Number)||[];
+     const pauseComponents=pauseStyle.border.match(/[0-9.]+/g)?.map(Number)||[];
      assert.ok(pauseComponents.length>=3&&pauseComponents[0]>=175&&
       pauseComponents[1]>=135&&pauseComponents[2]>=225&&pauseStyle.shadow!=='none',
       'Pause dial should retain a visible lavender glow through its transition: '+JSON.stringify(pauseStyle));
@@ -164,7 +164,7 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
       const css=getComputedStyle(el);
       return {border:css.borderTopColor,shadow:css.boxShadow};
      });
-     const boostComponents=boostStyle.border.match(/[\\d.]+/g)?.map(Number)||[];
+     const boostComponents=boostStyle.border.match(/[0-9.]+/g)?.map(Number)||[];
      assert.ok(boostComponents.length>=3&&boostComponents[0]>=215&&
       boostComponents[0]>boostComponents[1]&&boostComponents[2]>=160&&boostStyle.shadow!=='none',
       'Boost dial should retain a distinct pink glow: '+JSON.stringify(boostStyle));
