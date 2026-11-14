@@ -35,8 +35,15 @@ const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
    for(const selector of ['.br-ach-layout','.br-ach-summary','.br-ach-content','.br-ach-filters','.br-ach-list'])
     assert.equal(await popup.locator(selector).count(),1,'Missing native V15 achievement structure: '+selector);
    await popup.locator('.infinity-mode-achievements-filters [data-ach-filter="rare"]').click();
-   assert.ok(await popup.locator('.infinity-mode-achievement:visible').count()>=1,'Filtering shows matching rarity achievements');
+   const rareVisible=await popup.locator('.infinity-mode-achievement:visible').count();
+   const allRows=await popup.locator('.infinity-mode-achievement').count();
+   assert.ok(rareVisible>=1&&rareVisible<allRows,
+    'Selecting rare must hide cards of other rarities');
+   assert.equal(await popup.locator('.infinity-mode-achievement:visible:not([data-rarity="rare"])').count(),0,
+    'The rarity filter must show only rare achievements');
    await popup.locator('.infinity-mode-achievements-filters [data-ach-filter="all"]').click();
+   assert.equal(await popup.locator('.infinity-mode-achievement:visible').count(),allRows,
+    'All rarities must be restored by the ALL filter');
    const snap=await page.evaluate(id=>window.InfinityProfile.achievementStats(id),mode);
    assert.equal(snap.earned,0,'No fabricated unlocks in '+mode);
    assert.ok(snap.items.length>=18);
