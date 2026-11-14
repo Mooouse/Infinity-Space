@@ -228,7 +228,9 @@ const BOT_PERSONAS={
 };
 const DEATH_REPLAY_SECONDS=3.25;
 let vw=0,vh=0,dpr=1,last=0,uiClock=0,starTime=0,foodTimer=0,toastTimer=0,guideStep=0,guideReturn='playing';
-let game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),wrecks:[],nextWreckId:1,ambientCount:0,foodRespawnQueue:[],worms:[],fx:[],player:null,reported:false,deathElapsed:0,deathPosition:null,deathGhost:null};
+let game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),wrecks:[],nextWreckId:1,ambientCount:0,foodRespawnQueue:[],worms:[],fx:[],player:null,reported:false,reviveUsed:false,deathMass:0,adPending:false,deathElapsed:0,deathPosition:null,deathGhost:null};
+let crazyAdPaused=false;
+window.addEventListener('space-crazy-ad-request',event=>{crazyAdPaused=!!event.detail?.active});
 let qaManualPhysics=false; // tester-only: stop rAF simulation while deterministic QA advances physics
 let lastIdlePaint=0;
 const input={mx:0,my:0,mouseMoved:false,mouseDown:false,boostKey:false,boostTouch:false,keys:new Set(),stickAngle:0,stickPower:0,stickPointer:-1,touchAngle:null};
@@ -549,7 +551,7 @@ function notify(text){
  const el=$('worm-toast');el.textContent=text;el.classList.add('show');toastTimer=1.8;
 }
 function init(){
- game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),wrecks:[],nextWreckId:1,ambientCount:0,foodRespawnQueue:[],worms:[],fx:[],player:null,reported:false,deathElapsed:0,deathPosition:null,deathGhost:null};
+ game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),wrecks:[],nextWreckId:1,ambientCount:0,foodRespawnQueue:[],worms:[],fx:[],player:null,reported:false,reviveUsed:false,deathMass:0,adPending:false,deathElapsed:0,deathPosition:null,deathGhost:null};
  const human=!DEMO;
  const p=createWorm(DEMO?'Astra':(window.InfinityProfile?.getName()||'PILOT'),human,0);
  game.player=p;game.worms.push(p);
@@ -999,6 +1001,7 @@ function kill(w,killer,reason){
   head:{x:body[0].x,y:body[0].y},
   tip:{x:body[body.length-1].x,y:body[body.length-1].y}};
  if(w.human){
+  game.deathMass=w.mass;
   // A collision can kill the player while any live-world menu is visible.
   // Exit every menu first so the actual death replay/results are visible.
   // The skin editor's close handler may reopen the pause overlay.
@@ -1669,14 +1672,50 @@ window.addEventListener('message',event=>{
  if(event.data?.type==='infinity-space-worms-settings-close')closeSettings();
 });
 
+function wormReviveEligible(){
+ return !DEMO&&!game.reviveUsed&&game.state==='finished'&&!!window.SpaceCrazyAds?.supported;
+}
+function reviveWormWithHalfMass(){
+ if(!wormReviveEligible()||game.player.alive)return false;
+ const w=game.player,angle=rand(-.55,.55);
+ w.mass=Math.max(40,Math.floor(game.deathMass*.5));w.bestMass=Math.max(w.bestMass,w.mass);
+ const pos=spawnPosition(angle,segmentCount(w),false,0)||{x:WORLD.cx,y:WORLD.cy,angle};
+ w.x=pos.x;w.y=pos.y;w.angle=pos.angle??angle;w.target=w.angle;
+ w.alive=true;w.boost=false;w.invulnerable=5.5;w.dropClock=0;w.speed=172;
+ w.segments=Array.from({length:segmentCount(w)},(_,i)=>({x:w.x-Math.cos(w.angle)*11.8*(i+1),y:w.y-Math.sin(w.angle)*11.8*(i+1)}));
+ seedWormTrail(w);
+ game.reviveUsed=true;game.deathGhost=null;game.deathPosition=null;game.deathElapsed=0;game.adPending=false;
+ game.state='playing';camera.x=w.x;camera.y=w.y;
+ input.mouseDown=input.boostKey=input.boostTouch=false;
+ $('worm-result').hidden=true;$('worm-result').classList.remove('is-revealing');
+ $('worm-revive-note').hidden=true;document.body.classList.remove('worm-death-replay');
+ window.SpacePlatform?.playing?.(true);updateUI();
+ notify(({ru:'Возрождение · 50% массы',en:'Revived with 50% mass',es:'Reviviste con el 50% de masa'})[language]);
+ return true;
+}
 function revealDeathResult(){
  if(game.state!=='death-replay')return;
  game.state='finished';
- const overlay=$('worm-result');
- overlay.hidden=false;
- overlay.classList.add('is-revealing');
+ const overlay=$('worm-result'),ad=$('worm-revive-ad'),note=$('worm-revive-note');
+ overlay.hidden=false;overlay.classList.add('is-revealing');
+ ad.hidden=!wormReviveEligible();
+ ad.textContent=({ru:'▶ РЕКЛАМА · ВОЗРОДИТЬСЯ С 50% МАССЫ',en:'▶ WATCH AD · REVIVE WITH 50% MASS',es:'▶ ANUNCIO · REVIVIR CON 50% DE MASA'})[language];
+ note.hidden=!wormReviveEligible();
+ note.textContent=window.SpaceCrazyAds?.available?
+  ({ru:'Необязательно. Одно возрождение за забег.',en:'Optional. One revival per run.',es:'Opcional. Una resurrección por partida.'})[language]:
+  ({ru:'Реклама сейчас недоступна. Можно начать новый забег.',en:'Ad unavailable. You can start a new run.',es:'Anuncio no disponible.'})[language];
  window.SpacePlatform?.playing?.(false);
  if(!DEMO)updateUI();
+ // Interstitials are reserved for the final death AFTER the rewarded
+ // revival has been consumed. Never chain ads on a rewarded offer.
+ if(!DEMO&&game.reviveUsed&&game.time>=45&&window.SpaceCrazyAds?.available){
+  const current=game,buttons=overlay.querySelectorAll('.worm-actions button');
+  current.adPending=true;buttons.forEach(b=>b.disabled=true);
+  window.SpaceCrazyAds.midgame().finally(()=>{
+   if(game!==current)return;
+   current.adPending=false;buttons.forEach(b=>b.disabled=false);
+  });
+ }
 }
 
 function pause(){
@@ -1737,8 +1776,25 @@ $('worm-skins-open').onclick=showSkinWorkshop;
 $('worm-open-guide').onclick=()=>showGuide('paused');$('worm-exit').onclick=exit;
 $('worm-guide-skip').onclick=closeGuide;
 $('worm-guide-next').onclick=()=>{if(guideStep<2){guideStep++;paintGuide();}else closeGuide();};
-$('worm-restart').onclick=()=>{init();window.SpacePlatform?.playing?.(game.state==='playing');};
-$('worm-result-menu').onclick=exit;
+$('worm-revive-ad').onclick=async()=>{
+ if(game.adPending||!wormReviveEligible())return;
+ const note=$('worm-revive-note');
+ if(!window.SpaceCrazyAds?.available){
+  note.textContent=({ru:'Реклама доступна только в CrazyGames.',en:'Ads are available only in CrazyGames.',es:'Anuncios disponibles en CrazyGames.'})[language];
+  return;
+ }
+ const current=game;current.adPending=true;
+ const buttons=$('worm-result').querySelectorAll('.worm-actions button');
+ buttons.forEach(b=>b.disabled=true);
+ note.textContent=({ru:'Загрузка рекламы…',en:'Loading ad…',es:'Cargando anuncio…'})[language];
+ const success=await window.SpaceCrazyAds.rewarded();
+ if(game!==current)return;
+ current.adPending=false;buttons.forEach(b=>b.disabled=false);
+ if(success){reviveWormWithHalfMass();return;}
+ note.textContent=({ru:'Реклама не завершена. Масса не восстановлена.',en:'Ad incomplete. Mass not restored.',es:'Anuncio incompleto. Masa no restaurada.'})[language];
+};
+$('worm-restart').onclick=()=>{if(game.adPending)return;init();window.SpacePlatform?.playing?.(game.state==='playing');};
+$('worm-result-menu').onclick=()=>{if(!game.adPending)exit();};
 const boost=$('worm-boost');
 boost.addEventListener('pointerdown',e=>{if(game.state!=='playing')return;e.preventDefault();boost.setPointerCapture(e.pointerId);input.boostTouch=true;});
 for(const evt of ['pointerup','pointercancel','lostpointercapture'])boost.addEventListener(evt,()=>{input.boostTouch=false;});
@@ -1831,7 +1887,7 @@ function frame(now){
  let dt=last?clamp((now-last)/1000,0,.047):.016;last=now;
  starTime=now*.001;
  if(game.state==='playing'||game.state==='death-replay'||background){
-  if(!qaManualPhysics)simulate(dt);
+  if(!qaManualPhysics&&!crazyAdPaused)simulate(dt);
   if(DEMO&&(!game.player.alive||game.time>80))init();
   if(game.state==='death-replay'){
    // Render cadence can be much slower than wall time (software WebGL,
@@ -1872,7 +1928,7 @@ window.InfinityWormsQA={
     deathElapsed:game.deathElapsed,deathDelay:DEATH_REPLAY_SECONDS,
     deathFocus:game.deathPosition,
     resultVisible:!$('worm-result').hidden,
-    resultAnimating:$('worm-result').classList.contains('is-revealing')}),
+    resultAnimating:$('worm-result').classList.contains('is-revealing'),reviveUsed:game.reviveUsed,deathMass:game.deathMass,adPending:game.adPending}),
   bots:()=>game.worms.filter(w=>!w.human).map(w=>({
     id:w.id,name:w.name,persona:w.persona,skin:w.skin,head:w.head,x:w.x,y:w.y,alive:w.alive,
     speed:w.speed,reaction:w.reaction,afk:w.afkTimer>0,mass:w.mass,objective:w.objective,
