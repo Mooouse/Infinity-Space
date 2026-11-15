@@ -23,10 +23,9 @@ HTML_PAGES = ("index.html", "cosmic-worms.html", "cosmic-arena.html")
 
 # Only remove SDK tags, not unrelated gameplay/UI code.
 PORTAL_SCRIPT = re.compile(
-    r'<script\\s+src=["\\'](?:https://bridge\\.playgama\\.com/[^"\\']+|'
-    r'playgama-(?:platform|ui)\\.js(?:\\?[^"\\']*)?)["\\']'
-    r'\\s*(?:defer\\s*)?></script>\\s*',
-    flags=re.IGNORECASE,
+    r"""<script\s+src=["'](?:https://bridge\.playgama\.com/[^"']+|
+    playgama-(?:platform|ui)\.js(?:\?[^"']*)?)["']\s*(?:defer\s*)?></script>\s*""",
+    flags=re.IGNORECASE | re.VERBOSE,
 )
 
 
@@ -56,7 +55,7 @@ def main() -> None:
         contents = path.read_text(encoding="utf-8")
         if path.name == "music-tracks.js":
             contents, changed = re.subn(
-                r'("src":\\s*")assets/music/(track-\\d{2}\\.mp3)(")',
+                r'("src":\s*")assets/music/(track-\d{2}\.mp3)(")',
                 lambda match: match.group(1) + MUSIC_ORIGIN + match.group(2) + match.group(3),
                 contents,
             )
