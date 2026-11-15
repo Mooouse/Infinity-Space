@@ -585,7 +585,7 @@ let hazards=[
  {x:world.w*.68,y:world.h*.15,r:48,phase:4.0},
  {x:world.w*.30,y:world.h*.82,r:55,phase:5.3}
 ];
-game={state:'playing',mode,elapsed:0,left:c.duration,reviveUsed:false,adPending:false,reported:false,deathMass:0,resultWon:false,resultRank:0,people,food:Array.from({length:c.food},createFood),relics:[createRelic(),createRelic(),createRelic(),createRelic(),createRelic()],relicTimer:7,hazards,portals:[{x:world.w*.17,y:world.h*.75},{x:world.w*.83,y:world.h*.25}],scores:[0,0],coreHold:-1,stormR:Math.hypot(world.w/2,world.h/2)+200,stormCx:world.w/2,stormCy:world.h/2,finishReason:'',firstPlace:false,eventClock:0};
+game={state:'playing',mode,elapsed:0,left:c.duration,reviveUsed:false,adPending:false,reported:false,deathMass:0,lastReviveMass:0,resultWon:false,resultRank:0,people,food:Array.from({length:c.food},createFood),relics:[createRelic(),createRelic(),createRelic(),createRelic(),createRelic()],relicTimer:7,hazards,portals:[{x:world.w*.17,y:world.h*.75},{x:world.w*.83,y:world.h*.25}],scores:[0,0],coreHold:-1,stormR:Math.hypot(world.w/2,world.h/2)+200,stormCx:world.w/2,stormCy:world.h/2,finishReason:'',firstPlace:false,eventClock:0};
 mouse.active=false;touch.active=false;keys={};camera.zoom=1;
 document.body.dataset.arenaMode=mode;syncArenaAudio();
 camera.x=people[0].x-sw*.5;camera.y=people[0].y-sh*.5;fx=[];uiTick=0;
@@ -846,7 +846,9 @@ function offerArenaRespawn(){
 function reviveArenaHalfMass(){
  if(!game||game.people[0].alive)return false;
  const g=game,p=g.people[0];
- p.mass=Math.max(40,Math.floor(g.deathMass*.5));p.alive=true;p.respawn=0;p.stage=massForm(p.mass);
+ // Store the exact award before gameplay can collect nearby food.
+ g.lastReviveMass=Math.max(40,Math.floor(g.deathMass*.5));
+ p.mass=g.lastReviveMass;p.alive=true;p.respawn=0;p.stage=massForm(p.mass);
  p.r=13+Math.sqrt(p.mass)*2.45;p.invuln=5;p.shield=4;
  p.vx=p.vy=0;p.dirX=1;p.dirY=0;
  if(mode==='royale'){
@@ -1115,7 +1117,7 @@ if(new URLSearchParams(location.search).has('tester')){
   snapshot(){
    if(!game)return null;
    const p=game.people[0];
-   return {mass:p.mass,stage:p.stage,zoom:camera.zoom,state:game.state,mode,reviveUsed:game.reviveUsed,adPending:game.adPending,deathMass:game.deathMass};
+   return {mass:p.mass,stage:p.stage,zoom:camera.zoom,state:game.state,mode,reviveUsed:game.reviveUsed,adPending:game.adPending,deathMass:game.deathMass,lastReviveMass:game.lastReviveMass};
   },
   setElapsed(seconds){if(!game)return;game.elapsed=Math.max(0,Number(seconds)||0);game.left=Math.max(0,configs[mode].duration-game.elapsed);},
   forcePlayerDeath(){
