@@ -100,8 +100,8 @@ function installAds(){
    await arena.locator('#arena-revive-ad').click();
    await arena.waitForFunction(()=>window.InfinityArenaQA.snapshot().state==='playing',{timeout:7000});
    const snapshot=await arena.evaluate(()=>window.InfinityArenaQA.snapshot());
-   assert.ok(snapshot.reviveUsed&&Math.abs(snapshot.mass-480)<4,
-    mode+' reward must restore exactly 50% mass');
+   assert.ok(snapshot.reviveUsed&&snapshot.lastReviveMass===480&&snapshot.mass>=476,
+    mode+' reward must grant exactly 50% mass before ordinary collection resumes');
    await arena.evaluate(()=>{window.InfinityArenaQA.setMass(900);window.InfinityArenaQA.forcePlayerDeath();});
    assert.equal(await arena.locator('#arena-death-offer').isVisible(),false,
     mode+' must not offer another rewarded revival');
@@ -115,7 +115,9 @@ function installAds(){
   await arena.evaluate(()=>{window.SpaceCrazyAds.rewarded=async()=>true;});
   await arena.locator('#arena-result-revive-ad').click();
   await arena.waitForFunction(()=>window.InfinityArenaQA.snapshot().state==='playing',{timeout:7000});
-  assert.ok(Math.abs((await arena.evaluate(()=>window.InfinityArenaQA.snapshot())).mass-480)<4);
+  const royaleRevived=await arena.evaluate(()=>window.InfinityArenaQA.snapshot());
+  assert.ok(royaleRevived.reviveUsed&&royaleRevived.lastReviveMass===480&&royaleRevived.mass>=476,
+   'Royale must grant precisely 50% mass before normal simulation continues');
   await arena.evaluate(()=>{window.InfinityArenaQA.setElapsed(90);window.InfinityArenaQA.forcePlayerDeath();});
   await arena.locator('#result').waitFor({state:'visible',timeout:7000});
   await arena.waitForFunction(()=>window.__midgames>0,{timeout:5000});
