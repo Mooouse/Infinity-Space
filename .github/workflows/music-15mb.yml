@@ -1,0 +1,65 @@
+name: Publish 12 compressed music files (15 MB total)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/compress_music_15mb.py'
+      - '.github/workflows/music-15mb.yml'
+      - 'assets/music/*.mp3'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: infinity-space-music-15mb
+  cancel-in-progress: true
+
+jobs:
+  compress:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate encoder and original audio
+        run: |
+          set -euo pipefail
+          python3 -m py_compile tools/compress_music_15mb.py
+          ffmpeg -hide_banner -encoders | grep libopus
+          for i in $(seq -w 1 12); do
+            test -s "assets/music/track-$i.mp3"
+          done
+      - name: Compress to twelve individual Opus files
+        run: |
+          set -euo pipefail
+          python3 tools/compress_music_15mb.py dist-music-15mb
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('dist-music-15mb')
+          meta=json.loads((root/'manifest.json').read_text('utf8'))
+          audio=sorted(root.glob('*.opus'))
+          assert len(audio)==12
+          assert sum(p.stat().st_size for p in audio)==meta['total_bytes']
+          assert meta['total_bytes']<=15_000_000
+          for num, path in enumerate(audio,1):
+              assert path.name == f'track-{num:02d}.opus'
+          print(f"PASS: {len(audio)} independent music files, {meta['total_bytes']:,} bytes total")
+          for p in audio:
+              print(f"  {p.name}: {p.stat().st_size:,} bytes")
+          PY
+      - name: Publish direct music files (no ZIP)
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG="infinity-space-music-15mb"
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --target "$GITHUB_SHA" \
+              --title "Infinity Space — 12 compressed music tracks (15 MB total)" \
+              --notes "12 individual stereo Opus/Ogg music files, combined size under 15 MB. No ZIP. Each track is downloadable separately; originals are unchanged. Opus provides better sound at this size than low-bitrate MP3." \
+              --latest=false
+          fi
+          gh release upload "$TAG" dist-music-15mb/*.opus --clobber
+          gh release view "$TAG" --json assets --jq '.assets[] | [.name,.size,.url] | @tsv'
