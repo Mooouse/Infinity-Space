@@ -17,7 +17,7 @@
 }
 :where(.worm-shade,.ws-overlay,.shade,.infinity-profile-overlay){
  color:var(--ix-text);
- font-family:Inter,'Segoe UI',system-ui,sans-serif;
+ font-family:Inter,"Segoe UI",system-ui,sans-serif;
 }
 :where(.worm-shade,.shade,.ws-overlay){background:rgba(5,3,16,.88)!important;backdrop-filter:blur(9px)!important}
 :where(.worm-shade .worm-panel,.shade .panel,.ws-overlay .ws-dialog){
@@ -124,7 +124,7 @@
  background:#26183a!important;
  box-shadow:0 4px 0 #07041288!important;
  color:#f9f4ff!important;
- font:900 clamp(11px,.9vw,14px)/1.2 Inter,'Segoe UI',system-ui!important;
+ font:900 clamp(11px,.9vw,14px)/1.2 Inter,"Segoe UI",system-ui!important;
  letter-spacing:.04em!important;
  text-align:center!important;
  text-shadow:none!important;
@@ -267,7 +267,7 @@
  box-shadow:0 0 13px #8b43ff5b,inset 0 0 9px #080617cc!important;
 }
 .ws-preset-worm::after{
- content:'✦    ·  ✧   ·    ✦';position:absolute;inset:0;
+ content:"✦    ·  ✧   ·    ✦";position:absolute;inset:0;
  display:grid;place-items:center;font-size:11px;letter-spacing:.25em;
  color:#fff5e4;text-shadow:0 0 7px #fff8;
 }
@@ -410,7 +410,7 @@ body:has(#worm-field) #worm-pause-overlay .worm-pause-panel{
 #worm-pause-overlay .worm-pause-header h1{
  display:block!important;margin:0!important;
  color:#faf5ff!important;
- font:950 clamp(30px,3.3vw,45px)/1.05 'Inter Display',Inter,system-ui!important;
+ font:950 clamp(30px,3.3vw,45px)/1.05 "Inter Display",Inter,system-ui!important;
  letter-spacing:-.055em!important;
  text-shadow:0 2px 16px #955de838!important;
 }
@@ -1305,7 +1305,7 @@ body:has(#worm-field) #worm-hud .worm-top .worm-metrics .worm-metric{
  box-shadow:none!important;backdrop-filter:none!important;text-align:center!important;
 }
 body:has(#worm-field) #worm-hud .worm-top .worm-metrics .worm-metric:not(:last-child)::after{
- content:'';position:absolute;right:0;top:21%;bottom:21%;width:1px;background:#8a73b544;
+ content:"";position:absolute;right:0;top:21%;bottom:21%;width:1px;background:#8a73b544;
 }
 body:has(#worm-field) #worm-hud .worm-top .worm-metrics .worm-metric small{
  display:block!important;margin:0 0 4px!important;
@@ -1865,12 +1865,34 @@ html body:has(#worm-field) #mode-music-open:focus-visible{outline:2px solid #dcb
  aspect-ratio:46 / 11!important;object-fit:fill!important;
 }
 /* Optional CrazyGames rewards keep the same visual hierarchy as normal
-   selections{margin:7px 0;font:750 11px/1.45 Inter,system-ui,sans-serif;color:#edc3ff;min-height:0}
+   selections, and never obscure the existing preview. */
+
+
+
 .ws-overlay .ws-head-unlock{color:#ffd577;font-size:9px;font-weight:850;line-height:1.2;text-align:center}
 .ws-overlay .ws-head-choice .ws-head-unlock{display:block;max-width:100%}
+
+
+
+/* CrazyGames-only optional rewards. Never make a skip/restart path smaller
+   or less prominent than the ad action. */
+
+
+
+
+
+
+
+
+
+
+
 #result .arena-dialog-actions button:disabled,
 #worm-result .worm-actions button:disabled{opacity:.56!important;cursor:wait!important}
+
 @media(max-width:460px){
+ 
+ 
 }
 
 

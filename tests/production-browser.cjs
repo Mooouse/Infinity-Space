@@ -1,7 +1,7 @@
 const {chromium}=require('playwright');const assert=require('node:assert/strict');const fs=require('node:fs');
 const base=process.env.INFINITI_SMOKE_URL||'http://127.0.0.1:8765';
 (async()=>{const browser=await chromium.launch({headless:true});fs.mkdirSync('screenshots',{recursive:true});
-for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844,height:390}]){
+for(const viewport of [{width:2048,height:1035},{width:1440,height:900},{width:390,height:844},{width:844,height:390}]){
  for(const route of ['index.html','cosmic-worms.html','cosmic-arena.html?mode=arena','cosmic-arena.html?mode=royale','cosmic-arena.html?mode=core','cosmic-arena.html?mode=race']){
   const page=await browser.newPage({viewport,isMobile:viewport.width<900,hasTouch:viewport.width<900});const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.route('https://sdk.crazygames.com/**',r=>r.abort());
@@ -17,12 +17,25 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
   assert.deepEqual(await page.evaluate(()=>Object.keys(window).filter(k=>/QA$|Debug$|TestActions$/.test(k))),[]);
   if(route==='index.html'){
    await page.waitForFunction(()=>!!window.__releaseHarness);
-   await page.evaluate(()=>__releaseHarness.start());await page.waitForTimeout(800);
+   await page.waitForSelector('#screen-menu.hub-main-carousel .hub-mode-story-play');
+   const layout=await page.evaluate(()=>{
+    const story=document.querySelector('.hub-mode-story'),old=document.querySelector('.menu-main.hub-menu'),button=document.querySelector('.hub-mode-story-play');
+    const r=button.getBoundingClientRect();
+    return {display:getComputedStyle(story).display,old:getComputedStyle(old).display,color:getComputedStyle(story).color,inView:r.width>100&&r.height>30&&r.left>=0&&r.right<=innerWidth+1&&r.top>=0&&r.bottom<=innerHeight+1};
+   });
+   assert.equal(layout.display,'grid');assert.equal(layout.old,'none');assert.notEqual(layout.color,'rgb(0, 0, 0)');assert(layout.inView,JSON.stringify(layout));
+   await page.screenshot({path:`screenshots/${viewport.width}-main-menu.png`});
+   await page.locator('.hub-mode-step[data-dir="1"]').click();await page.waitForTimeout(500);
+   assert.equal(await page.locator('#screen-menu').getAttribute('data-preview-mode'),'worms');
+   await page.screenshot({path:`screenshots/${viewport.width}-worms-menu.png`});
+   await page.locator('.hub-mode-step[data-dir="-1"]').click();await page.waitForTimeout(450);
+   await page.locator('.hub-mode-story-play').click();await page.waitForTimeout(800);
    assert.equal(await page.evaluate(()=>__releaseHarness.state().running),true);
    assert(await page.evaluate(()=>__releaseHarness.state().time)>0);
    await page.evaluate(()=>__releaseHarness.music());
    assert(await page.getByText('Velvet Orbit',{exact:true}).count()>0);
    await page.waitForFunction(()=>[...document.querySelectorAll('img[src$=".svg"]')].filter(i=>{const r=i.getBoundingClientRect();return r.height>0&&r.top<innerHeight&&r.bottom>0}).every(i=>i.complete&&i.naturalWidth>0));
+   await page.screenshot({path:`screenshots/${viewport.width}-music.png`});
    await page.evaluate(()=>__releaseHarness.daily('menu'));
    await page.locator('#daily-claim').click();
    await page.evaluate(()=>__releaseHarness.roulette('menu'));
