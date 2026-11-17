@@ -11,6 +11,7 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
    await r.fulfill({response,body});
   });
   await page.goto(base+'/'+route);await page.waitForTimeout(1800);
+  assert.deepEqual(errors,[],route+' startup');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,route+' overflow');
   assert.equal(await page.locator('button:visible').count()>0,true,route+' controls');
   assert.deepEqual(await page.evaluate(()=>Object.keys(window).filter(k=>/QA$|Debug$|TestActions$/.test(k))),[]);
@@ -21,7 +22,7 @@ for(const viewport of [{width:1440,height:900},{width:390,height:844},{width:844
    assert(await page.evaluate(()=>__releaseHarness.state().time)>0);
    await page.evaluate(()=>__releaseHarness.music());
    assert(await page.getByText('Velvet Orbit',{exact:true}).count()>0);
-   await page.waitForFunction(()=>[...document.querySelectorAll('img[src$=".svg"]')].filter(i=>i.getBoundingClientRect().height>0).every(i=>i.complete&&i.naturalWidth>0));
+   await page.waitForFunction(()=>[...document.querySelectorAll('img[src$=".svg"]')].filter(i=>{const r=i.getBoundingClientRect();return r.height>0&&r.top<innerHeight&&r.bottom>0}).every(i=>i.complete&&i.naturalWidth>0));
    await page.evaluate(()=>__releaseHarness.daily('menu'));
    await page.locator('#daily-claim').click();
    await page.evaluate(()=>__releaseHarness.roulette('menu'));
