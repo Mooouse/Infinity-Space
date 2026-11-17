@@ -24,9 +24,14 @@ for(const viewport of [{width:2048,height:1035},{width:1440,height:900},{width:3
     return {display:getComputedStyle(story).display,old:getComputedStyle(old).display,color:getComputedStyle(story).color,inView:r.width>100&&r.height>30&&r.left>=0&&r.right<=innerWidth+1&&r.top>=0&&r.bottom<=innerHeight+1};
    });
    assert.equal(layout.display,'grid');assert.equal(layout.old,'none');assert.notEqual(layout.color,'rgb(0, 0, 0)');assert(layout.inView,JSON.stringify(layout));
+   async function launchVisible(){
+    assert(await page.locator('.hub-mode-story-play').evaluate(button=>{const r=button.getBoundingClientRect();return button.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));}), 'Launch button must be visible without auto-scrolling');
+   }
+   await launchVisible();
    await page.screenshot({path:`screenshots/${viewport.width}-main-menu.png`});
    await page.locator('.hub-mode-step[data-dir="1"]').click();await page.waitForTimeout(500);
    assert.equal(await page.locator('#screen-menu').getAttribute('data-preview-mode'),'worms');
+   await launchVisible();
    await page.screenshot({path:`screenshots/${viewport.width}-worms-menu.png`});
    await page.locator('.hub-mode-step[data-dir="-1"]').click();await page.waitForTimeout(450);
    await page.locator('.hub-mode-story-play').click();await page.waitForTimeout(800);

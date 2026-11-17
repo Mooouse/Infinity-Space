@@ -8943,3 +8943,42 @@ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nickname-status{
   min-height:36px!important;
  }
 }
+
+/* Short landscape screens keep the selected mode and its actions visible. */
+@media (orientation:landscape) and (max-height:500px){
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story{
+  grid-template-areas:"mast" "hero" "chooser" "shortcuts"!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:16px minmax(0,1fr) 30px 42px!important;
+  padding:50px 12px 6px!important;gap:3px!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-top{
+  min-height:0!important;height:16px!important;margin:0!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-copy{
+  display:flex!important;flex-direction:column!important;align-items:center!important;
+  justify-content:center!important;gap:4px!important;max-height:none!important;
+  width:min(490px,100%)!important;padding:0!important;overflow:visible!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-title{
+  font-size:28px!important;line-height:1.05!important;margin:0!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-goal{
+  font-size:11px!important;line-height:1.2!important;margin:0!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel :is(.hub-mode-story-description,.hub-mode-story-tags,.hub-mode-story-kicker){display:none!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nickname:not([hidden]){gap:2px!important;margin:0!important;width:min(320px,100%)!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nickname label{font-size:9px!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-nickname input{min-height:30px!important;height:30px!important;padding:3px 9px!important;font-size:13px!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-play{min-height:36px!important;height:36px!important;padding:5px 12px!important;margin:0!important;font-size:12px!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-skins:not([hidden]){min-height:27px!important;height:27px!important;padding:3px 10px!important;margin:0!important;font-size:10px!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-story-footer{min-height:0!important;height:30px!important;margin:0!important;padding:0!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-swipe-hint{display:none!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-mode-step{height:27px!important;min-height:27px!important;width:30px!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav{
+  display:grid!important;grid-template-columns:repeat(var(--mode-nav-count),minmax(0,1fr))!important;
+  width:100%!important;max-width:100%!important;gap:4px!important;margin:0!important;padding:0!important;
+ }
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-nav .hub-story-shortcut[data-shortcut]{min-height:38px!important;height:38px!important;padding:3px!important;max-width:none!important}
+ body.ui-v15 #screen-menu.hub-main-carousel .hub-story-shortcut-label{font-size:9px!important}
+}
