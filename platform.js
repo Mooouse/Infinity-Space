@@ -1,89 +1,50 @@
-/* CrazyGames SDK v3 bridge. Ads are requested only at explicit game breaks.
-   Both disabled SDK and unfilled advertisements leave the game playable. */
+/* Platform lifecycle, audio settings and persistent progress. */
 (() => {
  'use strict';
- let sdk=null,ready=false,wantsPlay=false,sentPlay=false,loaded=false;
- let loadingReported=false,lastHappy=-Infinity,platformMuted=false,adMuted=false,adBusy=false;
- const api={
-  get muted(){return platformMuted||adMuted;},
-  get adBusy(){return adBusy;},
-  get adsAvailable(){
-   if(!ready||adBusy)return false;
-   // In disabled mode even reading SDK.ad can throw sdkDisabled.
-   // Check the environment BEFORE touching any advertising module.
-   try{return sdkEnabled()&&typeof sdk.ad?.requestAd==='function';}
-   catch(_){return false;}
-  },
-  status:'loading',
-  playing(value){wantsPlay=!!value;sync();},
-  loaded(){loaded=true;sync();},
-  happy(){if(ready&&performance.now()-lastHappy>60000){lastHappy=performance.now();call('happytime');}},
-  requestAd
+ let sdk=null,ready=false,wantsPlay=false,sentPlay=false,loaded=false,loadingReported=false,lastHappy=-Infinity,muted=false;
+ const memory=new Map();
+ const local={
+  getItem(key){try{return localStorage.getItem(key);}catch(_){return memory.get(key)??null;}},
+  setItem(key,value){memory.set(key,String(value));try{localStorage.setItem(key,String(value));}catch(_){}},
+  removeItem(key){memory.delete(key);try{localStorage.removeItem(key);}catch(_){}}
  };
- window.SpacePlatform=api;
- function sdkEnabled(){
-  try{return sdk?.environment==='local'||sdk?.environment==='crazygames';}
-  catch(_){return false;}
- }
- function call(name){
-  try{sdk?.game?.[name]?.();}catch(_){/* SDK must not interrupt gameplay. */}
- }
+ let data=local;
+ const storage={
+  getItem(key){return data.getItem(key);},
+  setItem(key,value){data.setItem(key,String(value));},
+  removeItem(key){data.removeItem(key);}
+ };
+ function call(name){try{sdk?.game?.[name]?.();}catch(_){}}
  function sync(){
   if(!ready)return;
   if(loaded&&!loadingReported){loadingReported=true;call('loadingStop');}
   if(wantsPlay!==sentPlay){sentPlay=wantsPlay;call(wantsPlay?'gameplayStart':'gameplayStop');}
  }
- function audioChange(){window.dispatchEvent(new Event('space-platform-audio'));}
- function settings(value){platformMuted=!!value?.muteAudio;audioChange();}
- async function requestAd(type){
-  if((type!=='rewarded'&&type!=='midgame')||!api.adsAvailable)return false;
-  adBusy=true;
-  // The caller has already paused gameplay and disabled flight UI.
-  return new Promise(resolve=>{
-   let finished=false;
-   const timeout=setTimeout(()=>settle(false),120000);
-   function settle(success){
-    if(finished)return;
-    finished=true;clearTimeout(timeout);
-    adBusy=false;adMuted=false;audioChange();sync();
-    resolve(!!success);
-   }
-   try{
-    const callbacks={
-     adStarted(){adMuted=true;audioChange();},
-     adFinished(){settle(true);},
-     adError(){settle(false);}
-    };
-    const result=sdk.ad.requestAd(type,callbacks);
-    if(result&&typeof result.catch==='function')result.catch(()=>settle(false));
-   }catch(_){settle(false);}
-  });
- }
- async function initialize(){
+ function settings(value){muted=!!value?.muteAudio;window.dispatchEvent(new Event('space-platform-audio'));}
+ const api=window.SpacePlatform={storage,status:'loading',get muted(){return muted;},
+  playing(value){wantsPlay=!!value;sync();},loaded(){loaded=true;sync();},
+  happy(){if(ready&&performance.now()-lastHappy>60000){lastHappy=performance.now();call('happytime');}}
+ };
+ api.startup=(async()=>{
   try{
-   sdk=window.CrazyGames?.SDK;
-   if(!sdk)throw Error('SDK unavailable');
-   await sdk.init();
-   // GitHub Pages completes init in "disabled" mode. It must remain a
-   // standalone game; reading SDK.game/settings in this mode also throws.
-   if(!sdkEnabled()){sdk=null;api.status='standalone';return;}
+   if(!window.CrazyGames?.SDK)await new Promise((resolve,reject)=>{
+    const script=document.createElement('script');script.src='https://sdk.crazygames.com/crazygames-sdk-v3.js';
+    const timer=setTimeout(()=>reject(Error('SDK load timeout')),8000);
+    script.onload=()=>{clearTimeout(timer);resolve();};script.onerror=()=>{clearTimeout(timer);reject(Error('SDK unavailable'));};document.head.append(script);
+   });
+   sdk=window.CrazyGames?.SDK;await sdk.init();
+   if(!['local','crazygames'].includes(sdk.environment)){sdk=null;api.status='standalone';return;}
    ready=true;api.status='ready';call('loadingStart');
-   settings(sdk.game.settings);
-   sdk.game.addSettingsChangeListener?.(settings);
-   sync();
-  }catch(_){ready=false;sdk=null;api.status='standalone';}
- }
- const playgamaHost=window.SpacePlaygamaBuild===true||(typeof location!=='undefined'&&(
-  /(^|\.)playgama\.(com|io)$/.test((location.hostname||'').toLowerCase())||
-  (typeof document!=='undefined'&&/playgama\.(com|io)/.test((document.referrer||'').toLowerCase()))||
-  new URLSearchParams(location.search||'').get('playgama')==='1'));
- if(playgamaHost){api.status='loading';}
- else if(window.CrazyGames?.SDK)initialize();
- else{
-  const script=document.createElement('script');
-  script.src='https://sdk.crazygames.com/crazygames-sdk-v3.js';
-  script.async=true;script.onload=initialize;
-  script.onerror=()=>{api.status='standalone';};
-  document.head.append(script);
- }
+   try{
+    const cloud=sdk.data;
+    // Read before writing. Existing platform progress always wins over local migration.
+    cloud.getItem('cosmic-evolution-save-v1');
+    data=cloud;
+    const keys=[];try{for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i);if(/^(cosmic-evolution-save-v1|infinity-space-|infiniti-space-)/.test(key)&&!key.endsWith('-backup'))keys.push(key);}}catch(_){}
+    for(const key of keys){if(cloud.getItem(key)===null){const value=local.getItem(key);if(value!==null)cloud.setItem(key,value);}}
+    data=cloud;
+   }catch(error){api.storageError=error?.code||'unavailable';}
+   settings(sdk.game.settings);sdk.game.addSettingsChangeListener?.(settings);sync();
+  }catch(_){sdk=null;ready=false;api.status='standalone';}
+ })();
 })();

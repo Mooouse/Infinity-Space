@@ -80,8 +80,7 @@ function stageRecipe(t=g.tier){
  const recent=types.slice(-Math.min(3,types.length));
  return recent.map((type,i)=>({type,amount:Math.max(1,Math.round((2+t*.18)*(i===0?1:.64)))}));
 }
-const TEST_MODE = new URLSearchParams(location.search).get('tester')==='1';
-const SAVE_KEY = TEST_MODE?'cosmic-evolution-tester-save-v1':'cosmic-evolution-save-v1';
+const SAVE_KEY = 'cosmic-evolution-save-v1';
 // One source of truth for every visible version label: the game script URL.
 const GAME_BUILD_VERSION=(()=>{
  const url=document.querySelector('script[src*="game.js?v="]')?.getAttribute('src')||'';
@@ -89,23 +88,10 @@ const GAME_BUILD_VERSION=(()=>{
  return match?'v'+match[1]:'dev';
 })();
 
-const TEST_KEY = 'cosmic-evolution-tester-v1';
-const TEST_DEFAULTS = Object.freeze({speed:1,gravity:1,loot:1,zoom:1,ring:1,density:32,showStats:true,rewardMultiplier:1,trackChance:.8});
-let tester={...TEST_DEFAULTS};
-try {
- const savedTester=JSON.parse(localStorage.getItem(TEST_KEY)||'null');
- if(TEST_MODE&&savedTester&&typeof savedTester==='object')for(const k in TEST_DEFAULTS)
-  if(typeof savedTester[k]===typeof TEST_DEFAULTS[k])tester[k]=savedTester[k];
- // Saved tester settings that still have the previous default inherit the new 32.
- // Preserve any custom density and never downgrade an existing 32.
- if(TEST_MODE&&savedTester&&savedTester.densityBalanceV!==3&&tester.density===16)tester.density=32;
-}catch(_){}
-function saveTester(){try{localStorage.setItem(TEST_KEY,JSON.stringify({...tester,densityBalanceV:3}));}catch(_){}}
-
-const fresh = () => ({version:1,tier:0,matter:0,credits:0,total:0,time:0,awaySince:0,awayFromFlight:false,drift:{route:[],seconds:0,totalDistance:0,visits:0,last:null},daily:{lastDay:-1,spinDay:-1,streak:0,claims:0,spins:0,musicWins:0},awaitingReturnEvolution:false,reviveUsed:false,collects:0,rare:0,pulses:0,losses:0,unlocks:0,stageCollects:0,stageRare:0,stagePulses:0,upgrade:{gravity:0,speed:0,harvest:0,shield:0},sound:true,particles:true,quality:1,autoQuality:false,autoQualityV:1,buyAmount:1,music:true,musicVolume:.30,soundVolume:.7,achievements:{},bestChain:0,bestiary:{},tutorialDone:false,ownedTracks:[],activeTrack:null,controlMode:'follow',flightFeel:'smooth',mobileMode:'fixed',headingAngle:0,viewZoom:1,controlV:2,worldX:0,worldY:0,mapPins:[],nextPinId:1,activePin:null,abyssConsumed:{},abyssPositions:{},freeFlights:{},flightEpoch:0,complete:false,endless:false,visited:[],discoveryDiscs:[],exploredBonus:0,endlessGrowth:0,depleted:{},depletedMacro:{},depletedCosmic:{},stageExplored:0,materials:{ore:0,crystal:0,ice:0,gas:0,plasma:0,exotic:0},rebalanceV:3});
+const fresh = () => ({version:1,tier:0,matter:0,credits:0,total:0,time:0,awaySince:0,awayFromFlight:false,drift:{route:[],seconds:0,totalDistance:0,visits:0,last:null},daily:{lastDay:-1,spinDay:-1,streak:0,claims:0,spins:0,musicWins:0},awaitingReturnEvolution:false,collects:0,rare:0,pulses:0,losses:0,unlocks:0,stageCollects:0,stageRare:0,stagePulses:0,upgrade:{gravity:0,speed:0,harvest:0,shield:0},sound:true,particles:true,quality:1,autoQuality:false,autoQualityV:1,buyAmount:1,music:true,musicVolume:.30,soundVolume:.7,achievements:{},bestChain:0,bestiary:{},tutorialDone:false,ownedTracks:[],activeTrack:null,controlMode:'follow',flightFeel:'smooth',mobileMode:'fixed',headingAngle:0,viewZoom:1,controlV:2,worldX:0,worldY:0,mapPins:[],nextPinId:1,activePin:null,abyssConsumed:{},abyssPositions:{},freeFlights:{},flightEpoch:0,complete:false,endless:false,visited:[],discoveryDiscs:[],exploredBonus:0,endlessGrowth:0,depleted:{},depletedMacro:{},depletedCosmic:{},stageExplored:0,materials:{ore:0,crystal:0,ice:0,gas:0,plasma:0,exotic:0},rebalanceV:3});
 let g = fresh();
-let testerAbsoluteResetPending=false;
-try {const s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');
+
+try {const s=JSON.parse(window.SpacePlatform.storage.getItem(SAVE_KEY)||'null');
  if(s&&s.version===1&&Number.isFinite(s.tier)&&s.tier>=0&&s.tier<TA.length){
   g={...fresh(),...s,upgrade:{...fresh().upgrade,...s.upgrade},visited:Array.isArray(s.visited)?s.visited:[],discoveryDiscs:Array.isArray(s.discoveryDiscs)?s.discoveryDiscs.filter(d=>Array.isArray(d)&&d.length===3&&d.every(Number.isFinite)):[],exploredBonus:Number.isFinite(s.exploredBonus)?s.exploredBonus:0,depleted:s.depleted&&typeof s.depleted==='object'?s.depleted:{},depletedMacro:s.depletedMacro&&typeof s.depletedMacro==='object'?s.depletedMacro:{},depletedCosmic:s.depletedCosmic&&typeof s.depletedCosmic==='object'?s.depletedCosmic:{},materials:{...fresh().materials,...s.materials}};
   // Switch legacy automatic defaults off once; preserve subsequent manual choices.
@@ -144,7 +130,7 @@ g.awaySince=Number.isFinite(g.awaySince)?Math.max(0,g.awaySince):0;
 g.awayFromFlight=g.awayFromFlight===true;
 // Ignore stale pre-fix timestamps that were written just by sitting in menus.
 if(!g.awayFromFlight)g.awaySince=0;
-g.awaitingReturnEvolution=!!g.awaitingReturnEvolution;g.reviveUsed=!!g.reviveUsed;
+g.awaitingReturnEvolution=!!g.awaitingReturnEvolution;
 
 g.mapPins=normaliseMapPins(g.mapPins);
 g.nextPinId=Math.max(1,...g.mapPins.map(p=>p.id+1));
@@ -158,7 +144,7 @@ function radiusAt(tier,fraction){return 13*Math.pow(1.65,tier+clamp(fraction,0,1
 function physicsZoom(){const r=Math.max(1,player.r);return clamp(g.endless?(83+27*Math.log2(1+r/100))/r:Math.min(145,16+14*Math.log2(1+r/13))/r,1e-155,32);}
 function canAbsorbBody(e){return g.endless||e.r<=player.r;}
 function solarMass(){return Math.min(1e290,blackHoleCoreWorldRadius()/CHUNK*(9.4607304725808e12/2.95325));}
-function campaignZoom(radius){return clamp(tester.zoom*(g.viewZoom||1)*Math.min(145,16+14*Math.log2(1+radius/13))/Math.max(1,radius),1e-155,32);}
+function campaignZoom(radius){return clamp(1*(g.viewZoom||1)*Math.min(145,16+14*Math.log2(1+radius/13))/Math.max(1,radius),1e-155,32);}
 function currentRadius(){
  const base=radiusAt(g.tier,stageFraction());
  if(g.tier===TA.length-1){
@@ -173,7 +159,7 @@ const initialRadius=currentRadius();
 let player={x:Number.isFinite(g.worldX)?g.worldX:0,y:Number.isFinite(g.worldY)?g.worldY:0,vx:0,vy:0,r:initialRadius,targetR:initialRadius,rotation:0,shield:0,trail:[]};
 // Loading a saved giant black hole must start at its correct camera scale.
 // Animating from 1x to microscopic zoom would rebuild hundreds of LOD levels.
-const savedZoom=g.endless?clamp(tester.zoom*(g.viewZoom||1)*(83+27*Math.log2(1+initialRadius/100))/Math.max(1,initialRadius),1e-155,2.5):campaignZoom(initialRadius);
+const savedZoom=g.endless?clamp(1*(g.viewZoom||1)*(83+27*Math.log2(1+initialRadius/100))/Math.max(1,initialRadius),1e-155,2.5):campaignZoom(initialRadius);
 let camera={x:player.x,y:player.y,zoom:savedZoom};
 let entities=[],particles=[],shockwaves=[],texts=[],stars=[],nebula=[],energyArcs=[];let morph=null,screenFlash=0,streamTimer=0;const CHUNK=480;const loadedChunks=new Set();const visitedChunks=new Set(Array.isArray(g.visited)?g.visited:[]);if(!g.depleted||typeof g.depleted!=='object')g.depleted={};const WORLD_SEED=0x17aba37;const distantChunkCache=new Map();const MACRO_SIZE=3200,MACRO_COUNT=9;const macroCache=new Map(),macroSpriteCache=new Map(),macroLoaded=new Set();let macroEntities=[];let macroVisibleCount=0;if(!g.depletedMacro||typeof g.depletedMacro!=='object')g.depletedMacro={};
 // Manual flight: the cursor must NOT steer the ship until the user holds click.
@@ -277,7 +263,7 @@ function advanceHarvestChain(){
  }
  return chainMultiplier();
 }
-function ordinaryGravityRadius(){const power=upgradePower('gravity');return Math.max((g.tier<4?165:116.4)+power*7,player.r*3.36)*tester.gravity*(1+Math.max(0,power-80)*.01);}
+function ordinaryGravityRadius(){const power=upgradePower('gravity');return Math.max((g.tier<4?165:116.4)+power*7,player.r*3.36)*1*(1+Math.max(0,power-80)*.01);}
 function pickupFeedback(value,rare=false){
  pickupCount++;pickupValue+=value;
  const now=performance.now();
@@ -335,12 +321,12 @@ function scheduleMusic(){}
 
 function startMusic(){const t=MUSIC_TRACKS.find(t=>t.id===g.activeTrack&&g.ownedTracks.includes(t.id));if(!t){if(externalMusic)externalMusic.pause();externalMusic=null;g.activeTrack=null;}else if(!externalMusic){externalMusic=new Audio(t.src);externalMusic.loop=true;}initAudio();setMusicVolume();}
 addEventListener('space-platform-audio',()=>setMusicVolume());
-function save(){if(testerAbsoluteResetPending)return;
+function save(){
  g.worldX=player.x;g.worldY=player.y;
  let json;
- try{json=JSON.stringify(g);localStorage.setItem(SAVE_KEY,json);}catch(_){toastStorageWarning();}
- if(json&&!TEST_MODE){
-  window.SpacePlatform?.persist?.(json);
+ try{json=JSON.stringify(g);window.SpacePlatform.storage.setItem(SAVE_KEY,json);}catch(_){toastStorageWarning();}
+ if(json){
+  
   window.InfinityProfile?.syncEndless?.({
    time:g.time,objects:g.collects,matter:g.total,rare:g.rare,
    blackholes:Object.values(g.abyssConsumed||{}).filter(Boolean).length,
@@ -495,10 +481,10 @@ function flightSpeed(){
  const power=upgradePower('speed');
  const ordinarySpeed=(230+Math.min(190,power*5.2))*(1+Math.log2(1+player.r/25)*.38);
  const cosmicSpeed=player.r>CHUNK*5?Math.min(1e290,Math.max(ordinarySpeed,140/physicsZoom())):ordinarySpeed;
- return tester.speed*cosmicSpeed*(g.endless?8.5*(1+power*.01):1+Math.max(0,power-60)*.01);
+ return 1*cosmicSpeed*(g.endless?8.5*(1+power*.01):1+Math.max(0,power-60)*.01);
 }
 function uiIcon(name){
- const shapes={"map": "<circle cx=\"12\" cy=\"12\" r=\"8\"/><path d=\"m16 8-2.5 5.5L8 16l2.5-5.5Z\"/>", "gravity": "<circle cx=\"12\" cy=\"12\" r=\"3\"/><ellipse cx=\"12\" cy=\"12\" rx=\"10\" ry=\"6\" transform=\"rotate(-35 12 12)\"/>", "speed": "<path d=\"m13 3-9 11h7l-1 7 10-12h-8Z\"/>", "harvest": "<path d=\"m12 3 3 6 6 3-6 3-3 6-3-6-6-3 6-3Z\"/>", "shield": "<path d=\"m12 3 8 3v6c0 4-5 7-8 9-3-2-8-5-8-9V6Z\"/><path d=\"m8 12 3 3 5-6\"/>", "music": "<path d=\"M9 18V5l11-2v13M9 9l11-2\"/><ellipse cx=\"6\" cy=\"18\" rx=\"3\" ry=\"2\"/><ellipse cx=\"17\" cy=\"16\" rx=\"3\" ry=\"2\"/>", "playlist": "<rect x=\"3\" y=\"4\" width=\"14\" height=\"15\" rx=\"2\"/><path d=\"M7 8h6M7 12h6M7 16h4M20 8v10\"/><circle cx=\"18\" cy=\"18\" r=\"2\"/>", "mute": "<path d=\"M9 18v-5m0-6V5l11-2v13M13 8l7-1M3 3l18 18\"/><ellipse cx=\"6\" cy=\"18\" rx=\"3\" ry=\"2\"/>", "pause": "<path d=\"M8 5v14M16 5v14\" stroke-width=\"3\"/>", "settings": "<path d=\"M4 7h16M4 17h16\"/><circle cx=\"9\" cy=\"7\" r=\"3\" fill=\"#0b2031\"/><circle cx=\"16\" cy=\"17\" r=\"3\" fill=\"#0b2031\"/>", "tester": "<path d=\"m8 4-5 8 5 8M16 4l5 8-5 8M14 4l-4 16\"/>", "arrow": "<path d=\"M4 12h16m-6-6 6 6-6 6\"/>", "close": "<path d=\"m6 6 12 12M6 18 18 6\"/>", "chevron": "<path d=\"m14 6-6 6 6 6\"/>", "expand": "<path d=\"M7 17 18 6M7 6h11v11\"/>", "plus": "<path d=\"M12 5v14M5 12h14\"/>", "minus": "<path d=\"M5 12h14\"/>", "center": "<circle cx=\"12\" cy=\"12\" r=\"6\"/><path d=\"M12 2v5m0 10v5M2 12h5m10 0h5\"/>", "achievements": "<path d=\"M8 3h8v5a4 4 0 0 1-8 0ZM8 5H4v2a4 4 0 0 0 4 4m8-6h4v2a4 4 0 0 1-4 4M12 12v6m-4 3h8m-6-3h4\"/>", "statistics": "<path d=\"M4 20V4m0 16h17M9 16v-5m5 5V7m5 9V3\"/>", "upgrades": "<path d=\"M5 19v-6m7 6V5m7 14v-9M2 13h6m1-8h6m1 5h6\"/>"};
+ const shapes={"map": "<circle cx=\"12\" cy=\"12\" r=\"8\"/><path d=\"m16 8-2.5 5.5L8 16l2.5-5.5Z\"/>", "gravity": "<circle cx=\"12\" cy=\"12\" r=\"3\"/><ellipse cx=\"12\" cy=\"12\" rx=\"10\" ry=\"6\" transform=\"rotate(-35 12 12)\"/>", "speed": "<path d=\"m13 3-9 11h7l-1 7 10-12h-8Z\"/>", "harvest": "<path d=\"m12 3 3 6 6 3-6 3-3 6-3-6-6-3 6-3Z\"/>", "shield": "<path d=\"m12 3 8 3v6c0 4-5 7-8 9-3-2-8-5-8-9V6Z\"/><path d=\"m8 12 3 3 5-6\"/>", "music": "<path d=\"M9 18V5l11-2v13M9 9l11-2\"/><ellipse cx=\"6\" cy=\"18\" rx=\"3\" ry=\"2\"/><ellipse cx=\"17\" cy=\"16\" rx=\"3\" ry=\"2\"/>", "playlist": "<rect x=\"3\" y=\"4\" width=\"14\" height=\"15\" rx=\"2\"/><path d=\"M7 8h6M7 12h6M7 16h4M20 8v10\"/><circle cx=\"18\" cy=\"18\" r=\"2\"/>", "mute": "<path d=\"M9 18v-5m0-6V5l11-2v13M13 8l7-1M3 3l18 18\"/><ellipse cx=\"6\" cy=\"18\" rx=\"3\" ry=\"2\"/>", "pause": "<path d=\"M8 5v14M16 5v14\" stroke-width=\"3\"/>", "settings": "<path d=\"M4 7h16M4 17h16\"/><circle cx=\"9\" cy=\"7\" r=\"3\" fill=\"#0b2031\"/><circle cx=\"16\" cy=\"17\" r=\"3\" fill=\"#0b2031\"/>", "arrow": "<path d=\"M4 12h16m-6-6 6 6-6 6\"/>", "close": "<path d=\"m6 6 12 12M6 18 18 6\"/>", "chevron": "<path d=\"m14 6-6 6 6 6\"/>", "expand": "<path d=\"M7 17 18 6M7 6h11v11\"/>", "plus": "<path d=\"M12 5v14M5 12h14\"/>", "minus": "<path d=\"M5 12h14\"/>", "center": "<circle cx=\"12\" cy=\"12\" r=\"6\"/><path d=\"M12 2v5m0 10v5M2 12h5m10 0h5\"/>", "achievements": "<path d=\"M8 3h8v5a4 4 0 0 1-8 0ZM8 5H4v2a4 4 0 0 0 4 4m8-6h4v2a4 4 0 0 1-4 4M12 12v6m-4 3h8m-6-3h4\"/>", "statistics": "<path d=\"M4 20V4m0 16h17M9 16v-5m5 5V7m5 9V3\"/>", "upgrades": "<path d=\"M5 19v-6m7 6V5m7 14v-9M2 13h6m1-8h6m1 5h6\"/>"};
  return `<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${shapes[name]||shapes.arrow}</svg>`;
 }
 function populateUpgrades(){const root=$('upgrades');root.textContent='';for(const u of upgrades){let b=document.createElement('button');b.className='upgrade';b.dataset.upgrade=u.id;b.addEventListener('click',()=>buy(u.id));b.innerHTML=`<span class="upgrade-icon">${uiIcon(u.id)}</span><span class="upgrade-description"><strong>${u.name}</strong><small>${u.label} · <span class="upgrade-level"></span></small></span><span class="upgrade-cost"><span class="upgrade-price"></span><small>✦ цена</small></span>`;root.append(b);}}
@@ -550,8 +536,6 @@ function renderUI(force=false){
  $('pulse-fill').style.transform=`scaleX(${clamp(1-pulseCd/13,0,1)})`;$('boost-fill').style.transform=`scaleX(${clamp(1-boostCd/6,0,1)})`;
  $('zoom-label').textContent=`ДИАМЕТР ${lightYears(2*(g.endless?blackHoleCoreWorldRadius():player.r))} · КАМЕРА ${camera.zoom<.01?camera.zoom.toExponential(2):camera.zoom.toFixed(2)}× · ОБЗОР ${Math.round((g.viewZoom||1)*100)}%`;
  if($('btn-music').dataset.music!==String(g.music)){$('btn-music').innerHTML=uiIcon(g.music?'music':'mute');$('btn-music').dataset.music=String(g.music);}$('btn-music').setAttribute('aria-label',g.music?'Выключить музыку':'Включить музыку');const sx=Math.floor(player.x/CHUNK),sy=Math.floor(player.y/CHUNK);$('world-label').textContent=`${t.epoch.toUpperCase()} · НЕИЗВЕДАННАЯ ВСЕЛЕННАЯ`;$('world-subtitle').textContent=`X ${lightYears(player.x)} · Y ${lightYears(player.y)} · ${BIOME_NAMES[chunkInfo(sx,sy).biome]} · ИЗУЧЕНО ${fmt(exploredCount())} св. лет²`;
- const stats=$('tester-stats');
- if(stats)stats.textContent=`${Math.round(frameFps)} FPS · ${lensBackend.toUpperCase()} · ${entities.length} объектов · ${loadedChunks.size} областей · X ${lightYears(player.x)} · Y ${lightYears(player.y)}`;
  if(force)save();window.SpaceI18n?.refresh();
 }
 // World is deterministic: the same sector always has the same matter, even after a restart.
@@ -671,7 +655,7 @@ function markHarvested(e){
 function sectorQuota(info,cx,cy){
  const base={normal:10,rich:13,nebula:10,void:8,relic:10,anomaly:7}[info.biome];
  const variation=(seedHash(cx+73,cy-41)%5)-2;
- return clamp(Math.round((base+variation)*tester.density/16),2,32);
+ return clamp(Math.round((base+variation)*32/16),2,32);
 }
 function makeChunk(cx,cy){
  const key=chunkKey(cx,cy);if(loadedChunks.has(key))return;loadedChunks.add(key);
@@ -957,7 +941,7 @@ function cosmicVisibleLOD(referenceWidth=W,referenceHeight=H){
 }
 function blackHoleGravityRadius(){
  const zoom=physicsZoom(),core=blackHoleCoreWorldRadius();
- return core+Math.max(216,core*zoom*2.64)*(1+upgradePower('gravity')*.012)*tester.gravity*7/zoom;
+ return core+Math.max(216,core*zoom*2.64)*(1+upgradePower('gravity')*.012)*1*7/zoom;
 }
 function applyBlackHoleGravity(e,dt){
  if(e.freeFlight&&g.freeFlights[flightKey(e)])Object.assign(e,freeFlightAt(g.freeFlights[flightKey(e)]));
@@ -1049,7 +1033,7 @@ function finishCosmicAbsorption(e){
  if(mask&(1<<e.index)){e.dead=true;delete g.freeFlights[flightKey(e)];return;}
  bag[key]=(mask|(1<<e.index))>>>0;
  const value=blackHoleBodyValue(e);
- const amount=value*(1+upgradePower('harvest')*.075)*tester.loot*.1*BH_REWARD_SCALE;
+ const amount=value*(1+upgradePower('harvest')*.075)*1*.1*BH_REWARD_SCALE;
  g.matter=Math.min(1e290,g.matter+amount);g.total=Math.min(1e290,g.total+amount);
  g.stageCollects=Math.min(1e290,g.stageCollects+amount);
  g.credits=Math.min(1e290,g.credits+amount*.4);g.collects++;
@@ -1345,18 +1329,18 @@ function abyssCandidates(x,y,extent=0,minRadius=0){
 }
 // Offline drift runs once when the player returns. No physics objects are spawned
 // while the tab is closed and, crucially, NO evolution or death can occur.
-let awayReport=null,awaitingAd=false,pendingDeath=g.pendingDeath||null;
+let awayReport=null,pendingDeath=g.pendingDeath||null;
 const AWAY_DRIFT_MIN_MS=5*60*1000;
 function beginAway(){
  // Offline drift only starts when ACTIVE FLIGHT actually leaves the app.
  // Time in the main menu, rewards, pause, or map never counts.
- if(!running||awaitingAd||window.SpacePlatform?.adBusy||pendingDeath||!g.time||g.awaySince)return;
+ if(!running||pendingDeath||!g.time||g.awaySince)return;
  g.awaySince=Date.now();
  g.awayFromFlight=true;
  save();
 }
 function completeAway(){
- if(!g.awaySince||!g.awayFromFlight||awaitingAd||window.SpacePlatform?.adBusy||pendingDeath)return null;
+ if(!g.awaySince||!g.awayFromFlight||pendingDeath)return null;
  const elapsed=Date.now()-g.awaySince;
  g.awaySince=0;g.awayFromFlight=false;
  if(elapsed<AWAY_DRIFT_MIN_MS){save();return null;}
@@ -1573,13 +1557,7 @@ function atlasShowAbyss(){
  atlas.x=(left+right)/2;atlas.y=(top+bottom)/2;
  atlas.zoom=clamp(Math.min(bounds.width/(right-left),bounds.height/(bottom-top))*.8*CHUNK/27,1e-155,12);atlas.dirty=true;
 }
-function testerVisitAbyss(){
- const h=nearestAbyss();if(!h)return;
- player.x=h.x-h.r*5.3;player.y=h.y;player.vx=player.vy=0;
- camera.x=player.x;camera.y=player.y;abyssTimer=0;clearFlightInput();
- testerRemakeNearby();refreshAbysses();save();testerToggle(false);showMap();atlasShowAbyss();
- toast('Снаружи поля притяжения. Вход за горизонт уничтожит тестовый прогресс.');
-}
+
 
 function burst(x,y,n,color='#2860ff',scale=1){const cap=g.particles?Math.min(30,n):Math.min(5,n);for(let i=0;i<cap;i++){const a=rand(0,TAU),sp=rand(35,180)*scale;particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:rand(.3,.9),max:.9,r:rand(1,3.4)*scale,color});}if(particles.length>420)particles.splice(0,particles.length-420);}
 function popText(x,y,text,color='#c7ebff'){texts.push({x,y,text,color,life:1.1});if(texts.length>35)texts.shift();}
@@ -1594,7 +1572,7 @@ function campaignBodyValue(e){
  const ratio=clamp(e.r/Math.max(1,player.r),0,.95);
  return TA[g.tier].required*CAMPAIGN_YIELD[g.tier]*ratio*ratio;
 }
-function absorb(e){advanceHarvestChain();const mat=resourceOf(e);const boost=(1+upgradePower('harvest')*.075)*tester.loot;const val=g.endless?Math.max(1,Math.round(blackHoleBodyValue(e)*boost))*.1*BH_REWARD_SCALE:campaignBodyValue(e)*boost;g.matter=Math.min(1e290,g.matter+val);g.total=Math.min(1e290,g.total+val);g.stageCollects=Math.min(1e290,g.stageCollects+val);g.collects++;if(g.endless)g.endlessGrowth=(g.endlessGrowth||0)+Math.log1p(val)*.0004;
+function absorb(e){advanceHarvestChain();const mat=resourceOf(e);const boost=(1+upgradePower('harvest')*.075)*1;const val=g.endless?Math.max(1,Math.round(blackHoleBodyValue(e)*boost))*.1*BH_REWARD_SCALE:campaignBodyValue(e)*boost;g.matter=Math.min(1e290,g.matter+val);g.total=Math.min(1e290,g.total+val);g.stageCollects=Math.min(1e290,g.stageCollects+val);g.collects++;if(g.endless)g.endlessGrowth=(g.endlessGrowth||0)+Math.log1p(val)*.0004;
  const gain=mat==='exotic'?3:mat==='plasma'?2:mat==='gas'?2:mat==='crystal'?2:1;
  g.materials[mat]=(g.materials[mat]||0)+gain*(g.endless?.1*BH_REWARD_SCALE:1);
  if(!g.endless&&(mat==='plasma'||mat==='exotic')&&player.r<CHUNK*4)burst(e.x,e.y,9,MATERIALS[mat].color,.7);
@@ -1771,7 +1749,7 @@ function update(dt){
  // Early stages keep the familiar camera. The endless black hole zooms out
  // only as needed to keep its horizon visible, with no hard size ceiling.
  const horizonRadius=Math.max(player.r,player.targetR);
- const zTarget=g.endless?clamp(tester.zoom*(g.viewZoom||1)*(83+27*Math.log2(1+horizonRadius/100))/Math.max(1,horizonRadius),1e-155,2.5):campaignZoom(horizonRadius);
+ const zTarget=g.endless?clamp(1*(g.viewZoom||1)*(83+27*Math.log2(1+horizonRadius/100))/Math.max(1,horizonRadius),1e-155,2.5):campaignZoom(horizonRadius);
  const zoomResponse=g.endless?2.4:2;
  const ratioZ=clamp(zTarget/Math.max(camera.zoom,1e-155),1e-10,1e10);
  camera.zoom*=Math.exp(Math.log(ratioZ)*(1-Math.exp(-dt*zoomResponse)));
@@ -2228,7 +2206,7 @@ function getAccretionTexture(type=2){
 // The GPU samples the completed world buffer directly. There is no per-frame
 // getImageData/readback or million-pixel JavaScript loop on the normal path.
 const EINSTEIN_RING_SCALE=2.05;
-function einsteinRingScale(){return EINSTEIN_RING_SCALE*clamp(Number(tester.ring)||1,.6,2.5);}
+function einsteinRingScale(){return EINSTEIN_RING_SCALE*clamp(Number(1)||1,.6,2.5);}
 // Signed inverse lens equation: a source behind the centre becomes a ring,
 // with a reversed secondary image between that ring and the opaque horizon.
 // This warps the actual scene; it never paints an artificial luminous torus.
@@ -2928,7 +2906,7 @@ function openEvolution(){
 }
 function showStatistics(){
  if(window.InfinityProfile?.showStats){
-  if(!TEST_MODE)window.InfinityProfile.syncEndless({
+  window.InfinityProfile.syncEndless({
    time:g.time,objects:g.collects,matter:g.total,rare:g.rare,
    blackholes:Object.values(g.abyssConsumed||{}).filter(Boolean).length,
    deaths:g.losses,stage:g.tier
@@ -3036,10 +3014,6 @@ function celebrateAchievement(a){
  for(let i=0;i<=a[1];i++)setTimeout(()=>sound(330*2**((i*3+a[1])/12),a[1]>3?'triangle':'sine',.25+a[1]*.05,.02),i*120);
  if(a[1]>=4)window.SpacePlatform?.happy();
 }
-// Test-only hook for phone/desktop notification overflow regression checks.
-if(new URLSearchParams(location.search).get('tester')==='1'){
- window.InfinitiNoticeQA={toast,achievement:()=>celebrateAchievement(ACHIEVEMENTS[0])};
-}
 function showAchievements(){
  const earned=Object.keys(g.achievements||{}).length;
  show(`<div class="eyebrow">${L('THE RECORD OF YOUR JOURNEY','ИСТОРИЯ ТВОЕГО ПУТИ','EL REGISTRO DE TU VIAJE')}</div><div class="overlay-title">${L('ACHIEVEMENTS','ДОСТИЖЕНИЯ','LOGROS')} <small>${earned}/${ACHIEVEMENTS.length}</small></div><div class="achievement-list">${ACHIEVEMENTS.map(a=>{
@@ -3111,6 +3085,18 @@ function showBestiary(){
  show(`<div class="eyebrow">${L('FIELD GUIDE / 07 ENTRIES','СПРАВОЧНИК / 07 ЗАПИСЕЙ','GUÍA / 07 ENTRADAS')}</div><div class="overlay-title">${L('COSMIC BESTIARY','КОСМИЧЕСКИЙ БЕСТИАРИЙ','BESTIARIO CÓSMICO')}</div><div class="bestiary-grid">${FIELD_GUIDE.map(([id,t,title,desc])=>`<article class="bestiary-entry"><div class="bestiary-orb orb-${id}" aria-hidden="true"></div><div><small>${g.tier>=t?L('REACHED','ДОСТИГНУТО','ALCANZADO'):L('AHEAD','ВПЕРЕДИ','POR DESCUBRIR')} · ${String(t+1).padStart(2,'0')}</small><h3>${L(...title)}</h3><p>${L(...desc)}</p></div></article>`).join('')}</div><p class="overlay-copy">${L('Number scale: K = 10³ · M = 10⁶ · B = 10⁹ · T = 10¹² · Qa = 10¹⁵. After Dc the scale continues with aa, ab… Every step is ×1000.','Сокращения: K = 10³ · M = 10⁶ · B = 10⁹ · T = 10¹² · Qa = 10¹⁵. После Dc идут aa, ab… Каждый шаг — ×1000.','Escala: K = 10³ · M = 10⁶ · B = 10⁹ · T = 10¹² · Qa = 10¹⁵. Después de Dc sigue aa, ab… Cada paso es ×1000.')}</p><div class="modal-actions">${continueButton()}</div>`);attachContinue();
 }
 let tutorialStep=0;
+// CrazyGames: at most one click from loading to gameplay. A new player flies at
+// once; the controls appear as a hint, and the flight school stays in the menu.
+function startFlight(){
+ if(!g.tutorialDone){
+  g.tutorialDone=true;save();
+  const touch=matchMedia('(pointer:coarse)').matches;
+  setTimeout(()=>toast(touch
+   ?L('Joystick to move · fly into smaller objects to absorb them','Джойстик — движение · подлетай к мелким телам, чтобы поглотить их','Joystick para moverte · acércate a objetos pequeños para absorberlos')
+   :L('WASD / arrows / cursor to move · Shift dash · E pulse','WASD / стрелки / курсор — движение · Shift — рывок · E — импульс','WASD / flechas / cursor para moverte · Shift impulso · E pulso')),400);
+ }
+ resumeGame();
+}
 function showTutorial(step=0){
  tutorialStep=step;
  const steps=[
@@ -3149,7 +3135,7 @@ function showMusicShop(){
 // Daily login gift plus one wheel spin per calendar day. Roulette prizes are
 // granted atomically before the visual spin and remain owned after any death.
 let dailyOrigin='menu';
-let testerPrizeOverride=null;
+
 function dailyReturn(){
  const modal=$('modal');
  // A detached or already closed reward dialog must never trigger a second
@@ -3512,9 +3498,7 @@ function showCosmicRoulette(origin){
   (canSpin?L('✦ SPIN THE WHEEL','✦ КРУТИТЬ РУЛЕТКУ','✦ GIRAR LA RULETA'):
    canClaim?L('CLAIM DAILY REWARD FIRST','СНАЧАЛА ЗАБЕРИ НАГРАДУ','RECOGE TU REGALO PRIMERO'):
    L('NEXT SPIN TOMORROW','СЛЕДУЮЩАЯ ПОПЫТКА ЗАВТРА','PRÓXIMO GIRO MAÑANA'))+'</button>'+ 
-  '<button type="button" id="daily-ad-spin" class="roulette-ad-spin" '+(meta.canAdSpin(g)?'':'hidden ')+
-  (window.SpacePlatform?.adsAvailable?'':'disabled ')+
-  '>'+L('▶ WATCH AD · SPIN AGAIN','▶ РЕКЛАМА · ЕЩЁ ОДИН СПИН','▶ VER ANUNCIO · OTRO GIRO')+'</button>';
+  '';
  rewardsShell('roulette',
   L('Cosmic roulette','Космическая рулетка','Ruleta cósmica'),
   L('Spin for stardust or a rare music track.','Крути колесо ради звёздной пыли или редкого музыкального трека.','Gira para ganar polvo estelar o una pista musical rara.'),
@@ -3544,56 +3528,8 @@ function showCosmicRoulette(origin){
    wheelImage.style.display='none';
   }
  });
- const bonus=$('daily-ad-spin');
- bonus.title=window.SpacePlatform?.adsAvailable?
-  L('Complete a rewarded video for one extra spin today.','Досмотри рекламу и получи одну дополнительную попытку сегодня.','Mira el anuncio completo para conseguir un giro extra hoy.'):
-  L('Rewarded ads are only available inside CrazyGames.','Реклама доступна только при запуске на CrazyGames.','Los anuncios solo están disponibles en CrazyGames.');
- bonus.onclick=async()=>{
-  if(awaitingAd||!meta.canAdSpin(g))return;
-  if(!window.SpacePlatform?.adsAvailable){
-   $('daily-result').hidden=false;
-   $('daily-result').textContent=L('Ad not available here. Try on CrazyGames.','Реклама здесь недоступна. Запусти игру на CrazyGames.','El anuncio no está disponible aquí. Prueba en CrazyGames.');
-   return;
-  }
-  awaitingAd=true;bonus.disabled=true;
-  $('daily-result').hidden=false;
-  $('daily-result').textContent=L('Opening rewarded ad…','Открываем рекламу…','Abriendo anuncio…');
-  let completed=false;
-  try{completed=await window.SpacePlatform.requestAd('rewarded');}
-  catch(_){completed=false;}
-  finally{awaitingAd=false;}
-  // Credit the bonus even if the player switched pages while the ad ran.
-  // Losing a rewarded-ad grant because its button detached is not acceptable.
-  const granted=completed&&meta.grantAdSpin(g).ok;
-  if(granted){save();checkProgression();}
-  if(!bonus.isConnected){
-   if(granted)toast(L('Extra spin is ready in roulette.','Дополнительный спин доступен в рулетке.','Tienes un giro extra disponible.'));
-   return;
-  }
-  if(granted){
-   const from=$('modal').dataset.dailyOrigin==='play'?'play':'menu';
-   showCosmicRoulette(from);
-   // A confirmed ad grants and automatically starts exactly one bonus spin.
-   $('daily-spin')?.click();
-   return;
-  }
-  bonus.disabled=!window.SpacePlatform?.adsAvailable;
-  $('daily-result').hidden=false;
-  $('daily-result').textContent=L('Ad not completed. Your extra spin is still available.','Реклама не завершена. Дополнительная попытка не потрачена.','Anuncio incompleto. Tu giro extra sigue disponible.');
- };
  $('daily-spin').onclick=()=>{
   let rouletteRandom=Math.random;
-  if(TEST_MODE&&testerPrizeOverride){
-   const desired=testerPrizeOverride;
-   testerPrizeOverride=null;
-   const prizeIndex=meta.PRIZES.findIndex(p=>p.id===desired);
-   if(prizeIndex>=0){
-    const start=meta.PRIZES.slice(0,prizeIndex).reduce((sum,p)=>sum+p.weight,0);
-    const pct=(start+meta.PRIZES[prizeIndex].weight/2)/100;
-    let first=true;
-    rouletteRandom=()=>{if(first){first=false;return pct;}return Math.random();};
-   }
-  }
   const result=meta.roll(g,MUSIC_TRACKS,Date.now(),rouletteRandom);
   if(!result.ok)return;
   save();checkProgression();
@@ -3631,10 +3567,6 @@ function showCosmicRoulette(origin){
    if(tile)tile.classList.add('daily-wheel-winner');
    resultBox.textContent=message;resultBox.classList.add('daily-result-win');
    spin.textContent=L('COME BACK TOMORROW','ВОЗВРАЩАЙСЯ ЗАВТРА','VUELVE MAÑANA');
-   if(meta.canAdSpin(g)){
-    bonus.hidden=false;
-    bonus.disabled=!window.SpacePlatform?.adsAvailable;
-   }
    sound(790,'sine',.16,.03);
   },7350);
  };
@@ -3642,7 +3574,7 @@ function showCosmicRoulette(origin){
 function showMainMenu(paused=false){
  show(`<div class="menu-scene-label" aria-hidden="true">SINGULARITY / ∞</div><div class="menu-content"><div class="hero-kicker">${paused?'ПОЛЁТ ПРИОСТАНОВЛЕН':'ОТ ЧАСТИЦЫ ДО БЕСКОНЕЧНОСТИ'}</div><h1>INFINITY<br><span>SPACE</span></h1><p class="modal-lead">Твоя гравитация. Твоя эволюция.<br>Бесконечная Вселенная впереди.</p><nav class="menu-nav" aria-label="Главное меню"><button id="btn-start" class="primary-button">${paused||g.time>0?'БЕСКОНЕЧНЫЙ КОСМОС · ПРОДОЛЖИТЬ':'БЕСКОНЕЧНЫЙ КОСМОС · ИГРАТЬ'} <span>${uiIcon('arrow')}</span></button><button id="menu-arcade" class="arcade-nav"><span>✦</span>${L('COSMIC ARENA · PLAY','КОСМИЧЕСКАЯ АРЕНА · ИГРАТЬ','ARENA CÓSMICA · JUGAR')} <small>IO</small></button><button id="menu-modes" class="arcade-nav arcade-modes-nav"><span>◈</span>${L('OTHER GAME MODES','ДРУГИЕ РЕЖИМЫ ИГРЫ','OTROS MODOS DE JUEGO')} <small>4</small></button><button id="menu-map"><span>${uiIcon('map')}</span>Карта Вселенной <small>M</small></button><button id="menu-achievements"><span>${uiIcon('achievements')}</span>Достижения <small>${uiIcon('expand')}</small></button><button id="menu-bestiary"><span>${uiIcon('map')}</span>${L('Bestiary','Бестиарий','Bestiario')} <small>${uiIcon('expand')}</small></button><button id="menu-statistics"><span>${uiIcon('statistics')}</span>Статистика <small>${uiIcon('expand')}</small></button><button id="menu-settings"><span>${uiIcon('settings')}</span>Настройки <small>${uiIcon('expand')}</small></button></nav><div class="menu-save"><span class="live-dot"></span>${g.time>10?`${TA[g.tier].name} · ${timeFmt(g.time)} · автосохранение`:'28 форм эволюции · свободное исследование'}</div></div><div class="menu-footer"><span>WASD — полёт · Колёсико — масштаб · E — импульс</span><span>${GAME_BUILD_VERSION} / INFINITY SPACE</span></div>`);
  menuVisible=true;setNavigationState('menu');$('modal').dataset.screen='menu';$('modal').firstElementChild.classList.add('menu-card');
- $('btn-start').onclick=()=>g.tutorialDone?resumeGame():showTutorial();$('menu-arcade').onclick=()=>{location.assign('cosmic-arena.html?mode=arena&v=4');};$('menu-modes').onclick=()=>{location.assign('cosmic-arena.html?v=4');};$('menu-map').onclick=showMap;
+ $('btn-start').onclick=()=>startFlight();$('menu-arcade').onclick=()=>{location.assign('cosmic-arena.html?mode=arena&v=4');};$('menu-modes').onclick=()=>{location.assign('cosmic-arena.html?v=4');};$('menu-map').onclick=showMap;
  const dailyMenuBtn=document.createElement('button');dailyMenuBtn.id='menu-daily';
  dailyMenuBtn.innerHTML='✦ '+L('Daily rewards & roulette','Ежедневные награды и рулетка','Recompensas y ruleta');
  dailyMenuBtn.onclick=()=>showDailyRewards('menu');
@@ -4113,22 +4045,21 @@ function showMap(){
 function showPause(){showMainMenu(true);}
 
 function showSettings(){show(`<label class="settings-line"><span>Language / Язык / Idioma</span>${languageSelect()}</label><div class="eyebrow">ПАРАМЕТРЫ ПОЛЁТА</div><div class="overlay-title">НАСТРОЙКИ</div><div class="settings-line"><span>Управление мышью</span><select id="set-control-mode"><option value="hold" ${g.controlMode==='hold'?'selected':''}>Зажать кнопку и направлять</option><option value="follow" ${g.controlMode==='follow'?'selected':''}>Следовать за курсором</option><option value="keys" ${g.controlMode==='keys'?'selected':''}>Только клавиатура</option></select></div><div class="settings-line"><span>Отклик движения</span><select id="set-flight-feel"><option value="direct" ${g.flightFeel==='direct'?'selected':''}>Точный, без инерции</option><option value="smooth" ${g.flightFeel==='smooth'?'selected':''}>Плавный, с инерцией</option></select></div><p class="overlay-copy" style="text-align:left">WASD / стрелки — точное движение. По умолчанию объект плавно следует за курсором без нажатия. WASD — точное движение, на телефоне — джойстик. E — необязательный импульс, Shift — рывок.</p><div class="settings-line"><span>Кинематографичная космическая музыка</span><input id="set-music" type="checkbox" ${g.music?'checked':''}></div><div class="settings-line"><span>Громкость музыки</span><input id="set-music-volume" type="range" min="0" max="100" value="${Math.round(g.musicVolume*100)}" aria-label="Громкость музыки"></div><p class="overlay-copy" style="text-align:left">Оригинальный саундтрек: медленное органное звучание и пространственный эмбиент. Музыка запускается после нажатия «Играть».</p><div class="settings-line"><span>Звуковые эффекты</span><input id="set-sound" type="checkbox" ${g.sound?'checked':''}></div><label class="settings-line"><span>${L('Effects volume','Громкость эффектов','Volumen de efectos')}</span><input id="set-sound-volume" type="range" min="0" max="100" value="${Math.round((g.soundVolume??.7)*100)}"></label><div class="settings-line"><span>Частицы и вспышки</span><input id="set-particles" type="checkbox" ${g.particles?'checked':''}></div><label class="settings-line"><span>${L('Automatic graphics reduction','Автоматическое снижение графики','Reducción gráfica automática')}</span><input id="set-auto-quality" type="checkbox" ${g.autoQuality!==false?'checked':''}></label><p class="overlay-copy" style="text-align:left">${L('Off: full screen resolution and full-resolution black hole distortion, even at low FPS.','Выключено: полное разрешение экрана и искажения чёрных дыр, даже при низком FPS.','Desactivado: resolución completa de pantalla y distorsión de agujeros negros, incluso con pocos FPS.')}</p><div class="settings-line"><span>Качество эффектов</span><select id="set-quality" ${g.autoQuality===false?'disabled':''}><option value="1" ${g.autoQuality===false||g.quality===1?'selected':''}>Высокое</option><option value="0.5" ${g.autoQuality!==false&&g.quality===.5?'selected':''}>Экономное</option></select></div><p class="overlay-copy" style="text-align:left">M — карта, P — пауза. Схема управления сохраняется между запусками.</p><div class="modal-actions"><button id="settings-nickname" class="secondary-button">${L('Change nickname','Сменить никнейм','Cambiar apodo')}</button><button id="settings-music" class="secondary-button">${L('Music collection','Коллекция музыки','Colección de música')}</button><button id="settings-tutorial" class="secondary-button">${L('Flight tutorial','Обучение','Tutorial de vuelo')}</button>${continueButton('СОХРАНИТЬ И ИГРАТЬ')}<button class="secondary-button" id="btn-new-universe">НОВАЯ ИГРА</button></div>`);$('modal').dataset.screen='settings';setNavigationState('settings');attachContinue();$('settings-nickname').onclick=()=>window.InfinityProfile?.promptName(false);$('set-language').onchange=e=>{window.SpaceI18n.setLanguage(e.target.value);renderUI();showSettings();};$('settings-music').onclick=showMusicShop;$('settings-tutorial').onclick=()=>showTutorial();$('set-sound-volume').oninput=e=>{g.soundVolume=+e.target.value/100;save();};$('btn-new-universe').onclick=restartCampaign;$('set-control-mode').onchange=e=>{g.controlMode=e.target.value;clearFlightInput();syncHeadingControl();save();};$('set-flight-feel').onchange=e=>{g.flightFeel=e.target.value;save();};$('set-music').onchange=e=>{g.music=e.target.checked;initAudio();setMusicVolume();save();};$('set-music-volume').oninput=e=>{g.musicVolume=+e.target.value/100;setMusicVolume();save();};$('set-sound').onchange=e=>{g.sound=e.target.checked;save();};$('set-particles').onchange=e=>{g.particles=e.target.checked;save();};$('set-auto-quality').onchange=e=>{setAutoQuality(e.target.checked);$('set-quality').disabled=!e.target.checked;$('set-quality').value=String(e.target.checked?g.quality:1);};$('set-quality').onchange=e=>{g.quality=Number(e.target.value);performanceScale=1;applyResolution();save();};}
-function resetCampaignState(resetModifiers=false){
+function resetCampaignState(){
  achievementQueue=[];achievementToastAt=-10;requirementNotice='';requirementNoticeAt=-100;if(externalMusic){externalMusic.pause();externalMusic=null;}
  const preferences={sound:g.sound,music:g.music,musicVolume:g.musicVolume,soundVolume:g.soundVolume,tutorialDone:g.tutorialDone,quality:g.quality,autoQuality:g.autoQuality,buyAmount:g.buyAmount,particles:g.particles,controlMode:g.controlMode,flightFeel:g.flightFeel,mobileMode:g.mobileMode,mobileSensitivity:g.mobileSensitivity,headingAngle:g.headingAngle,credits:Math.max(0,Number(g.credits)||0),ownedTracks:[...(g.ownedTracks||[])],activeTrack:g.activeTrack,achievements:{...g.achievements},bestiary:{...g.bestiary},daily:{...g.daily}};
  cosmicAbsorptions.length=0;absorbingMacroKeys.clear();
  const next=fresh();Object.assign(g,next,preferences);pendingDeath=null;g.pendingDeath=null;visitedChunks.clear();loadedChunks.clear();distantChunkCache.clear();macroLoaded.clear();macroCache.clear();macroLODCache.clear();if(macroBackdrop){macroBackdrop.canvas.width=0;macroBackdrop.canvas.height=0;macroBackdrop=null;}if(macroBackdropOld){macroBackdropOld.canvas.width=0;macroBackdropOld=null;}macroEntities=[];entities=[];
- if(resetModifiers&&TEST_MODE){Object.assign(tester,TEST_DEFAULTS);saveTester();}
  player.x=0;player.y=0;player.vx=player.vy=0;player.r=player.targetR=radiusAt(0,0);lastReveal={x:Infinity,y:Infinity,r:-Infinity};
  player.trail=[];camera.x=camera.y=0;camera.zoom=1;particles=[];shockwaves=[];energyArcs=[];texts=[];
- harvestChain=0;harvestChainTime=0;screenFlash=0;morph=null;running=false;abyssTimer=0;abyssPhysical=[];abyssVisual=[];abyssNotice='';$('abyss-warning').hidden=true;clearFlightInput();pulseCd=boostCd=boostTime=0;visitPosition();streamField();save();renderUI(true);testerRefresh();testerToggle(false);
+ harvestChain=0;harvestChainTime=0;screenFlash=0;morph=null;running=false;abyssTimer=0;abyssPhysical=[];abyssVisual=[];abyssNotice='';$('abyss-warning').hidden=true;clearFlightInput();pulseCd=boostCd=boostTime=0;visitPosition();streamField();save();renderUI(true);
 }
 function dieInAbyss(h){
  if(pendingDeath)return;
  const safe={id:h.id,name:h.name,x:h.x,y:h.y,r:h.r};
  pendingDeath={hole:safe,mass:fmt(g.total),duration:timeFmt(g.time),
   absorbed:Math.max(0,Math.floor(g.collects||0)),unlocks:Math.max(0,Math.floor(g.unlocks||0)),
-  tier:g.tier,stardust:fmt(g.credits||0),triedAd:false};
+  tier:g.tier,stardust:fmt(g.credits||0)};
  g.pendingDeath=pendingDeath;
  g.awaySince=0;
  g.losses++;
@@ -4142,8 +4073,6 @@ function dieInAbyss(h){
   try{showDeathOffer();}
   catch(error){
    console.error('Infinity Space death screen:',error);
-   // The fallback MUST preserve the flight results and rewarded-ad revival,
-   // never collapse into the restart-only panel reported by testers.
    const modal=$('modal'),d=pendingDeath;
    if(!d)return;
    modal.classList.remove('off');modal.dataset.screen='death';
@@ -4161,66 +4090,17 @@ function dieInAbyss(h){
     ' <strong>'+fmt(d.unlocks??g.unlocks??0)+'</strong></span><span>'+
     L('STARDUST','ЗВЁЗДНАЯ ПЫЛЬ','POLVO ESTELAR')+
     ' <strong>✦ '+(d.stardust??fmt(g.credits||0))+'</strong></span></div>'+
-    '<div class="revive-actions"><button id="revive-ad" class="revive-ad" type="button">'+
-    L('▶ WATCH AD · REVIVE','▶ РЕКЛАМА · ВОЗРОДИТЬСЯ','▶ VER ANUNCIO · REVIVIR')+
-    '</button><button id="revive-restart" class="revive-restart" type="button">'+
+    '<div class="revive-actions"><button id="revive-restart" class="revive-restart" type="button">'+
     L('START NEW JOURNEY','НАЧАТЬ ЗАНОВО','NUEVO VIAJE')+'</button></div>'+
     '<div class="revive-feedback" id="revive-feedback" role="status"></div></div></div>';
    $('revive-restart').onclick=()=>{resetCampaignState(false);resumeGame();};
-   const ad=$('revive-ad');
-   ad.disabled=!!g.reviveUsed;
-   ad.onclick=async()=>{
-    if(awaitingAd||!pendingDeath||g.reviveUsed)return;
-    const fb=$('revive-feedback');
-    if(!window.SpacePlatform?.adsAvailable){
-     fb.textContent=L('Rewarded ads are only available on CrazyGames.','Рекламное возрождение доступно только на CrazyGames.','Los anuncios solo están disponibles en CrazyGames.');
-     return;
-    }
-    awaitingAd=true;ad.disabled=true;
-    let completed=false;
-    try{completed=await window.SpacePlatform.requestAd('rewarded');}
-    catch(err){console.warn('Rewarded revival failed:',err);}
-    finally{awaitingAd=false;}
-    if(completed){reviveFromDeath();return;}
-    if(ad.isConnected){
-     ad.disabled=false;
-     fb.textContent=L('Ad not completed. You can retry.','Реклама не завершена. Можно попробовать снова.','Anuncio incompleto. Puedes reintentar.');
-    }
-   };
    setTimeout(()=>{if(pendingDeath)save();},60);
   }
  },0);
 }
-function reviveFromDeath(){
-  if(!pendingDeath||g.reviveUsed)return;
-  const hole=pendingDeath.hole;
-  const dx=player.x-hole.x,dy=player.y-hole.y,distance=Math.hypot(dx,dy);
-  const angle=distance>.0001?Math.atan2(dy,dx):(g.headingAngle||0);
-  const safe=Math.max(hole.r*6.7,hole.r+player.r*8);
-  player.x=hole.x+Math.cos(angle)*safe;
-  player.y=hole.y+Math.sin(angle)*safe;
-  player.vx=Math.cos(angle)*flightSpeed()*.8;
-  player.vy=Math.sin(angle)*flightSpeed()*.8;
-  player.shield=9;camera.x=player.x;camera.y=player.y;
-  g.reviveUsed=true;g.pendingDeath=null;pendingDeath=null;
-  abyssTimer=0;refreshAbysses();atlas.dirty=true;
-  save();resumeGame();
-  toast(L('Revived! Your journey continues.','Возрождение! Путешествие продолжается.','¡Has revivido! El viaje continúa.'));
-}
 function showDeathOffer(){
  if(!pendingDeath)return;
- // An older saved death may still contain obsolete coinsCost; it is ignored.
- const d=pendingDeath,eligible=!g.reviveUsed,ads=!!window.SpacePlatform?.adsAvailable;
- // Always show the rewarded-revival option, including on the GitHub tester.
- // An unavailable SDK must not silently remove the user's only revival choice.
- const offeredAd='<button id="revive-ad" type="button" class="revive-ad"'+
-   (!eligible?' disabled aria-disabled="true"':'')+'>'+
-   L('▶ WATCH AD · REVIVE','▶ РЕКЛАМА · ВОЗРОДИТЬСЯ','▶ VER ANUNCIO · REVIVIR')+'</button>';
- const adExplanation=!eligible?
-  L('Revival has already been used in this run.','Возрождение уже использовано в этом прохождении.','La reanimación ya se usó en esta partida.'):
-  !ads?L('Ads are available when playing on CrazyGames. On GitHub Pages you can test the death screen, but an ad cannot start.',
-  'Реклама доступна на CrazyGames. На GitHub Pages можно проверить экран смерти, но запустить рекламу нельзя.',
-  'Los anuncios están disponibles en CrazyGames. En GitHub Pages no se pueden iniciar anuncios.') :'';
+ const d=pendingDeath;
  show('<div class="revive-screen"><div class="revive-eyebrow">'+
   L('EVENT HORIZON CROSSED','ГОРИЗОНТ СОБЫТИЙ ПЕРЕСЕЧЁН','HORIZONTE CRUZADO')+'</div>'+
   '<h2>'+L('SWALLOWED BY THE VOID','ПОГЛОЩЁН БЕЗДНОЙ','DEVORADO POR EL VACÍO')+'</h2>'+
@@ -4232,254 +4112,34 @@ function showDeathOffer(){
   L('EVOLUTION FORM','ФОРМА ЭВОЛЮЦИИ','FORMA EVOLUTIVA')+' <strong>'+((d.tier??g.tier)+1)+' / '+TA.length+'</strong></span><span>'+
   L('EVOLUTIONS','ЭВОЛЮЦИЙ','EVOLUCIONES')+' <strong>'+fmt(d.unlocks??g.unlocks??0)+'</strong></span><span>'+
   L('STARDUST','ЗВЁЗДНАЯ ПЫЛЬ','POLVO ESTELAR')+' <strong>✦ '+(d.stardust??fmt(g.credits||0))+'</strong></span></div>'+
-  '<div class="revive-actions">'+offeredAd+
+  '<div class="revive-actions">'+
   '<button id="revive-restart" type="button" class="revive-restart">'+
   L('START NEW JOURNEY','НАЧАТЬ ЗАНОВО','NUEVO VIAJE')+'</button></div>'+
-  (adExplanation?'<p class="revive-ad-note">'+adExplanation+'</p>':'')+
-  '<small>'+L('One revival per run. Reviving preserves your progress. Starting over preserves stardust and owned music.','Одно возрождение за прохождение. При возрождении прогресс сохраняется. При новой игре остаются звёздная пыль и музыка.','Una reanimación por partida. Revivir conserva el progreso; empezar de nuevo conserva polvo y música.')+'</small>'+
+  '<small>'+L('Starting over preserves stardust and owned music.','При новой игре остаются звёздная пыль и купленная музыка.','Se conservan el polvo estelar y la música.')+'</small>'+
   '<div class="revive-feedback" id="revive-feedback" aria-live="polite"></div></div>');
  $('modal').dataset.screen='death';$('panel-close').onclick=()=>{$('revive-restart').click();};
  // Display the actionable death dialog before persisting potentially large
  // explored-sector data. The save still contains the pending-death offer.
  setTimeout(()=>{if(pendingDeath)save();},40);
  $('revive-restart').onclick=()=>{
-  if(awaitingAd)return;
-  // Do not wait for CrazyGames midgame ads here: the SDK bridge can hold the
-  // response for 120 seconds. Restart is always immediate and independent.
+  
   resetCampaignState(false);
   resumeGame();
   toast(L('New journey started · soundtrack and stardust saved','Новое путешествие · музыка и пыль сохранены','Nuevo viaje · música y polvo conservados'));
  };
- const revive=reviveFromDeath;
- const ad=$('revive-ad');
- if(ad)ad.onclick=async()=>{
-  if(awaitingAd||!pendingDeath||g.reviveUsed)return;
-  if(!window.SpacePlatform?.adsAvailable){
-   $('revive-feedback').textContent=L('Rewarded ads are only available inside CrazyGames.',
-    'Рекламное возрождение доступно только на CrazyGames.',
-    'La reanimación por anuncio solo está disponible en CrazyGames.');
-   return;
-  }
-  awaitingAd=true;d.triedAd=true;
-  const buttons=[...document.querySelectorAll('.revive-actions button')];buttons.forEach(b=>b.disabled=true);
-  $('revive-feedback').textContent=L('Ad request in progress…','Загрузка рекламы…','Cargando anuncio…');
-  let completed=false;
-  try{completed=await window.SpacePlatform.requestAd('rewarded');}
-  catch(error){console.warn('Rewarded revival unavailable:',error);}
-  finally{awaitingAd=false;}
-  if(completed){revive();return;}
-  if(!pendingDeath)return;
-  buttons.forEach(b=>b.disabled=false);
-  $('revive-feedback').textContent=L('Ad not completed. Start a new journey or retry later.','Реклама не завершена. Начни новое путешествие или попробуй позже.','Anuncio no completado. Inicia otro viaje o inténtalo más tarde.');
-  // No adFinished event means no free revival. Let the player retry if the
-  // platform reports that the rewarded ad is available again.
-  ad.disabled=!window.SpacePlatform?.adsAvailable;
- };
+
 }
 function restartCampaign(){
- if(!confirm(window.SpaceI18n?.t('Начать новую Вселенную? Текущий прогресс будет сохранён в резервной копии.')||'Начать новую Вселенную? Текущий прогресс будет сохранён в резервной копии.'))return;
- try{localStorage.setItem(SAVE_KEY+'-backup',localStorage.getItem(SAVE_KEY)||'');}catch(_){}
- resetCampaignState(true);running=true;
+ show(`<div class="eyebrow">${L('NEW UNIVERSE','НОВАЯ ВСЕЛЕННАЯ','NUEVO UNIVERSO')}</div><p class="overlay-copy">${window.SpaceI18n?.t('Начать новую Вселенную? Текущий прогресс будет сохранён в резервной копии.')||'Начать новую Вселенную? Текущий прогресс будет сохранён в резервной копии.'}</p><div class="modal-actions"><button class="primary-button" id="btn-restart-yes">${L('START OVER','НАЧАТЬ ЗАНОВО','EMPEZAR DE NUEVO')} <span>${uiIcon('arrow')}</span></button><button class="secondary-button" id="btn-continue">${L('CANCEL','ОТМЕНА','CANCELAR')}</button></div>`);
+ attachContinue();$('btn-restart-yes').onclick=confirmRestartCampaign;
+}
+function confirmRestartCampaign(){
+ try{window.SpacePlatform.storage.setItem(SAVE_KEY+'-backup',window.SpacePlatform.storage.getItem(SAVE_KEY)||'');}catch(_){}
+ resetCampaignState(true);running=true;window.SpacePlatform?.playing(true);
  $('modal').classList.add('off');toast('Новая Вселенная создана · предыдущий прогресс сохранён');
 }
 
-function testerRefresh(){
- const panel=$('tester-panel');if(!panel)return;
- $('tester-tier').value=String(g.tier);
- if(document.activeElement!==$('tester-credits'))$('tester-credits').value=String(Math.round(g.credits));
- const progress=panel.querySelector('[data-test="progress"]');progress.value=String(Math.round(stageFraction()*100));
- $('test-progress-val').textContent=progress.value+'%';
- for(const k of ['speed','gravity','loot','zoom','ring','density']){
-  const input=panel.querySelector(`[data-test="${k}"]`),label=panel.querySelector(`[data-test-value="${k}"]`);
-  input.value=tester[k];label.textContent=k==='density'?`${tester[k]}/32`:`${tester[k]}×`;
- }
- testerRewardsRefresh();
-}
-function testerRewardsRefresh(){
- if(!TEST_MODE||!window.SpaceMeta)return;
- const meta=window.SpaceMeta,d=meta.state(g),today=meta.dayIndex();
- const el=$('tester-daily-status');
- if(el){
-  const claim=meta.canClaim(g)?'ДОСТУПЕН':'ПОЛУЧЕН';
-  const spin=meta.canSpin(g)?'ДОСТУПЕН':'НЕДОСТУПЕН';
-  el.textContent='Сегодня: подарок '+claim+' / спин '+spin+
-   ' · Серия '+d.streak+' дн. · Получено '+d.claims+
-   ' · Прокруток '+d.spins+' · Треков '+d.musicWins+
-   ' · Бонус '+fmt(meta.baseReward(g,d.lastDay===today?d.streak:d.lastDay===today-1?d.streak+1:1))+' ✦';
- }
- const streakInput=$('tester-daily-streak');
- if(streakInput&&document.activeElement!==streakInput)streakInput.value=String(d.streak);
- for(const key of ['rewardMultiplier','trackChance']){
-  const input=document.querySelector('[data-reward-tune="'+key+'"]');
-  const label=document.querySelector('[data-reward-value="'+key+'"]');
-  if(input&&document.activeElement!==input)input.value=String(tester[key]);
-  if(label)label.textContent=key==='trackChance'?tester[key].toFixed(1)+'%':tester[key].toFixed(1)+'×';
- }
-}
-function testerToggle(force){
- if(!TEST_MODE)return;
- const panel=$('tester-panel'),open=force===undefined?panel.classList.contains('hidden'):!!force;
- panel.classList.toggle('hidden',!open);
- panel.setAttribute('aria-hidden',String(!open));
- $('btn-tester').setAttribute('aria-pressed',String(open));
- if(open)testerRefresh();
-}
-function testerSetTier(tier){
- const next=clamp(Math.round(tier),0,TA.length-1),from=g.tier;
- if(next===from)return;
- g.tier=next;g.complete=next===TA.length-1;g.endless=next===TA.length-1;g.matter=0;g.stageCollects=0;g.stageRare=0;g.stagePulses=0;g.stageExplored=0;
- morph={from,time:0,duration:1.5};player.targetR=currentRadius();
- player.r=player.targetR;screenFlash=.5;
- // Test jumps must not finish a previous form's in-flight digestion with the
- // new form's rewards. Restore unconsumed identities to their world layer.
- for(const e of [...entities,...macroEntities,...cosmicAbsorptions])if(e.absorbing||e.gathering)delete g.freeFlights[flightKey(e)];
- cosmicAbsorptions.length=0;absorbingMacroKeys.clear();for(const key of Object.keys(g.freeFlights))absorbingMacroKeys.add(key);
- camera.zoom=g.endless?clamp(tester.zoom*(g.viewZoom||1)*(83+27*Math.log2(1+player.r/100))/Math.max(1,player.r),1e-155,2.5):campaignZoom(player.r);
- testerRemakeNearby();
- burst(player.x,player.y,35,TA[next].color);
- renderUI(true);testerRefresh();
-}
-function testerRemakeNearby(){
- loadedChunks.clear();entities=[];distantChunkCache.clear();macroLoaded.clear();macroEntities=[];streamField();
-}
-// Remove ALL tester-specific state, including the automatic backup. The ordinary
-// player profile lives under a different key and is deliberately never touched.
-function testerAbsoluteReset(){
- if(!TEST_MODE)return false;
- if(!confirm('ПОЛНЫЙ СБРОС ТЕСТЕРА: навсегда удалить тестовый прогресс, звёздную пыль, купленную музыку, достижения, карту, маршруты, ежедневные награды, статистику и все настройки тестера?\n\nОбычное прохождение останется нетронутым.'))return false;
- testerAbsoluteResetPending=true;
- try{
-  localStorage.removeItem(SAVE_KEY);
-  localStorage.removeItem(SAVE_KEY+'-backup');
-  localStorage.removeItem(TEST_KEY);
- }catch(error){
-  testerAbsoluteResetPending=false;
-  toast('Не удалось очистить тестовые данные браузера.');
-  return false;
- }
- location.reload();
- return true;
-}
-function testerInit(){
- if(!TEST_MODE){$('btn-tester').hidden=true;return;}
- window.SpaceMeta?.setTesterTuning({rewardMultiplier:tester.rewardMultiplier,trackChance:tester.trackChance});
- const tier=$('tester-tier');
- TA.forEach((form,index)=>{const option=document.createElement('option');option.value=String(index);
- option.textContent=`${index+1}. ${form.name}`;tier.append(option);});
- $('btn-tester').onclick=()=>testerToggle();
- $('tester-close').onclick=()=>testerToggle(false);
- tier.onchange=()=>testerSetTier(Number(tier.value));
- $('tester-credits').onchange=ev=>{g.credits=clamp(Number(ev.target.value)||0,0,1e12);renderUI(true);testerRefresh();};
 
- // Test actions never modify the production save: TEST_MODE has a separate SAVE_KEY.
- const rewardMeta=window.SpaceMeta;
- const rewardUpdate=()=>{save();renderUI(true);testerRefresh();};
- const rewardDay=()=>rewardMeta.dayIndex();
- const rewardState=()=>rewardMeta.state(g);
- const rewardOpenOrigin=()=>$('modal').dataset.screen==='menu'?'menu':'play';
- $('tester-daily-streak').onchange=e=>{
-  rewardState().streak=clamp(Math.floor(Number(e.target.value)||0),0,99999);
-  rewardUpdate();
- };
- document.querySelectorAll('#tester-panel [data-reward-tune]').forEach(input=>{
-  input.oninput=()=>{
-   const key=input.dataset.rewardTune,value=Number(input.value);
-   if(!Number.isFinite(value))return;
-   tester[key]=key==='trackChance'?clamp(value,.1,25):clamp(value,.1,20);
-   rewardMeta.setTesterTuning({rewardMultiplier:tester.rewardMultiplier,trackChance:tester.trackChance});
-   saveTester();rewardUpdate();
-  };
- });
- $('tester-open-daily').onclick=()=>{
-  const origin=rewardOpenOrigin();testerToggle(false);showDailyRewards(origin);
- };
- $('tester-open-wheel').onclick=()=>{
-  const origin=rewardOpenOrigin();testerToggle(false);showCosmicRoulette(origin);
- };
- $('tester-unlock-daily').onclick=()=>{
-  const d=rewardState(),today=rewardDay();
-  d.lastDay=today-1;d.spinDay=today-1;
-  rewardUpdate();toast('Новый тестовый день: подарок снова доступен');
- };
- $('tester-claim-daily').onclick=()=>{
-  const result=rewardMeta.claim(g);
-  if(!result.ok){toast('Подарок сегодня уже получен');return;}
-  rewardUpdate();toast('Тестовый подарок: ✦ '+fmt(result.amount));
- };
- $('tester-unlock-spin').onclick=()=>{
-  const d=rewardState(),today=rewardDay();
-  d.lastDay=today;d.spinDay=today-1;
-  rewardUpdate();toast('Тестовая попытка разблокирована');
- };
- $('tester-force-spin').onclick=()=>{
-  const d=rewardState(),today=rewardDay(),origin=rewardOpenOrigin();
-  d.lastDay=today;d.spinDay=today-1;
-  testerPrizeOverride=$('tester-force-prize').value||null;
-  rewardUpdate();testerToggle(false);showCosmicRoulette(origin);
-  $('daily-spin')?.click();
- };
- $('tester-odds-sim').onclick=()=>{
-  const counts=new Map(rewardMeta.PRIZES.map(p=>[p.id,0]));
-  for(let n=0;n<1000;n++){
-   let roll=Math.random()*100;
-   for(const prize of rewardMeta.PRIZES){
-    roll-=prize.weight;
-    if(roll<0){counts.set(prize.id,counts.get(prize.id)+1);break;}
-   }
-  }
-  $('tester-odds-result').textContent='1000 виртуальных спинов (без выдачи):\n'+
-   rewardMeta.PRIZES.map(p=>p.id+': '+counts.get(p.id)+' / '+p.weight.toFixed(1)+'% ожид.').join('\n');
-  toast('Симуляция 1000 прокруток выполнена');
- };
- $('tester-reset-daily').onclick=()=>{
-  if(!confirm('Сбросить серию входов и статистику наград ТОЛЬКО в тестовом сохранении? Купленные треки и звёздная пыль останутся.'))return;
-  g.daily={lastDay:-1,spinDay:-1,streak:0,claims:0,spins:0,musicWins:0};
-  testerPrizeOverride=null;
-  $('tester-odds-result').textContent='';
-  rewardUpdate();toast('Тестовые награды сброшены');
- };
-
- document.querySelectorAll('#tester-panel [data-test]').forEach(input=>{
-  input.oninput=()=>{
-   const key=input.dataset.test,value=Number(input.value);
-   if(!Number.isFinite(value))return;
-   if(key==='progress'){g.matter=Math.round(TA[g.tier].required*value/100);
-    player.targetR=currentRadius();
-    $('test-progress-val').textContent=value+'%';}
-   else if(Object.hasOwn(TEST_DEFAULTS,key)){
-    const previous=tester[key];tester[key]=key==='density'?Math.round(value):value;
-    panelValue(key,tester[key]);
-    if(key==='density'&&previous!==tester[key])testerRemakeNearby();
-    saveTester();
-   }
-   renderUI();save();
-  };
- });
- $('tester-missions').onclick=()=>{const m=missionReq();
-  g.stageCollects=Math.max(g.stageCollects,m.collect);g.stageRare=Math.max(g.stageRare,m.rare);
-  g.stageExplored=Math.max(g.stageExplored,m.explore);for(const r of stageRecipe())g.materials[r.type]=Math.max(g.materials[r.type]||0,r.amount);renderUI(true);toast('Рецепт и задачи выполнены');};
- $('tester-next').onclick=()=>testerSetTier(g.tier+1);
- $('tester-jump').onclick=()=>{player.x+=CHUNK*10;player.vx=player.vy=0;camera.x=player.x;camera.y=player.y;
-  visitPosition();testerRemakeNearby();renderUI(true);toast('Перемещение на 10 св. лет (тест)');};
- $('tester-abyss').onclick=testerVisitAbyss;
- $('tester-reset-mods').onclick=()=>{
-  Object.assign(tester,TEST_DEFAULTS);window.SpaceMeta?.setTesterTuning({rewardMultiplier:1,trackChance:.8});saveTester();testerRemakeNearby();testerRefresh();
-  toast('Тестовые множители сброшены');};
- $('tester-new-game').onclick=restartCampaign;
- $('tester-full-reset').onclick=testerAbsoluteReset;
- $('tester-copy-save').onclick=()=>{
-  if(!confirm(window.SpaceI18n?.t('Скопировать основное прохождение в тестерское? Текущий тестовый прогресс будет заменён.')||'Скопировать основное прохождение в тестерское? Текущий тестовый прогресс будет заменён.'))return;
-  try{const data=localStorage.getItem('cosmic-evolution-save-v1');if(!data){toast('Основное сохранение не найдено');return;}localStorage.setItem(SAVE_KEY,data);location.reload();}
-  catch(_){toast('Не удалось скопировать сохранение');}
- };
- $('camera-minus').onclick=()=>{g.viewZoom=clamp(g.viewZoom/1.25,.05,10);save();};$('camera-plus').onclick=()=>{g.viewZoom=clamp(g.viewZoom*1.25,.05,10);save();};
-$('btn-new-game').onclick=restartCampaign;
-}
-function panelValue(key,v){
- const label=document.querySelector(`#tester-panel [data-test-value="${key}"]`);
- if(label)label.textContent=key==='density'?`${v}/32`:`${v}×`;
-}
-testerInit();
 $('camera-minus').onclick=()=>{g.viewZoom=clamp(g.viewZoom/1.25,.05,10);save();};$('camera-plus').onclick=()=>{g.viewZoom=clamp(g.viewZoom*1.25,.05,10);save();};
 $('btn-new-game').onclick=restartCampaign;
 function showFinal(){show(`<div class="hero-kicker">28 / 28 ФОРМ ОТКРЫТО</div><div class="overlay-title">БЕСКОНЕЧНАЯ ЧЁРНАЯ ДЫРА</div><p class="overlay-copy">От одинокой частицы до бесконечного космоса. Теперь горизонт событий растёт бесконечно.</p><div class="stat-list"><div><strong>${timeFmt(g.time)}</strong><small>Время прохождения</small></div><div><strong>${fmt(g.total)}</strong><small>Поглощено материи</small></div><div><strong>${fmt(g.collects)}</strong><small>Космических объектов</small></div><div><strong>${g.rare}</strong><small>Найдено реликвий</small></div></div><p class="overlay-copy">Поглощай материю и продолжай увеличиваться без предела!</p><div class="modal-actions"><button class="primary-button" id="btn-endless">ИССЛЕДОВАТЬ ДАЛЬШЕ →</button><button class="secondary-button" id="btn-new-universe">НОВАЯ ИГРА</button></div>`);$('btn-endless').onclick=()=>{g.complete=true;g.endless=true;running=true;save();startMusic();$('modal').classList.add('off');last=performance.now();toast('∞ БЕСКОНЕЧНОЕ ИССЛЕДОВАНИЕ');};$('btn-new-universe').onclick=restartCampaign;}
@@ -4577,7 +4237,7 @@ if(window.SpaceUIv15Templates && document.createElement('template').content){
   decorate(root);return {root,old};
  }
  showMainMenu=function(paused=false){enterScreen('menu');legacy.menu(paused);const {root}=mount('menu');
-  q(root,'.primary.big-play').onclick=()=>g.tutorialDone?resumeGame():showTutorial();q(root,'.quiet-btn').onclick=restartCampaign;
+  q(root,'.primary.big-play').onclick=()=>startFlight();q(root,'.quiet-btn').onclick=restartCampaign;
   const dailyReady=window.SpaceMeta?.canClaim(g),rouletteReady=window.SpaceMeta?.canSpin(g);
   const menuGrid=q(root,'.menu-grid');
   // Match the original menu controls EXACTLY: same SVG family, three spans,
@@ -4670,8 +4330,8 @@ if(window.SpaceUIv15Templates && document.createElement('template').content){
    ['floating',L('Floating joystick · where you touch','Плавающий стик · в месте касания','Joystick flotante · donde toques')],
    ['touch',L('Touch to steer','Направление касанием','Toca para dirigir')]
   ];
-  const readWormPrefs=()=>{try{return JSON.parse(localStorage.getItem(wormKey)||'{}')||{};}catch(_){return {};}};
-  const writeWormPrefs=(key,value)=>{const data=readWormPrefs();data[key]=value;try{localStorage.setItem(wormKey,JSON.stringify(data));}catch(_){}};
+  const readWormPrefs=()=>{try{return JSON.parse(window.SpacePlatform.storage.getItem(wormKey)||'{}')||{};}catch(_){return {};}};
+  const writeWormPrefs=(key,value)=>{const data=readWormPrefs();data[key]=value;try{window.SpacePlatform.storage.setItem(wormKey,JSON.stringify(data));}catch(_){}};
   function addWormModeRow(id,heading,modes,key,fallback){
    const row=document.createElement('label');row.className='br-worm-control-row';
    const label=document.createElement('span');label.textContent=heading;
@@ -4788,7 +4448,7 @@ if(window.SpaceUIv15Templates && document.createElement('template').content){
   // NOT mount the old v15 statistics screen beneath it: closing the dialog
   // otherwise reveals a blank/stale page with no valid Back destination.
   if(window.InfinityProfile?.showStats){
-   if(!TEST_MODE)window.InfinityProfile.syncEndless({
+   window.InfinityProfile.syncEndless({
     time:g.time,objects:g.collects,matter:g.total,rare:g.rare,
     blackholes:Object.values(g.abyssConsumed||{}).filter(Boolean).length,
     deaths:g.losses,stage:g.tier
@@ -5029,7 +4689,6 @@ if(window.SpaceUIv15Templates && document.createElement('template').content){
   text(hud,'.evo-title>span:first-child',`${g.tier+1} / 28 · ${TA[g.tier].name}`);text(hud,'.evo-title>span:nth-child(2)',g.endless?'∞':TA[Math.min(27,g.tier+1)].name);text(hud,'.evo-aux b',Math.round(stageFraction()*100)+'%');q(hud,'.progress-bar span').style.width=stageFraction()*100+'%';text(hud,'#player-label-text',TA[g.tier].name);text(hud,'.player-label small',`${g.tier+1} / 28`);text(hud,'#pulse small',$('pulse-cooldown').textContent);text(hud,'#dash small',$('boost-cooldown').textContent);
  }
  const originalResume=resumeGame;resumeGame=function(){resumeFromAway();navigationStack.length=0;stopMusicPreview();visual?.closeSelect();originalResume();refreshV15();};
- if(TEST_MODE){const b=document.createElement('button');b.className='v15-tester';b.textContent='</>';b.setAttribute('aria-label','Tester panel');b.onclick=()=>testerToggle();document.body.append(b);}
  document.body.classList.add('ui-v15');
  refreshV15();
 }
@@ -5042,7 +4701,7 @@ if(WORM_SETTINGS_EMBED){
  const style=document.createElement('style');
  style.textContent=`
   html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#0b0619!important}
-  #universe,#hud,.vignette,#abyss-warning,#tester-panel,.v15-tester{
+  #universe,#hud,.vignette,#abyss-warning{
     display:none!important
   }
   #modal{position:fixed!important;inset:0!important;display:block!important;
@@ -5119,7 +4778,6 @@ function physicalKey(e){
  return codes[e.code]||e.key.toLowerCase();
 }
 addEventListener('keydown',e=>{const k=physicalKey(e);
- if(k==='f2'&&TEST_MODE){e.preventDefault();testerToggle();return;}
  if(e.target instanceof HTMLElement&&e.target.closest('input, select, textarea, [contenteditable="true"]'))return;
  if(['arrowup','arrowleft','arrowright','arrowdown',' '].includes(k))e.preventDefault();
  keys.add(k);
@@ -5135,7 +4793,7 @@ addEventListener('blur',()=>{
 // A window can lose focus without becoming document.hidden (multi-monitor,
 // browser apps, OS task switching). Finish qualifying absences on focus too.
 addEventListener('focus',()=>{
- if(document.hidden||awaitingAd||window.SpacePlatform?.adBusy)return;
+ if(document.hidden)return;
  const report=completeAway();
  if(report){
   showMainMenu(true);
@@ -5145,56 +4803,10 @@ addEventListener('focus',()=>{
 addEventListener('pagehide',()=>{beginAway();save();});
 document.addEventListener('visibilitychange',()=>{
  if(document.hidden){beginAway();if(running)showPause();}
- else if(!awaitingAd&&!window.SpacePlatform?.adBusy){
+ else if(true){
   const report=completeAway();
   if(report){showMainMenu(true);toast(L('Drift complete · route saved on the map','Дрейф завершён · маршрут сохранён на карте','Deriva completada · ruta guardada en el mapa'));}
  }
 });
 renderUI();
-// Developer-friendly deterministic smoke checks may inspect this read-only snapshot.
-// Browser smoke-test hook is exclusively available under ?tester=1.
-// It executes the REAL rival-hole collision code path rather than drawing a
-// cosmetic death screen. Ordinary players cannot trigger it.
-if(TEST_MODE)Object.defineProperty(window,'InfinitiTestActions',{value:Object.freeze({
- simulateRivalDeath(){
-  const h=livingAbysses().find(h=>!canEatAbyss(h));
-  if(!h)return false;
-  player.x=h.x+h.r*.93;player.y=h.y;
-  player.vx=player.vy=0;
-  abyssPhysical=[h];abyssTimer=120;
-  return updateAbysses(.025,Math.max(1,flightSpeed()),h.x+h.r*1.15,h.y)===false;
- },
- currentScreen(){return {screen:$('modal').dataset.screen,off:$('modal').classList.contains('off'),running,death:!!pendingDeath};}
-})});
-if(TEST_MODE)Object.defineProperty(window,'InfinityArtQA',{value:Object.freeze({
- drawGallery(canvas){
-  const out=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
-  out.fillStyle='#060b1c';out.fillRect(0,0,w,h);
-  const mats=['ore','crystal','ice','gas','plasma','exotic'];
-  const planets=[
-   ['#baa3ed',false,7],['#2860ff',false,8],['#2860ff',false,9],
-   ['#27ff40',false,10],['#efbd9e',true,11],['#83b7f5',true,12],
-   ['#f5c374',false,0],['#a56aff',false,3],['#e2eeff',false,4]];
-  const cell=w/6;
-  for(let i=0;i<mats.length;i++){
-   const sprite=matterArtwork(mats[i],i);
-   out.drawImage(sprite,i*cell+cell*.08,14,cell*.84,cell*.84);
-   out.fillStyle='#e8e7ff';out.font='12px sans-serif';
-   out.fillText(mats[i],i*cell+cell*.14,cell*.87);
-  }
-  const pr=Math.min(154,w/5.3),ry=cell+62;
-  for(let i=0;i<planets.length;i++){
-   const [color,gas,variant]=planets[i],sprite=planetArtwork(color,gas,variant);
-   const x=(i%5)*w/5+w/10,y=ry+Math.floor(i/5)*(pr+28)+pr/2;
-   out.drawImage(sprite,x-pr/2,y-pr/2,pr,pr);
-  }
-  for(let i=0;i<5;i++){
-   const sprite=rockArtwork(['#b5bfd7','#c1b6ad','#aaa8b2','#bc987d','#94adcc'][i],5,i);
-   const x=(i+.5)*w/5,y=h-75;
-   out.drawImage(sprite,x-66,y-66,132,132);
-  }
-  return {matter:matterArtCache.size,rocks:rockArtCache.size,planets:planetArtCache.size};
- }
-})});
-Object.defineProperty(window,'CosmicEvolutionDebug',{get:()=>({tier:g.tier,matter:g.matter,playerRadius:player.r,targetRadius:player.targetR,cameraZoom:camera.zoom,total:g.total,credits:g.credits,elapsed:g.time,objects:entities.length,particles:particles.length,playerX:player.x,playerY:player.y,loadedSectors:loadedChunks.size,visitedSectors:exploredCount(),visitedExactSectors:visitedChunks.size,visitedDiscs:g.discoveryDiscs.length,depletedSectors:Object.keys(g.depleted).length,music:g.music,running,progress:g.matter/TA[g.tier].required,forms:TA.length,renderTicks,fps:Math.round(frameFps),renderScale:performanceScale,autoQuality:g.autoQuality!==false,pixelRatio:dpr,controlMode:g.controlMode,flightFeel:g.flightFeel,stickActive:stick.active,mouseDown:pointer.down,velocityX:player.vx,velocityY:player.vy,mission:missionReq(),tester:TEST_MODE?{...tester}:null,testMode:TEST_MODE,farSectors:distantChunkCache.size,nearbyCollected:g.collects,activeSoundSources:pickupCount,macroPositions:macroEntities.slice(0,5).map(e=>[e.chunk,e.index,e.x,e.y]),visibleSectorQuota:sectorQuota(chunkInfo(Math.floor(player.x/CHUNK),Math.floor(player.y/CHUNK)),Math.floor(player.x/CHUNK),Math.floor(player.y/CHUNK)),lensBackend,absorbingGalaxies:cosmicAbsorptions.length,macroVisible:macroVisibleCount,macroActive:macroEntities.length,macroHoles:macroEntities.filter(e=>e.kind==='blackhole').length,galaxyPalettes:GALAXY_PALETTES.length,macroDepleted:Object.keys(g.depletedMacro).length,cosmicDepleted:Object.keys(g.depletedCosmic).length,cosmicHarvestTimer,complete:g.complete,endless:g.endless,baseRadius:radiusAt(g.tier,0),endlessRadiusMultiplier:g.tier===TA.length-1?currentRadius()/radiusAt(g.tier,0):1,atlasZoom:atlas.zoom,materials:{...g.materials},recipe:stageRecipe(),stageExplored:g.stageExplored})});
 })();

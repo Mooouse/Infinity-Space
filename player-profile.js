@@ -1,6 +1,7 @@
 /* Infinity Space: persistent nickname and unified, per-mode statistics.
    Shared by the endless world, four arcade modes and Cosmic Worms. */
-(function(){
+(async function(){
+await window.SpacePlatform.startup;
 'use strict';
 const PROFILE_KEY='infinity-space-player-v1', STATS_KEY='infinity-space-stats-v1';
 const MODE_IDS=['endless','arena','royale','core','race','worms'];
@@ -15,8 +16,8 @@ function language(){
  return /^ru\b/i.test(s)?'ru':/^es\b/i.test(s)?'es':'en';
 }
 const text=(key)=>dict[language()][key]||dict.en[key]||key;
-function read(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v&&typeof v==='object'?v:fallback;}catch(_){return fallback;}}
-function write(key,value){try{localStorage.setItem(key,JSON.stringify(value));}catch(_){}}
+function read(key,fallback){try{const v=JSON.parse(window.SpacePlatform.storage.getItem(key));return v&&typeof v==='object'?v:fallback;}catch(_){return fallback;}}
+function write(key,value){try{window.SpacePlatform.storage.setItem(key,JSON.stringify(value));}catch(_){}}
 function safeCount(x){const n=Number(x);return Number.isFinite(n)?Math.max(0,n):0;}
 function basic(){return {matches:0,wins:0,kills:0,objects:0,maxMass:0,time:0,bestPlace:null,placeSum:0,top3:0,points:0,bestPoints:0,bestFinish:null,maxStage:0,forms:[0,0,0,0,0],matter:0,rare:0,blackholes:0,deaths:0};}
 function empty(){const s={version:2,order:MODE_IDS.slice()};for(const mode of MODE_IDS)s[mode]=basic();s.endless._last=null;return s;}
@@ -445,5 +446,8 @@ function showModeAchievements(mode){
  return node;
 }
 
+// CrazyGames: land a new player in the game, not in a nickname form. A default
+// callsign is assigned once; the player can change it from the profile chip.
+if(!getName())setName('Pilot-'+String(1000+Math.floor(Math.random()*9000)));
 window.InfinityProfile={getName,setName,promptName,showStats,getStats,recordMatch,syncEndless,total,language,text,showModeAchievements,achievementStats};
 })();

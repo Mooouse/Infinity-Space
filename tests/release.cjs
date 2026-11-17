@@ -1,0 +1,6 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+for(const file of fs.readdirSync('.').filter(f=>/\.(js|html|css)$/.test(f))){const s=fs.readFileSync(file,'utf8');assert(!/tester|TEST_MODE|requestAd|SpaceCrazyAds|rewarded|midgame|WATCH AD|реклам/i.test(s),file);if(file.endsWith('.js'))new vm.Script(s,{filename:file});if(file.endsWith('.html'))for(const m of s.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g))new vm.Script(m[1],{filename:file});}
+const scope={};vm.runInNewContext(fs.readFileSync('music-tracks.js','utf8'),{window:scope});assert.equal(scope.SpaceMusicTracks.length,12);assert.equal(new Set(scope.SpaceMusicTracks.map(t=>t.title)).size,12);
+for(const t of scope.SpaceMusicTracks){assert(fs.existsSync(t.src));assert(fs.existsSync(t.cover));assert(t.cover.endsWith('.svg'));assert(t.duration>70);}
+const meta={};vm.runInNewContext(fs.readFileSync('space-meta.js','utf8'),{window:meta});const g={credits:0,tier:0};const m=meta.SpaceMeta,now=Date.now();assert(!m.canSpin(g,now));assert(m.claim(g,now).ok);assert(m.canSpin(g,now));assert(m.roll(g,scope.SpaceMusicTracks,now,()=>0).ok);assert(!m.roll(g,scope.SpaceMusicTracks,now).ok);assert(!m.claim(g,now).ok);assert(m.claim(g,now+86400000).ok);
+console.log('Release syntax, removal, assets, daily entitlement: OK');

@@ -1,6 +1,7 @@
 /* Infinity Space / Cosmic Worms — shared, persistent per-segment skin workshop.
    Runs in the main game menu and in the Cosmic Worms pause screen. */
-(function(){
+(async function(){
+await window.SpacePlatform.startup;
 'use strict';
 const KEY='infinity-space-worms-settings-v2';
 const HEADS=["classic","pizza","pig","blackhole","cat","dragon","robot","alien","shark","skull","ghost","astronaut","planet","sun","comet","crystal","eclipse","pulsar","mushroom","crown","star","donut","fox","demon","octopus","ufo","panda","cyclops","frog","flame","rocket","lollipop"];
@@ -33,35 +34,7 @@ const L={
  es:{title:'Taller de gusanos',desc:'Elige un cuerpo cósmico continuo con estrellas, cometas y degradados.',
  templates:'Estilos',segment:'Degradado',palette:'Colores',all:'Rellenar',stripes:'Alternar',reset:'Restablecer',done:'Listo',close:'Cerrar',picked:'Segmento',custom:'Color propio',tip:'Pulsa un círculo para pintarlo. Mayús + clic pinta un rango.'}
 };
-// Two skins and two heads are CrazyGames rewarded-only and persist independently
-// from the selected settings. No ads are ever requested by the Playgama build.
-const AD_ONLY_SKINS=new Set(['adnova','adember']);
-const AD_ONLY_HEADS=new Set(['rocket','lollipop']);
-const AD_REWARDS_KEY='infinity-space-crazy-worm-rewards-v1';
-function ownedAdRewards(){
- try{
-  const data=JSON.parse(localStorage.getItem(AD_REWARDS_KEY)||'{}');
-  return {skins:Array.isArray(data.skins)?data.skins.filter(x=>AD_ONLY_SKINS.has(x)):[],
-    heads:Array.isArray(data.heads)?data.heads.filter(x=>AD_ONLY_HEADS.has(x)):[]};
- }catch(_){return {skins:[],heads:[]}}
-}
-function adOwned(type,id){const k=type==='skin'?'skins':'heads';return ownedAdRewards()[k].includes(id);}
-function grantAdReward(type,id){
- const valid=type==='skin'?AD_ONLY_SKINS.has(id):AD_ONLY_HEADS.has(id);
- if(!valid)return false;
- const all=ownedAdRewards(),key=type==='skin'?'skins':'heads';
- if(!all[key].includes(id))all[key].push(id);
- try{localStorage.setItem(AD_REWARDS_KEY,JSON.stringify(all))}catch(_){return false}
- return true;
-}
-function headUnlocked(id){return HEADS.includes(id)&&(!AD_ONLY_HEADS.has(id)||adOwned('head',id))}
-const playgamaBuild=()=>window.SpacePlaygamaBuild===true||location.protocol==='blob:'||
- /(^|\.)playgama\.(com|io)$/.test(location.hostname||'')||
- new URLSearchParams(location.search).has('playgama');
-// In standalone / disabled CrazyGames environments an inert 'watch ad'
-// purchase would violate the SDK's launch requirements. Expose these
-// optional offers only where the CrazyGames SDK can actually serve them.
-const adRewardsVisible=()=>!playgamaBuild()&&window.SpaceCrazyAds?.supported===true;
+function headUnlocked(id){return HEADS.includes(id)}
 // Preset skins are lasting rewards for rank-one finishes, eliminations
 // and personal mass records. The first two are always available.
 const UNLOCKS={
@@ -78,7 +51,6 @@ function milestones(){
   mass:Math.max(0,totals.maxMass||0,live.mass||0)};
 }
 function rewardFor(id){
- if(AD_ONLY_SKINS.has(id))return {unlocked:adOwned('skin',id),kind:'ad',need:1,current:adOwned('skin',id)?1:0};
  const challenge=UNLOCKS[id];
  if(!challenge)return {unlocked:true,kind:'free',need:0,current:0};
  const [kind,need]=challenge,progress=milestones();
@@ -87,7 +59,6 @@ function rewardFor(id){
 }
 function requirementText(id,language){
  const r=rewardFor(id);if(r.unlocked)return language==='ru'?'ОТКРЫТО':language==='es'?'DESBLOQUEADO':'UNLOCKED';
- if(r.kind==='ad')return language==='ru'?'▶ РЕКЛАМА':language==='es'?'▶ VER ANUNCIO':'▶ WATCH AD';
  const key=r.kind==='wins'?
   (language==='ru'?'ТОП-1':language==='es'?'TOP 1':'TOP 1'):
   r.kind==='kills'?(language==='ru'?'УБИЙСТВ':language==='es'?'BAJAS':'KILLS'):
@@ -97,7 +68,7 @@ function requirementText(id,language){
 const normalize=x=>/^#[0-9a-f]{6}$/i.test(x)?x.toLowerCase():null;
 const presetColors=id=>PRESETS.find(x=>x[0]===id)?.[4]||PRESETS[0][4];
 function load(){
- let raw={};try{raw=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(_){}
+ let raw={};try{raw=JSON.parse(window.SpacePlatform.storage.getItem(KEY)||'{}')||{}}catch(_){}
  const skin=PRESETS.some(p=>p[0]===raw.skin)&&rewardFor(raw.skin).unlocked?raw.skin:'nebula';
  const backup=presetColors(skin);
  return {
@@ -107,7 +78,7 @@ function load(){
  };
 }
 function save(obj){
- try{localStorage.setItem(KEY,JSON.stringify(obj))}catch(_){}
+ try{window.SpacePlatform.storage.setItem(KEY,JSON.stringify(obj))}catch(_){}
  window.dispatchEvent(new CustomEvent('infinity-worm-skin-changed',{detail:{skin:obj.skin,customEnabled:obj.customEnabled,customSegments:obj.customSegments.slice(),head:obj.head}}));
 }
 // Preview motion is a true trailing path, sampled at equal time intervals.
@@ -282,14 +253,14 @@ function close(){
 }
 function open({onChange,onClose}={}){
  if(active){close()}
- const lang=/^(ru|en|es)$/.test(localStorage.getItem('infiniti-space-language')||'')?localStorage.getItem('infiniti-space-language'):(/^ru/i.test(navigator.language)?'ru':/^es/i.test(navigator.language)?'es':'en');
+ const lang=/^(ru|en|es)$/.test(window.SpacePlatform.storage.getItem('infiniti-space-language')||'')?window.SpacePlatform.storage.getItem('infiniti-space-language'):(/^ru/i.test(navigator.language)?'ru':/^es/i.test(navigator.language)?'es':'en');
  const t=L[lang];
  let data=load(),selectedColor=COLORS[0],selectedIndex=0;
  const root=document.createElement('div');
  root.className='ws-overlay';root.setAttribute('role','dialog');root.setAttribute('aria-modal','true');root.setAttribute('aria-label',t.title);
  root.innerHTML='<section class="ws-dialog"><header class="ws-header"><div><span class="ws-eyebrow">INFINITY SPACE / COSMIC WORMS</span><h2 class="ws-title"></h2><p class="ws-desc"></p></div><button class="ws-x" type="button" aria-label=""></button></header>'+
  '<div class="ws-body"><div class="ws-live-preview"><div class="ws-live-caption"><strong class="ws-preview-title"></strong><span class="ws-preview-hint"></span></div><canvas class="ws-preview-canvas" width="920" height="220" aria-label="Animated worm appearance preview"></canvas></div><h3 class="ws-presets-title"></h3><div class="ws-presets"></div>'+
- '<p class="ws-ad-status" role="status" aria-live="polite"></p><div class="ws-section"><h3 class="ws-head-heading"></h3><div class="ws-head-options"></div></div>'+
+ '<div class="ws-section"><h3 class="ws-head-heading"></h3><div class="ws-head-options"></div></div>'+
  '<details class="ws-advanced"><summary class="ws-advanced-summary"></summary>'+
  '<div class="ws-section"><div class="ws-part-head"><h3 class="ws-segments-title"></h3><span class="ws-indicator"></span></div><p class="ws-tip"></p><div class="ws-segments" role="group"></div></div>'+
  '<div class="ws-section"><h3 class="ws-palette-title"></h3><div class="ws-palette"></div><label class="ws-custom-label"><span class="ws-custom-title"></span><input type="color" class="ws-custom" value="#ff1744"></label></div></details>'+
@@ -336,55 +307,20 @@ function open({onChange,onClose}={}){
  cyclops:['Циклоп','Cyclops','Cíclope'],
  frog:['Лягушка','Frog','Rana'],
  flame:['Огонь','Flame','Llama'],
- rocket:['Ракета · реклама','Rocket · Ad','Cohete · Anuncio'],
- lollipop:['Леденец · реклама','Candy · Ad','Caramelo · Anuncio']
+ rocket:['Ракета','Rocket','Cohete'],
+ lollipop:['Леденец','Candy','Caramelo']
 };
- let watchingReward=false;
- const adStatus=message=>{$('.ws-ad-status').textContent=message;};
- async function watchUnlock(type,id){
-  if(watchingReward)return false;
-  if(!window.SpaceCrazyAds?.available){
-   adStatus(lang==='ru'?'Реклама доступна в CrazyGames.':lang==='es'?'Anuncios disponibles en CrazyGames.':'Ads are available in CrazyGames.');
-   return false;
-  }
-  watchingReward=true;
-  adStatus(lang==='ru'?'Загрузка рекламы…':lang==='es'?'Cargando anuncio…':'Loading ad…');
-  root.querySelectorAll('.ad-locked').forEach(el=>el.disabled=true);
-  let completed=false;
-  try{completed=await window.SpaceCrazyAds.rewarded();}
-  finally{watchingReward=false;}
-  if(!completed||!grantAdReward(type,id)){
-   adStatus(lang==='ru'?'Реклама не завершена. Награда не выдана.':lang==='es'?'Anuncio incompleto.':'Ad not completed. No reward granted.');
-   root.querySelectorAll('.ad-locked').forEach(el=>el.disabled=false);
-   return false;
-  }
-  adStatus(lang==='ru'?'Награда открыта навсегда!':lang==='es'?'¡Recompensa desbloqueada!':'Reward permanently unlocked!');
-  if(type==='skin'){
-   data.skin=id;data.customEnabled=false;
-   data.customSegments=Array.from({length:64},(_,i)=>presetColors(id)[i%4]);
-  }else data.head=id;
-  persist();
-  if(root.isConnected){renderPresets();renderHeads();renderSegments();}
-  return true;
- }
  function renderHeads(){
   const list=$('.ws-head-options');list.replaceChildren();
   for(const id of HEADS){
-   if(AD_ONLY_HEADS.has(id)&&!adRewardsVisible())continue;
-   const locked=AD_ONLY_HEADS.has(id)&&!headUnlocked(id);
+   const locked=false;
    const b=document.createElement('button');b.type='button';
    b.className='ws-head-choice'+(locked?' ad-locked':'')+(data.head===id?' selected':'');
    b.dataset.head=id;
    b.innerHTML='<span class="ws-head-symbol" aria-hidden="true"><canvas width="64" height="64"></canvas></span><span class="ws-head-label"></span>';
    b.querySelector('.ws-head-label').textContent=headLabels[id][lang==='ru'?0:lang==='es'?2:1];
-   if(locked){
-    const tag=document.createElement('small');tag.className='ws-head-unlock';
-    tag.textContent=lang==='ru'?'▶ ЗА РЕКЛАМУ':lang==='es'?'▶ VER ANUNCIO':'▶ WATCH AD';
-    b.append(tag);
-   }
    WormHeadArt.drawThumbnail(b.querySelector('canvas'),id);
    b.onclick=()=>{
-    if(locked){watchUnlock('head',id);return}
     data.head=id;persist();
     list.querySelectorAll('.ws-head-choice').forEach(x=>x.classList.toggle('selected',x.dataset.head===id));
    };
@@ -417,7 +353,6 @@ function open({onChange,onClose}={}){
  function renderPresets(){
   const list=$('.ws-presets');list.replaceChildren();
   PRESETS.forEach(p=>{
-   if(AD_ONLY_SKINS.has(p[0])&&!adRewardsVisible())return;
    const reward=rewardFor(p[0]);
    const item=document.createElement('button');item.type='button';
    item.className='ws-preset'+(data.skin===p[0]&&!data.customEnabled?' selected':'');
@@ -437,7 +372,7 @@ function open({onChange,onClose}={}){
    unlock.textContent=requirementText(p[0],lang);item.append(unlock);
    item.onclick=()=>{
     const lock=rewardFor(p[0]);
-    if(!lock.unlocked){if(lock.kind==='ad')watchUnlock('skin',p[0]);return;}
+    if(!lock.unlocked)return;
     data.skin=p[0];data.customEnabled=false;data.customSegments=Array.from({length:64},(_,i)=>p[4][i%p[4].length]);
     persist();renderPresets();renderSegments();
    };
@@ -567,5 +502,5 @@ function open({onChange,onClose}={}){
  previewFrame=requestAnimationFrame(paintPreview);
  return close;
 }
-window.WormSkinStudio={open,close,read:load,presets:PRESETS,isUnlocked:id=>rewardFor(id).unlocked,isHeadUnlocked:headUnlocked,rewardFor,adOwned,progress:milestones,previewCenterline,headArt:WormHeadArt};
+window.WormSkinStudio={open,close,read:load,presets:PRESETS,isUnlocked:id=>rewardFor(id).unlocked,isHeadUnlocked:headUnlocked,rewardFor,progress:milestones,previewCenterline,headArt:WormHeadArt};
 })();

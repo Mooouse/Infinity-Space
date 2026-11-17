@@ -22,11 +22,11 @@
   
   
 
-  <link rel="stylesheet" href="ui-app.css?v=3.92.4">
-  <link rel="stylesheet" href="unified-space.css?v=4">
-<link rel="stylesheet" href="secondary-design.css?v=6">
-<link rel="stylesheet" href="profile-report.css?v=4">
-<link rel="stylesheet" href="mode-unified.css?v=14">
+  <link rel="stylesheet" href="ui-app.css?v=3.95.0">
+  <link rel="stylesheet" href="unified-space.css?v=3.95.0">
+<link rel="stylesheet" href="secondary-design.css?v=3.95.0">
+<link rel="stylesheet" href="profile-report.css?v=3.95.0">
+<link rel="stylesheet" href="mode-unified.css?v=3.95.0">
 </head>
 <body>
   <canvas id="universe" aria-label="Игровое поле Infinity Space"></canvas>
@@ -39,7 +39,7 @@
         <div class="stat"><span class="stat-icon gold">✦</span><div><small>ЗВЁЗДНАЯ ПЫЛЬ</small><strong id="credit-value">0</strong></div></div>
         <div class="stat timer-stat"><span class="stat-icon clock">◷</span><div><small>В КОСМОСЕ</small><strong id="time-value">00:00</strong></div></div>
       </div>
-      <div class="top-actions"><button id="btn-new-game" class="square-button" title="Начать заново" aria-label="Новая игра">↺</button><button id="btn-tester" class="square-button tester-toggle" title="Тестерская панель (F2)" aria-label="Тестерская панель"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 4-5 8 5 8M16 4l5 8-5 8M14 4l-4 16"/></svg></button><button id="btn-music" class="square-button" title="Включить / выключить музыку" aria-label="Музыка"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l11-2v13M9 9l11-2"/><ellipse cx="6" cy="18" rx="3" ry="2"/><ellipse cx="17" cy="16" rx="3" ry="2"/></svg></button><button id="btn-map" class="square-button" title="Карта Вселенной (M)" aria-label="Карта Вселенной"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="m16 8-2.5 5.5L8 16l2.5-5.5Z"/></svg></button><button id="btn-pause" class="square-button" title="Пауза (P)" aria-label="Пауза"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5v14M16 5v14" stroke-width="3"/></svg></button><button id="btn-settings" class="square-button" title="Настройки" aria-label="Настройки"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3" fill="#0b2031"/><circle cx="16" cy="17" r="3" fill="#0b2031"/></svg></button></div>
+      <div class="top-actions"><button id="btn-new-game" class="square-button" title="Начать заново" aria-label="Новая игра">↺</button><button id="btn-music" class="square-button" title="Включить / выключить музыку" aria-label="Музыка"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l11-2v13M9 9l11-2"/><ellipse cx="6" cy="18" rx="3" ry="2"/><ellipse cx="17" cy="16" rx="3" ry="2"/></svg></button><button id="btn-map" class="square-button" title="Карта Вселенной (M)" aria-label="Карта Вселенной"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="m16 8-2.5 5.5L8 16l2.5-5.5Z"/></svg></button><button id="btn-pause" class="square-button" title="Пауза (P)" aria-label="Пауза"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5v14M16 5v14" stroke-width="3"/></svg></button><button id="btn-settings" class="square-button" title="Настройки" aria-label="Настройки"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3" fill="#0b2031"/><circle cx="16" cy="17" r="3" fill="#0b2031"/></svg></button></div>
     </header>
     <aside class="sidebar" id="sidebar">
       <div class="side-header"><span>УЛУЧШЕНИЯ</span><button id="btn-sidebar" aria-label="Свернуть улучшения"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button></div>
@@ -60,66 +60,19 @@
     <div id="toast-root" class="toast-root" aria-live="polite"></div>
   </div>
   <div id="abyss-warning" class="abyss-warning" hidden role="status"></div>
-  <section id="tester-panel" class="tester-panel hidden" aria-label="Панель тестирования" aria-hidden="true">
-    <div class="tester-header"><div><small>РАЗРАБОТКА / F2</small><strong>ТЕСТЕРСКАЯ ПАНЕЛЬ</strong></div><button id="tester-close" type="button" title="Закрыть панель"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/></svg></button></div>
-    <div id="tester-stats" class="tester-stats">FPS / объекты / координаты</div>
-    <label class="tester-line"><span>Форма эволюции</span><select id="tester-tier" aria-label="Форма эволюции"></select></label>
-    <label class="tester-line"><span>Прогресс стадии <b id="test-progress-val">0%</b></span><input data-test="progress" type="range" min="0" max="100" step="1" value="0"></label>
-    <label class="tester-line"><span>Скорость полёта <b data-test-value="speed">1×</b></span><input data-test="speed" type="range" min=".25" max="6" step=".25" value="1"></label>
-    <label class="tester-line"><span>Гравитация <b data-test-value="gravity">1×</b></span><input data-test="gravity" type="range" min=".5" max="8" step=".25" value="1"></label>
-    <label class="tester-line"><span>Сбор материи <b data-test-value="loot">1×</b></span><input data-test="loot" type="range" min=".25" max="30" step=".25" value="1"></label>
-    <label class="tester-line"><span>Масштаб камеры <b data-test-value="zoom">1×</b></span><input data-test="zoom" type="range" min=".2" max="6" step=".1" value="1"></label>
-    <label class="tester-line"><span>Размер бублика <b data-test-value="ring">1×</b></span><input data-test="ring" aria-label="Размер бублика" type="range" min=".6" max="2.5" step=".05" value="1"></label>
-    <label class="tester-line"><span>Плотность добычи <b data-test-value="density">32/32</b></span><input data-test="density" type="range" min="4" max="32" step="1" value="32"></label>
-    <label class="tester-line"><span>Звёздная пыль (баланс)</span><input id="tester-credits" type="number" min="0" max="1000000000000" step="1000" value="0"></label>
-    <section class="tester-rewards" aria-label="Тестирование наград и рулетки">
-      <h3>✦ НАГРАДЫ И РУЛЕТКА</h3>
-      <div id="tester-daily-status" class="tester-rewards-status" role="status" aria-live="polite"></div>
-      <label class="tester-line"><span>Серия входов, дней</span><input id="tester-daily-streak" type="number" min="0" max="99999" step="1" value="0"></label>
-      <label class="tester-line"><span>Множитель ежедневной пыли <b data-reward-value="rewardMultiplier">1×</b></span><input data-reward-tune="rewardMultiplier" type="range" min=".1" max="20" step=".1" value="1"></label>
-      <label class="tester-line"><span>Шанс музыкального трека <b data-reward-value="trackChance">0.8%</b></span><input data-reward-tune="trackChance" type="range" min=".1" max="25" step=".1" value=".8"></label>
-      <label class="tester-line"><span>Принудительный приз (только тестовый спин)</span><select id="tester-force-prize"><option value="">Случайный результат</option><option value="dust-1">×1 — звёздная пыль</option><option value="dust-2">×2 — звёздная пыль</option><option value="dust-3">×3 — звёздная пыль</option><option value="dust-5">×5 — звёздная пыль</option><option value="dust-8">×8 — звёздная пыль</option><option value="dust-15">×15 — звёздная пыль</option><option value="dust-30">×30 — звёздная пыль</option><option value="track">♫ Музыкальный трек</option></select></label>
-      <div class="tester-reward-buttons">
-        <button id="tester-open-daily" type="button">Календарь наград</button>
-        <button id="tester-open-wheel" type="button">Открыть рулетку</button>
-        <button id="tester-unlock-daily" type="button">↻ Новый день (тест)</button>
-        <button id="tester-claim-daily" type="button">✦ Выдать награду</button>
-        <button id="tester-unlock-spin" type="button">↻ Разблокировать спин</button>
-        <button id="tester-force-spin" type="button">◉ Тестовый спин</button>
-        <button id="tester-odds-sim" type="button">1000 случайных призов</button>
-        <button id="tester-reset-daily" type="button" class="danger">Сбросить награды</button>
-      </div>
-      <div id="tester-odds-result" class="tester-odds-result" role="status" aria-live="polite"></div>
-      <p class="tester-reward-note">Все действия меняют только тестовое сохранение. Изменение шансов и множителя не влияет на обычную игру.</p>
-    </section>
-    <div class="tester-actions">
-      <button id="tester-missions" type="button">✓ Выполнить задачи</button>
-      <button id="tester-next" type="button">↑ Следующая форма</button>
-      <button id="tester-abyss" type="button">◉ К сверхмассивной дыре</button>
-      <button id="tester-jump" type="button">➤ +10 св. лет</button>
-      <button id="tester-reset-mods" type="button">↻ Сбросить множители</button>
-      <button id="tester-new-game" type="button" class="danger">⟲ Новая игра</button><button id="tester-copy-save" class="tester-copy" type="button">⇄ Копировать сохранение</button>
-    </div>
-    <div class="tester-wipe-zone">
-      <button id="tester-full-reset" type="button" class="tester-absolute-reset" aria-describedby="tester-full-reset-warning">⚠ ПОЛНЫЙ СБРОС ВСЕГО</button>
-      <p id="tester-full-reset-warning">Удаляет всё тестовое прохождение: прогресс, пыль, покупки, музыку, достижения, карту, ежедневные награды и настройки. Без резервной копии. Обычный профиль не затрагивается.</p>
-    </div>
-    <p class="tester-note">Тестовые параметры сохраняются отдельно. Изменения стадии и валюты влияют на текущее сохранение. Исследованные области и собранная материя остаются постоянными.</p>
-  </section>
+
   <div id="modal" class="modal-backdrop" data-screen="menu" role="dialog" aria-modal="true" aria-label="Меню игры"></div>
-  <script src="i18n.js?v=3.40.2" defer></script>
-  <script src="platform.js?v=3.60.0" defer></script>
-  <script src="crazygames-extras.js?v=1" defer></script>
-  <script src="https://bridge.playgama.com/v2/stable/playgama-bridge.js" defer></script>
-  <script src="playgama-platform.js?v=3.60.0" defer></script>
-  <script src="space-meta.js?v=3.51.0" defer></script>
-  <script src="ui-v15-behaviors.js?v=3.42.6" defer></script>
-  <script src="ui-v15-templates.js?v=3.80.1" defer></script>
-  <script src="music-tracks.js?v=3.54.2" defer></script>
-  <script src="mobile-controls.js?v=3.42.1" defer></script>
-  <script src="player-profile.js?v=6" defer></script>
-  <script src="game.js?v=3.92.4" defer></script>
-  <script src="playgama-ui.js?v=3.60.0" defer></script>
-  <script src="worm-skin-studio.js?v=17" defer></script><script src="menu-hub.js?v=3.94.1" defer></script>
+  <script src="platform.js?v=3.95.0" defer></script>
+<script src="i18n.js?v=3.95.0" defer></script>
+  
+  
+  <script src="space-meta.js?v=3.95.0" defer></script>
+  <script src="ui-v15-behaviors.js?v=3.95.0" defer></script>
+  <script src="ui-v15-templates.js?v=3.95.0" defer></script>
+  <script src="music-tracks.js?v=3.95.0" defer></script>
+  <script src="mobile-controls.js?v=3.95.0" defer></script>
+  <script src="player-profile.js?v=3.95.0" defer></script>
+  <script src="game.js?v=3.95.0" defer></script>
+  <script src="worm-skin-studio.js?v=3.95.0" defer></script><script src="menu-hub.js?v=3.95.0" defer></script>
 </body>
 </html>

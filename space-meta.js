@@ -4,20 +4,6 @@
  'use strict';
  const DAY_MS=86400000;
  const TAU=Math.PI*2;
- const IS_TESTER=typeof root.location?.search==='string'&&new URLSearchParams(root.location.search).get('tester')==='1';
- let testerRewardMultiplier=1;
- const BASE_PRIZE_WEIGHTS=[29,25,20,13,8,3,1.2,.8];
- function setTesterTuning({rewardMultiplier=1,trackChance=.8}={}){
-  if(!IS_TESTER)return false;
-  testerRewardMultiplier=clamp(Number(rewardMultiplier)||1,.1,20);
-  const chance=clamp(Number(trackChance),.1,25);
-  const normalized=finite(chance)?chance:.8;
-  PRIZES.forEach((prize,i)=>{
-   prize.weight=i===7?normalized:BASE_PRIZE_WEIGHTS[i]*(100-normalized)/99.2;
-  });
-  return true;
- }
-
  const finite=x=>Number.isFinite(x);
  const clamp=(x,min,max)=>Math.min(max,Math.max(min,x));
  function dayIndex(now=Date.now()){
@@ -33,29 +19,14 @@
   d.claims=clamp(Math.floor(Number(d.claims)||0),0,99999);
   d.spins=clamp(Math.floor(Number(d.spins)||0),0,99999);
   d.musicWins=clamp(Math.floor(Number(d.musicWins)||0),0,99999);
-  d.adSpinDay=finite(d.adSpinDay)?d.adSpinDay:-1;
-  d.adSpinUsedDay=finite(d.adSpinUsedDay)?d.adSpinUsedDay:-1;
   return d;
  }
  function baseReward(g,streak){
   // Grows with progression, but does not grant free evolution matter.
-  return Math.round((240+Math.min(streak,30)*85)*Math.pow(1+Math.max(0,g.tier||0),2.2)*testerRewardMultiplier);
+  return Math.round((240+Math.min(streak,30)*85)*Math.pow(1+Math.max(0,g.tier||0),2.2));
  }
  function canClaim(g,now=Date.now()){return state(g).lastDay<dayIndex(now);}
- function canSpin(g,now=Date.now()){
-  const d=state(g),day=dayIndex(now);
-  return d.lastDay===day&&(d.spinDay!==day||(d.adSpinDay===day&&d.adSpinUsedDay!==day));
- }
- // One additional attempt per day, credited only by a finished rewarded ad.
- function canAdSpin(g,now=Date.now()){
-  const d=state(g),day=dayIndex(now);
-  return d.lastDay===day&&d.spinDay===day&&d.adSpinDay!==day;
- }
- function grantAdSpin(g,now=Date.now()){
-  if(!canAdSpin(g,now))return {ok:false,reason:'unavailable'};
-  const d=state(g);d.adSpinDay=dayIndex(now);
-  return {ok:true};
- }
+ function canSpin(g,now=Date.now()){const d=state(g),day=dayIndex(now);return d.lastDay===day&&d.spinDay!==day;}
  function claim(g,now=Date.now()){
   const d=state(g),today=dayIndex(now);
   if(d.lastDay>=today)return {ok:false,reason:'claimed'};
@@ -77,11 +48,9 @@
  ];
  function roll(g,tracks,now=Date.now(),random=Math.random){
   const d=state(g),today=dayIndex(now);
-  const normal=d.spinDay!==today,bonus=d.adSpinDay===today&&d.adSpinUsedDay!==today;
-  if(d.lastDay!==today||(!normal&&!bonus))return {ok:false,reason:'unavailable'};
+  if(!canSpin(g,now))return {ok:false,reason:'unavailable'};
   // Consume the appropriate entitlement before any animation/reload.
-  if(normal)d.spinDay=today;else d.adSpinUsedDay=today;
-  d.spins++;
+  d.spinDay=today;d.spins++;
   let n=clamp(Number(random())||0,0,.999999999)*100,prize=PRIZES[PRIZES.length-1];
   for(const p of PRIZES){n-=p.weight;if(n<0){prize=p;break;}}
   const amountBase=baseReward(g,d.streak);
@@ -179,6 +148,6 @@
   // Around 90 minutes unattended can complete a form; never exceed 100%.
   return Math.max(0,Math.min(r-m,r*(seconds/5400)));
  }
- root.SpaceMeta={dayIndex,state,canClaim,canSpin,canAdSpin,grantAdSpin,claim,roll,PRIZES,baseReward,setTesterTuning,
+ root.SpaceMeta={dayIndex,state,canClaim,canSpin,claim,roll,PRIZES,baseReward,
   segmentHit,safeStep,planDrift,addRoute,driftReward};
 })(typeof window!=='undefined'?window:globalThis);

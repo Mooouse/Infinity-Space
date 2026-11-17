@@ -165,7 +165,6 @@ if(window.SpaceUIv15Templates && document.createElement('template').content){
   text(hud,'.evo-title>span:first-child',`${g.tier+1} / 28 · ${TA[g.tier].name}`);text(hud,'.evo-title>span:nth-child(2)',g.endless?'∞':TA[Math.min(27,g.tier+1)].name);text(hud,'.evo-aux b',Math.round(stageFraction()*100)+'%');q(hud,'.progress-bar span').style.width=stageFraction()*100+'%';text(hud,'#player-label-text',TA[g.tier].name);text(hud,'.player-label small',`${g.tier+1} / 28`);text(hud,'#pulse small',$('pulse-cooldown').textContent);text(hud,'#dash small',$('boost-cooldown').textContent);text(hud,'#upgrades-open b',Object.values(g.upgrade).reduce((a,b)=>a+b,0));
  }
  const originalResume=resumeGame;resumeGame=function(){stopMusicPreview();visual?.closeSelect();originalResume();refreshV15();};
- if(TEST_MODE){const b=document.createElement('button');b.className='v15-tester';b.textContent='</>';b.setAttribute('aria-label','Tester panel');b.onclick=()=>testerToggle();document.body.append(b);}
  document.body.classList.add('ui-v15');
  refreshV15();
 }

@@ -1,18 +1,19 @@
 /* Infinity Space — one music library and playlist for every arcade mode.
    Reads the canonical Endless Space save rather than creating a second shop. */
-(()=>{'use strict';
+(async () => {
+await window.SpacePlatform.startup;'use strict';
 const tracks=window.SpaceMusicTracks||[];
 const params=new URLSearchParams(location.search);
 const previewParams=new URLSearchParams(location.hash.slice(1));
 if(!tracks.length||params.has('demo')||previewParams.has('demo'))return;
 const locale=()=>{
- let language='en';try{language=localStorage.getItem('infiniti-space-language')||navigator.language||'en'}catch(_){}
+ let language='en';try{language=window.SpacePlatform.storage.getItem('infiniti-space-language')||navigator.language||'en'}catch(_){}
  return /^ru/i.test(language)?'ru':/^es/i.test(language)?'es':'en';
 };
 const translation=(en,ru,es)=>({ru,es,en})[locale()];
 const SAVE='cosmic-evolution-save-v1';
 const safeRead=()=>{
- try{const value=JSON.parse(localStorage.getItem(SAVE)||'null');return value&&typeof value==='object'?value:null;}catch(_){return null;}
+ try{const value=JSON.parse(window.SpacePlatform.storage.getItem(SAVE)||'null');return value&&typeof value==='object'?value:null;}catch(_){return null;}
 };
 const first=tracks[0];
 const owned=data=>new Set([first.id,...(Array.isArray(data?.ownedTracks)?data.ownedTracks:[])]);
@@ -48,7 +49,7 @@ function saveSelection(track,disable=false){
  if(disable)saved.music=!saved.music;
  else{saved.activeTrack=track.id;saved.music=true;}
  saved.ownedTracks=[...bought];
- try{const json=JSON.stringify(saved);localStorage.setItem(SAVE,json);window.SpacePlatform?.persist?.(json);}catch(_){return false;}
+ try{const json=JSON.stringify(saved);window.SpacePlatform.storage.setItem(SAVE,json);}catch(_){return false;}
  sync();return true;
 }
 function close(){

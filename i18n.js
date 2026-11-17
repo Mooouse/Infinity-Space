@@ -1,5 +1,6 @@
 /* Explicit EN/RU/ES catalogue. Original text is retained so switching is reversible. */
-(() => {
+(async () => {
+await window.SpacePlatform.startup;
 'use strict';
 const rows=`Космическая пыль|Cosmic dust|Polvo cósmico
 Микрометеор|Micrometeor|Micrometeoro
@@ -231,7 +232,6 @@ const rows=`Космическая пыль|Cosmic dust|Polvo cósmico
 БЕЗДНА|ABYSS|ABISMO
 ГОРИЗОНТ|HORIZON|HORIZONTE
 Панель тестирования|Testing panel|Panel de pruebas
-Тестерская панель|Tester panel|Panel de pruebas
 Закрыть панель|Close panel|Cerrar panel
 Форма эволюции|Evolution form|Forma evolutiva
 Прогресс стадии|Stage progress|Progreso de etapa
@@ -250,7 +250,6 @@ const rows=`Космическая пыль|Cosmic dust|Polvo cósmico
 Снаружи поля притяжения. Вход за горизонт уничтожит тестовый прогресс.|Outside the gravity field. Crossing the horizon resets test progress.|Fuera del campo de gravedad. Cruzar el horizonte reinicia el progreso de prueba.
 Основное сохранение не найдено|Main save not found|No se encontró la partida principal
 Не удалось скопировать сохранение|Could not copy save|No se pudo copiar la partida
-Скопировать основное прохождение в тестерское? Текущий тестовый прогресс будет заменён.|Copy your main save into testing? Current test progress will be replaced.|¿Copiar la partida principal a pruebas? Se reemplazará el progreso de prueba.
 Тестовые параметры сохраняются отдельно. Изменения стадии и валюты влияют на текущее сохранение. Исследованные области и собранная материя остаются постоянными.|Test settings are saved separately. Stage and currency changes affect the current save. Exploration and collected matter persist.|Los ajustes de prueba se guardan aparte. La etapa y la moneda afectan a la partida actual. La exploración y la materia recogida persisten.
 Перемещение на 10 св. лет (тест)|Moved 10 ly (test)|Desplazado 10 al (prueba)
 Включить / выключить музыку|Toggle music|Activar o desactivar música
@@ -306,7 +305,7 @@ const dictionary=new Map();
 for(const line of rows.split('\n')){const [ru,en,es]=line.split('|');dictionary.set(ru,{en,es});dictionary.set(ru.toUpperCase(),{en:en.toUpperCase(),es:es.toUpperCase()});}
 const escape=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 const pattern=new RegExp([...dictionary.keys()].sort((a,b)=>b.length-a.length).map(escape).join('|'),'g');
-let language='en';try{const saved=localStorage.getItem('infiniti-space-language');if(['en','ru','es'].includes(saved))language=saved;}catch(_){}
+let language='en';try{const saved=window.SpacePlatform.storage.getItem('infiniti-space-language');if(['en','ru','es'].includes(saved))language=saved;}catch(_){}
 const originals=new WeakMap(),attributes=new WeakMap();
 function t(text){return language==='ru'?String(text):String(text).replace(pattern,key=>dictionary.get(key)[language]);}
 function skip(node){return node.parentElement?.closest('script,style,[data-no-translate],#set-language');}
@@ -324,7 +323,7 @@ function refresh(root=document.body){
  }
  document.documentElement.lang=language;
 }
-function setLanguage(value){if(!['en','ru','es'].includes(value))return;language=value;try{localStorage.setItem('infiniti-space-language',value);}catch(_){}refresh();}
+function setLanguage(value){if(!['en','ru','es'].includes(value))return;language=value;try{window.SpacePlatform.storage.setItem('infiniti-space-language',value);}catch(_){}refresh();}
 function context(c){if(!c||c._translated)return c;c._translated=true;const original=c.fillText;c.fillText=function(text,...args){return original.call(this,t(text),...args);};return c;}
 window.SpaceI18n={get language(){return language;},t,refresh,setLanguage,context};
 refresh();let queued=false;new MutationObserver(()=>{if(!queued){queued=true;queueMicrotask(()=>{queued=false;refresh();});}}).observe(document.body,{subtree:true,childList:true,characterData:true});

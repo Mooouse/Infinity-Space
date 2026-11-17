@@ -1,12 +1,13 @@
 /* Infinity Space — Cosmic Worms: original single-player .io serpent arena.
    Slither-style growth/boost/body-collision mechanics; all rivals are local AI.
    No external game logic, assets, account or network requests. */
-(()=>{'use strict';
+(async () => {
+await window.SpacePlatform.startup;'use strict';
 const QUERY=new URLSearchParams(location.search);
 const HASH_QUERY=new URLSearchParams(location.hash.slice(1));
 const DEMO=QUERY.has('demo')||HASH_QUERY.has('demo');
 if(DEMO)document.documentElement.classList.add('worm-demo');
-const storedLang=(()=>{try{return localStorage.getItem('infiniti-space-language')||''}catch(_){return ''}})();
+const storedLang=(()=>{try{return window.SpacePlatform.storage.getItem('infiniti-space-language')||''}catch(_){return ''}})();
 const language=/^(ru|en|es)$/.test(storedLang)?storedLang:(/^ru/i.test(navigator.language)?'ru':/^es/i.test(navigator.language)?'es':'en');
 document.documentElement.lang=language;
 const WORDS={
@@ -83,7 +84,7 @@ const SKINS=[
 ];
 const SETTINGS_KEY='infinity-space-worms-settings-v2';
 function loadSettings(){
- try{const s=JSON.parse(localStorage.getItem(SETTINGS_KEY));if(s&&typeof s==='object')
+ try{const s=JSON.parse(window.SpacePlatform.storage.getItem(SETTINGS_KEY));if(s&&typeof s==='object')
   return {skin:SKINS.some(v=>v.id===s.skin)?s.skin:'nebula',glow:s.glow!==false,names:s.names!==false,viewZoom:clamp(Number(s.viewZoom)||1,.84,1.16),head:window.WormSkinStudio?.isHeadUnlocked?.(s.head)?s.head:'classic',muted:s.muted===true,controlMode:['auto','mouse','keys','stick','touch'].includes(s.controlMode)?s.controlMode:'auto',mobileControlMode:['fixed','floating','touch'].includes(s.mobileControlMode)?s.mobileControlMode:'fixed',customEnabled:s.customEnabled===true,customSegments:Array.isArray(s.customSegments)?s.customSegments.filter(c=>/^#[0-9a-f]{6}$/i.test(c)).slice(0,64):[]};}catch(_){}
  return {skin:'nebula',glow:true,names:true,viewZoom:1,head:'classic',muted:false,controlMode:'auto',mobileControlMode:'fixed',customEnabled:false,customSegments:[]};
 }
@@ -106,7 +107,7 @@ window.addEventListener('storage',e=>{
  Object.assign(options,loadSettings());
  syncWormControlMode();syncPauseSound();
 });
-function saveOptions(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(options));}catch(_){}}
+function saveOptions(){try{window.SpacePlatform.storage.setItem(SETTINGS_KEY,JSON.stringify(options));}catch(_){}}
 
 let wormAudioContext=null,wormAudioMaster=null,lastWormPickupSound=0;
 // Tiny synthesised feedback uses the same sound switch as the pause screen.
@@ -236,10 +237,7 @@ const BOT_PERSONAS={
 };
 const DEATH_REPLAY_SECONDS=3.25;
 let vw=0,vh=0,dpr=1,last=0,uiClock=0,starTime=0,foodTimer=0,toastTimer=0,guideStep=0,guideReturn='playing';
-let game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),wrecks:[],nextWreckId:1,ambientCount:0,foodRespawnQueue:[],worms:[],fx:[],player:null,reported:false,reviveUsed:false,deathMass:0,adPending:false,deathElapsed:0,deathPosition:null,deathGhost:null};
-let crazyAdPaused=false;
-window.addEventListener('space-crazy-ad-request',event=>{crazyAdPaused=!!event.detail?.active});
-let qaManualPhysics=false; // tester-only: stop rAF simulation while deterministic QA advances physics
+let game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),wrecks:[],nextWreckId:1,ambientCount:0,foodRespawnQueue:[],worms:[],fx:[],player:null,reported:false,deathMass:0,deathElapsed:0,deathPosition:null,deathGhost:null};
 let lastIdlePaint=0;
 const input={mx:0,my:0,mouseMoved:false,mouseDown:false,boostKey:false,boostTouch:false,keys:new Set(),stickAngle:0,stickPower:0,stickPointer:-1,touchAngle:null};
 syncWormControlMode();
@@ -559,7 +557,7 @@ function notify(text){
  const el=$('worm-toast');el.textContent=text;el.classList.add('show');toastTimer=1.8;
 }
 function init(){
- game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),wrecks:[],nextWreckId:1,ambientCount:0,foodRespawnQueue:[],worms:[],fx:[],player:null,reported:false,reviveUsed:false,deathMass:0,adPending:false,deathElapsed:0,deathPosition:null,deathGhost:null};
+ game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),wrecks:[],nextWreckId:1,ambientCount:0,foodRespawnQueue:[],worms:[],fx:[],player:null,reported:false,deathMass:0,deathElapsed:0,deathPosition:null,deathGhost:null};
  const human=!DEMO;
  const p=createWorm(DEMO?'Astra':(window.InfinityProfile?.getName()||'PILOT'),human,0);
  game.player=p;game.worms.push(p);
@@ -586,7 +584,7 @@ function init(){
  $('worm-guide').hidden=true;$('worm-settings').hidden=true;
  if(!DEMO){
   if(!window.InfinityProfile?.getName())window.InfinityProfile?.promptName?.(true,name=>{p.name=name;});
-  let visited=false;try{visited=localStorage.getItem('infinity-space-mode-guide-v2:worms')==='1'}catch(_){}
+  let visited=false;try{visited=window.SpacePlatform.storage.getItem('infinity-space-mode-guide-v2:worms')==='1'}catch(_){}
   if(!visited)showGuide('playing');
  }
  updateUI();
@@ -1680,50 +1678,9 @@ window.addEventListener('message',event=>{
  if(event.data?.type==='infinity-space-worms-settings-close')closeSettings();
 });
 
-function wormReviveEligible(){
- return !DEMO&&!game.reviveUsed&&game.state==='finished'&&!!window.SpaceCrazyAds?.supported;
-}
-function reviveWormWithHalfMass(){
- if(!wormReviveEligible()||game.player.alive)return false;
- const w=game.player,angle=rand(-.55,.55);
- w.mass=Math.max(40,Math.floor(game.deathMass*.5));w.bestMass=Math.max(w.bestMass,w.mass);
- const pos=spawnPosition(angle,segmentCount(w),false,0)||{x:WORLD.cx,y:WORLD.cy,angle};
- w.x=pos.x;w.y=pos.y;w.angle=pos.angle??angle;w.target=w.angle;
- w.alive=true;w.boost=false;w.invulnerable=5.5;w.dropClock=0;w.speed=172;
- w.segments=Array.from({length:segmentCount(w)},(_,i)=>({x:w.x-Math.cos(w.angle)*11.8*(i+1),y:w.y-Math.sin(w.angle)*11.8*(i+1)}));
- seedWormTrail(w);
- game.reviveUsed=true;game.deathGhost=null;game.deathPosition=null;game.deathElapsed=0;game.adPending=false;
- game.state='playing';camera.x=w.x;camera.y=w.y;
- input.mouseDown=input.boostKey=input.boostTouch=false;
- $('worm-result').hidden=true;$('worm-result').classList.remove('is-revealing');
- $('worm-revive-note').hidden=true;document.body.classList.remove('worm-death-replay');
- window.SpacePlatform?.playing?.(true);updateUI();
- notify(({ru:'Возрождение · 50% массы',en:'Revived with 50% mass',es:'Reviviste con el 50% de masa'})[language]);
- return true;
-}
 function revealDeathResult(){
  if(game.state!=='death-replay')return;
- game.state='finished';
- const overlay=$('worm-result'),ad=$('worm-revive-ad'),note=$('worm-revive-note');
- overlay.hidden=false;overlay.classList.add('is-revealing');
- ad.hidden=!wormReviveEligible();
- ad.textContent=({ru:'▶ РЕКЛАМА · ВОЗРОДИТЬСЯ С 50% МАССЫ',en:'▶ WATCH AD · REVIVE WITH 50% MASS',es:'▶ ANUNCIO · REVIVIR CON 50% DE MASA'})[language];
- note.hidden=!wormReviveEligible();
- note.textContent=window.SpaceCrazyAds?.available?
-  ({ru:'Необязательно. Одно возрождение за забег.',en:'Optional. One revival per run.',es:'Opcional. Una resurrección por partida.'})[language]:
-  ({ru:'Реклама сейчас недоступна. Можно начать новый забег.',en:'Ad unavailable. You can start a new run.',es:'Anuncio no disponible.'})[language];
- window.SpacePlatform?.playing?.(false);
- if(!DEMO)updateUI();
- // Interstitials are reserved for the final death AFTER the rewarded
- // revival has been consumed. Never chain ads on a rewarded offer.
- if(!DEMO&&game.reviveUsed&&game.time>=45&&window.SpaceCrazyAds?.available){
-  const current=game,buttons=overlay.querySelectorAll('.worm-actions button');
-  current.adPending=true;buttons.forEach(b=>b.disabled=true);
-  window.SpaceCrazyAds.midgame().finally(()=>{
-   if(game!==current)return;
-   current.adPending=false;buttons.forEach(b=>b.disabled=false);
-  });
- }
+ game.state='finished';const overlay=$('worm-result');overlay.hidden=false;overlay.classList.add('is-revealing');window.SpacePlatform?.playing?.(false);if(!DEMO)updateUI();
 }
 
 function pause(){
@@ -1761,7 +1718,7 @@ function paintGuide(){
  [...$('worm-guide-dots').children].forEach((e,i)=>e.classList.toggle('current',i===guideStep));
 }
 function closeGuide(){
- try{localStorage.setItem('infinity-space-mode-guide-v2:worms','1')}catch(_){}
+ try{window.SpacePlatform.storage.setItem('infinity-space-mode-guide-v2:worms','1')}catch(_){}
  $('worm-guide').hidden=true;game.state=guideReturn;
  if(guideReturn==='paused')$('worm-pause-overlay').hidden=false;
  else window.SpacePlatform?.playing?.(true);
@@ -1784,40 +1741,7 @@ $('worm-skins-open').onclick=showSkinWorkshop;
 $('worm-open-guide').onclick=()=>showGuide('paused');$('worm-exit').onclick=exit;
 $('worm-guide-skip').onclick=closeGuide;
 $('worm-guide-next').onclick=()=>{if(guideStep<2){guideStep++;paintGuide();}else closeGuide();};
-$('worm-revive-ad').onclick=async()=>{
- if(game.adPending||!wormReviveEligible())return;
- const note=$('worm-revive-note');
- if(!window.SpaceCrazyAds?.available){
-  note.textContent=({ru:'Реклама доступна только в CrazyGames.',en:'Ads are available only in CrazyGames.',es:'Anuncios disponibles en CrazyGames.'})[language];
-  return;
- }
- const current=game;current.adPending=true;
- const buttons=$('worm-result').querySelectorAll('.worm-actions button');
- buttons.forEach(b=>b.disabled=true);
- note.textContent=({ru:'Загрузка рекламы…',en:'Loading ad…',es:'Cargando anuncio…'})[language];
- const success=await window.SpaceCrazyAds.rewarded();
- if(game!==current)return;
- current.adPending=false;buttons.forEach(b=>b.disabled=false);
- if(success){reviveWormWithHalfMass();return;}
- note.textContent=({ru:'Реклама не завершена. Масса не восстановлена.',en:'Ad incomplete. Mass not restored.',es:'Anuncio incompleto. Masa no restaurada.'})[language];
-};
-// On declining the optional rewarded offer, the NEXT ROUND is an eligible
-// natural break for a midgame ad. Never show it while the offer is open.
-async function leaveWormResults(next){
- if(game.adPending)return;
- const current=game;
- if(current.state==='finished'&&!current.reviveUsed&&current.time>=45&&window.SpaceCrazyAds?.available){
-  current.adPending=true;
-  const buttons=$('worm-result').querySelectorAll('.worm-actions button');
-  buttons.forEach(b=>b.disabled=true);
-  try{await window.SpaceCrazyAds.midgame();}
-  finally{
-   if(game===current){current.adPending=false;buttons.forEach(b=>b.disabled=false);}
-  }
-  if(game!==current)return;
- }
- next();
-}
+function leaveWormResults(next){next();}
 $('worm-restart').onclick=()=>leaveWormResults(()=>{init();window.SpacePlatform?.playing?.(game.state==='playing');});
 $('worm-result-menu').onclick=()=>leaveWormResults(exit);
 const boost=$('worm-boost');
@@ -1939,12 +1863,11 @@ function frame(now){
  if(document.hidden){last=now;return;}
  const background=backgroundFlightActive();
  if(background&&now-lastIdlePaint<34)return;
- if(qaManualPhysics&&now-lastIdlePaint<120)return;
- if(background||qaManualPhysics)lastIdlePaint=now;
+ if(background)lastIdlePaint=now;
  let dt=last?clamp((now-last)/1000,0,.047):.016;last=now;
  starTime=now*.001;
  if(game.state==='playing'||game.state==='death-replay'||background){
-  if(!qaManualPhysics&&!crazyAdPaused)simulate(dt);
+  simulate(dt);
   if(DEMO&&(!game.player.alive||game.time>80))init();
   if(game.state==='death-replay'){
    // Render cadence can be much slower than wall time (software WebGL,
@@ -1965,405 +1888,6 @@ function frame(now){
  paint(starTime);
 }
 init();requestAnimationFrame(frame);
-if(QUERY.has('tester')||HASH_QUERY.has('tester')||DEMO){
- window.InfinityWormsProgress=()=>({
- kills:game.player?.kills||0,
- mass:game.player?.bestMass||game.player?.mass||0,
- top1:game.player?.bestRank===1
-});
-window.InfinityWormsQA={
-  snapshot:()=>({state:game.state,mode:'worms',demo:DEMO,time:game.time,mass:game.player.mass,
-    bestMass:game.player.bestMass,length:game.player.segments.length,radius:wormRadius(game.player),head:options.head,angle:game.player.angle,
-    targetAngle:game.player.target,x:game.player.x,y:game.player.y,zoom:camera.zoom,
-    rank:ranking(game.player),worms:game.worms.length,
-    alive:game.worms.filter(w=>w.alive).length,food:game.food.length,
-    world:{w:WORLD.w,h:WORLD.h,rx:WORLD.rx,ry:WORLD.ry},
-    targetFood:FOOD_TARGET,botCount:BOT_COUNT,gridCells:game.foodGrid.size,
-    skin:options.skin,customEnabled:options.customEnabled,customColors:options.customSegments?.length||0,glow:options.glow,names:options.names,zoomSetting:Math.round(options.viewZoom*100),
-    lastDeath:game.lastDeath||null,guideOpen:!$('worm-guide').hidden,
-    settingsOpen:!$('worm-settings').hidden,boosting:game.player.boost,
-    deathElapsed:game.deathElapsed,deathDelay:DEATH_REPLAY_SECONDS,
-    deathFocus:game.deathPosition,
-    resultVisible:!$('worm-result').hidden,
-    resultAnimating:$('worm-result').classList.contains('is-revealing'),reviveUsed:game.reviveUsed,deathMass:game.deathMass,adPending:game.adPending}),
-  bots:()=>game.worms.filter(w=>!w.human).map(w=>({
-    id:w.id,name:w.name,persona:w.persona,skin:w.skin,head:w.head,x:w.x,y:w.y,alive:w.alive,
-    speed:w.speed,reaction:w.reaction,afk:w.afkTimer>0,mass:w.mass,objective:w.objective,
-    targetWreckId:w.targetWreckId,coilTargetId:w.coil?.id??null
-  })),
-  foodRegenerationProbe:()=>{
-   const sample=game.food.find(f=>f.ambient&&f._index>=0&&
-    ((f.x-WORLD.cx)/WORLD.rx)**2+((f.y-WORLD.cy)/WORLD.ry)**2<.65);
-   if(!sample)return {valid:false};
-   const before=game.ambientCount,oldQueue=game.foodRespawnQueue;
-   game.foodRespawnQueue=[];
-   const x=sample.x,y=sample.y,existing=new Set(game.food);
-   try{
-    removeFood(sample);
-    const queued=game.foodRespawnQueue.length;
-    regenerateAmbientFood();
-    const replacement=game.food.find(f=>f.ambient&&!existing.has(f));
-    return {valid:!!replacement,before,after:game.ambientCount,
-     queued,nearby:!!replacement&&Math.hypot(replacement.x-x,replacement.y-y)<=333,
-     oldPosition:{x,y},newPosition:replacement?{x:replacement.x,y:replacement.y}:null};
-   }finally{game.foodRespawnQueue.push(...oldQueue);}
-  },
-  spawnDistributionProbe:()=>{
-   const p=game.player,bots=game.worms.filter(w=>!w.human&&w.alive);
-   const radial=w=>Math.hypot(w.x-p.x,w.y-p.y);
-   let minimum=Infinity;
-   for(let i=0;i<bots.length;i++)
-    for(let j=i+1;j<bots.length;j++)
-     minimum=Math.min(minimum,Math.hypot(bots[i].x-bots[j].x,bots[i].y-bots[j].y));
-   const giants=bots.filter(w=>w.mass>=8000);
-   const ringGiantBodies=giants.every(w=>w.segments.every((seg,i)=>{
-    if(i%13!==0)return true;
-    const radialDist=Math.hypot(seg.x-WORLD.cx,seg.y-WORLD.cy);
-    return radialDist>6300&&radialDist<9000;
-   }));
-   return {total:bots.length,nearbyWithin3100:bots.filter(w=>radial(w)<3100).length,
-    farBeyond6500:bots.filter(w=>radial(w)>6500).length,
-    giantCount:giants.length,giantsFar:giants.filter(w=>radial(w)>6300).length,
-    giantBodiesOnOuterArc:ringGiantBodies,minHeadDistance:minimum};
-  },
-  wreckScopeProbe:()=>{
-   const actual=game;
-   try{
-    game={time:0,food:[],foodGrid:new Map(),wrecks:[],worms:[]};
-    const f=makeFood(1000,1000,'#ff1744',5,8);addFood(f);
-    f.wreckId=1;
-    game.wrecks=[{id:1,remaining:1,items:[f],
-     minX:f.x,maxX:f.x,minY:f.y,maxY:f.y}];
-    const makeWorm=(x,y,locked=false)=>({
-     id:x,persona:'pro',mass:250,x,y,angle:0,
-     targetWreckId:locked?1:null,targetFood:null,alive:true
-    });
-    return {near:!!collectWreckTarget(makeWorm(1500,1000)),
-     distant:!!collectWreckTarget(makeWorm(8000,8000)),
-     committed:!!collectWreckTarget(makeWorm(8000,8000,true))};
-   }finally{game=actual;}
-  },
-  giantRivalsProbe:()=>({
-   massive:game.worms.filter(w=>!w.human&&w.alive&&w.mass>=8000).length,
-   largest:Math.max(0,...game.worms.filter(w=>!w.human&&w.alive).map(w=>w.mass)),
-   player:game.player?.mass||0,
-   lengths:game.worms.filter(w=>!w.human&&w.alive).slice(0,3).map(w=>w.segments.length)
-  }),
-  wrecks:()=>game.wrecks.map(w=>({id:w.id,remaining:w.remaining,total:w.items.length,
-    age:game.time-w.created})),
-  forcePausedCollision:()=>{
-   if(game.state!=='paused')return {error:'not paused',state:game.state};
-   const p=game.player;
-   const adversary=game.worms.find(w=>!w.human&&w.alive);
-   if(!adversary)return {error:'no opponent'};
-   // A heavier live rival reaches the player's unprotected head.
-   // Route through production broadphase, collision and death handling.
-   p.invulnerable=0;
-   adversary.invulnerable=0;
-   adversary.mass=Math.max(p.mass+100,adversary.mass);
-   adversary.x=p.x;adversary.y=p.y;
-   addBodyGrid();collisions();
-   return {state:game.state,playerAlive:p.alive,
-    pauseVisible:!$('worm-pause-overlay').hidden,
-    settingsVisible:!$('worm-settings').hidden,
-    rank:ranking(p)};
-  },
-  botSkillBalanceProbe:()=>{
-   const active=game.worms.filter(w=>!w.human&&w.alive);
-   const experienced=active.filter(w=>['hunter','veteran','pro'].includes(w.persona));
-   const passive=active.filter(w=>w.persona==='afk');
-   return {total:active.length,experienced:experienced.length,
-    passive:passive.length,share:active.length?experienced.length/active.length:0};
-  },
-  botEvasionProbe:()=>{
-   const prev=game;
-   try{
-    const w={id:901,alive:true,human:false,persona:'pro',
-     x:5000,y:5000,angle:0,target:0,speed:185,mass:800,
-     segments:Array.from({length:75},(_,i)=>({x:5000-(i+1)*11.8,y:5000}))};
-    const barrier={id:902,alive:true,human:false,persona:'casual',
-     x:5210,y:4680,angle:Math.PI/2,speed:0,mass:1000,
-     segments:Array.from({length:55},(_,i)=>({x:5210,y:4690+i*11.8}))};
-    game={worms:[w,barrier],bodyGrid:new Map()};
-    addBodyGrid();
-    const pro=BOT_PERSONAS.pro;
-    const straight=botRouteRisk(w,0,pro);
-    const left=botRouteRisk(w,-1.16,pro);
-    const right=botRouteRisk(w,1.16,pro);
-    const alert=botHasUrgentThreat(w);
-    return {straight:straight.penalty,turn:Math.min(left.penalty,right.penalty),
-     straightClearance:straight.clearance,
-     saferClearance:Math.max(left.clearance,right.clearance),alert};
-   }finally{game=prev;}
-  },
-  // Deterministic browser-accessible regression: measure real steering
-  // with isolated corpses, ambient food and empty space. This must not
-  // mutate the player's live match.
-  // Regression tests for the rendering paths on a long looping worm.
-  visualMassProbe:()=>{
-   const masses=[61,500,8000,15000];
-   const samples=masses.map(mass=>({
-    mass,diameterAtMinZoom:wormRadius({mass})*2*.35,
-    detailAtMinZoom:cosmicSkinDetail({mass},.35),
-    dropScale:corpseDropScale(mass),segments:segmentCount({mass})
-   }));
-   // A dense loop used to punch holes in the old offset-polygon skin.
-   const points=Array.from({length:420},(_,i)=>({
-    x:160+Math.cos(i*.058)*59,
-    y:130+Math.sin(i*.058)*59
-   }));
-   const canvas=document.createElement('canvas');
-   canvas.width=320;canvas.height=280;
-   const g=canvas.getContext('2d',{willReadFrequently:true});
-   const mask=cosmicBodyMask(points,15);
-   g.fillStyle='#fff';g.fill(mask);
-   let transparentCenters=0;
-   for(let i=0;i<points.length;i+=17){
-    const p=points[i],alpha=g.getImageData(Math.round(p.x),Math.round(p.y),1,1).data[3];
-    if(alpha<230)transparentCenters++;
-   }
-   return {samples,transparentCenters,checkedCenters:Math.ceil(points.length/17),
-    palettes:Object.keys(SKIN_NEBULAE).length};
-  },
-  corpseSizeProbe:()=>({small:corpseDropScale(60),medium:corpseDropScale(1000),
-   giant:corpseDropScale(8000),huge:corpseDropScale(15000)}),
-  foodCourseProbe:()=>{
-   const userGame=game;
-   try{
-    game={food:[],foodGrid:new Map()};
-    const w={x:5000,y:5000,angle:0};
-    const persona=BOT_PERSONAS.pro;
-    const cases=[];
-    for(const direction of [.78,-.78,0]){
-     game.food.length=0;game.foodGrid.clear();
-     for(let i=0;i<96;i++){
-      const d=370+(i%13)*13,angle=direction;
-      addFood(makeFood(5000+Math.cos(angle)*d+Math.sin(i)*23,
-       5000+Math.sin(angle)*d+Math.cos(i)*23,'#ffe500',3,4));
-     }
-     for(let i=0;i<8;i++)addFood(makeFood(5000+465+i*9,5000,'#ff1744',3,4));
-     cases.push({direction,heading:planFoodLane(w,persona).heading});
-    }
-    return cases;
-   }finally{game=userGame;}
-  },
-  combatProbe:()=>{
-   const previous=game;
-   try{
-    game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),
-     worms:[],wrecks:[],ambientCount:0,foodRespawnQueue:[]};
-    const hunter={id:-801,persona:'pro',human:false,alive:true,x:5000,y:5000,
-     angle:0,target:0,think:0,reaction:.08,wiggle:0,speed:172,mass:850,boost:false,
-     segments:Array.from({length:180},()=>({x:0,y:0})),
-     targetFood:null,targetWreckId:null,coil:null,coilCooldown:999,objective:'food',
-     navFromX:5000,navFromY:5000,navSince:0,escapeUntil:0,escapeHeading:0,
-     roamHeading:0,roamUntil:99,huntTargetId:null,huntUntil:0,huntCooldown:0,
-     boostUntil:0,boostRestUntil:0};
-    const prey={id:-802,persona:'casual',human:false,alive:true,x:6600,y:5200,
-     angle:.15,target:.15,think:0,speed:150,mass:260,
-     segments:Array.from({length:35},()=>({x:0,y:0}))};
-    game.worms=[hunter,prey];
-    let boosted=false,locked=false,objective='';
-    for(let i=0;i<250;i++){
-     game.time=i*.08;hunter.think=0;
-     steerBot(hunter,.08);
-     if(hunter.huntTargetId===prey.id)locked=true;
-     if(hunter.boost)boosted=true;
-     objective=hunter.objective;
-     hunter.angle+=clamp(normAngle(hunter.target-hunter.angle),-.24,.24);
-     hunter.x+=Math.cos(hunter.angle)*15;hunter.y+=Math.sin(hunter.angle)*15;
-    }
-    return {locked,boosted,objective,range:Math.hypot(hunter.x-prey.x,hunter.y-prey.y)};
-   }finally{game=previous;}
-  },
-  navigationProbe:()=>{
-   const activeGame=game;
-   const run=(mode)=>{
-    game={state:'playing',time:0,food:[],foodGrid:new Map(),bodyGrid:new Map(),
-     worms:[],wrecks:[],ambientCount:0,foodRespawnQueue:[]};
-    const w={id:707,persona:'pro',human:false,alive:true,x:5000,y:5000,angle:0,target:0,
-     think:0,reaction:.085,wiggle:0,speed:185,mass:800,boost:false,
-     segments:Array.from({length:140},()=>({x:0,y:0})),
-     targetFood:null,targetWreckId:null,coil:null,coilCooldown:35,objective:'food',
-     navFromX:5000,navFromY:5000,navSince:0,escapeUntil:0,escapeHeading:0,
-     roamHeading:0,roamUntil:9,huntTargetId:null,huntUntil:0,huntCooldown:7};
-    game.worms=[w];
-    if(mode==='salvage'){
-     const wreck={id:1,created:0,remaining:0,items:[]};
-     for(let i=0;i<110;i++){
-      const f=makeFood(5500+i*9,5000+Math.sin(i*.09)*70,'#ff84e7',3,4);
-      f.wreckId=1;addFood(f);wreck.items.push(f);wreck.remaining++;
-     }
-     game.wrecks=[wreck];
-    }else if(mode==='ambient'){
-     for(let i=0;i<1300;i++)
-      addFood(makeFood(4700+(i%55)*30,4650+Math.floor(i/55)*28,'#ffe500',2.5,4));
-    }
-    const originalCount=game.food.length;
-    let rotation=0,flips=0;
-    for(let i=0;i<1080;i++){
-     const dt=1/60;game.time+=dt;steerBot(w,dt);
-     if(Math.abs(normAngle(w.target-w.angle))>2.7)flips++;
-     const previous=w.angle;
-     w.angle+=clamp(normAngle(w.target-w.angle),-3.35*dt,3.35*dt);
-     w.x+=Math.cos(w.angle)*w.speed*dt;
-     w.y+=Math.sin(w.angle)*w.speed*dt;
-     rotation+=Math.abs(normAngle(w.angle-previous));
-     foodNearby(w.x,w.y,49,f=>{
-      if(f._index>=0&&Math.hypot(f.x-w.x,f.y-w.y)<45)removeFood(f);
-     });
-    }
-    return {total:originalCount,collected:originalCount-game.food.length,
-     displacementRatio:Math.hypot(w.x-5000,w.y-5000)/(w.speed*18),
-     meanTurn:rotation/18,flips,remaining:game.wrecks[0]?.remaining??null};
-   };
-   try{return {salvage:run('salvage'),ambient:run('ambient'),empty:run('empty')};}
-   finally{game=activeGame;}
-  },
-  salvageProbe:()=>{
-   const active=game.wrecks.find(w=>w.remaining>0);
-   if(!active)return {available:false,total:0,eligible:0,prioritizing:0};
-   const bots=game.worms.filter(w=>!w.human&&w.alive);
-   const eligible=bots.filter(b=>
-    game.wrecks.some(wreck=>wreck.remaining>0&&(
-     wreck.id===b.targetWreckId||wreck.items.some(f=>f._index>=0&&
-      Math.hypot(f.x-b.x,f.y-b.y)<=corpseAwarenessRadius(b))
-    ))).length;
-   for(const b of bots){b.think=0;steerBot(b,1/60);}
-   return {available:true,id:active.id,total:bots.length,eligible,
-    prioritizing:bots.filter(b=>b.objective==='salvage'&&b.targetWreckId!==null).length,
-    types:[...new Set(bots.map(b=>b.persona))]};
-  },
-  encircleProbe:()=>{
-   const victim={id:-999,alive:true,mass:80,segments:Array.from({length:35},()=>({x:0,y:0})),
-    x:1000,y:1000,angle:0,speed:0};
-   const attacker={id:-998,alive:true,mass:900,segments:Array.from({length:150},()=>({x:0,y:0})),
-    x:1180,y:1000,angle:Math.PI/2,speed:172,persona:'pro',coilCooldown:game.time+100};
-   const radius=encircleRadius(victim),canClose=canEncircle(attacker,victim);
-   attacker.coil={id:victim.id,x:victim.x,y:victim.y,radius,dir:1,
-    progress:0,lastBearing:null,until:game.time+13,escaped:0};
-   game.worms.push(victim);
-   try{
-    for(let tick=0;tick<330;tick++){
-     const heading=guideCoil(attacker,1/60,BOT_PERSONAS.pro);
-     if(heading===null)break;
-     attacker.angle+=clamp(normAngle(heading-attacker.angle),-3.35/60,3.35/60);
-     attacker.x+=Math.cos(attacker.angle)*attacker.speed/60;
-     attacker.y+=Math.sin(attacker.angle)*attacker.speed/60;
-    }
-    return {canClose,radius,availableLength:attacker.segments.length*11.8,
-     requiredLength:TAU*radius*1.08,loop:attacker.coil?.progress||0,
-     radiusError:Math.abs(Math.hypot(attacker.x-victim.x,attacker.y-victim.y)-radius)};
-   }finally{game.worms.pop();}
-  },
-  relaxationProbe:()=>{
-   const simulateCurve=smoothing=>{
-    const w={x:500,y:500,angle:0,
-     segments:Array.from({length:110},(_,i)=>({x:500-11.8*(i+1),y:500}))};
-    seedWormTrail(w);
-    for(let i=0;i<180;i++){
-     const dt=1/60,heading=i<30?0:Math.min(Math.PI*.75,(i-30)*dt*3.35),advance=172*dt;
-     w.x+=Math.cos(heading)*advance;w.y+=Math.sin(heading)*advance;
-     followWormTrail(w,advance,11.8,smoothing?dt:0);
-    }
-    return w;
-   };
-   const relaxed=simulateCurve(true),rigid=simulateCurve(false);
-   return {maxShift:Math.max(...relaxed.segments.map((p,i)=>
-     Math.hypot(p.x-rigid.segments[i].x,p.y-rigid.segments[i].y))),
-    samples:relaxed.trail.length,segmentCount:relaxed.segments.length};
-  },
-  botReshuffleProbe:()=>{
-   const b=game.worms.find(w=>!w.human&&w.alive);
-   if(!b)return null;
-   const after=botIdentity(b);
-   return {before:{persona:b.persona,skin:b.skin,head:b.head,name:b.name},
-     after,independent:after.persona!==b.persona&&after.skin!==b.skin&&after.head!==b.head&&after.name!==b.name};
-  },
-  botStyles:()=>Object.fromEntries(
-    Object.keys(BOT_PERSONAS).map(id=>[id,
-      game.worms.filter(w=>!w.human&&w.persona===id).length])),
-  setMass:value=>{game.player.mass=Math.max(35,Number(value)||60);
-    game.player.bestMass=Math.max(game.player.bestMass,game.player.mass);updateUI();},
-  giveFood:value=>{game.player.mass+=Math.max(1,Number(value)||10);
-    game.player.foodEaten++;updateUI();},
-  setHeading:angle=>{input.mouseMoved=false;input.keys.clear();input.touchAngle=null;
-    input.stickPower=0;game.player.target=Number(angle);},
-  // Fixed-step simulation for deterministic movement assertions in slow CI.
-  // This verifies actual bot/player physics independently of paint FPS.
-  freezeRealtime:enabled=>{qaManualPhysics=!!enabled;return qaManualPhysics;},
-  advancePhysics:seconds=>{
-   const ticks=Math.max(0,Math.min(240,Math.round(Number(seconds)*60)));
-   if(game.state!=='playing')return {ticks:0,time:game.time};
-   for(let i=0;i<ticks&&game.state==='playing';i++)simulate(1/60);
-   return {ticks,time:game.time};
-  },
-  // Stable UI smoke tests must not randomly die while inspecting controls.
-  testProtection:seconds=>{game.player.invulnerable=clamp(Number(seconds)||30,0,120);},
-  setRunTime:seconds=>{game.time=Math.max(game.time,Math.max(0,Number(seconds)||0));return game.time;},
-  forceDeath:()=>{game.player.invulnerable=0;kill(game.player,null,'body');},
-  forceBotDeath:()=>{
-   const b=game.worms.find(w=>!w.human&&w.alive);
-   if(!b)return null;
-   b.invulnerable=0;const before=game.food.length;
-   kill(b,null,'body');
-   const drop=game.wrecks[0];
-   const meanRadius=drop?.items.length?drop.items.reduce((sum,f)=>sum+f.r,0)/drop.items.length:0;
-   return {name:b.name,segments:b.segments.length,dropped:game.food.length-before,
-    mass:b.mass,meanRadius,lastDeath:game.lastDeath};
-  },
-  spawnProbe:()=>{
-   const w=createWorm('SPAWN_QA',false,777,true);
-   if(!w)return {safe:false,reason:'no safe candidate'};
-   let minimum=Infinity;
-   for(const other of game.worms){
-    if(!other.alive)continue;
-    const otherNodes=[other,...other.segments];
-    for(const n of [w,...w.segments]){
-     for(const m of otherNodes){
-      const d=Math.hypot(n.x-m.x,n.y-m.y);minimum=Math.min(minimum,d);
-     }
-    }
-   }
-   return {safe:minimum>=250,minimum,segments:w.segments.length};
-  },
-  desiredLength:()=>segmentCount(game.player),
-  // Use the SAME smoothing path as paint(), without depending on rAF/CI GPU.
-  advanceCamera:steps=>{
-   const count=Math.max(0,Math.min(150,Math.floor(Number(steps)||0)));
-   for(let i=0;i<count;i++)updateCamera();
-   return camera.zoom;
-  },
-  orbitTrailProbe:()=>{
-   const cx=1200,cy=1400,r=62,gap=11.8,count=28;
-   const test={x:cx+r,y:cy,angle:Math.PI/2,
-    segments:Array.from({length:count},(_,i)=>({x:cx+r,y:cy-(i+1)*gap}))};
-   seedWormTrail(test);
-   const origin={...test.segments[count-1]};
-   let previous={x:test.x,y:test.y};
-   for(let i=1;i<=520;i++){
-    const angle=i*.036;
-    test.x=cx+r*Math.cos(angle);test.y=cy+r*Math.sin(angle);
-    const moved=Math.hypot(test.x-previous.x,test.y-previous.y);
-    followWormTrail(test,moved,gap);
-    previous={x:test.x,y:test.y};
-   }
-   const tail=test.segments[count-1];
-   return {tailMoved:Math.hypot(tail.x-origin.x,tail.y-origin.y),
-    tailRadius:Math.hypot(tail.x-cx,tail.y-cy),radius:r,
-    segmentCount:test.segments.length,history:test.trail.length};
-  },
-  headOnWinner:({massA,massB,speedA=172,speedB=172})=>{
-   const a={id:1,mass:massA,speed:speedA},b={id:2,mass:massB,speed:speedB};
-   return headOnWinner(a,b)===a?'a':'b';
-  },
-  skins:()=>SKINS.map(x=>({id:x.id,ru:x.ru,en:x.en,pattern:x.pattern})),
-  pause:()=>pause()
- };
-}
-document.addEventListener('DOMContentLoaded',()=>{
- Promise.resolve(window.SpacePlatform?.startup).catch(()=>{}).then(()=>{
-  if(!DEMO){window.SpacePlatform?.loaded?.();window.SpacePlatform?.playing?.(game.state==='playing');}
- });
-});
+window.InfinityWormsProgress=()=>({kills:game.player?.kills||0,mass:game.player?.bestMass||game.player?.mass||0,top1:game.player?.bestRank===1});
+if(!DEMO){window.SpacePlatform?.loaded?.();window.SpacePlatform?.playing?.(game.state==='playing');}
 })();

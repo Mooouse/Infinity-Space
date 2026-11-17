@@ -1,19 +1,7 @@
 // Visual functions from the approved v15.3 reference; no demo state or audio.
-(()=>{'use strict';
-function musicCover(i){const t={title:i===0?'First Light':'Transmission '+String(i+1).padStart(2,'0'),hue:[252,278,226,308,199,267,17,330][i%8],kind:i%8},h=t.hue,s=100+i*23;
- const points=Array.from({length:19},(_,j)=>{const x=(j*47+s*3)%300,y=(j*89+s)%300,r=(j%3===0?1.4:.7);return `<circle cx="${x}" cy="${y}" r="${r}" fill="white" opacity="${j%3===0?.55:.28}"/>`}).join('');
- const art=[
- `<ellipse cx="154" cy="66" rx="104" ry="33" fill="none" stroke="#d9b6ff" stroke-width="4" transform="rotate(-23 154 66)" opacity=".75"/><circle cx="154" cy="66" r="39" fill="#090720" stroke="#ae80f5" stroke-width="3"/><path d="M74 90 Q150 50 240 34" stroke="#e9d6ff" stroke-width="3" fill="none" opacity=".8"/>`,
- `<path d="M0 68 Q55 9 108 69 T213 68 T316 64" stroke="#e7d6ff" stroke-width="7" fill="none" opacity=".65"/><path d="M0 90 Q60 36 111 91 T215 90 T315 85" stroke="#b88afe" stroke-width="2.4" fill="none"/><circle cx="151" cy="67" r="13" fill="#f1d8ff"/>`,
- `<path d="M18 90 C79 3 198 137 282 25" fill="none" stroke="#b4e8ff" stroke-width="10" opacity=".5"/><path d="M0 106 C74 20 184 148 300 30" fill="none" stroke="#e1f4ff" stroke-width="2.5"/><circle cx="130" cy="62" r="14" fill="#aab9ff"/>`,
- `<circle cx="150" cy="70" r="40" fill="#02020b" stroke="#f6a2e6" stroke-width="2"/><circle cx="150" cy="70" r="61" fill="none" stroke="#cc6cdb" stroke-width="7" opacity=".3"/><ellipse cx="150" cy="70" rx="100" ry="22" fill="none" stroke="#edb9e2" stroke-width="3" transform="rotate(16 150 70)"/>`,
- `<path d="M55 95 Q126 10 202 62 Q236 85 271 31" stroke="#27ff40" stroke-width="12" opacity=".3" fill="none"/><path d="M55 95 Q126 10 202 62 Q236 85 271 31" stroke="#c4fff5" stroke-width="2.7" fill="none"/><circle cx="193" cy="61" r="23" fill="#2860ff"/>`,
- `<ellipse cx="150" cy="64" rx="105" ry="42" fill="none" stroke="#e9caff" stroke-width="2.5" transform="rotate(29 150 64)"/><circle cx="150" cy="64" r="33" fill="#030109" stroke="#bf88ff" stroke-width="5"/><circle cx="150" cy="64" r="53" fill="none" stroke="#9a6bfc" stroke-width="8" opacity=".25"/>`,
- `<path d="M0 105 88 39 120 80 184 16 217 76 300 25" fill="none" stroke="#ffc5a0" stroke-width="4"/><circle cx="185" cy="19" r="14" fill="#ffe6c8"/><circle cx="85" cy="41" r="6" fill="#ffb16d"/>`,
- `<path d="M42 113 Q138 -14 244 113" fill="none" stroke="#f1a8ff" stroke-width="2"/><path d="M62 102 Q149 -27 236 102" fill="none" stroke="#d680e8" stroke-width="6" opacity=".45"/><ellipse cx="153" cy="63" rx="31" ry="27" fill="#03010a" stroke="#edb6ff" stroke-width="3"/><circle cx="153" cy="63" r="4" fill="#ffe3ff"/>`
- ][t.kind];
- return `<svg viewBox="0 0 300 300" role="img" aria-label="Обложка: ${t.title}" preserveAspectRatio="xMidYMid meet"><defs><radialGradient id="m${i}g" cx="55%" cy="48%"><stop stop-color="hsl(${h} 60% 31%)"/><stop offset="1" stop-color="hsl(${h} 55% 7%)"/></radialGradient><radialGradient id="m${i}gl"><stop stop-color="white" stop-opacity=".65"/><stop offset="1" stop-color="white" stop-opacity="0"/></radialGradient></defs><rect width="300" height="300" fill="url(#m${i}g)"/><path d="M22 22h256v256H22z" stroke="white" stroke-opacity=".15" stroke-width="1.2" fill="none"/>${points}<circle cx="156" cy="150" r="100" fill="url(#m${i}gl)" opacity=".20"/><g transform="translate(0 85) scale(1 1.0)">${art}</g><path d="M27 248h52" stroke="white" stroke-width="2" stroke-opacity=".28"/><path d="M221 50h52" stroke="white" stroke-width="2" stroke-opacity=".28"/></svg>`;
-}
+(async () => {
+await window.SpacePlatform.startup;'use strict';
+function musicCover(i){return `<img src="assets/music/track-${String(i+1).padStart(2,'0')}.svg" alt="" width="360" height="360">`;}
 function mediaSVG(which){
  const art={
   play:'<path fill="currentColor" d="M11 5.5c0-1.5 1.6-2.4 2.9-1.5l15 10c1.4.9 1.4 3 0 3.9l-15 10c-1.3.9-2.9 0-2.9-1.5Z"/>',

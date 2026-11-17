@@ -2,7 +2,8 @@
  * Presentation only: original game handlers, saves, language and reward flow
  * stay attached to the EXISTING buttons when they move into the new layout.
  */
-(()=>{'use strict';
+(async () => {
+await window.SpacePlatform.startup;'use strict';
  const words={
   ru:{modes:'РЕЖИМЫ ИГРЫ',modesSub:'Арена · Выживание · Захват · Гонка · Черви',world:'ТВОЯ ВСЕЛЕННАЯ',
       worldSub:'Прогресс и открытия',bonus:'БОНУСЫ',bonusSub:'Награды каждый день',

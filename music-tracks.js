@@ -1,110 +1,110 @@
 window.SpaceMusicTracks = [
   {
     "id": 1,
-    "title": "Five Billion Years Ago",
+    "title": "Velvet Orbit",
     "price": 0,
     "src": "assets/music/track-01.mp3",
-    "cover": "assets/music/track-01.jpg",
-    "duration": 228.0,
-    "subtitle": "Cinematic · deep time"
+    "cover": "assets/music/track-01.svg",
+    "duration": 106.67,
+    "subtitle": "Ambient · drifting chords"
   },
   {
     "id": 2,
-    "title": "Deep Space Transit",
+    "title": "Crimson Aphelion",
     "price": 10000,
     "src": "assets/music/track-02.mp3",
-    "cover": "assets/music/track-02.jpg",
-    "duration": 247.63,
-    "subtitle": "Space ambient · drifting pulse"
+    "cover": "assets/music/track-02.svg",
+    "duration": 102.4,
+    "subtitle": "Electronic · orbital pulse"
   },
   {
     "id": 3,
-    "title": "Old Piano, New Dust",
+    "title": "Glass Satellites",
     "price": 75000,
     "src": "assets/music/track-03.mp3",
-    "cover": "assets/music/track-03.jpg",
-    "duration": 184.03,
-    "subtitle": "Lo-fi · warm piano"
+    "cover": "assets/music/track-03.svg",
+    "duration": 98.46,
+    "subtitle": "Space keys · soft echoes"
   },
   {
     "id": 4,
-    "title": "Rainy Afternoon Lo-fi",
+    "title": "Solar Petals",
     "price": 250000,
     "src": "assets/music/track-04.mp3",
-    "cover": "assets/music/track-04.jpg",
-    "duration": 200.04,
-    "subtitle": "Lo-fi · rainy afternoon"
+    "cover": "assets/music/track-04.svg",
+    "duration": 94.81,
+    "subtitle": "Ambient · drifting chords"
   },
   {
     "id": 5,
-    "title": "lofi happy",
+    "title": "Violet Current",
     "price": 1000000,
     "src": "assets/music/track-05.mp3",
-    "cover": "assets/music/track-05.jpg",
-    "duration": 170.04,
-    "subtitle": "Lo-fi · soft synths"
+    "cover": "assets/music/track-05.svg",
+    "duration": 91.43,
+    "subtitle": "Electronic · orbital pulse"
   },
   {
     "id": 6,
-    "title": "Nocturnal Rain Field",
+    "title": "Quiet Meridian",
     "price": 100000000000000000000000000,
     "src": "assets/music/track-06.mp3",
-    "cover": "assets/music/track-06.jpg",
-    "duration": 248.93,
-    "subtitle": "Ambient · nocturnal rain"
+    "cover": "assets/music/track-06.svg",
+    "duration": 88.28,
+    "subtitle": "Space keys · soft echoes"
   },
   {
     "id": 7,
-    "title": "Bilewater's Lament",
+    "title": "Ember Constellation",
     "price": 1000000000000000000000000000000,
     "src": "assets/music/track-07.mp3",
-    "cover": "assets/music/track-07.jpg",
-    "duration": 218.28,
-    "subtitle": "Dark ambient · prepared piano"
+    "cover": "assets/music/track-07.svg",
+    "duration": 85.33,
+    "subtitle": "Ambient · drifting chords"
   },
   {
     "id": 8,
-    "title": "Dead Space Lofi",
+    "title": "Gravity Waltz",
     "price": 10000000000000000000000000000000000,
     "src": "assets/music/track-08.mp3",
-    "cover": "assets/music/track-08.jpg",
-    "duration": 189.96,
-    "subtitle": "Lo-fi · weightless rhythm"
+    "cover": "assets/music/track-08.svg",
+    "duration": 82.58,
+    "subtitle": "Electronic · orbital pulse"
   },
   {
     "id": 9,
-    "title": "Космический дрон",
+    "title": "Golden Parallax",
     "price": 100000000000000000000000000000000000000,
     "src": "assets/music/track-09.mp3",
-    "cover": "assets/music/track-09.jpg",
-    "duration": 246.05,
-    "subtitle": "Ambient · cosmic drone"
+    "cover": "assets/music/track-09.svg",
+    "duration": 80.0,
+    "subtitle": "Space keys · soft echoes"
   },
   {
     "id": 10,
-    "title": "Космическая пустота",
+    "title": "Midnight Signals",
     "price": 1000000000000000000000000000000000000000000,
     "src": "assets/music/track-10.mp3",
-    "cover": "assets/music/track-10.jpg",
-    "duration": 219.6,
-    "subtitle": "Ambient · distant piano"
+    "cover": "assets/music/track-10.svg",
+    "duration": 77.58,
+    "subtitle": "Ambient · drifting chords"
   },
   {
     "id": 11,
-    "title": "За пределами тишины",
+    "title": "Stellar Garden",
     "price": 10000000000000000000000000000000000000000000000,
     "src": "assets/music/track-11.mp3",
-    "cover": "assets/music/track-11.jpg",
-    "duration": 225.0,
-    "subtitle": "Ambient · cold horizon"
+    "cover": "assets/music/track-11.svg",
+    "duration": 75.29,
+    "subtitle": "Electronic · orbital pulse"
   },
   {
     "id": 12,
-    "title": "Omnis Tenebrae",
+    "title": "Beyond the Halo",
     "price": 100000000000000000000000000000000000000000000000000,
     "src": "assets/music/track-12.mp3",
-    "cover": "assets/music/track-12.jpg",
-    "duration": 209.64,
-    "subtitle": "Dark ambient · organ"
+    "cover": "assets/music/track-12.svg",
+    "duration": 73.14,
+    "subtitle": "Space keys · soft echoes"
   }
 ];
